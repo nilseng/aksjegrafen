@@ -20,11 +20,13 @@ export const connectToMongoDb = async () => {
   );
 
   // Retrieving mongodb collections
-  collections.shareownership = client.db().collection("shareownership");
+  collections.ownerships = client.db().collection('ownerships');
+  collections.shareholders = client.db().collection('shareholders');
+  collections.companies = client.db().collection('companies')
 
-  collections.shareownership.createIndex({ Selskap: 1 })
-  collections.shareownership.createIndex({ Orgnr: 1 })
-  collections.shareownership.createIndex({ 'Antall aksjer': 1 })
+  //Creating indices
+  collections.shareholders.createIndex({ id: 1 }, { unique: true })
+  collections.companies.createIndex({ orgnr: 1 }, { unique: true })
 
   //Connection events
   client.on("connected", () => {

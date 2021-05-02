@@ -17,9 +17,27 @@ router.get("/ownership/:company", async (req: any, res) => {
 })
 
 router.get("/company/:searchTerm", async (req, res) => {
-    const companies = await db.shareownership.distinct('Selskap', { Selskap: { $regex: req.params.searchTerm, $options: "i" } }).catch(e => console.error(e))
+    const companies = await db.companies.find(
+        {
+            $or: [
+                { orgnr: { $regex: new RegExp(`^${req.params.searchTerm}`), $options: "i" } },
+                { name: { $regex: req.params.searchTerm, $options: "i" } }
+            ]
+        }).limit(10).toArray().catch(e => console.error(e))
     if (!companies) return res.status(400).json('Search failed.')
-    res.status(200).json(companies.slice(0, 10))
+    res.status(200).json(companies)
+})
+
+router.get("/shareholder/:searchTerm", async (req, res) => {
+    const shareholders = await db.shareholders.find(
+        {
+            $or: [
+                { orgnr: { $regex: new RegExp(`^${req.params.searchTerm}`), $options: "i" } },
+                { name: { $regex: req.params.searchTerm, $options: "i" } }
+            ]
+        }).limit(10).toArray().catch(e => console.error(e))
+    if (!shareholders) return res.status(400).json('Search failed.')
+    res.status(200).json(shareholders)
 })
 
 export default router
