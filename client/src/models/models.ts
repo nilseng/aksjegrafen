@@ -1,4 +1,4 @@
-export interface Company {
+export interface ICompany {
     _id: string;
     orgnr?: string;
     name: string;
@@ -8,8 +8,8 @@ export interface Company {
     stocks?: number;
 }
 
-export type Shareholder = Company &
-    Person & { _id: string; id: string; kind: ShareholderType };
+export type IShareholder = ICompany &
+    IPerson & { _id: string; id: string; kind: ShareholderType };
 
 enum ShareholderType {
     COMPANY,
@@ -17,19 +17,19 @@ enum ShareholderType {
     UNKNOWN,
 }
 
-export interface Company {
-    orgnr?: string;
-    name: string;
-    zipCode?: string;
-    location?: string;
-    countryCode?: string;
-    stocks?: number;
-}
-
-export interface Person {
+export interface IPerson {
     name: string;
     yearOfBirth?: number;
     zipCode?: string;
     location?: string;
     countryCode?: string;
+}
+
+export interface IOwnership {
+    _id: string
+    orgnr: string
+    shareHolderId: string
+    shareClass: string
+    stocks: number
+    company?: ICompany
 }

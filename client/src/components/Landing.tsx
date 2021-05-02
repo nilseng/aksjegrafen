@@ -6,12 +6,16 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import { Company, Shareholder } from "../models/models";
+import { ICompany, IShareholder } from "../models/models";
+import { Stats } from "./Stats";
+import { useHistory } from "react-router-dom";
 
 export const Landing = () => {
-  const [companySearchList, setCompanySearchList] = useState<Company[]>([]);
+  const history = useHistory();
+
+  const [companySearchList, setCompanySearchList] = useState<ICompany[]>([]);
   const [shareholderSearchList, setShareholderSearchList] = useState<
-    Shareholder[]
+    IShareholder[]
   >([]);
 
   const handleCompanySearch = (e: any) => {
@@ -60,7 +64,8 @@ export const Landing = () => {
 
   return (
     <Container style={{ minHeight: "80vh" }}>
-      <div className="h1 my-4">Eierskapsstruktur</div>
+      <div className="h4 my-4">Eierskapsstruktur</div>
+      <Stats />
       <Row>
         <Col sm>
           <Form.Group>
@@ -69,16 +74,19 @@ export const Landing = () => {
               name="peakSearchTerm"
               type="text"
               placeholder="Selskapsnavn eller orgnr..."
-              size="sm"
+              size="lg"
               onChange={(e) => handleCompanySearch(e)}
             ></Form.Control>
           </Form.Group>
           <ListGroup>
             {companySearchList?.map((company) => (
-              <ListGroup.Item key={company._id}>
-                <Button variant="link" onClick={() => console.log(company)}>
-                  <span className="mr-2">{company.orgnr}</span>
-                  <span>{company.name}</span>
+              <ListGroup.Item
+                key={company._id}
+                onClick={() => history.push(`/company?_id=${company._id}`)}
+              >
+                <Button variant="link">
+                  <span className="mr-2">{company.name}</span>
+                  <span className="text-muted">({company.orgnr})</span>
                 </Button>
               </ListGroup.Item>
             ))}
@@ -91,14 +99,19 @@ export const Landing = () => {
               name="peakSearchTerm"
               type="text"
               placeholder="Orgnr eller navn på person eller selskap..."
-              size="sm"
+              size="lg"
               onChange={(e) => handleShareholderSearch(e)}
             ></Form.Control>
           </Form.Group>
           <ListGroup>
             {shareholderSearchList?.map((shareholder) => (
-              <ListGroup.Item key={shareholder._id}>
-                <Button variant="link" onClick={() => console.log(shareholder)}>
+              <ListGroup.Item
+                key={shareholder._id}
+                onClick={() =>
+                  history.push(`/shareholder?_id=${shareholder._id}`)
+                }
+              >
+                <Button variant="link">
                   <span className="mr-2">{shareholder.name}</span>
                   {shareholder.yearOfBirth && (
                     <span className="mr-2">{shareholder.yearOfBirth}</span>
@@ -115,7 +128,7 @@ export const Landing = () => {
           </ListGroup>
         </Col>
       </Row>
-      <div className="position-absolute" style={{ bottom: 0 }}>
+      <div className="my-4">
         <p className="small text-muted">
           All data på denne siden er gjort offentlig tilgjengelig av
           Skatteetaten.
@@ -123,6 +136,9 @@ export const Landing = () => {
         <p className="small text-muted">
           Send en mail til teodor.nilseng@gmail.com ved tilbakemeldinger eller
           spørsmål.
+        </p>
+        <p className="small text-muted">
+          Denne siden eies og er utviklet av Pureokrs AS.
         </p>
       </div>
     </Container>

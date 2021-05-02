@@ -3,50 +3,7 @@ import path from 'path'
 import fs from 'fs'
 
 import { collections as db } from "../database/databaseSetup"
-
-interface OwnershipRaw {
-    Orgnr: string
-    Selskap: string
-    Aksjeklasse: string
-    'Navn aksjonær': string
-    'Fødselsår/orgnr': string | undefined
-    'Postnr/sted': string | undefined
-    Landkode: string
-    'Antall aksjer': string | number
-    'Antall aksjer selskap': string | number
-}
-
-interface Ownership {
-    orgnr: string
-    shareHolderId: string
-    shareClass: string
-    stocks: number
-}
-
-type Shareholder = Company & Person & { id: string, kind: ShareholderType }
-
-enum ShareholderType {
-    COMPANY,
-    PERSON,
-    UNKNOWN
-}
-
-interface Company {
-    orgnr?: string
-    name: string
-    zipCode?: string
-    location?: string
-    countryCode?: string
-    stocks?: number
-}
-
-interface Person {
-    name: string
-    yearOfBirth?: number
-    zipCode?: string
-    location?: string
-    countryCode?: string
-}
+import { Company, Ownership, OwnershipRaw, Shareholder, ShareholderType } from '../models/models'
 
 export const importData = async () => {
     console.log('------------- Data import started -------------')
