@@ -137,11 +137,11 @@ export const Landing = () => {
           Skatteetaten.
         </p>
         <p className="small text-muted">
-          Send en mail til teodor.nilseng@gmail.com ved tilbakemeldinger eller
-          spørsmål.
+          Send en mail til teodor.nilseng@gmail.com i tilfelle positive
+          tilbakemeldinger.
         </p>
         <p className="small text-muted">
-          Denne siden eies og er utviklet av Pureokrs AS.
+          Siden eies og er utviklet av Pureokrs AS.
         </p>
       </div>
     </Container>
