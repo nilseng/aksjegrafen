@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Col from "react-bootstrap/esm/Col";
 import Container from "react-bootstrap/esm/Container";
-import Row from "react-bootstrap/esm/Row";
+import Table from "react-bootstrap/esm/Table";
+import { useHistory } from "react-router-dom";
 import { useQuery } from "../hooks";
 import { IShareholder, IOwnership } from "../models/models";
 
 export const Shareholder = () => {
   const query = useQuery();
+  const history = useHistory();
 
   const [shareholderId, setShareholderId] = useState<string>();
   const [shareholder, setShareholder] = useState<IShareholder>();
@@ -42,33 +43,35 @@ export const Shareholder = () => {
       <Container>
         <p className="h4 my-4">Aksjer eid av {shareholder?.name}</p>
         {ownerships && (
-          <Row>
-            <Col>
-              <p className="h4">Selskap</p>
-              {ownerships.map((o) => (
-                <div key={o._id}>{o.company?.name}</div>
-              ))}
-            </Col>
-            <Col>
-              <p className="h4">Antall aksjer</p>
+          <Table striped bordered hover responsive>
+            <thead>
+              <tr>
+                <th>Selskap</th>
+                <th>Antall aksjer</th>
+                <th>Eierandel</th>
+              </tr>
+            </thead>
+            <tbody>
               {ownerships &&
                 ownerships.map((o) => (
-                  <div key={o._id}>{o.stocks.toLocaleString()}</div>
+                  <tr
+                    key={o._id}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      history.push(`/company?_id=${o.company?._id}`)
+                    }
+                  >
+                    <td>{o.company?.name}</td>
+                    <td>{o.stocks.toLocaleString()}</td>
+                    <td>
+                      {o.company?.stocks &&
+                        ((o.stocks / o.company.stocks) * 100).toFixed(2)}
+                      %
+                    </td>
+                  </tr>
                 ))}
-            </Col>
-            <Col>
-              <p className="h4">Eierandel</p>
-              {ownerships &&
-                ownerships.map(
-                  (o) =>
-                    o.company?.stocks && (
-                      <div key={o._id}>
-                        {((o.stocks / o.company?.stocks) * 100).toFixed(2)}%
-                      </div>
-                    )
-                )}
-            </Col>
-          </Row>
+            </tbody>
+          </Table>
         )}
         {(!ownerships || ownerships.length === 0) && shareholderId && (
           <p>Laster inn aksjonærdata...</p>

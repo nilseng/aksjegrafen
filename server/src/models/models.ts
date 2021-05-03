@@ -15,6 +15,8 @@ export interface Ownership {
     shareHolderId: string
     shareClass: string
     stocks: number
+    company?: Company
+    shareholder?: Shareholder
 }
 
 export type Shareholder = Company & Person & { id: string, kind: ShareholderType }
