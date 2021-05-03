@@ -64,7 +64,7 @@ export const Landing = () => {
 
   return (
     <Container style={{ minHeight: "80vh" }}>
-      <div className="h4 mt-4">Norske aksjonærer</div>
+      <div className="h4 mt-4">Norske aksjer</div>
       <p className="text-muted mb-4">
         - søk og finn info om eierskap i aksjeselskaper
       </p>

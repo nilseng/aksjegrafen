@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/esm/Table";
 import { useHistory } from "react-router";
@@ -11,12 +12,15 @@ export const Company = () => {
   const [error, setError] = useState<string>();
 
   const [companyId, setCompanyId] = useState<string>();
+  const [orgnr, setOrgnr] = useState<string>();
   const [company, setCompany] = useState<IShareholder>();
   const [ownerships, setOwnerships] = useState<IOwnership[]>([]);
 
   useEffect(() => {
     const _id = query.get("_id");
-    if (_id) setCompanyId(_id);
+    const o = query.get("orgnr");
+    setCompanyId(_id ?? undefined);
+    setOrgnr(o ?? undefined);
   }, [query]);
 
   useEffect(() => {
@@ -25,8 +29,13 @@ export const Company = () => {
         const c = await res.json();
         setCompany(c);
       });
+    } else if (orgnr) {
+      fetch(`/api/company?orgnr=${orgnr}`).then(async (res) => {
+        const c = await res.json();
+        setCompany(c);
+      });
     }
-  }, [companyId]);
+  }, [companyId, orgnr]);
 
   useEffect(() => {
     if (company) {
@@ -57,14 +66,34 @@ export const Company = () => {
             <tbody>
               {ownerships &&
                 ownerships.map((o) => (
-                  <tr
-                    key={o._id}
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      history.push(`/shareholder?_id=${o.shareholder?._id}`)
-                    }
-                  >
-                    <td>{o.shareholder?.name}</td>
+                  <tr key={o._id}>
+                    <td className="d-flex align-items-center justify-content-between">
+                      <span
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          history.push(`/shareholder?_id=${o.shareholder?._id}`)
+                        }
+                      >
+                        {o.shareholder?.name}
+                      </span>
+                      {o.shareholder?.orgnr &&
+                        (o.shareholder.name.includes(" AS") ||
+                          o.shareholder.name
+                            .toLowerCase()
+                            .includes("aksjeselskap")) && (
+                          <Button
+                            size="sm"
+                            className="float-right"
+                            onClick={() =>
+                              history.push(
+                                `/company?orgnr=${o.shareholder?.orgnr}`
+                              )
+                            }
+                          >
+                            {"Aksjonærer".toUpperCase()}
+                          </Button>
+                        )}
+                    </td>
                     <td>{o.shareholder?.countryCode}</td>
                     <td>{o.stocks.toLocaleString()}</td>
                     <td>

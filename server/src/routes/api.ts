@@ -14,6 +14,9 @@ router.get('/company', async (req, res) => {
     } else if (req.query._id) {
         const company = await db.companies.findOne({ _id: new ObjectID(req.query._id as string) }).catch(e => console.error(e))
         return company ? res.status(200).json(company) : res.status(404).json({ error: 'Finding company failed.' })
+    } else if (req.query.orgnr) {
+        const company = await db.companies.findOne({ orgnr: req.query.orgnr }).catch(e => console.error(e))
+        return company ? res.status(200).json(company) : res.status(404).json({ error: 'Finding company failed.' })
     } else {
         res.status(404).json({ error: 'Not found.' })
     }
