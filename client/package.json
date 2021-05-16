@@ -20,6 +20,7 @@
     "cytoscape-cola": "^2.4.0",
     "d3": "^6.7.0",
     "lodash": "^4.17.21",
+    "node-sass": "^5.0.0",
     "react": "^17.0.2",
     "react-bootstrap": "^1.5.2",
     "react-d3-graph": "^2.6.0",

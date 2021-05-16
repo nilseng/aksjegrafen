@@ -1,59 +1,26 @@
-import { useEffect, useState } from "react";
-import { Graph, GraphConfiguration } from "react-d3-graph";
-import { useWindowDimensions } from "../../hooks/useWindowDimensions";
-
-// graph payload (with minimalist structure)
-const data = {
-  nodes: [{ id: "Harry" }, { id: "Sally" }, { id: "Alice" }],
-  links: [
-    { source: "Harry", target: "Sally" },
-    { source: "Harry", target: "Alice" },
-  ],
-};
-
-const onClickNode = function (nodeId: string) {
-  window.alert(`Clicked node ${nodeId}`);
-};
-
-const onClickLink = function (source: string, target: string) {
-  window.alert(`Clicked link between ${source} and ${target}`);
-};
+import React from "react";
+import {
+  forceSimulation,
+  forceLink,
+  SimulationNodeDatum,
+  SimulationLinkDatum,
+} from "d3-force";
 
 export const D3Graph = () => {
-  const [graphConfig, setGraphConfig] = useState<
-    GraphConfiguration<any, any>
-  >();
+  const nodes: SimulationNodeDatum[] = [{ index: 1 }, { index: 2 }];
+  const links: SimulationLinkDatum<SimulationNodeDatum>[] = [
+    { source: nodes[0], target: nodes[1] },
+  ];
 
-  const { width, height } = useWindowDimensions();
+  const graph = forceSimulation(nodes);
 
-  useEffect(() => {
-    if (width && height) {
-      setGraphConfig({
-        nodeHighlightBehavior: true,
-        width,
-        height,
-        collapsible: true,
-        panAndZoom: true,
-        directed: true,
-        node: {
-          color: "lightgreen",
-          size: Math.max(width, height),
-          highlightStrokeColor: "blue",
-        },
-        link: {
-          highlightColor: "lightblue",
-        },
-      } as GraphConfiguration<any, any>);
-    }
-  }, [width, height]);
+  console.log(graph.nodes());
+  console.log(links);
 
   return (
-    <Graph
-      id="graph-id"
-      data={data}
-      config={graphConfig}
-      onClickNode={onClickNode}
-      onClickLink={onClickLink}
-    />
+    <>
+      <div className="rotatedRectBackground" />
+      <p>d3 graph to come</p>
+    </>
   );
 };
