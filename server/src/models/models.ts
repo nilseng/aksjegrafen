@@ -1,13 +1,13 @@
 export interface OwnershipRaw {
-    Orgnr: string
-    Selskap: string
-    Aksjeklasse: string
-    'Navn aksjonær': string
-    'Fødselsår/orgnr': string | undefined
-    'Postnr/sted': string | undefined
-    Landkode: string
-    'Antall aksjer': string | number
-    'Antall aksjer selskap': string | number
+    orgnr: string
+    companyName: string
+    shareClass: string
+    shareholderName: string
+    yobOrOrgnr: string | undefined
+    zipLocation: string | undefined
+    countryCode: string
+    shareholderStocks: string | number
+    companyStocks: string | number
 }
 
 export interface Ownership {
@@ -15,11 +15,12 @@ export interface Ownership {
     shareHolderId: string
     shareClass: string
     stocks: number
+    year: number
     company?: Company
     shareholder?: Shareholder
 }
 
-export type Shareholder = Company & Person & { id: string, kind: ShareholderType }
+export type Shareholder = Partial<Company> & Partial<Person> & { id: string, kind: ShareholderType, name: string }
 
 export enum ShareholderType {
     COMPANY,
@@ -28,7 +29,7 @@ export enum ShareholderType {
 }
 
 export interface Company {
-    orgnr?: string
+    orgnr: string
     name: string
     zipCode?: string
     location?: string
@@ -42,4 +43,21 @@ export interface Person {
     zipCode?: string
     location?: string
     countryCode?: string
+}
+
+export const isOwnership = (o: any): o is Ownership => {
+    return o.orgnr && typeof o.orgnr === 'string' &&
+        o.shareHolderId && typeof o.shareHolderId === 'string' &&
+        o.shareClass && typeof o.shareClass === 'string' &&
+        o.stocks && typeof +o.stocks === 'number' &&
+        o.year && typeof +o.year === 'number'
+}
+
+export const isShareholder = (o: any): o is Shareholder => {
+    return o.id && typeof o.id === 'string' && (o.kind || o.kind === 0) && (o.name || o.orgnr)
+}
+
+export const isCompany = (o: any): o is Shareholder => {
+    return o.orgnr && typeof o.orgnr === 'string' &&
+        o.name && typeof o.name === 'string'
 }

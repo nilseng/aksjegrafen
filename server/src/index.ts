@@ -7,10 +7,7 @@ import sslRedirect from 'heroku-ssl-redirect'
 
 import { connectToMongoDb } from "./database/databaseSetup"
 import router from "./routes/api"
-import { importData } from './services/importService'
-
-// Enable to run data import. File name must be updated in importService.ts in case of new file.
-//importData()
+import { importData, updateYear } from './services/importService'
 
 dotenv.config()
 
@@ -35,6 +32,8 @@ app.use(express.static(path.join(__dirname, '../../client/build')))
 
 connectToMongoDb().then(_ => {
     app.listen({ port: process.env.PORT || 4000 }, () => console.log(`The server is now running on port ${process.env.PORT || 4000}`))
+    // Enable to run data import
+    //importData(2020)
 })
 
 app.use('/*', express.static(path.join(__dirname, '../../client/build', 'index.html')))
