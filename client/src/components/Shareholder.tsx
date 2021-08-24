@@ -16,6 +16,7 @@ export const Shareholder = () => {
   const [shareholderId, setShareholderId] = useState<string>();
   const [shareholder, setShareholder] = useState<IShareholder>();
   const [ownerships, setOwnerships] = useState<IOwnership[]>([]);
+  const [year, setYear] = useState<2019 | 2020>();
 
   useEffect(() => {
     const _id = query.get("_id");
@@ -57,23 +58,25 @@ export const Shareholder = () => {
             </thead>
             <tbody>
               {ownerships &&
-                ownerships.map((o) => (
-                  <tr
-                    key={o._id}
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      history.push(`/company?_id=${o.company?._id}`)
-                    }
-                  >
-                    <td>{o.company?.name}</td>
-                    <td>{o.stocks.toLocaleString()}</td>
-                    <td>
-                      {o.company?.stocks &&
-                        ((o.stocks / o.company.stocks) * 100).toFixed(2)}
-                      %
-                    </td>
-                  </tr>
-                ))}
+                ownerships
+                  .filter((o) => o.year === year)
+                  .map((o) => (
+                    <tr
+                      key={o._id}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        history.push(`/company?_id=${o.company?._id}`)
+                      }
+                    >
+                      <td>{o.company?.name}</td>
+                      <td>{o.stocks.toLocaleString()}</td>
+                      <td>
+                        {o.company?.stocks &&
+                          ((o.stocks / o.company.stocks) * 100).toFixed(2)}
+                        %
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </Table>
         )}

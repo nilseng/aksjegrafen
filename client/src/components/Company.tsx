@@ -19,6 +19,7 @@ export const Company = () => {
   const [orgnr, setOrgnr] = useState<string>();
   const [company, setCompany] = useState<IShareholder>();
   const [ownerships, setOwnerships] = useState<IOwnership[]>([]);
+  const [year, setYear] = useState<2019 | 2020>(2020);
 
   useEffect(() => {
     const _id = query.get("_id");
@@ -69,44 +70,48 @@ export const Company = () => {
             </thead>
             <tbody>
               {ownerships &&
-                ownerships.map((o) => (
-                  <tr key={o._id}>
-                    <td className="d-flex align-items-center justify-content-between">
-                      <span
-                        style={{ cursor: "pointer" }}
-                        onClick={() =>
-                          history.push(`/shareholder?_id=${o.shareholder?._id}`)
-                        }
-                      >
-                        {o.shareholder?.name}
-                      </span>
-                      {o.shareholder?.orgnr &&
-                        (o.shareholder.name.includes(" AS") ||
-                          o.shareholder.name
-                            .toLowerCase()
-                            .includes("aksjeselskap")) && (
-                          <Button
-                            size="sm"
-                            className="float-right"
-                            onClick={() =>
-                              history.push(
-                                `/company?orgnr=${o.shareholder?.orgnr}`
-                              )
-                            }
-                          >
-                            {"Aksjonærer".toUpperCase()}
-                          </Button>
-                        )}
-                    </td>
-                    <td>{o.shareholder?.countryCode}</td>
-                    <td>{o.stocks.toLocaleString()}</td>
-                    <td>
-                      {company?.stocks &&
-                        ((o.stocks / company.stocks) * 100).toFixed(2)}
-                      %
-                    </td>
-                  </tr>
-                ))}
+                ownerships
+                  .filter((o) => o.year === year)
+                  .map((o) => (
+                    <tr key={o._id}>
+                      <td className="d-flex align-items-center justify-content-between">
+                        <span
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            history.push(
+                              `/shareholder?_id=${o.shareholder?._id}`
+                            )
+                          }
+                        >
+                          {o.shareholder?.name}
+                        </span>
+                        {o.shareholder?.orgnr &&
+                          (o.shareholder.name.includes(" AS") ||
+                            o.shareholder.name
+                              .toLowerCase()
+                              .includes("aksjeselskap")) && (
+                            <Button
+                              size="sm"
+                              className="float-right"
+                              onClick={() =>
+                                history.push(
+                                  `/company?orgnr=${o.shareholder?.orgnr}`
+                                )
+                              }
+                            >
+                              {"Aksjonærer".toUpperCase()}
+                            </Button>
+                          )}
+                      </td>
+                      <td>{o.shareholder?.countryCode}</td>
+                      <td>{o.stocks.toLocaleString()}</td>
+                      <td>
+                        {company?.stocks &&
+                          ((o.stocks / company.stocks) * 100).toFixed(2)}
+                        %
+                      </td>
+                    </tr>
+                  ))}
             </tbody>
           </Table>
         )}

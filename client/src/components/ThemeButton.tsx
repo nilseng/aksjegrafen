@@ -35,7 +35,7 @@ export const ThemeButton = ({ theme, setTheme }: IProps) => {
       <FontAwesomeIcon
         className="mx-2"
         icon={faMoon}
-        color={theme.background}
+        color={theme.primary}
         style={{ visibility: theme.id === "dark" ? "visible" : "hidden" }}
       />
     </div>

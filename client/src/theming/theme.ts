@@ -8,7 +8,7 @@ export const theming = {
             boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.2)",
             borderRadius: 8,
         },
-        primary: '#1c2e3f'
+        primary: '#17a2b8'
     },
     dark: {
         id: 'dark',
