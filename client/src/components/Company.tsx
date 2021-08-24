@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { useContext } from "react";
 import Button from "react-bootstrap/esm/Button";
 import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/esm/Table";
 import { useHistory } from "react-router";
+import { AppContext } from "../App";
 import { useQuery } from "../hooks";
 import { IOwnership, IShareholder } from "../models/models";
 
 export const Company = () => {
+  const { theme } = useContext(AppContext);
+
   const query = useQuery();
   const history = useHistory();
   const [error, setError] = useState<string>();
@@ -51,10 +55,10 @@ export const Company = () => {
 
   return (
     <>
-      <Container>
+      <Container style={{ color: theme.text }}>
         <p className="h4 my-4">Aksjonærer i {company?.name}</p>
         {ownerships && (
-          <Table striped bordered hover responsive>
+          <Table variant={theme.id} striped hover responsive>
             <thead>
               <tr>
                 <th>Aksjonær</th>

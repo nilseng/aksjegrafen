@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Col from "react-bootstrap/esm/Col";
 import Row from "react-bootstrap/esm/Row";
+import { AppContext } from "../App";
 
 export const Stats = () => {
+  const { theme } = useContext(AppContext);
+
   const [companyCount, setCompanyCount] = useState<number>();
   const [shareholderCount, setShareholderCount] = useState<number>();
 
@@ -18,14 +21,32 @@ export const Stats = () => {
   }, []);
 
   return (
-    <Row className="bg-light mb-4 p-4">
-      <Col sm className="d-flex flex-column align-items-center">
+    <Row style={{ color: theme.text }}>
+      <Col
+        sm
+        className="d-flex flex-column align-items-center p-md-5 p-2 m-md-5 m-2"
+        style={{
+          backgroundColor: theme.background,
+          ...theme.elevation,
+        }}
+      >
         <p className="display-4">{companyCount?.toLocaleString()}</p>
-        aksjeselskaper
+        <p className="font-weight-bold mt-2" style={{ color: theme.primary }}>
+          aksjeselskaper
+        </p>
       </Col>
-      <Col sm className="d-flex flex-column align-items-center">
+      <Col
+        sm
+        className="d-flex flex-column align-items-center p-md-5 p-2 m-md-5 m-2"
+        style={{
+          backgroundColor: theme.background,
+          ...theme.elevation,
+        }}
+      >
         <p className="display-4">{shareholderCount?.toLocaleString()}</p>
-        aksjonærer
+        <p className="font-weight-bold mt-2" style={{ color: theme.primary }}>
+          aksjonærer
+        </p>
       </Col>
     </Row>
   );

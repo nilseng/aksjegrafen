@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useContext } from "react";
 import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/esm/Table";
 import { useHistory } from "react-router-dom";
+import { AppContext } from "../App";
 import { useQuery } from "../hooks";
 import { IShareholder, IOwnership } from "../models/models";
 
 export const Shareholder = () => {
+  const { theme } = useContext(AppContext);
+
   const query = useQuery();
   const history = useHistory();
 
@@ -40,10 +44,10 @@ export const Shareholder = () => {
 
   return (
     <>
-      <Container>
+      <Container style={{ color: theme.text }}>
         <p className="h4 my-4">Aksjer eid av {shareholder?.name}</p>
         {ownerships && (
-          <Table striped bordered hover responsive>
+          <Table variant={theme.id} striped bordered hover responsive>
             <thead>
               <tr>
                 <th>Selskap</th>

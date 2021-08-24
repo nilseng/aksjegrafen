@@ -1,0 +1,20 @@
+.btn.btn-dark {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.dropdown-menu {
+  background-color: #343a40 !important;
+  .dropdown-item,
+  .dropdown-item:focus,
+  .dropdown-item:hover,
+  .dropdown-item:active {
+    color: #f8f9fa;
+    background-color: #343a40;
+  }
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: #f8f9fa !important;
+  margin-right: 2rem;
+}
