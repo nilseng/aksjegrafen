@@ -89,14 +89,16 @@ export const Landing = () => {
                 style={{
                   backgroundColor: theme.backgroundSecondary,
                   borderColor: theme.backgroundSecondary,
+                  color: theme.text,
                 }}
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup>
+            <ListGroup className="w-100">
               {companySearchList?.map((company) => (
                 <ListGroup.Item
                   key={company._id}
+                  className="w-100"
                   style={{ backgroundColor: theme.backgroundSecondary }}
                   onClick={() => history.push(`/company?_id=${company._id}`)}
                 >
@@ -120,11 +122,12 @@ export const Landing = () => {
                 style={{
                   backgroundColor: theme.backgroundSecondary,
                   borderColor: theme.backgroundSecondary,
+                  color: theme.text,
                 }}
                 onChange={(e) => handleShareholderSearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup>
+            <ListGroup className="w-100">
               {shareholderSearchList?.map((shareholder) => (
                 <ListGroup.Item
                   key={shareholder._id}

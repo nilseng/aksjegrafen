@@ -57,63 +57,126 @@ export const Company = () => {
   return (
     <>
       <Container style={{ color: theme.text }}>
-        <p className="h4 my-4">Aksjonærer i {company?.name}</p>
-        {ownerships && (
-          <Table variant={theme.id} striped hover responsive>
-            <thead>
-              <tr>
-                <th>Aksjonær</th>
-                <th>Landkode</th>
-                <th>Antall aksjer</th>
-                <th>Eierandel</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ownerships &&
-                ownerships
-                  .filter((o) => o.year === year)
-                  .map((o) => (
-                    <tr key={o._id}>
-                      <td className="d-flex align-items-center justify-content-between">
-                        <span
-                          style={{ cursor: "pointer" }}
-                          onClick={() =>
-                            history.push(
-                              `/shareholder?_id=${o.shareholder?._id}`
-                            )
-                          }
-                        >
-                          {o.shareholder?.name}
-                        </span>
-                        {o.shareholder?.orgnr &&
-                          (o.shareholder.name.includes(" AS") ||
-                            o.shareholder.name
-                              .toLowerCase()
-                              .includes("aksjeselskap")) && (
-                            <Button
-                              size="sm"
-                              className="float-right"
-                              onClick={() =>
-                                history.push(
-                                  `/company?orgnr=${o.shareholder?.orgnr}`
-                                )
-                              }
-                            >
-                              {"Aksjonærer".toUpperCase()}
-                            </Button>
-                          )}
-                      </td>
-                      <td>{o.shareholder?.countryCode}</td>
-                      <td>{o.stocks.toLocaleString()}</td>
-                      <td>
-                        {company?.stocks &&
-                          ((o.stocks / company.stocks) * 100).toFixed(2)}
-                        %
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
-          </Table>
+        <p className="my-4">Aksjonærer i {company?.name}</p>
+        {ownerships && ownerships.filter((o) => o.year === 2020).length > 0 && (
+          <>
+            <p>2020</p>
+            <Table variant={theme.id} striped hover responsive>
+              <thead>
+                <tr>
+                  <th>Aksjonær</th>
+                  <th>Landkode</th>
+                  <th>Antall aksjer</th>
+                  <th>Eierandel</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ownerships &&
+                  ownerships
+                    .filter((o) => o.year === 2020)
+                    .map((o) => (
+                      <tr key={o._id}>
+                        <td className="d-flex align-items-center justify-content-between">
+                          <span
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              history.push(
+                                `/shareholder?_id=${o.shareholder?._id}`
+                              )
+                            }
+                          >
+                            {o.shareholder?.name}
+                          </span>
+                          {o.shareholder?.orgnr &&
+                            (o.shareholder.name.includes(" AS") ||
+                              o.shareholder.name
+                                .toLowerCase()
+                                .includes("aksjeselskap")) && (
+                              <Button
+                                size="sm"
+                                className="float-right"
+                                onClick={() =>
+                                  history.push(
+                                    `/company?orgnr=${o.shareholder?.orgnr}`
+                                  )
+                                }
+                              >
+                                {"Aksjonærer".toUpperCase()}
+                              </Button>
+                            )}
+                        </td>
+                        <td>{o.shareholder?.countryCode}</td>
+                        <td>{o.stocks.toLocaleString()}</td>
+                        <td>
+                          {company?.stocks &&
+                            ((o.stocks / company.stocks) * 100).toFixed(2)}
+                          %
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </Table>
+          </>
+        )}
+        {ownerships && ownerships.filter((o) => o.year === 2019).length > 0 && (
+          <>
+            <p>2019</p>
+            <Table variant={theme.id} striped hover responsive>
+              <thead>
+                <tr>
+                  <th>Aksjonær</th>
+                  <th>Landkode</th>
+                  <th>Antall aksjer</th>
+                  <th>Eierandel</th>
+                </tr>
+              </thead>
+              <tbody>
+                {ownerships &&
+                  ownerships
+                    .filter((o) => o.year === 2019)
+                    .map((o) => (
+                      <tr key={o._id}>
+                        <td className="d-flex align-items-center justify-content-between">
+                          <span
+                            style={{ cursor: "pointer" }}
+                            onClick={() =>
+                              history.push(
+                                `/shareholder?_id=${o.shareholder?._id}`
+                              )
+                            }
+                          >
+                            {o.shareholder?.name}
+                          </span>
+                          {o.shareholder?.orgnr &&
+                            (o.shareholder.name.includes(" AS") ||
+                              o.shareholder.name
+                                .toLowerCase()
+                                .includes("aksjeselskap")) && (
+                              <Button
+                                size="sm"
+                                className="float-right"
+                                onClick={() =>
+                                  history.push(
+                                    `/company?orgnr=${o.shareholder?.orgnr}`
+                                  )
+                                }
+                              >
+                                {"Aksjonærer".toUpperCase()}
+                              </Button>
+                            )}
+                        </td>
+                        <td>{o.shareholder?.countryCode}</td>
+                        <td>{o.stocks.toLocaleString()}</td>
+                        <td>
+                          {company?.stocks &&
+                            ((o.stocks / company.stocks) * 100).toFixed(2)}
+                          %
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </Table>
+          </>
         )}
         {(!ownerships || ownerships.length === 0) && !error && companyId && (
           <p>Laster inn aksjonærdata...</p>
