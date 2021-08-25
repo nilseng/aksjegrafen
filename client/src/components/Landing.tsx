@@ -77,7 +77,11 @@ export const Landing = () => {
     >
       <div className="pt-5">
         <Row>
-          <Col sm className="d-flex flex-column align-items-center pt-5">
+          <Col
+            sm
+            className="d-flex flex-column align-items-center pt-5 m-1"
+            style={{ backgroundColor: theme.background, ...theme.elevation }}
+          >
             <StatCard label="aksjeselskaper" stat={companyCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
               <Form.Label>Søk etter selskap</Form.Label>
@@ -110,7 +114,11 @@ export const Landing = () => {
               ))}
             </ListGroup>
           </Col>
-          <Col sm className="d-flex flex-column align-items-center pt-5">
+          <Col
+            sm
+            className="d-flex flex-column align-items-center pt-5 m-1"
+            style={{ backgroundColor: theme.background, ...theme.elevation }}
+          >
             <StatCard label="aksjonærer" stat={shareholderCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
               <Form.Label>Søk etter aksjonær</Form.Label>

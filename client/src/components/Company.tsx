@@ -19,7 +19,6 @@ export const Company = () => {
   const [orgnr, setOrgnr] = useState<string>();
   const [company, setCompany] = useState<IShareholder>();
   const [ownerships, setOwnerships] = useState<IOwnership[]>([]);
-  const [year, setYear] = useState<2019 | 2020>(2020);
 
   useEffect(() => {
     const _id = query.get("_id");
