@@ -7,15 +7,19 @@ import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { ICompany, IShareholder } from "../models/models";
-import { Stats } from "./Stats";
 import { useHistory } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../App";
+import { StatCard } from "./StatCard";
+import { useCompanyCount, useShareholderCount } from "../services/apiService";
 
 export const Landing = () => {
   const { theme } = useContext(AppContext);
 
   const history = useHistory();
+
+  const companyCount = useCompanyCount();
+  const shareholderCount = useShareholderCount();
 
   const [companySearchList, setCompanySearchList] = useState<ICompany[]>([]);
   const [shareholderSearchList, setShareholderSearchList] = useState<
@@ -72,16 +76,20 @@ export const Landing = () => {
       style={{ minHeight: "calc(100vh - 58.78px)", color: theme.text }}
     >
       <div className="pt-5">
-        <Stats />
-        <Row className="pt-5">
-          <Col sm>
-            <Form.Group>
+        <Row>
+          <Col sm className="d-flex flex-column align-items-center pt-5">
+            <StatCard label="aksjeselskaper" stat={companyCount} />
+            <Form.Group className="w-100 mt-sm-5 mt-2">
               <Form.Label>Søk etter selskap</Form.Label>
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
                 placeholder="Selskapsnavn eller orgnr..."
                 size="lg"
+                style={{
+                  backgroundColor: theme.backgroundSecondary,
+                  borderColor: theme.backgroundSecondary,
+                }}
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
             </Form.Group>
@@ -100,14 +108,19 @@ export const Landing = () => {
               ))}
             </ListGroup>
           </Col>
-          <Col sm>
-            <Form.Group>
+          <Col sm className="d-flex flex-column align-items-center pt-5">
+            <StatCard label="aksjonærer" stat={shareholderCount} />
+            <Form.Group className="w-100 mt-sm-5 mt-2">
               <Form.Label>Søk etter aksjonær</Form.Label>
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
                 placeholder="Orgnr eller navn på person eller selskap..."
                 size="lg"
+                style={{
+                  backgroundColor: theme.backgroundSecondary,
+                  borderColor: theme.backgroundSecondary,
+                }}
                 onChange={(e) => handleShareholderSearch(e)}
               ></Form.Control>
             </Form.Group>

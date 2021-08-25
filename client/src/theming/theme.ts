@@ -4,6 +4,7 @@ export const theming = {
         background: '#fefefe',
         backgroundSecondary: '#f8f9fa',
         text: '#212529',
+        muted: '#343a40',
         elevation: {
             boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.2)",
             borderRadius: 8,
@@ -15,6 +16,7 @@ export const theming = {
         background: '#212529',
         backgroundSecondary: '#343a40',
         text: '#f8f9fa',
+        muted: '#868e96',
         elevation: {
             boxShadow: "0px 0px 5px 0px rgba(255,255,255,0.2)",
             borderRadius: 8,
