@@ -164,9 +164,10 @@ export const Landing = () => {
       </div>
       <div className="my-4">
         <p className="small text-muted">
-          All data på denne siden er gjort offentlig tilgjengelig av
-          Skatteetaten. Siden eies og er utviklet av Pureokrs AS
-          (contact@pureokrs.com).
+          All data er gjort offentlig tilgjengelig av Skatteetaten. Duplikater
+          av aksjonærer forekommer i Skatteetatens datasett, og de samme
+          duplikatene vil være på denne siden. Siden eies og er utviklet av
+          Pureokrs AS (contact@pureokrs.com).
         </p>
       </div>
     </Container>
