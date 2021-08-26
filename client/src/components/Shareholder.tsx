@@ -4,7 +4,7 @@ import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/esm/Table";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../App";
-import { useQuery } from "../hooks";
+import { useQuery } from "../hooks/useQuery";
 import { IShareholder, IOwnership } from "../models/models";
 
 export const Shareholder = () => {

@@ -12,6 +12,8 @@ import { useContext } from "react";
 import { AppContext } from "../App";
 import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSitemap } from "@fortawesome/free-solid-svg-icons";
 
 export const Landing = () => {
   const { theme } = useContext(AppContext);
@@ -104,12 +106,22 @@ export const Landing = () => {
                   key={company._id}
                   className="w-100"
                   style={{ backgroundColor: theme.backgroundSecondary }}
-                  onClick={() => history.push(`/company?_id=${company._id}`)}
                 >
-                  <Button variant="link">
+                  <Button
+                    variant="link"
+                    onClick={() => history.push(`/company?_id=${company._id}`)}
+                  >
                     <span className="mr-2">{company.name}</span>
                     <span className="text-muted">({company.orgnr})</span>
                   </Button>
+                  <FontAwesomeIcon
+                    icon={faSitemap}
+                    color={theme.primary}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      history.push(`/ownership-chart?_id=${company._id}`)
+                    }
+                  />
                 </ListGroup.Item>
               ))}
             </ListGroup>
@@ -147,13 +159,19 @@ export const Landing = () => {
                   <Button variant="link">
                     <span className="mr-2">{shareholder.name}</span>
                     {shareholder.yearOfBirth && (
-                      <span className="mr-2">{shareholder.yearOfBirth}</span>
+                      <span className="text-muted mr-2">
+                        {shareholder.yearOfBirth}
+                      </span>
                     )}
                     {shareholder.orgnr && (
-                      <span className="mr-2">{shareholder.orgnr}</span>
+                      <span className="text-muted mr-2">
+                        {shareholder.orgnr}
+                      </span>
                     )}
                     {shareholder.countryCode && (
-                      <span>{shareholder.countryCode}</span>
+                      <span className="text-muted">
+                        {shareholder.countryCode}
+                      </span>
                     )}
                   </Button>
                 </ListGroup.Item>

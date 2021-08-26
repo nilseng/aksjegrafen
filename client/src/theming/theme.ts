@@ -4,12 +4,13 @@ export const theming = {
         background: '#fefefe',
         backgroundSecondary: '#f8f9fa',
         text: '#212529',
-        muted: '#343a40',
+        muted: '#e9ecef',
         elevation: {
             boxShadow: "0px 0px 5px 0px rgba(0,0,0,0.2)",
             borderRadius: 8,
         },
-        primary: '#17a2b8'
+        primary: '#17a2b8',
+        shadowColor: '#000'
     },
     dark: {
         id: 'dark',
@@ -21,6 +22,7 @@ export const theming = {
             boxShadow: "0px 0px 5px 0px rgba(255,255,255,0.2)",
             borderRadius: 8,
         },
-        primary: '#17a2b8'
+        primary: '#17a2b8',
+        shadowColor: '#fff'
     }
 }

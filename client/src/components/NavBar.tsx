@@ -15,7 +15,12 @@ interface IProps {
 
 const NavBar = ({ theme, setTheme }: IProps) => {
   return (
-    <Navbar variant="light" expand="md" collapseOnSelect>
+    <Navbar
+      variant="light"
+      expand="md"
+      collapseOnSelect
+      style={{ zIndex: 10000 }}
+    >
       <Link to="/">
         <Navbar.Brand className="text-light">
           <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />

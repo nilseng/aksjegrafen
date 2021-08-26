@@ -5,7 +5,7 @@ import Container from "react-bootstrap/esm/Container";
 import Table from "react-bootstrap/esm/Table";
 import { useHistory } from "react-router";
 import { AppContext } from "../App";
-import { useQuery } from "../hooks";
+import { useQuery } from "../hooks/useQuery";
 import { IOwnership, IShareholder } from "../models/models";
 
 export const Company = () => {

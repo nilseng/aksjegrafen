@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import { Company } from "./components/Company";
-import { Graph } from "./components/Graph/Graph";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
+import { OwnershipChart } from "./components/OwnershipChart/OwnershipChart";
 import { Shareholder } from "./components/Shareholder";
 
 import { theming } from "./theming/theme";
@@ -40,7 +40,7 @@ const App = () => {
           <Route path="/" component={Landing} exact />
           <Route path="/shareholder" component={Shareholder} />
           <Route path="/company" component={Company} />
-          <Route path="/graph" component={Graph} />
+          <Route path="/ownership-chart" component={OwnershipChart} />
         </AppContext.Provider>
       </Switch>
     </Router>
