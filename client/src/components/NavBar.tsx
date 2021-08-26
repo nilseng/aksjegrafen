@@ -6,6 +6,7 @@ import "./NavBar.scss";
 
 import AnimatedLogo from "./AnimatedLogo";
 import { ThemeButton } from "./ThemeButton";
+import { Link } from "react-router-dom";
 
 interface IProps {
   theme: any;
@@ -15,22 +16,22 @@ interface IProps {
 const NavBar = ({ theme, setTheme }: IProps) => {
   return (
     <Navbar variant="light" expand="md" collapseOnSelect>
-      <Navbar.Brand href="/" className="text-light">
-        <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
-        <span className="font-weight-light mx-4" style={{ color: theme.text }}>
-          Norske aksjer
-        </span>
-      </Navbar.Brand>
-      <Navbar.Toggle
-        className="mb-2"
-        aria-controls="basic-navbar-nav"
-        style={{ outline: "none" }}
-      />
-      <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-        <Nav className="pr-4" defaultActiveKey="/home">
+      <Link to="/">
+        <Navbar.Brand className="text-light">
+          <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
+          <span
+            className="font-weight-light mx-4"
+            style={{ color: theme.text }}
+          >
+            Norske aksjer
+          </span>
+        </Navbar.Brand>
+      </Link>
+      <div className="d-flex justify-content-end" style={{ flexGrow: 1 }}>
+        <Nav className="pr-4 " defaultActiveKey="/home">
           <ThemeButton theme={theme} setTheme={setTheme} />
         </Nav>
-      </Navbar.Collapse>
+      </div>
     </Navbar>
   );
 };
