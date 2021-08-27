@@ -26,6 +26,11 @@ export const getCompanyByOrgnr = async (orgnr: string) => {
     return res.json()
 }
 
+export const getOwnershipCount = async (company: ICompany, year: number) => {
+    const res = await fetch(`/api/ownerships?orgnr=${company.orgnr}&year=${year}&count=true`)
+    return res.json()
+}
+
 export const useShareholderCount = () => {
     const [count, setCount] = useState<number>()
 
@@ -77,4 +82,18 @@ export const useGetCompany = (id?: string, orgnr?: string) => {
     }, [id, orgnr])
 
     return company
+}
+
+export const useGetOwnershipCount = (company?: ICompany, year?: number) => {
+    const [count, setCount] = useState<number>()
+    useEffect(() => {
+        if (company && year) {
+            getOwnershipCount(company, year).then(c => {
+                if (c.error) return;
+                setCount(c)
+            })
+        }
+    }, [company, year])
+
+    return count
 }

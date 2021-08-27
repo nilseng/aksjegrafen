@@ -94,17 +94,22 @@ router.get("/ownerships", async (req, res) => {
             return res.status(500).json({ error: 'Something went wrong.' })
         }
     } else if (req.query?.orgnr) {
-        try {
-            const ownerships = await db.ownerships.find({ orgnr: req.query.orgnr }).sort({ stocks: -1 }).limit(100).toArray()
-            const shareholders = await db.shareholders.find({ id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) } }).toArray()
-            const data = ownerships.map((o: Ownership) => {
-                o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId)
-                return o
-            })
-            return res.status(200).json(data)
-        } catch (e) {
-            console.error(e)
-            return res.status(500).json({ error: 'Something went wrong.' })
+        if (req.query?.count && req.query?.year) {
+            const count = await db.ownerships.countDocuments({ orgnr: req.query.orgnr, year: +req.query.year }).catch(e => ({ error: e }))
+            return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
+        } else {
+            try {
+                const ownerships = await db.ownerships.find({ orgnr: req.query.orgnr }).sort({ stocks: -1 }).limit(100).toArray()
+                const shareholders = await db.shareholders.find({ id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) } }).toArray()
+                const data = ownerships.map((o: Ownership) => {
+                    o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId)
+                    return o
+                })
+                return res.status(200).json(data)
+            } catch (e) {
+                console.error(e)
+                return res.status(500).json({ error: 'Something went wrong.' })
+            }
         }
     } else {
         res.status(404).json({ error: 'Not found.' })

@@ -8,10 +8,15 @@ import * as d3 from "d3";
 import { AppContext } from "../../App";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { ICompany, IOwnership } from "../../models/models";
-import { useGetCompany, useGetOwnerships } from "../../services/apiService";
+import {
+  useGetCompany,
+  useGetOwnershipCount,
+  useGetOwnerships,
+} from "../../services/apiService";
 import { useQuery } from "../../hooks/useQuery";
 import { useHistory } from "react-router-dom";
 import { isAksjeselskap } from "../../utils/isAksjeselskap";
+import Loading from "../Loading";
 
 export const OwnershipChart = () => {
   const { theme } = useContext(AppContext);
@@ -24,6 +29,7 @@ export const OwnershipChart = () => {
   const [companyId, setCompanyId] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
   const company = useGetCompany(companyId, orgnr);
+  const ownershipCount = useGetOwnershipCount(company, 2020);
 
   useEffect(() => {
     const _id = query.get("_id");
@@ -62,7 +68,7 @@ export const OwnershipChart = () => {
 
       const nodes = root.descendants();
 
-      // Centering tree, turning it upside down and adding top margin
+      // Centering tree, turning it "upside down" and adding top margin
       nodes.forEach((node) => {
         node.x += width / 2;
         node.y = height - node.y - height / 2;
@@ -110,12 +116,31 @@ export const OwnershipChart = () => {
     }
   };
 
+  const handleDragEnd = (e: KonvaEventObject<DragEvent>) => {
+    if (scroll?.stageScale)
+      setScroll({
+        stageScale: scroll?.stageScale,
+        stageX: e.target.x(),
+        stageY: e.target.y(),
+      });
+  };
+
+  if (!ownerships)
+    return (
+      <Loading
+        height={`${height - 58.78}px`}
+        color={theme.primary}
+        backgroundColor={theme.background}
+      />
+    );
+
   return (
     <Stage
       className="fixed-top"
       width={width}
       height={height}
       onWheel={handleWheel}
+      onDragEnd={handleDragEnd}
       scaleX={scroll?.stageScale}
       scaleY={scroll?.stageScale}
       x={scroll?.stageX}
@@ -127,8 +152,12 @@ export const OwnershipChart = () => {
           <Line
             key={`${l.source.data._id}-${l.target.data._id}`}
             points={[l.source.x, l.source.y, l.target.x, l.target.y]}
-            stroke={theme.muted}
+            stroke={theme.background}
             strokeWidth={1}
+            shadowColor={theme.shadowColor}
+            shadowBlur={3}
+            cornerRadius={4}
+            shadowOpacity={0.2}
           />
         ))}
       </Layer>
@@ -144,6 +173,7 @@ export const OwnershipChart = () => {
             height={nodeHeight}
             company={company}
             history={history}
+            ownerCount={ownershipCount}
           />
         ))}
       </Layer>
@@ -160,6 +190,7 @@ interface ITreeNodeProps {
   theme: any;
   company?: ICompany;
   history: any;
+  ownerCount?: number;
 }
 
 const TreeNode = ({
@@ -171,6 +202,7 @@ const TreeNode = ({
   theme,
   company,
   history,
+  ownerCount,
 }: ITreeNodeProps) => {
   return (
     <Group
@@ -221,6 +253,27 @@ const TreeNode = ({
             text={`${((data.stocks / company.stocks) * 100).toFixed(
               2
             )}% eierandel`}
+            fill={theme.primary}
+            align={"left"}
+            wrap={"none"}
+            ellipsis={true}
+            padding={12}
+            fontSize={12}
+            fontStyle={"bold"}
+          />
+        )}
+      {!(data as IOwnership)?.company &&
+        !(data as IOwnership)?.shareholder &&
+        ownerCount && (
+          <Text
+            x={x - width / 2}
+            y={y - height / 2 + 4 + 24}
+            width={width}
+            text={
+              ownerCount === 1
+                ? `${ownerCount.toLocaleString()} aksjonær`
+                : `${ownerCount.toLocaleString()} aksjonærer`
+            }
             fill={theme.primary}
             align={"left"}
             wrap={"none"}

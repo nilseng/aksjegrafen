@@ -84,21 +84,21 @@ export const Landing = () => {
             style={{
               backgroundColor: theme.background,
               ...theme.elevation,
-              maxHeight: "17rem",
-              height: "17rem",
+              maxHeight: "15.5rem",
+              height: "15.5rem",
             }}
           >
             <StatCard label="aksjeselskaper" stat={companyCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
-              <Form.Label>Søk etter selskap</Form.Label>
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
-                placeholder="Selskapsnavn eller orgnr..."
+                placeholder="Søk etter selskap..."
                 style={{
-                  backgroundColor: theme.backgroundSecondary,
-                  borderColor: theme.backgroundSecondary,
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
                   color: theme.text,
+                  ...theme.lowering,
                 }}
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
@@ -107,8 +107,11 @@ export const Landing = () => {
               {companySearchList?.map((company) => (
                 <ListGroup.Item
                   key={company._id}
-                  className="w-100 mw-100 d-flex align-items-center justify-content-between"
-                  style={{ backgroundColor: theme.backgroundSecondary }}
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between my-1"
+                  style={{
+                    backgroundColor: theme.background,
+                    ...theme.elevation,
+                  }}
                 >
                   <div>
                     <div className="mr-2">{company.name}</div>
@@ -145,31 +148,34 @@ export const Landing = () => {
             style={{
               backgroundColor: theme.background,
               ...theme.elevation,
-              maxHeight: "17rem",
-              height: "17rem",
+              maxHeight: "15.5rem",
+              height: "15.5rem",
             }}
           >
             <StatCard label="aksjonærer" stat={shareholderCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
-              <Form.Label>Søk etter aksjonær</Form.Label>
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
-                placeholder="Orgnr eller navn på person eller selskap..."
+                placeholder="...eller aksjonær..."
                 style={{
-                  backgroundColor: theme.backgroundSecondary,
-                  borderColor: theme.backgroundSecondary,
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
                   color: theme.text,
+                  ...theme.lowering,
                 }}
                 onChange={(e) => handleShareholderSearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup className="w-100" style={{ zIndex: 100 }}>
+            <ListGroup className="w-100 mw-100" style={{ zIndex: 100 }}>
               {shareholderSearchList?.map((shareholder) => (
                 <ListGroup.Item
                   key={shareholder._id}
-                  className="w-100 mw-100 d-flex align-items-center justify-content-between"
-                  style={{ backgroundColor: theme.backgroundSecondary }}
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between my-1"
+                  style={{
+                    backgroundColor: theme.background,
+                    ...theme.elevation,
+                  }}
                 >
                   <div>
                     <span className="mr-2">{shareholder.name}</span>
