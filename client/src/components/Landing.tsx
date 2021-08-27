@@ -13,7 +13,7 @@ import { AppContext } from "../App";
 import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSitemap } from "@fortawesome/free-solid-svg-icons";
+import { faList, faSitemap } from "@fortawesome/free-solid-svg-icons";
 
 export const Landing = () => {
   const { theme } = useContext(AppContext);
@@ -82,7 +82,12 @@ export const Landing = () => {
           <Col
             sm
             className="d-flex flex-column align-items-center pt-5 m-1"
-            style={{ backgroundColor: theme.background, ...theme.elevation }}
+            style={{
+              backgroundColor: theme.background,
+              ...theme.elevation,
+              maxHeight: "17rem",
+              height: "17rem",
+            }}
           >
             <StatCard label="aksjeselskaper" stat={companyCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
@@ -91,7 +96,6 @@ export const Landing = () => {
                 name="peakSearchTerm"
                 type="text"
                 placeholder="Selskapsnavn eller orgnr..."
-                size="lg"
                 style={{
                   backgroundColor: theme.backgroundSecondary,
                   borderColor: theme.backgroundSecondary,
@@ -100,28 +104,38 @@ export const Landing = () => {
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup className="w-100">
+            <ListGroup className="w-100 mw-100">
               {companySearchList?.map((company) => (
                 <ListGroup.Item
                   key={company._id}
-                  className="w-100"
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between"
                   style={{ backgroundColor: theme.backgroundSecondary }}
                 >
-                  <Button
-                    variant="link"
-                    onClick={() => history.push(`/company?_id=${company._id}`)}
-                  >
-                    <span className="mr-2">{company.name}</span>
-                    <span className="text-muted">({company.orgnr})</span>
-                  </Button>
-                  <FontAwesomeIcon
-                    icon={faSitemap}
-                    color={theme.primary}
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      history.push(`/ownership-chart?_id=${company._id}`)
-                    }
-                  />
+                  <div>
+                    <div className="mr-2">{company.name}</div>
+                    <span className="small text-muted mr-3">
+                      {company.orgnr}
+                    </span>
+                  </div>
+                  <div className="text-nowrap">
+                    <FontAwesomeIcon
+                      icon={faSitemap}
+                      color={theme.primary}
+                      style={{ cursor: "pointer" }}
+                      className="mr-3"
+                      onClick={() =>
+                        history.push(`/ownership-chart?_id=${company._id}`)
+                      }
+                    />
+                    <FontAwesomeIcon
+                      icon={faList}
+                      color={theme.secondary}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        history.push(`/company?_id=${company._id}`)
+                      }
+                    />
+                  </div>
                 </ListGroup.Item>
               ))}
             </ListGroup>
@@ -129,7 +143,12 @@ export const Landing = () => {
           <Col
             sm
             className="d-flex flex-column align-items-center pt-5 m-1"
-            style={{ backgroundColor: theme.background, ...theme.elevation }}
+            style={{
+              backgroundColor: theme.background,
+              ...theme.elevation,
+              maxHeight: "17rem",
+              height: "17rem",
+            }}
           >
             <StatCard label="aksjonærer" stat={shareholderCount} />
             <Form.Group className="w-100 mt-sm-5 mt-2">
@@ -138,7 +157,6 @@ export const Landing = () => {
                 name="peakSearchTerm"
                 type="text"
                 placeholder="Orgnr eller navn på person eller selskap..."
-                size="lg"
                 style={{
                   backgroundColor: theme.backgroundSecondary,
                   borderColor: theme.backgroundSecondary,
@@ -151,29 +169,37 @@ export const Landing = () => {
               {shareholderSearchList?.map((shareholder) => (
                 <ListGroup.Item
                   key={shareholder._id}
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between"
                   style={{ backgroundColor: theme.backgroundSecondary }}
-                  onClick={() =>
-                    history.push(`/shareholder?_id=${shareholder._id}`)
-                  }
                 >
-                  <Button variant="link">
+                  <div>
                     <span className="mr-2">{shareholder.name}</span>
-                    {shareholder.yearOfBirth && (
-                      <span className="text-muted mr-2">
-                        {shareholder.yearOfBirth}
-                      </span>
-                    )}
-                    {shareholder.orgnr && (
-                      <span className="text-muted mr-2">
-                        {shareholder.orgnr}
-                      </span>
-                    )}
-                    {shareholder.countryCode && (
-                      <span className="text-muted">
-                        {shareholder.countryCode}
-                      </span>
-                    )}
-                  </Button>
+                    <div>
+                      {shareholder.yearOfBirth && (
+                        <span className="small text-muted mr-2">
+                          {shareholder.yearOfBirth}
+                        </span>
+                      )}
+                      {shareholder.orgnr && (
+                        <span className="small text-muted mr-2">
+                          {shareholder.orgnr}
+                        </span>
+                      )}
+                      {shareholder.countryCode && (
+                        <span className="small text-muted">
+                          {shareholder.countryCode}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <FontAwesomeIcon
+                    icon={faList}
+                    color={theme.secondary}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      history.push(`/shareholder?_id=${shareholder._id}`)
+                    }
+                  />
                 </ListGroup.Item>
               ))}
             </ListGroup>

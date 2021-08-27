@@ -10,6 +10,7 @@ export const theming = {
             borderRadius: 8,
         },
         primary: '#17a2b8',
+        secondary: '#6f42c1',
         shadowColor: '#000'
     },
     dark: {
@@ -23,6 +24,7 @@ export const theming = {
             borderRadius: 8,
         },
         primary: '#17a2b8',
+        secondary: '#6f42c1',
         shadowColor: '#fff'
     }
 }
