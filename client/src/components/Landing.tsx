@@ -80,7 +80,7 @@ export const Landing = () => {
         <Row>
           <Col
             sm
-            className="d-flex flex-column align-items-center pt-5 m-1"
+            className="d-flex flex-column align-items-center pt-5 m-sm-4 m-1"
             style={{
               backgroundColor: theme.background,
               ...theme.elevation,
@@ -141,7 +141,7 @@ export const Landing = () => {
           </Col>
           <Col
             sm
-            className="d-flex flex-column align-items-center pt-5 m-1"
+            className="d-flex flex-column align-items-center pt-5 m-sm-4 m-1"
             style={{
               backgroundColor: theme.background,
               ...theme.elevation,
