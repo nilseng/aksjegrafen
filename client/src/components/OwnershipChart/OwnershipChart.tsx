@@ -38,7 +38,7 @@ export const OwnershipChart = () => {
     setOrgnr(orgnr ?? undefined);
   }, [query]);
 
-  const ownerships = useGetOwnerships(company);
+  const { ownerships, setOwnerships } = useGetOwnerships(company);
 
   const [treeNodes, setTreeNodes] =
     useState<d3.HierarchyPointNode<ICompany | IOwnership>[]>();
@@ -174,6 +174,7 @@ export const OwnershipChart = () => {
             company={company}
             history={history}
             ownerCount={ownershipCount}
+            setOwnerships={setOwnerships}
           />
         ))}
       </Layer>
@@ -191,6 +192,9 @@ interface ITreeNodeProps {
   company?: ICompany;
   history: any;
   ownerCount?: number;
+  setOwnerships?: React.Dispatch<
+    React.SetStateAction<IOwnership[] | undefined>
+  >;
 }
 
 const TreeNode = ({
@@ -203,6 +207,7 @@ const TreeNode = ({
   company,
   history,
   ownerCount,
+  setOwnerships,
 }: ITreeNodeProps) => {
   return (
     <Group
@@ -220,6 +225,7 @@ const TreeNode = ({
       }}
       onClick={() => {
         if (isAksjeselskap((data as IOwnership)?.shareholder)) {
+          if (setOwnerships) setOwnerships(undefined);
           history.push(
             `/ownership-chart?orgnr=${(data as IOwnership).shareholder?.orgnr}`
           );

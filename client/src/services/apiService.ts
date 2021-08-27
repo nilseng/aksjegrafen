@@ -62,7 +62,7 @@ export const useGetOwnerships = (company?: ICompany) => {
             });
         }
     }, [company]);
-    return ownerships
+    return { ownerships, setOwnerships }
 }
 
 export const useGetCompany = (id?: string, orgnr?: string) => {
