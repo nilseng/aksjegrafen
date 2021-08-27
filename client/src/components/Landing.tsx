@@ -3,7 +3,6 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { debounce } from "lodash";
 import ListGroup from "react-bootstrap/ListGroup";
-import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { ICompany, IShareholder } from "../models/models";
@@ -104,7 +103,7 @@ export const Landing = () => {
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup className="w-100 mw-100">
+            <ListGroup className="w-100 mw-100" style={{ zIndex: 100 }}>
               {companySearchList?.map((company) => (
                 <ListGroup.Item
                   key={company._id}
@@ -165,7 +164,7 @@ export const Landing = () => {
                 onChange={(e) => handleShareholderSearch(e)}
               ></Form.Control>
             </Form.Group>
-            <ListGroup className="w-100">
+            <ListGroup className="w-100" style={{ zIndex: 100 }}>
               {shareholderSearchList?.map((shareholder) => (
                 <ListGroup.Item
                   key={shareholder._id}
