@@ -209,6 +209,15 @@ const TreeNode = ({
   ownerCount,
   setOwnerships,
 }: ITreeNodeProps) => {
+  const handleClick = () => {
+    if (isAksjeselskap((data as IOwnership)?.shareholder)) {
+      if (setOwnerships) setOwnerships(undefined);
+      history.push(
+        `/ownership-chart?orgnr=${(data as IOwnership).shareholder?.orgnr}`
+      );
+    }
+  };
+
   return (
     <Group
       onMouseEnter={(e) => {
@@ -223,14 +232,8 @@ const TreeNode = ({
           if (container) container.style.cursor = "default";
         }
       }}
-      onClick={() => {
-        if (isAksjeselskap((data as IOwnership)?.shareholder)) {
-          if (setOwnerships) setOwnerships(undefined);
-          history.push(
-            `/ownership-chart?orgnr=${(data as IOwnership).shareholder?.orgnr}`
-          );
-        }
-      }}
+      onClick={handleClick}
+      onTap={handleClick}
     >
       <ChartRect x={x} y={y} theme={theme} width={width} height={height} />
       <Text
