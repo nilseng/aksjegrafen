@@ -89,7 +89,7 @@ export const Landing = () => {
             }}
           >
             <StatCard label="aksjeselskaper" stat={companyCount} />
-            <Form.Group className="w-100 mt-sm-5 mt-2">
+            <Form.Group className="w-100 mt-5 px-3">
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
@@ -99,6 +99,7 @@ export const Landing = () => {
                   borderColor: "transparent",
                   color: theme.text,
                   ...theme.lowering,
+                  borderRadius: "4rem",
                 }}
                 onChange={(e) => handleCompanySearch(e)}
               ></Form.Control>
@@ -153,7 +154,7 @@ export const Landing = () => {
             }}
           >
             <StatCard label="aksjonærer" stat={shareholderCount} />
-            <Form.Group className="w-100 mt-sm-5 mt-2">
+            <Form.Group className="w-100 mt-5 px-3">
               <Form.Control
                 name="peakSearchTerm"
                 type="text"
@@ -163,6 +164,7 @@ export const Landing = () => {
                   borderColor: "transparent",
                   color: theme.text,
                   ...theme.lowering,
+                  borderRadius: "4rem",
                 }}
                 onChange={(e) => handleShareholderSearch(e)}
               ></Form.Control>

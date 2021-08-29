@@ -20,7 +20,7 @@ export const StatCard = ({ label, stat }: IProps) => {
       }}
     >
       <p className="h4">{stat?.toLocaleString()}</p>
-      <p className="font-weight-bold m-0" style={{ color: theme.primary }}>
+      <p className="m-0" style={{ color: theme.primary }}>
         {label}
       </p>
     </div>

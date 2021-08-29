@@ -12,18 +12,15 @@ export const ThemeButton = ({ theme, setTheme }: IProps) => {
   return (
     <div
       style={{
-        backgroundColor: theme.text,
+        backgroundColor: theme.backgroundColor,
         width: "4rem",
         height: "2rem",
-        borderRadius: "4rem",
         cursor: "pointer",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        boxShadow:
-          theme.id === "light"
-            ? "inset 0px 0px 4px 0px rgba(255,255,255,0.5)"
-            : "inset 0px 0px 4px 0px rgba(0,0,0,0.5)",
+        ...theme.lowering,
+        borderRadius: "4rem",
       }}
       onClick={() => {
         localStorage.setItem("theme", theme.id === "light" ? "dark" : "light");
@@ -33,7 +30,7 @@ export const ThemeButton = ({ theme, setTheme }: IProps) => {
       <FontAwesomeIcon
         className="mx-2"
         icon={faSun}
-        color={theme.background}
+        color={theme.primary}
         style={{ visibility: theme.id === "light" ? "visible" : "hidden" }}
       />
       <FontAwesomeIcon

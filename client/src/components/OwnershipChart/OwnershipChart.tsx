@@ -271,27 +271,27 @@ const TreeNode = ({
             fontStyle={"bold"}
           />
         )}
-      {!(data as IOwnership)?.company &&
-        !(data as IOwnership)?.shareholder &&
-        ownerCount && (
-          <Text
-            x={x - width / 2}
-            y={y - height / 2 + 4 + 24}
-            width={width}
-            text={
-              ownerCount === 1
-                ? `${ownerCount.toLocaleString()} aksjonær`
-                : `${ownerCount.toLocaleString()} aksjonærer`
-            }
-            fill={theme.primary}
-            align={"left"}
-            wrap={"none"}
-            ellipsis={true}
-            padding={12}
-            fontSize={12}
-            fontStyle={"bold"}
-          />
-        )}
+      {!(data as IOwnership)?.company && !(data as IOwnership)?.shareholder && (
+        <Text
+          x={x - width / 2}
+          y={y - height / 2 + 4 + 24}
+          width={width}
+          text={
+            ownerCount
+              ? ownerCount === 1
+                ? `${ownerCount?.toLocaleString()} aksjonær`
+                : `${ownerCount?.toLocaleString()} aksjonærer`
+              : ""
+          }
+          fill={theme.primary}
+          align={"left"}
+          wrap={"none"}
+          ellipsis={true}
+          padding={12}
+          fontSize={12}
+          fontStyle={"bold"}
+        />
+      )}
       <Text
         x={x - width / 2}
         y={y - height / 2 + 4 + 48}

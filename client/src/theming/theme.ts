@@ -10,7 +10,7 @@ export const theming = {
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 2px 0px rgba(0,0,0,0.2)",
+            boxShadow: "inset 0px 0px 3px 0px rgba(0,0,0,0.2)",
             borderRadius: 8,
         },
         primary: '#17a2b8',
@@ -28,7 +28,7 @@ export const theming = {
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 2px 0px rgba(255,255,255,0.2)",
+            boxShadow: "inset 0px 0px 3px 0px rgba(255,255,255,0.2)",
             borderRadius: 8,
         },
         primary: '#17a2b8',
