@@ -7,12 +7,13 @@ import * as d3 from "d3";
 
 import { AppContext } from "../../App";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
-import { ICompany, IOwnership } from "../../models/models";
+import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
   useGetCompany,
   useGetOwnershipCount,
-  useGetShareholderOwnerships,
-  useGetCompanyOwnerships,
+  useGetOwneeOwnerships,
+  useGetShareholder,
+  useGetOwnerOwnerships,
 } from "../../services/apiService";
 import { useQuery } from "../../hooks/useQuery";
 import { useHistory } from "react-router-dom";
@@ -33,52 +34,65 @@ export const OwnershipChart = () => {
   const history = useHistory();
   const query = useQuery();
 
+  const [year, setYear] = useState<2019 | 2020>(2020);
   const [companyId, setCompanyId] = useState<string>();
+  const [shareholder_id, setShareholder_id] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
   const company = useGetCompany(companyId, orgnr);
-  const ownershipCount = useGetOwnershipCount(company, 2020);
+  const shareholder = useGetShareholder(shareholder_id);
+  const ownershipCount = useGetOwnershipCount(company, year);
 
   useEffect(() => {
-    const _id = query.get("_id");
+    const c_id = query.get("_id");
     const orgnr = query.get("orgnr");
-    setCompanyId(_id ?? undefined);
+    const s_id = query.get("shareholder_id");
+    setCompanyId(c_id ?? undefined);
     setOrgnr(orgnr ?? undefined);
+    setShareholder_id(s_id ?? undefined);
   }, [query]);
 
   useEffect(() => {
     setScroll({ stageScale: 1, stageX: 0, stageY: 0 });
-  }, [companyId, orgnr]);
+    setTreeLinks(undefined);
+    setOwnerLinks(undefined);
+    setOwneeLinks(undefined);
+  }, [companyId, orgnr, shareholder_id]);
 
-  const { shareholderOwnerships, setShareholderOwnerships } =
-    useGetShareholderOwnerships(company);
-  const { companyOwnerships, setCompanyOwnerships } =
-    useGetCompanyOwnerships(company);
+  const { ownerOwnerships, setOwnerOwnerships } =
+    useGetOwnerOwnerships(company);
+  const { owneeOwnerships, setOwneeOwnerships } = useGetOwneeOwnerships(
+    company,
+    shareholder
+  );
 
-  const [shareholderNodes, setShareholderNodes] =
+  const [ownerNodes, setOwnerNodes] =
     useState<d3.HierarchyPointNode<ICompany | IOwnership>[]>();
 
-  const [companyNodes, setCompanyNodes] =
-    useState<d3.HierarchyPointNode<ICompany | IOwnership>[]>();
+  const [owneeNodes, setOwneeNodes] =
+    useState<d3.HierarchyPointNode<ICompany | IOwnership | IShareholder>[]>();
 
-  const [shareholderLinks, setShareholderLinks] =
+  const [ownerLinks, setOwnerLinks] =
     useState<d3.HierarchyPointLink<ICompany | IOwnership>[]>();
 
-  const [companyLinks, setCompanyLinks] =
-    useState<d3.HierarchyPointLink<ICompany | IOwnership>[]>();
+  const [owneeLinks, setOwneeLinks] =
+    useState<d3.HierarchyPointLink<ICompany | IOwnership | IShareholder>[]>();
 
-  const shareholderTree = useRef(d3.tree());
-  const companyTree = useRef(d3.tree());
+  const [treeLinks, setTreeLinks] =
+    useState<d3.HierarchyPointLink<ICompany | IOwnership | IShareholder>[]>();
+
+  const ownerTree = useRef(d3.tree());
+  const owneeTree = useRef(d3.tree());
   const nodeWidth = 200;
   const nodeHeight = 100;
   const verticalMargin = 100;
   const horizontalMargin = 40;
-  shareholderTree.current.size([width, height]);
-  shareholderTree.current.nodeSize([
+  ownerTree.current.size([width, height]);
+  ownerTree.current.nodeSize([
     nodeWidth + horizontalMargin,
     nodeHeight + verticalMargin,
   ]);
-  companyTree.current.size([width, height]);
-  companyTree.current.nodeSize([
+  owneeTree.current.size([width, height]);
+  owneeTree.current.nodeSize([
     nodeWidth + horizontalMargin,
     nodeHeight + verticalMargin,
   ]);
@@ -86,11 +100,11 @@ export const OwnershipChart = () => {
   useEffect(() => {
     if (company) {
       const root: d3.HierarchyPointNode<ICompany | IOwnership> =
-        shareholderTree.current(
+        ownerTree.current(
           d3.hierarchy({
             ...company,
-            children: shareholderOwnerships
-              ?.filter((o) => o.year === 2020)
+            children: ownerOwnerships
+              ?.filter((o) => o.year === year)
               .slice(0, 5),
           })
         ) as d3.HierarchyPointNode<ICompany | IOwnership>;
@@ -104,20 +118,34 @@ export const OwnershipChart = () => {
       });
       const links = root.links();
 
-      setShareholderLinks(links);
-      setShareholderNodes(nodes);
+      links.forEach((l) => ((l as any).keyPrefix = "owner"));
+
+      setOwnerLinks(links);
+      setTreeLinks((l) => (l ? [...links, ...l] : links));
+      setOwnerNodes(nodes);
     }
-  }, [width, height, shareholderOwnerships, company]);
+    return () => {
+      setOwnerLinks(undefined);
+      setTreeLinks(undefined);
+    };
+  }, [width, height, ownerOwnerships, company, year]);
 
   useEffect(() => {
-    if (company) {
-      const root: d3.HierarchyPointNode<ICompany | IOwnership> =
-        companyTree.current(
-          d3.hierarchy({
-            ...company,
-            children: companyOwnerships?.filter((o) => o.year === 2020),
-          })
-        ) as d3.HierarchyPointNode<ICompany | IOwnership>;
+    if (company || shareholder) {
+      const root: d3.HierarchyPointNode<ICompany | IOwnership | IShareholder> =
+        company
+          ? (owneeTree.current(
+              d3.hierarchy({
+                ...company,
+                children: owneeOwnerships?.filter((o) => o.year === year),
+              })
+            ) as d3.HierarchyPointNode<ICompany | IOwnership>)
+          : (owneeTree.current(
+              d3.hierarchy({
+                ...shareholder,
+                children: owneeOwnerships?.filter((o) => o.year === year),
+              })
+            ) as d3.HierarchyPointNode<ICompany | IOwnership>);
 
       const nodes = root.descendants();
 
@@ -128,10 +156,13 @@ export const OwnershipChart = () => {
       });
       const links = root.links();
 
-      setCompanyLinks(links);
-      setCompanyNodes(nodes);
+      links.forEach((l) => ((l as any).keyPrefix = "ownee"));
+
+      setOwneeLinks(links);
+      setTreeLinks((l) => (l ? [...links, ...l] : links));
+      setOwneeNodes(nodes);
     }
-  }, [company, height, companyOwnerships, width]);
+  }, [company, height, width, owneeOwnerships, shareholder, year]);
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -175,7 +206,7 @@ export const OwnershipChart = () => {
       });
   };
 
-  if (!shareholderOwnerships)
+  if (!ownerOwnerships && !owneeOwnerships)
     return (
       <Loading
         height={`${height - 58.78}px`}
@@ -185,24 +216,54 @@ export const OwnershipChart = () => {
     );
 
   return (
-    <Stage
-      className="fixed-top"
-      width={width}
-      height={height}
-      onWheel={handleWheel}
-      onDragEnd={handleDragEnd}
-      scaleX={scroll?.stageScale}
-      scaleY={scroll?.stageScale}
-      x={scroll?.stageX}
-      y={scroll?.stageY}
-      draggable
-    >
-      <Layer>
-        {shareholderLinks &&
-          companyLinks &&
-          [...shareholderLinks, ...companyLinks]?.map((l) => (
+    <>
+      <div
+        className="w-100 d-flex justify-content-center"
+        style={{ position: "absolute", top: 100 }}
+      >
+        <span
+          className="mx-2"
+          style={{
+            color: theme.text,
+            fontWeight: year === 2020 ? "bold" : "normal",
+            cursor: "pointer",
+            zIndex: 10000,
+          }}
+          onClick={() => setYear(2020)}
+        >
+          2020
+        </span>
+        <span
+          className="mx-2"
+          style={{
+            color: theme.text,
+            fontWeight: year === 2019 ? "bold" : "normal",
+            cursor: "pointer",
+            zIndex: 10000,
+          }}
+          onClick={() => setYear(2019)}
+        >
+          2019
+        </span>
+      </div>
+      <Stage
+        className="fixed-top"
+        width={width}
+        height={height}
+        onWheel={handleWheel}
+        onDragEnd={handleDragEnd}
+        scaleX={scroll?.stageScale}
+        scaleY={scroll?.stageScale}
+        x={scroll?.stageX}
+        y={scroll?.stageY}
+        draggable
+      >
+        <Layer>
+          {treeLinks?.map((l) => (
             <Line
-              key={`${l.source.data._id}-${l.target.data._id}`}
+              key={`${(l as any).keyPrefix}-${l.source.data._id}-${
+                l.target.data._id
+              }`}
               points={[l.source.x, l.source.y, l.target.x, l.target.y]}
               stroke={theme.background}
               strokeWidth={1}
@@ -212,44 +273,49 @@ export const OwnershipChart = () => {
               shadowOpacity={0.2}
             />
           ))}
-      </Layer>
-      <Layer>
-        {shareholderNodes?.map((node) => (
-          <TreeNode
-            key={node.data._id}
-            data={node.data}
-            x={node.x}
-            y={node.y}
-            theme={theme}
-            width={nodeWidth}
-            height={nodeHeight}
-            company={company}
-            history={history}
-            ownerCount={ownershipCount}
-            setShareholderOwnerships={setShareholderOwnerships}
-            setCompanyOwnerships={setCompanyOwnerships}
-          />
-        ))}
-      </Layer>
-      <Layer>
-        {companyNodes?.slice(1).map((node) => (
-          <TreeNode
-            key={node.data._id}
-            data={node.data}
-            x={node.x}
-            y={node.y}
-            theme={theme}
-            width={nodeWidth}
-            height={nodeHeight}
-            company={company}
-            history={history}
-            ownerCount={ownershipCount}
-            setShareholderOwnerships={setShareholderOwnerships}
-            setCompanyOwnerships={setCompanyOwnerships}
-          />
-        ))}
-      </Layer>
-    </Stage>
+        </Layer>
+        <Layer>
+          {ownerNodes?.map((node) => (
+            <TreeNode
+              key={"owner-" + node.data._id}
+              data={node.data}
+              x={node.x}
+              y={node.y}
+              theme={theme}
+              width={nodeWidth}
+              height={nodeHeight}
+              company={company}
+              shareholder={shareholder}
+              history={history}
+              ownerCount={ownershipCount}
+              setShareholderOwnerships={setOwnerOwnerships}
+              setCompanyOwnerships={setOwneeOwnerships}
+            />
+          ))}
+        </Layer>
+        <Layer>
+          {/* Consider the root as an owner node if there are any, otherwise use the first of the ownee nodes */}
+          {owneeNodes?.slice(ownerNodes ? 1 : 0).map((node) => (
+            <TreeNode
+              key={"ownee" + node.data._id}
+              data={node.data}
+              x={node.x}
+              y={node.y}
+              theme={theme}
+              width={nodeWidth}
+              height={nodeHeight}
+              company={company}
+              shareholder={shareholder}
+              history={history}
+              ownerCount={ownershipCount}
+              owneeCount={owneeOwnerships?.length}
+              setShareholderOwnerships={setOwnerOwnerships}
+              setCompanyOwnerships={setOwneeOwnerships}
+            />
+          ))}
+        </Layer>
+      </Stage>
+    </>
   );
 };
 
@@ -261,8 +327,10 @@ interface ITreeNodeProps {
   height: number;
   theme: any;
   company?: ICompany;
+  shareholder?: IShareholder;
   history: any;
   ownerCount?: number;
+  owneeCount?: number;
   setShareholderOwnerships?: React.Dispatch<
     React.SetStateAction<IOwnership[] | undefined>
   >;
@@ -279,8 +347,10 @@ const TreeNode = ({
   height,
   theme,
   company,
+  shareholder,
   history,
   ownerCount,
+  owneeCount,
   setShareholderOwnerships,
   setCompanyOwnerships,
 }: ITreeNodeProps) => {
@@ -365,23 +435,50 @@ const TreeNode = ({
             fontStyle={"bold"}
           />
         )}
-      {company?.stocks &&
-        (data as IOwnership)?.company?.stocks &&
-        data.stocks && (
-          <Text
-            x={x - width / 2}
-            y={y - height / 2 + 4 + 24}
-            width={width}
-            text={`${companyOwnershipShare.toFixed()}% eid av ${company.name}`}
-            fill={theme.primary}
-            align={"left"}
-            wrap={"none"}
-            ellipsis={true}
-            padding={12}
-            fontSize={12}
-            fontStyle={"bold"}
-          />
-        )}
+      {((data as IShareholder).kind || (data as IShareholder).kind === 0) &&
+      shareholder &&
+      owneeCount ? (
+        <Text
+          x={x - width / 2}
+          y={y - height / 2 + 4 + 24}
+          width={width}
+          text={
+            owneeCount
+              ? owneeCount !== 1
+                ? `${owneeCount} investeringer`
+                : `${owneeCount} investering`
+              : ""
+          }
+          fill={theme.primary}
+          align={"left"}
+          padding={12}
+          fontSize={12}
+          fontStyle={"bold"}
+        />
+      ) : (
+        <Text text="" />
+      )}
+      {(company?.stocks || shareholder?.kind || shareholder?.kind === 0) &&
+      (data as IOwnership)?.company?.stocks &&
+      data.stocks ? (
+        <Text
+          x={x - width / 2}
+          y={y - height / 2 + 4 + 24}
+          width={width}
+          text={`${companyOwnershipShare.toFixed()}% eid av ${
+            company?.name || shareholder?.name
+          }`}
+          fill={theme.primary}
+          align={"left"}
+          wrap={"none"}
+          ellipsis={true}
+          padding={12}
+          fontSize={12}
+          fontStyle={"bold"}
+        />
+      ) : (
+        <Text text="" />
+      )}
       {!(data as IOwnership)?.company && !(data as IOwnership)?.shareholder && (
         <Text
           x={x - width / 2}
@@ -403,18 +500,20 @@ const TreeNode = ({
           fontStyle={"bold"}
         />
       )}
-      <Text
-        x={x - width / 2}
-        y={y - height / 2 + 4 + 60}
-        width={width}
-        text={`${data.stocks?.toLocaleString()} aksjer`}
-        fill={theme.text}
-        align={"left"}
-        wrap={"none"}
-        ellipsis={true}
-        padding={12}
-        fontSize={12}
-      />
+      {!((data as IShareholder).kind || (data as IShareholder).kind === 0) && (
+        <Text
+          x={x - width / 2}
+          y={y - height / 2 + 4 + 60}
+          width={width}
+          text={`${data.stocks?.toLocaleString()} aksjer`}
+          fill={theme.text}
+          align={"left"}
+          wrap={"none"}
+          ellipsis={true}
+          padding={12}
+          fontSize={12}
+        />
+      )}
     </Group>
   );
 };

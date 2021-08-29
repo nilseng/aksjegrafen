@@ -199,14 +199,27 @@ export const Landing = () => {
                       )}
                     </div>
                   </div>
-                  <FontAwesomeIcon
-                    icon={faList}
-                    color={theme.secondary}
-                    style={{ cursor: "pointer" }}
-                    onClick={() =>
-                      history.push(`/shareholder?_id=${shareholder._id}`)
-                    }
-                  />
+                  <div className="text-nowrap">
+                    <FontAwesomeIcon
+                      icon={faSitemap}
+                      color={theme.primary}
+                      style={{ cursor: "pointer" }}
+                      className="mr-3"
+                      onClick={() =>
+                        history.push(
+                          `/ownership-chart?shareholder_id=${shareholder._id}`
+                        )
+                      }
+                    />
+                    <FontAwesomeIcon
+                      icon={faList}
+                      color={theme.secondary}
+                      style={{ cursor: "pointer" }}
+                      onClick={() =>
+                        history.push(`/shareholder?_id=${shareholder._id}`)
+                      }
+                    />
+                  </div>
                 </ListGroup.Item>
               ))}
             </ListGroup>
