@@ -24,6 +24,12 @@ export const OwnershipChart = () => {
 
   const { width, height } = useWindowDimensions();
 
+  const [scroll, setScroll] = useState<{
+    stageScale: number;
+    stageX: number;
+    stageY: number;
+  }>({ stageScale: 1, stageX: 0, stageY: 0 });
+
   const history = useHistory();
   const query = useQuery();
 
@@ -38,6 +44,10 @@ export const OwnershipChart = () => {
     setCompanyId(_id ?? undefined);
     setOrgnr(orgnr ?? undefined);
   }, [query]);
+
+  useEffect(() => {
+    setScroll({ stageScale: 1, stageX: 0, stageY: 0 });
+  }, [companyId, orgnr]);
 
   const { shareholderOwnerships, setShareholderOwnerships } =
     useGetShareholderOwnerships(company);
@@ -105,9 +115,7 @@ export const OwnershipChart = () => {
         companyTree.current(
           d3.hierarchy({
             ...company,
-            children: companyOwnerships
-              ?.filter((o) => o.year === 2020)
-              .slice(0, 5),
+            children: companyOwnerships?.filter((o) => o.year === 2020),
           })
         ) as d3.HierarchyPointNode<ICompany | IOwnership>;
 
@@ -124,9 +132,6 @@ export const OwnershipChart = () => {
       setCompanyNodes(nodes);
     }
   }, [company, height, companyOwnerships, width]);
-
-  const [scroll, setScroll] =
-    useState<{ stageScale: number; stageX: number; stageY: number }>();
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
