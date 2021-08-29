@@ -20,8 +20,6 @@ const argv = yargs(hideBin(process.argv)).options({
     data: { type: 'array', description: 'Specify data to be included - ownerships, companies and/or shareholders' }
 }).parseSync()
 
-console.log(argv)
-
 const app = express()
 
 app.use(sslRedirect())

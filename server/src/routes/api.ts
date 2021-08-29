@@ -111,7 +111,26 @@ router.get("/ownerships", async (req, res) => {
                 return res.status(500).json({ error: 'Something went wrong.' })
             }
         }
-    } else {
+    } else if (req.query?.shareholderOrgnr) {
+        if (req.query?.count && req.query?.year) {
+            const count = await db.ownerships.countDocuments({ shareholderOrgnr: req.query.orgnr, year: +req.query.year }).catch(e => ({ error: e }))
+            return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
+        } else {
+            try {
+                const ownerships = await db.ownerships.find({ shareholderOrgnr: req.query.shareholderOrgnr }).sort({ stocks: -1 }).limit(100).toArray()
+                const companies = await db.companies.find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } }).toArray()
+                const data = ownerships.map((o: Ownership) => {
+                    o.company = companies.find((c: Company) => c.orgnr === o.orgnr)
+                    return o
+                })
+                return res.status(200).json(data)
+            } catch (e) {
+                console.error(e)
+                return res.status(500).json({ error: 'Something went wrong.' })
+            }
+        }
+    }
+    else {
         res.status(404).json({ error: 'Not found.' })
     }
 })

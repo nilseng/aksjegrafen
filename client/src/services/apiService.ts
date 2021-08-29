@@ -11,8 +11,13 @@ export const getShareholderCount = async () => {
     return res.json()
 }
 
-export const getOwnerships = async (company: ICompany) => {
+export const getShareholderOwnerships = async (company: ICompany) => {
     const res = await fetch(`/api/ownerships?orgnr=${company.orgnr}`)
+    return res.json()
+}
+
+export const getCompanyOwnerships = async (company: ICompany) => {
+    const res = await fetch(`/api/ownerships?shareholderOrgnr=${company.orgnr}`)
     return res.json()
 }
 
@@ -51,18 +56,34 @@ export const useCompanyCount = () => {
     return count
 }
 
-export const useGetOwnerships = (company?: ICompany) => {
-    const [ownerships, setOwnerships] = useState<IOwnership[]>()
+export const useGetShareholderOwnerships = (company?: ICompany) => {
+    const [shareholderOwnerships, setShareholderOwnerships] = useState<IOwnership[]>()
     useEffect(() => {
         if (company) {
-            getOwnerships(company).then(async (o) => {
+            getShareholderOwnerships(company).then(async (o) => {
                 if (o?.error) {
-                    setOwnerships([]);
-                } else setOwnerships(o);
+                    setShareholderOwnerships([]);
+                } else setShareholderOwnerships(o);
             });
         }
+        return () => setShareholderOwnerships(undefined)
     }, [company]);
-    return { ownerships, setOwnerships }
+    return { shareholderOwnerships, setShareholderOwnerships }
+}
+
+export const useGetCompanyOwnerships = (company?: ICompany) => {
+    const [companyOwnerships, setCompanyOwnerships] = useState<IOwnership[]>()
+    useEffect(() => {
+        if (company) {
+            getCompanyOwnerships(company).then(async o => {
+                if (o?.error) {
+                    setCompanyOwnerships([])
+                } else setCompanyOwnerships(o)
+            })
+        }
+        return () => setCompanyOwnerships(undefined)
+    }, [company])
+    return { companyOwnerships, setCompanyOwnerships }
 }
 
 export const useGetCompany = (id?: string, orgnr?: string) => {
