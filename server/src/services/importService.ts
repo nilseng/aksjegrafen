@@ -5,13 +5,30 @@ import fs from 'fs'
 import { collections as db } from "../database/databaseSetup"
 import { Company, isCompany, isOwnership, isShareholder, Ownership, OwnershipRaw, Shareholder, ShareholderType } from '../models/models'
 
-export const importData = async (year: number) => {
+export const importData = async (year?: number, data?: (number | string)[]) => {
+    let fileName: string;
+    switch (year) {
+        case 2019: {
+            fileName = 'aksjeeiebok__2019_04052020.csv'
+            break;
+        }
+        case 2020: {
+            fileName = 'aksjeeiebok__2020.csv'
+            break;
+        }
+        default: {
+            console.log('-------------')
+            console.log('Please specify for which year you want to import data (2019 or 2020)')
+            console.log('-------------')
+            return;
+        }
+    }
     console.log('------------- Data import started -------------')
     const ownerships: Ownership[] = []
     const companies: { [key: string]: Company } = {}
     const shareholders: { [key: string]: Shareholder } = {}
     let counter = 0;
-    const stream = fs.createReadStream(path.join(__dirname, '../../..', 'data', 'aksjeeiebok__2020.csv'))
+    const stream = fs.createReadStream(path.join(__dirname, '../../..', 'data', fileName))
         .pipe(csv({
             separator: ';',
             strict: true,
@@ -52,17 +69,32 @@ export const importData = async (year: number) => {
             console.log('OWNERSHIP:', ownerships[0])
             console.log('COMPANY:', Object.values(companies)[0])
             console.log('SHAREHOLDER', Object.values(shareholders)[0])
-            //await db.ownerships.insertMany(ownerships)
-            await db.companies.bulkWrite(Object.values(companies).map(c => ({ updateOne: { filter: { orgnr: c.orgnr }, update: { $set: c }, upsert: true } })))
-            await db.shareholders.bulkWrite(Object.values(shareholders).map(s => ({ updateOne: { filter: { id: s.id }, update: { $set: s }, upsert: true } })))
+            if (data?.includes('ownerships')) await db.ownerships.insertMany(ownerships)
+            if (data?.includes('companies')) await db.companies.bulkWrite(Object.values(companies).map(c => ({ updateOne: { filter: { orgnr: c.orgnr }, update: { $set: c }, upsert: true } })))
+            if (data?.includes('shareholders')) await db.shareholders.bulkWrite(Object.values(shareholders).map(s => ({ updateOne: { filter: { id: s.id }, update: { $set: s }, upsert: true } })))
             console.log('------------- Data import complete -------------')
         })
 }
 
+export const deleteData = async (year?: number, data?: (number | string)[]) => {
+    if (!data) {
+        console.log('------------- Please specify data to be deleted -------------')
+        return;
+    }
+    console.log('------------- Data deletion started -------------')
+    if (data?.includes('ownerships')) await db.ownerships.deleteMany(year ? { year } : {})
+    if (data?.includes('companies')) await db.companies.deleteMany({})
+    if (data?.includes('shareholders')) await db.shareholders.deleteMany({})
+    console.log('------------- Data deletion complete -------------')
+}
+
 const mapOwnership = (raw: OwnershipRaw, year: number): Ownership => {
     return {
-        orgnr: raw.orgnr, shareClass: raw.shareClass, stocks: +raw.shareholderStocks, year,
-        shareHolderId: raw.shareholderName + raw.yobOrOrgnr + raw.zipLocation + raw.countryCode
+        ...raw,
+        shareHolderId: raw.shareholderName + raw.yobOrOrgnr + raw.zipLocation + raw.countryCode,
+        shareholderOrgnr: raw.yobOrOrgnr?.length === 9 ? raw.yobOrOrgnr : undefined,
+        stocks: +raw.shareholderStocks,
+        year
     }
 }
 
@@ -85,10 +117,4 @@ const mapShareholder = (raw: OwnershipRaw, id: string): Partial<Shareholder> => 
 
 const getShareholderType = (raw: OwnershipRaw): ShareholderType => {
     return raw.yobOrOrgnr?.length === 9 ? ShareholderType.COMPANY : (raw.yobOrOrgnr?.length === 4 ? ShareholderType.PERSON : ShareholderType.UNKNOWN)
-}
-
-export const updateYear = async (year: number) => {
-    console.log('------------- Updating year -------------');
-    await db.ownerships.updateMany({}, { $set: { year: year } })
-    console.log('------------- Year updated -------------');
 }

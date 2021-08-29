@@ -10,10 +10,10 @@ export interface OwnershipRaw {
     companyStocks: string | number
 }
 
-export interface Ownership {
-    orgnr: string
+export type Ownership = OwnershipRaw & {
     shareHolderId: string
-    shareClass: string
+    shareholderOrgnr?: string,
+    // Legacy property
     stocks: number
     year: number
     company?: Company
