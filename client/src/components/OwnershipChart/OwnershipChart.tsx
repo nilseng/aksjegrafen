@@ -308,7 +308,9 @@ export const OwnershipChart = () => {
               shareholder={shareholder}
               history={history}
               ownerCount={ownershipCount}
-              owneeCount={owneeOwnerships?.length}
+              owneeCount={
+                owneeOwnerships?.filter((o) => o.year === year).length
+              }
               setShareholderOwnerships={setOwnerOwnerships}
               setCompanyOwnerships={setOwneeOwnerships}
             />
@@ -424,10 +426,9 @@ const TreeNode = ({
             x={x - width / 2}
             y={y - height / 2 + 4 + 24}
             width={width}
-            text={`${(
-              (data.stocks / company.stocks) *
-              100
-            ).toFixed()}% eierskap`}
+            text={`${((data.stocks / company.stocks) * 100).toPrecision(
+              2
+            )}% eierskap`}
             fill={theme.primary}
             align={"left"}
             padding={12}
@@ -465,7 +466,7 @@ const TreeNode = ({
           x={x - width / 2}
           y={y - height / 2 + 4 + 24}
           width={width}
-          text={`${companyOwnershipShare.toFixed()}% eid av ${
+          text={`${companyOwnershipShare.toPrecision(2)}% eid av ${
             company?.name || shareholder?.name
           }`}
           fill={theme.primary}
