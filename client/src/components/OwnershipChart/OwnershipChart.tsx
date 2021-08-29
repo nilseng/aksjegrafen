@@ -426,9 +426,11 @@ const TreeNode = ({
             x={x - width / 2}
             y={y - height / 2 + 4 + 24}
             width={width}
-            text={`${((data.stocks / company.stocks) * 100).toPrecision(
-              2
-            )}% eierskap`}
+            text={`${
+              (data.stocks / company.stocks) * 100 < 1
+                ? ((data.stocks / company.stocks) * 100).toPrecision(2)
+                : ((data.stocks / company.stocks) * 100).toFixed(2)
+            }% eierskap`}
             fill={theme.primary}
             align={"left"}
             padding={12}
@@ -466,9 +468,11 @@ const TreeNode = ({
           x={x - width / 2}
           y={y - height / 2 + 4 + 24}
           width={width}
-          text={`${companyOwnershipShare.toPrecision(2)}% eid av ${
-            company?.name || shareholder?.name
-          }`}
+          text={`${
+            companyOwnershipShare < 1
+              ? companyOwnershipShare.toPrecision(2)
+              : companyOwnershipShare.toFixed(2)
+          }% eid av ${company?.name || shareholder?.name}`}
           fill={theme.primary}
           align={"left"}
           wrap={"none"}
