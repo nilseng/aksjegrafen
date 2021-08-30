@@ -16,8 +16,8 @@ export const getOwnerOwnerships = async (company?: ICompany, shareholder?: IShar
         const res = await fetch(`/api/ownerships?orgnr=${company.orgnr}`)
         return res.json()
     }
-    else if (shareholder) {
-        const res = await fetch(`/api/ownerships?shareholderId=${shareholder.id}`)
+    else if (shareholder?.orgnr) {
+        const res = await fetch(`/api/ownerships?orgnr=${shareholder.orgnr}`)
         return res.json()
     }
 }
