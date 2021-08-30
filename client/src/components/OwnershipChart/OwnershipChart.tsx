@@ -59,10 +59,15 @@ export const OwnershipChart = () => {
 
   const { ownerOwnerships, setOwnerOwnerships } =
     useGetOwnerOwnerships(company);
+
   const { owneeOwnerships, setOwneeOwnerships } = useGetOwneeOwnerships(
     company,
-    shareholder?.orgnr ? undefined : shareholder
+    shareholder
   );
+
+  useEffect(() => {
+    if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
+  }, [shareholder]);
 
   const [ownerNodes, setOwnerNodes] =
     useState<d3.HierarchyPointNode<ICompany | IOwnership>[]>();

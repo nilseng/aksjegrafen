@@ -45,7 +45,10 @@ export const TreeNode = ({
       history.push(
         `/ownership-chart?orgnr=${(data as IOwnership).shareholder?.orgnr}`
       );
-    } else if ((data as IOwnership).company) {
+    } else if (
+      (data as IOwnership).company &&
+      (data as IOwnership).company?._id !== company?._id
+    ) {
       if (setShareholderOwnerships) setShareholderOwnerships(undefined);
       if (setCompanyOwnerships) setCompanyOwnerships(undefined);
       history.push(

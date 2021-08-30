@@ -207,9 +207,7 @@ export const Landing = () => {
                       className="mr-3"
                       onClick={() =>
                         history.push(
-                          shareholder.orgnr
-                            ? `/ownership-chart?orgnr=${shareholder.orgnr}`
-                            : `/ownership-chart?shareholder_id=${shareholder._id}`
+                          `/ownership-chart?shareholder_id=${shareholder._id}`
                         )
                       }
                     />
