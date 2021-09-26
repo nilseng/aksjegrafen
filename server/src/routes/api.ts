@@ -41,25 +41,40 @@ router.get('/shareholder', async (req, res) => {
 })
 
 router.get('/shareholders', async (req, res) => {
-    const shareholders = await db.shareholders.find({}).toArray().catch(e => console.error(e))
+    const options = req.query.limit ? { limit: +req.query.limit } : undefined
+    const shareholders = await db.shareholders.find({}, options).toArray().catch(e => console.error(e))
     return shareholders ? res.status(200).json(shareholders) : res.status(404).json({ error: 'Something went wrong.' })
 })
 
 router.get('/companies', async (req, res) => {
-    const companies = await db.companies.find({}).toArray().catch(e => console.error(e))
+    const options = req.query.limit ? { limit: +req.query.limit } : undefined
+    const companies = await db.companies.find({}, options).toArray().catch(e => console.error(e))
     return companies ? res.status(200).json(companies) : res.status(404).json({ error: 'Something went wrong.' })
 })
 
 router.get("/company/:searchTerm", async (req, res) => {
-    const companies = await db.companies.find(
-        {
-            $or: [
-                { orgnr: { $regex: new RegExp(`^${req.params.searchTerm}`), $options: "i" } },
-                { name: { $regex: req.params.searchTerm, $options: "i" } }
-            ]
-        }).limit(10).toArray().catch(e => console.error(e))
-    if (!companies) return res.status(400).json({ error: 'Search failed.' })
-    res.status(200).json(companies)
+    if (req.query.count) {
+        const count = await db.companies.countDocuments(
+            {
+                $or: [
+                    { orgnr: { $regex: new RegExp(`^${req.params.searchTerm}`), $options: "i" } },
+                    { name: { $regex: req.params.searchTerm, $options: "i" } }
+                ]
+            }).catch(e => console.error(e))
+        if (!count && count !== 0) return res.status(400).json({ error: 'Search failed.' })
+        res.status(200).json(count)
+    } else {
+        const options = req.query.limit ? { limit: +req.query.limit } : undefined
+        const companies = await db.companies.find(
+            {
+                $or: [
+                    { orgnr: { $regex: new RegExp(`^${req.params.searchTerm}`), $options: "i" } },
+                    { name: { $regex: req.params.searchTerm, $options: "i" } }
+                ]
+            }, options).toArray().catch(e => console.error(e))
+        if (!companies) return res.status(400).json({ error: 'Search failed.' })
+        res.status(200).json(companies)
+    }
 })
 
 router.get("/shareholder/:searchTerm", async (req, res) => {
@@ -131,8 +146,53 @@ router.get("/ownerships", async (req, res) => {
         }
     }
     else {
-        res.status(404).json({ error: 'Not found.' })
+        const options = req.query.limit ? { limit: +req.query.limit } : undefined
+        const ownerships = await db.ownerships.find(req.query.year ? { year: +req.query.year } : {}, options).toArray().catch(e => console.error(e))
+        return ownerships ? res.status(200).json(ownerships) : res.status(404).json({ error: 'Something went wrong.' })
     }
+})
+
+router.get("/ownership-graph", async (req, res) => {
+    const companyIds = JSON.parse(req.query.companyIds as string)
+    const companyIdStrings = companyIds.map((id: number) => '' + id)
+    if (Array.isArray(companyIds)) {
+        const ownerships = await db.ownerships.find({ orgnr: { $in: companyIdStrings }, year: 2020 }).toArray()
+        const uniqueShareholderIds = new Set(ownerships.map((o: Ownership) => o.shareHolderId))
+        const shareholders = await db.shareholders.find({ id: { $in: Array.from(uniqueShareholderIds) } }).toArray()
+        return ownerships && shareholders ? res.status(200).json({ ownerships, shareholders }) : res.status(404).json({ error: 'Something went wrong.' })
+    }
+    else res.status(404).send("Please specify companies")
+})
+
+router.get("/company-graph", async (req, res) => {
+    console.log(`--------- Retrieving graph data ---------`)
+    const year = req.query.year ? +req.query.year : undefined;
+    const limit = req.query.limit ? +req.query.limit : undefined;
+    // Getting `limit` number of ownerships from `year`
+    const ownerships = await db.ownerships.find({ shareholderOrgnr: { $exists: true, $ne: null }, year }).limit(limit ?? 100).toArray().catch(e => console.error(e))
+    if (ownerships && Array.isArray(ownerships)) console.log(`--------- Found ${ownerships.length} ownerships ---------`);
+    else return res.status(500).send()
+    const nodes: { [key: string]: Partial<Company & Shareholder> } = {};
+    // Getting all Shareholder and Company data for all shareholders with an orgnr
+    for (let i = 0; i < ownerships.length; i += 1000) {
+        const c: Company[] = await db.companies.find({ orgnr: { $in: ownerships.map(o => o.shareholderOrgnr).slice(i, i + 1000) } }).toArray()
+        for (const company of c) {
+            nodes[company.orgnr] = company;
+        }
+        const s: Shareholder[] = await db.shareholders.find({ orgnr: { $in: ownerships.map(o => o.shareholderOrgnr).slice(i, i + 1000) } }).toArray()
+        for (const shareholder of s) {
+            if (shareholder.orgnr) nodes[shareholder.orgnr] = { ...nodes[shareholder.orgnr], ...shareholder }
+        }
+    }
+    // Getting all companies
+    for (let i = 0; i < ownerships.length; i += 1000) {
+        const c: Company[] = await db.companies.find({ orgnr: { $in: ownerships.map(o => o.orgnr).slice(i, i + 1000) } }).toArray()
+        for (const company of c) {
+            nodes[company.orgnr] = company;
+        }
+    }
+    console.log(`--------- Found ${Object.keys(nodes).length} unique nodes ---------`)
+    res.status(200).json({ ownerships, nodes })
 })
 
 export default router

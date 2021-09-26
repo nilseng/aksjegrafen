@@ -41,7 +41,7 @@ export const Landing = () => {
     (searchTerm: string) => {
       if (!searchTerm || searchTerm?.length < 3) setCompanySearchList([]);
       else {
-        fetch(`/api/company/${searchTerm}`).then(async (res: any) => {
+        fetch(`/api/company/${searchTerm}?limit=10`).then(async (res: any) => {
           const companies = await res.json();
           setCompanySearchList(companies);
         });

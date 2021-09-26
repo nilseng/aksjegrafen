@@ -27,6 +27,7 @@ export const connectToMongoDb = async () => {
   //Creating indices
   collections.shareholders.createIndex({ id: 1 }, { unique: true })
   collections.companies.createIndex({ orgnr: 1 }, { unique: true })
+  collections.ownerships.createIndex({ shareholderOrgnr: 1 }, { unique: false })
 
   //Connection events
   client.on("connected", () => {
