@@ -4,8 +4,7 @@
   "description": "Web app for å finne aksjeselskaper og aksjonærer.",
   "main": "server/src/index.ts",
   "scripts": {
-    "heroku-prebuild": "npm i && cd client && npm i && npm run build && cd .. && cd server && npm i && tsc",
-    "heroku-postinstall": "cd client && npm i --save-dev"
+    "heroku-prebuild": "npm i && cd client && npm i && npm i --save-dev && npm run build && cd .. && cd server && npm i && tsc"
   },
   "author": "Teodor Nilseng Danielsen",
   "license": "ISC",
