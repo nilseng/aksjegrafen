@@ -76,8 +76,8 @@ export const Landing = () => {
       className="d-flex flex-column justify-content-between"
       style={{ minHeight: "calc(100vh - 58.78px)", color: theme.text }}
     >
-      <div className="pt-5">
-        <Row>
+      <div className="d-flex justify-content-center align-items-center flex-fill">
+        <Row className="w-100">
           <Col
             sm
             className="d-flex flex-column align-items-center pt-5 m-sm-4 m-2"
