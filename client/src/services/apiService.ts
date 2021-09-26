@@ -102,45 +102,61 @@ export const useCompanyCount = (searchTerm?: string) => {
 }
 
 export const useGetOwnerOwnerships = (company?: ICompany, shareholder?: IShareholder) => {
-    const [ownerOwnerships, setOwnerOwnerships] = useState<IOwnership[]>()
+    const [ownerOwnerships, setOwnerOwnerships] = useState<IOwnership[]>();
+    const [loading, setLoading] = useState<boolean>();
     useEffect(() => {
         if (company) {
+            setLoading(true);
             getOwnerOwnerships(company).then((o) => {
                 if (o?.error) {
                     setOwnerOwnerships([]);
                 } else setOwnerOwnerships(o);
+                setLoading(false);
             });
         }
         else if (shareholder) {
+            setLoading(true);
             getOwnerOwnerships(undefined, shareholder).then((o) => {
                 if (o?.error) {
                     setOwnerOwnerships([]);
                 } else setOwnerOwnerships(o);
+                setLoading(false);
             });
         }
-        return () => setOwnerOwnerships(undefined)
+        return () => {
+            setOwnerOwnerships(undefined);
+            setLoading(undefined);
+        }
     }, [company, shareholder]);
-    return { ownerOwnerships, setOwnerOwnerships }
+    return { ownerOwnerships, setOwnerOwnerships, loading }
 }
 
 export const useGetOwneeOwnerships = (company?: ICompany, shareholder?: IShareholder) => {
-    const [owneeOwnerships, setOwneeOwnerships] = useState<IOwnership[]>()
+    const [owneeOwnerships, setOwneeOwnerships] = useState<IOwnership[]>();
+    const [loading, setLoading] = useState<boolean>();
     useEffect(() => {
         if (company) {
+            setLoading(true);
             getOwneeOwnerships(company).then(o => {
                 if (o?.error) {
                     setOwneeOwnerships([])
                 } else setOwneeOwnerships(o)
+                setLoading(false);
             })
         } else if (shareholder) {
+            setLoading(true);
             getOwneeOwnerships(undefined, shareholder).then(o => {
                 if (o?.error) setOwneeOwnerships([])
                 else setOwneeOwnerships(o)
+                setLoading(false);
             })
         }
-        return () => setOwneeOwnerships(undefined)
+        return () => {
+            setOwneeOwnerships(undefined);
+            setLoading(undefined);
+        }
     }, [company, shareholder])
-    return { owneeOwnerships, setOwneeOwnerships }
+    return { owneeOwnerships, setOwneeOwnerships, loading }
 }
 
 export const useGetCompany = (id?: string, orgnr?: string) => {
@@ -214,19 +230,25 @@ export const useGetShareholder = (_id?: string, shareholderId?: string) => {
     return shareholder
 }
 
-export const useGetOwnershipCount = (company?: ICompany, year?: number) => {
-    const [count, setCount] = useState<number>()
+export const useOwnershipCount = (company?: ICompany, year?: number): { count: number | undefined, loading: boolean | undefined } => {
+    const [count, setCount] = useState<number>();
+    const [loading, setLoading] = useState<boolean>()
     useEffect(() => {
         if (company && year) {
+            setLoading(true);
             getOwnershipCount(company, year).then(c => {
                 if (c.error) return;
                 setCount(c)
+                setLoading(false);
             })
         }
-        return () => setCount(undefined)
+        return () => {
+            setCount(undefined);
+            setLoading(undefined);
+        }
     }, [company, year])
 
-    return count
+    return { count, loading }
 }
 
 export const useCompanyGraph = (year?: number, limit?: number) => {

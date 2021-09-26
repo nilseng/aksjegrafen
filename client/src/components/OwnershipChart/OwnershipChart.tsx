@@ -10,7 +10,7 @@ import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
   useGetCompany,
-  useGetOwnershipCount,
+  useOwnershipCount,
   useGetOwneeOwnerships,
   useGetShareholder,
   useGetOwnerOwnerships,
@@ -40,7 +40,8 @@ export const OwnershipChart = () => {
   const [orgnr, setOrgnr] = useState<string>();
   const company = useGetCompany(companyId, orgnr);
   const shareholder = useGetShareholder(shareholder_id);
-  const ownershipCount = useGetOwnershipCount(company, year);
+  const { count: ownershipCount, loading: loadingOwnershipCount } =
+    useOwnershipCount(company, year);
 
   useEffect(() => {
     const c_id = query.get("_id");
@@ -51,19 +52,24 @@ export const OwnershipChart = () => {
     setShareholder_id(s_id ?? undefined);
   }, [query]);
 
+  // Hack to reset state when query changes
   useEffect(() => {
     setScroll({ stageScale: 1, stageX: 0, stageY: 0 });
     setOwnerLinks(undefined);
     setOwneeLinks(undefined);
   }, [companyId, orgnr, shareholder_id]);
 
-  const { ownerOwnerships, setOwnerOwnerships } =
-    useGetOwnerOwnerships(company);
+  const {
+    ownerOwnerships,
+    setOwnerOwnerships,
+    loading: loadingOwnerOwnerships,
+  } = useGetOwnerOwnerships(company);
 
-  const { owneeOwnerships, setOwneeOwnerships } = useGetOwneeOwnerships(
-    company,
-    shareholder
-  );
+  const {
+    owneeOwnerships,
+    setOwneeOwnerships,
+    loading: loadingOwneeOwnerships,
+  } = useGetOwneeOwnerships(company, shareholder);
 
   useEffect(() => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
@@ -98,6 +104,7 @@ export const OwnershipChart = () => {
     nodeHeight + verticalMargin,
   ]);
 
+  // Creating owner tree
   useEffect(() => {
     if (company) {
       const root: d3.HierarchyPointNode<ICompany | IOwnership> =
@@ -127,6 +134,7 @@ export const OwnershipChart = () => {
     return () => setOwnerLinks(undefined);
   }, [width, height, ownerOwnerships, company, year]);
 
+  // Creating ownee/investment tree
   useEffect(() => {
     if (company || shareholder) {
       const root: d3.HierarchyPointNode<ICompany | IOwnership | IShareholder> =
@@ -203,7 +211,7 @@ export const OwnershipChart = () => {
       });
   };
 
-  if (!ownerOwnerships && !owneeOwnerships)
+  if (loadingOwnerOwnerships || loadingOwneeOwnerships || loadingOwnershipCount)
     return (
       <Loading
         height={`${height - 58.78}px`}
