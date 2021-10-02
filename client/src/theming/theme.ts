@@ -6,11 +6,11 @@ export const theming = {
         text: '#212529',
         muted: '#e9ecef',
         elevation: {
-            boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.2)",
+            boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.2), 0px 0px 20px 0px rgba(0,0,0,0.1)",
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 3px 0px rgba(0,0,0,0.2)",
+            boxShadow: "inset 0px 0px 3px 0px rgba(0,0,0,0.2), inset 0px 0px 10px 0px rgba(0,0,0,0.1)",
             borderRadius: 8,
         },
         primary: '#17a2b8',
@@ -24,11 +24,11 @@ export const theming = {
         text: '#f8f9fa',
         muted: '#868e96',
         elevation: {
-            boxShadow: "0px 0px 4px 0px rgba(255,255,255,0.2)",
+            boxShadow: "0px 0px 4px 0px rgba(255,255,255,0.2), 0px 0px 10px 0px rgba(255,255,255,0.1)",
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 3px 0px rgba(255,255,255,0.2)",
+            boxShadow: "inset 0px 0px 3px 0px rgba(255,255,255,0.2), inset 0px 0px 6px 0px rgba(255,255,255,0.1)",
             borderRadius: 8,
         },
         primary: '#17a2b8',

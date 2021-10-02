@@ -29,7 +29,7 @@ export const ChartRect = ({ x, y, width, height, theme }: IChartRectProps) => {
       height={height}
       fill={theme.background}
       shadowColor={theme.shadowColor}
-      shadowBlur={3}
+      shadowBlur={6}
       cornerRadius={4}
       shadowOpacity={0.2}
       onClick={handleClick}
