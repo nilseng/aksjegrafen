@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { debounce } from "lodash";
@@ -12,7 +12,13 @@ import { AppContext } from "../App";
 import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faList, faSitemap } from "@fortawesome/free-solid-svg-icons";
+import {
+  faList,
+  faSitemap,
+  faUserTie,
+} from "@fortawesome/free-solid-svg-icons";
+
+import { faBuilding } from "@fortawesome/free-regular-svg-icons";
 
 export const Landing = () => {
   const { theme } = useContext(AppContext);
@@ -88,7 +94,11 @@ export const Landing = () => {
               height: "15.5rem",
             }}
           >
-            <StatCard label="aksjeselskaper" stat={companyCount} />
+            <StatCard
+              label="aksjeselskaper"
+              labelIcon={faBuilding}
+              stat={companyCount}
+            />
             <Form.Group className="w-100 mt-5 px-3">
               <Form.Control
                 name="peakSearchTerm"
@@ -153,7 +163,11 @@ export const Landing = () => {
               height: "15.5rem",
             }}
           >
-            <StatCard label="aksjonærer" stat={shareholderCount} />
+            <StatCard
+              label="aksjonærer"
+              labelIcon={faUserTie}
+              stat={shareholderCount}
+            />
             <Form.Group className="w-100 mt-5 px-3">
               <Form.Control
                 name="peakSearchTerm"

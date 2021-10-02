@@ -1,13 +1,15 @@
-import React from "react";
+import { IconDefinition } from "@fortawesome/fontawesome-common-types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { AppContext } from "../App";
 
 interface IProps {
   label?: string;
+  labelIcon?: IconDefinition;
   stat?: string | number;
 }
 
-export const StatCard = ({ label, stat }: IProps) => {
+export const StatCard = ({ label, stat, labelIcon }: IProps) => {
   const { theme } = useContext(AppContext);
   return (
     <div
@@ -20,9 +22,10 @@ export const StatCard = ({ label, stat }: IProps) => {
       }}
     >
       <p className="h4">{stat?.toLocaleString()}</p>
-      <p className="m-0" style={{ color: theme.primary }}>
+      <span className="m-0" style={{ color: theme.primary }}>
+        {labelIcon && <FontAwesomeIcon icon={labelIcon} className="mr-2" />}
         {label}
-      </p>
+      </span>
     </div>
   );
 };
