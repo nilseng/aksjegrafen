@@ -59,10 +59,6 @@ export const Graph = () => {
 
   const zoomed = (event: any) => {
     let svgTransform = event.transform;
-    if (svgTransform.k >= 4) {
-      svgTransform.k = 4;
-      return;
-    }
     setSvgTranslate(
       `translate(${svgTransform.x},${svgTransform.y}) scale(${svgTransform.k})`
     );
@@ -77,7 +73,13 @@ export const Graph = () => {
         className="d-flex w-100"
         style={{ ...theme.lowering, height: "90%" }}
       >
-        <svg ref={svgRef} height="100%" width="100%" viewBox={"0 0 1000 1000"}>
+        <svg
+          ref={svgRef}
+          height="100%"
+          width="100%"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={"0 0 1000 1000"}
+        >
           <g transform={svgTranslate}>
             <GraphNode
               data={{ entity: { ...company, ...shareholder }, ownerCount }}
