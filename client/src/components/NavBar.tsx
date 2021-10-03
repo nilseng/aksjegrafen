@@ -29,7 +29,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
             className="font-weight-light mx-4"
             style={{ color: theme.text }}
           >
-            Norske aksjer
+            Aksjegrafen
           </span>
         </Navbar.Brand>
       </Link>
