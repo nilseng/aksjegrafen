@@ -69,10 +69,7 @@ export const Graph = () => {
 
   return (
     <div className="d-flex w-100 h-100 p-sm-5 p-2">
-      <div
-        className="d-flex w-100"
-        style={{ ...theme.lowering, height: "90%" }}
-      >
+      <div className="d-flex w-100" style={{ ...theme.lowering }}>
         <svg
           ref={svgRef}
           height="100%"
