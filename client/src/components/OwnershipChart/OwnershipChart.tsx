@@ -235,7 +235,6 @@ export const OwnershipChart = () => {
                   fontWeight: "bold",
                   cursor: "pointer",
                   zIndex: 10000,
-                  ...theme.elevation,
                 }
               : {
                   color: theme.muted,
@@ -258,7 +257,6 @@ export const OwnershipChart = () => {
                   fontWeight: "bold",
                   cursor: "pointer",
                   zIndex: 10000,
-                  ...theme.elevation,
                 }
               : {
                   color: theme.muted,
