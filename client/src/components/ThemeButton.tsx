@@ -19,7 +19,7 @@ export const ThemeButton = ({ theme, setTheme }: IProps) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        ...theme.lowering,
+        ...theme.button,
         borderRadius: "4rem",
       }}
       onClick={() => {

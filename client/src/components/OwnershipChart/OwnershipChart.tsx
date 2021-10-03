@@ -241,7 +241,7 @@ export const OwnershipChart = () => {
                   fontWeight: "normal",
                   cursor: "pointer",
                   zIndex: 10000,
-                  ...theme.lowering,
+                  ...theme.button,
                 }
           }
           onClick={() => setYear(2020)}
@@ -263,7 +263,7 @@ export const OwnershipChart = () => {
                   fontWeight: "normal",
                   cursor: "pointer",
                   zIndex: 10000,
-                  ...theme.lowering,
+                  ...theme.button,
                 }
           }
           onClick={() => setYear(2019)}

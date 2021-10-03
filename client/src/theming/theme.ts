@@ -13,6 +13,10 @@ export const theming = {
             boxShadow: "inset -3px -3px 8px 0px rgba(255,255,255,0.5), inset 3px 3px 8px 0px rgba(209, 205, 199,0.5)",
             borderRadius: 8,
         },
+        button: {
+            boxShadow: "inset -3px -3px 8px 0px rgba(209, 205, 199,0.5), inset 3px 3px 8px 0px rgba(255,255,255,0.5)",
+            borderRadius: 8,
+        },
         primary: '#17a2b8',
         secondary: '#6f42c1',
         shadowColor: '#000'
@@ -29,6 +33,10 @@ export const theming = {
         },
         lowering: {
             boxShadow: "inset -2px -2px 4px 0px rgba(0, 0, 0,0.2), inset 2px 2px 4px 0px rgba(60, 60, 60,0.2)",
+            borderRadius: 8,
+        },
+        button: {
+            boxShadow: "inset -2px -2px 4px 0px rgba(60, 60, 60,0.2), inset 2px 2px 4px 0px rgba(0, 0, 0,0.2)",
             borderRadius: 8,
         },
         primary: '#17a2b8',
