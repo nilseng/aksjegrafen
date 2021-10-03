@@ -19,15 +19,12 @@ export const GraphNode = ({ x, y, width, height, data }: IProps) => {
 
   return (
     <g>
-      <foreignObject
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        className="p-2"
-        style={theme.elevation}
-      >
-        <div data-xmlns="http://www.w3.org/1999/xhtml">
+      <foreignObject x={x} y={y} width={width} height={height} className="p-5">
+        <div
+          data-xmlns="http://www.w3.org/1999/xhtml"
+          className="p-2 w-100 h-100"
+          style={theme.elevation}
+        >
           {data.ownerCount && (
             <p className="small m-0" style={{ color: theme.muted }}>
               {data.ownerCount} owner{data.ownerCount > 1 && "s"}

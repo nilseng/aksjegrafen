@@ -16,8 +16,8 @@ import {
 import Loading from "../Loading";
 import { GraphNode } from "./GraphNode";
 
-const nodeWidth = 200;
-const nodeHeight = 100;
+const nodeWidth = 400;
+const nodeHeight = 200;
 
 export const Graph = () => {
   const { theme } = useContext(AppContext);
