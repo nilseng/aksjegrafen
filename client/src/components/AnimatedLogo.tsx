@@ -4,12 +4,14 @@ const AnimatedLogo = ({
   color = "#1c2e3f",
   height = "5rem",
   width = "5rem",
+  style = {},
 }) => {
   return (
     <svg
       style={{
         height: height,
         width: width,
+        ...style,
       }}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 60 60"

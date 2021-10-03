@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { Route, Router, Switch } from "react-router-dom";
 import { Company } from "./components/Company";
-import { Graph } from "./components/Graph";
+import { CytoGraph } from "./components/CytoGraph";
+import { Graph } from "./components/Graph/Graph";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { OwnershipChart } from "./components/OwnershipChart/OwnershipChart";
@@ -37,16 +38,25 @@ const App = () => {
   return (
     <Router history={history}>
       <NavBar theme={theme} setTheme={setTheme} />
-      <Switch>
-        <AppContext.Provider value={{ theme }}>
-          <Route path="/" component={Landing} exact />
-          <Route path="/shareholder" component={Shareholder} />
-          <Route path="/company" component={Company} />
-          <Route path="/ownership-chart" component={OwnershipChart} />
-          <Route path="/stats" component={Stats} />
-          <Route path="/graph" component={Graph} />
-        </AppContext.Provider>
-      </Switch>
+      <div
+        className="d-flex w-100"
+        style={{
+          minHeight: "calc(100vh - 77.19px)",
+          height: "calc(100vh - 90px)",
+        }}
+      >
+        <Switch>
+          <AppContext.Provider value={{ theme }}>
+            <Route path="/" component={Landing} exact />
+            <Route path="/graph" component={Graph} />
+            <Route path="/shareholder" component={Shareholder} />
+            <Route path="/company" component={Company} />
+            <Route path="/ownership-chart" component={OwnershipChart} />
+            <Route path="/stats" component={Stats} />
+            <Route path="/cyto-graph" component={CytoGraph} />
+          </AppContext.Provider>
+        </Switch>
+      </div>
     </Router>
   );
 };

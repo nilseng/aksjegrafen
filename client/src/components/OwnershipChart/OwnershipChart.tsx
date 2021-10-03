@@ -212,13 +212,7 @@ export const OwnershipChart = () => {
   };
 
   if (loadingOwnerOwnerships || loadingOwneeOwnerships || loadingOwnershipCount)
-    return (
-      <Loading
-        height={`${height - 58.78}px`}
-        color={theme.primary}
-        backgroundColor={theme.background}
-      />
-    );
+    return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
     <>

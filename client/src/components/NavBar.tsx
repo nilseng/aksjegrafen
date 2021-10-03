@@ -19,12 +19,24 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       variant="light"
       expand="md"
       collapseOnSelect
-      className="mt-4 mx-4"
-      style={{ zIndex: 10000, ...theme.elevation }}
+      style={{ zIndex: 10000 }}
     >
       <Link to="/">
         <Navbar.Brand className="text-light">
-          <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
+          <span
+            style={{
+              ...theme.elevation,
+              borderRadius: "100px",
+              display: "inline-block",
+              textAlign: "center",
+              verticalAlign: "middle",
+              width: "3.2rem",
+              height: "3.2rem",
+              paddingTop: "0.4rem",
+            }}
+          >
+            <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
+          </span>
           <span
             className="font-weight-light mx-4"
             style={{ color: theme.text }}

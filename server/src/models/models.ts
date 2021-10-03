@@ -57,7 +57,7 @@ export const isShareholder = (o: any): o is Shareholder => {
     return o.id && typeof o.id === 'string' && (o.kind || o.kind === 0) && (o.name || o.orgnr)
 }
 
-export const isCompany = (o: any): o is Shareholder => {
+export const isCompany = (o: any): o is Company => {
     return o.orgnr && typeof o.orgnr === 'string' &&
         o.name && typeof o.name === 'string'
 }

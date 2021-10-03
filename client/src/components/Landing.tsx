@@ -14,6 +14,7 @@ import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faList,
+  faProjectDiagram,
   faSitemap,
   faUserTie,
 } from "@fortawesome/free-solid-svg-icons";
@@ -79,8 +80,8 @@ export const Landing = () => {
 
   return (
     <Container
-      className="d-flex flex-column justify-content-between"
-      style={{ minHeight: "calc(100vh - 82.78px)", color: theme.text }}
+      className="d-flex flex-column justify-content-between flex-fill"
+      style={{ color: theme.text }}
     >
       <div className="d-flex justify-content-center align-items-center flex-fill">
         <Row className="w-100">
@@ -139,6 +140,13 @@ export const Landing = () => {
                       onClick={() =>
                         history.push(`/ownership-chart?_id=${company._id}`)
                       }
+                    />
+                    <FontAwesomeIcon
+                      icon={faProjectDiagram}
+                      color={theme.primary}
+                      style={{ cursor: "pointer" }}
+                      className="mr-3"
+                      onClick={() => history.push(`/graph?_id=${company._id}`)}
                     />
                     <FontAwesomeIcon
                       icon={faList}
@@ -223,6 +231,15 @@ export const Landing = () => {
                         history.push(
                           `/ownership-chart?shareholder_id=${shareholder._id}`
                         )
+                      }
+                    />
+                    <FontAwesomeIcon
+                      icon={faProjectDiagram}
+                      color={theme.primary}
+                      style={{ cursor: "pointer" }}
+                      className="mr-3"
+                      onClick={() =>
+                        history.push(`/graph?shareholder_id=${shareholder._id}`)
                       }
                     />
                     <FontAwesomeIcon

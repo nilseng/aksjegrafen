@@ -8,7 +8,7 @@ import { useCompanyGraph } from "../services/apiService";
 
 cytoscape.use(fcose);
 
-export const Graph = () => {
+export const CytoGraph = () => {
   const { theme } = useContext(AppContext);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,10 +78,5 @@ export const Graph = () => {
     }
   }, [containerRef, nodes, ownerships, theme]);
 
-  return (
-    <div
-      ref={containerRef}
-      style={{ minHeight: "calc(100vh - 58.78px)" }}
-    ></div>
-  );
+  return <div ref={containerRef} style={{ minHeight: "100%" }}></div>;
 };

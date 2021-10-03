@@ -18,7 +18,7 @@ const Loading = ({
 }: IProps) => {
   return (
     <div
-      className="d-flex flex-column justify-content-center align-items-center"
+      className="d-flex flex-column justify-content-center align-items-center w-100"
       style={{ height, margin, backgroundColor }}
     >
       <AnimatedLogo color={color} />
