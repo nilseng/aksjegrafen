@@ -4,7 +4,7 @@ export const theming = {
         background: '#efeeee',
         backgroundSecondary: '#f8f9fa',
         text: '#212529',
-        muted: '#e9ecef',
+        muted: '#adb5bd',
         elevation: {
             boxShadow: "-6px -6px 16px 0px rgba(255,255,255,0.5), 6px 6px 16px 0px rgba(209, 205, 199,0.5)",
             borderRadius: 8,

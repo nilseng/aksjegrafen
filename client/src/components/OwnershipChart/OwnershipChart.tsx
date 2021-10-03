@@ -227,25 +227,47 @@ export const OwnershipChart = () => {
         style={{ position: "absolute", top: 100 }}
       >
         <span
-          className="mx-2"
-          style={{
-            color: theme.text,
-            fontWeight: year === 2020 ? "bold" : "normal",
-            cursor: "pointer",
-            zIndex: 10000,
-          }}
+          className="py-2 px-4"
+          style={
+            year === 2020
+              ? {
+                  color: theme.primary,
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  zIndex: 10000,
+                  ...theme.elevation,
+                }
+              : {
+                  color: theme.muted,
+                  fontWeight: "normal",
+                  cursor: "pointer",
+                  zIndex: 10000,
+                  ...theme.lowering,
+                }
+          }
           onClick={() => setYear(2020)}
         >
           2020
         </span>
         <span
-          className="mx-2"
-          style={{
-            color: theme.text,
-            fontWeight: year === 2019 ? "bold" : "normal",
-            cursor: "pointer",
-            zIndex: 10000,
-          }}
+          className="py-2 px-4"
+          style={
+            year === 2019
+              ? {
+                  color: theme.primary,
+                  fontWeight: "bold",
+                  cursor: "pointer",
+                  zIndex: 10000,
+                  ...theme.elevation,
+                }
+              : {
+                  color: theme.muted,
+                  fontWeight: "normal",
+                  cursor: "pointer",
+                  zIndex: 10000,
+                  ...theme.lowering,
+                }
+          }
           onClick={() => setYear(2019)}
         >
           2019
