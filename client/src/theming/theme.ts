@@ -1,16 +1,16 @@
 export const theming = {
     light: {
         id: 'light',
-        background: '#fefefe',
+        background: '#efeeee',
         backgroundSecondary: '#f8f9fa',
         text: '#212529',
         muted: '#e9ecef',
         elevation: {
-            boxShadow: "0px 0px 4px 0px rgba(0,0,0,0.2), 0px 0px 20px 0px rgba(0,0,0,0.1)",
+            boxShadow: "-6px -6px 16px 0px rgba(255,255,255,0.5), 6px 6px 16px 0px rgba(209, 205, 199,0.5)",
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 3px 0px rgba(0,0,0,0.2), inset 0px 0px 10px 0px rgba(0,0,0,0.1)",
+            boxShadow: "inset -3px -3px 8px 0px rgba(255,255,255,0.5), inset 3px 3px 8px 0px rgba(209, 205, 199,0.5)",
             borderRadius: 8,
         },
         primary: '#17a2b8',
@@ -24,11 +24,11 @@ export const theming = {
         text: '#f8f9fa',
         muted: '#868e96',
         elevation: {
-            boxShadow: "0px 0px 4px 0px rgba(255,255,255,0.2), 0px 0px 10px 0px rgba(255,255,255,0.1)",
+            boxShadow: "-4px -4px 8px 0px rgba(0, 0, 0,0.2), 4px 4px 8px 0px rgba(60, 60, 60,0.2)",
             borderRadius: 8,
         },
         lowering: {
-            boxShadow: "inset 0px 0px 3px 0px rgba(255,255,255,0.2), inset 0px 0px 6px 0px rgba(255,255,255,0.1)",
+            boxShadow: "inset -2px -2px 4px 0px rgba(0, 0, 0,0.2), inset 2px 2px 4px 0px rgba(60, 60, 60,0.2)",
             borderRadius: 8,
         },
         primary: '#17a2b8',

@@ -80,7 +80,7 @@ export const Landing = () => {
   return (
     <Container
       className="d-flex flex-column justify-content-between"
-      style={{ minHeight: "calc(100vh - 58.78px)", color: theme.text }}
+      style={{ minHeight: "calc(100vh - 82.78px)", color: theme.text }}
     >
       <div className="d-flex justify-content-center align-items-center flex-fill">
         <Row className="w-100">
@@ -118,7 +118,7 @@ export const Landing = () => {
               {companySearchList?.map((company) => (
                 <ListGroup.Item
                   key={company._id}
-                  className="w-100 mw-100 d-flex align-items-center justify-content-between my-1"
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-1"
                   style={{
                     backgroundColor: theme.background,
                     ...theme.elevation,
@@ -187,7 +187,7 @@ export const Landing = () => {
               {shareholderSearchList?.map((shareholder) => (
                 <ListGroup.Item
                   key={shareholder._id}
-                  className="w-100 mw-100 d-flex align-items-center justify-content-between my-1"
+                  className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-1"
                   style={{
                     backgroundColor: theme.background,
                     ...theme.elevation,
@@ -240,7 +240,7 @@ export const Landing = () => {
           </Col>
         </Row>
       </div>
-      <div className="my-4">
+      <div className="pt-4 px-4 my-4" style={theme.lowering}>
         <p className="small text-muted">
           All data er gjort offentlig tilgjengelig av Skatteetaten. Duplikater
           av aksjonærer forekommer i Skatteetatens datasett, og de samme

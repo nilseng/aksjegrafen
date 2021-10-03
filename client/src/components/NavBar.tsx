@@ -19,7 +19,8 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       variant="light"
       expand="md"
       collapseOnSelect
-      style={{ zIndex: 10000 }}
+      className="mt-4 mx-4"
+      style={{ zIndex: 10000, ...theme.elevation }}
     >
       <Link to="/">
         <Navbar.Brand className="text-light">
