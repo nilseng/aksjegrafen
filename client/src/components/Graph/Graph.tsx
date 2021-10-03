@@ -1,5 +1,11 @@
 import * as d3 from "d3";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import {
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { AppContext } from "../../App";
 import { useQuery } from "../../hooks/useQuery";
 import {
@@ -42,10 +48,11 @@ export const Graph = () => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
   }, [shareholder]);
 
+  const svgRef = useRef<SVGSVGElement>(null);
   const [svgTranslate, setSvgTranslate] = useState("translate(0,0) scale(1)");
 
   useLayoutEffect(() => {
-    const svg: any = d3.select(document.getElementById("graphSvg"));
+    const svg: any = d3.select(svgRef.current);
     const zoom = d3.zoom().on("zoom", zoomed);
     svg.call(zoom);
   });
@@ -66,8 +73,11 @@ export const Graph = () => {
 
   return (
     <div className="d-flex w-100 h-100 p-sm-5 p-2">
-      <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
-        <svg id="graphSvg" height="100%" width="100%" viewBox={"0 0 1000 1000"}>
+      <div
+        className="d-flex w-100"
+        style={{ ...theme.lowering, height: "90%" }}
+      >
+        <svg ref={svgRef} height="100%" width="100%" viewBox={"0 0 1000 1000"}>
           <g transform={svgTranslate}>
             <GraphNode
               data={{ entity: { ...company, ...shareholder }, ownerCount }}
