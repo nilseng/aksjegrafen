@@ -24,7 +24,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       <Link to="/">
         <Navbar.Brand className="text-light">
           <span
-            className="ml-4"
+            className="ml-2"
             style={{
               ...theme.button,
               borderRadius: "100px",
@@ -41,7 +41,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
         </Navbar.Brand>
       </Link>
       <div className="d-flex justify-content-end" style={{ flexGrow: 1 }}>
-        <Nav className="pr-4 " defaultActiveKey="/home">
+        <Nav className="mr-2 " defaultActiveKey="/home">
           <ThemeButton theme={theme} setTheme={setTheme} />
         </Nav>
       </div>
