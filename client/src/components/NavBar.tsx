@@ -24,8 +24,9 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       <Link to="/">
         <Navbar.Brand className="text-light">
           <span
+            className="ml-4"
             style={{
-              ...theme.elevation,
+              ...theme.button,
               borderRadius: "100px",
               display: "inline-block",
               textAlign: "center",
@@ -36,12 +37,6 @@ const NavBar = ({ theme, setTheme }: IProps) => {
             }}
           >
             <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
-          </span>
-          <span
-            className="font-weight-light mx-4"
-            style={{ color: theme.text }}
-          >
-            Aksjegrafen
           </span>
         </Navbar.Brand>
       </Link>

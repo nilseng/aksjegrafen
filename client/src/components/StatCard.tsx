@@ -16,7 +16,7 @@ export const StatCard = ({ label, stat, labelIcon }: IProps) => {
       className="d-flex flex-column align-items-center p-2 mx-4"
       style={{
         backgroundColor: theme.background,
-        ...theme.elevation,
+        ...theme.lowering,
         width: "10rem",
         minHeight: "5rem",
       }}
