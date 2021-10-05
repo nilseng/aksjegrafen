@@ -13,7 +13,7 @@ import {
   useOwnershipCount,
   useGetOwneeOwnerships,
   useGetShareholder,
-  useGetOwnerOwnerships,
+  useOwners,
 } from "../../services/apiService";
 import { useQuery } from "../../hooks/useQuery";
 import { useHistory } from "react-router-dom";
@@ -60,14 +60,14 @@ export const OwnershipChart = () => {
   }, [companyId, orgnr, shareholder_id]);
 
   const {
-    ownerOwnerships,
-    setOwnerOwnerships,
+    owners,
+    setOwners,
     loading: loadingOwnerOwnerships,
-  } = useGetOwnerOwnerships(company);
+  } = useOwners(company);
 
   const {
-    owneeOwnerships,
-    setOwneeOwnerships,
+    investments,
+    setInvestments,
     loading: loadingOwneeOwnerships,
   } = useGetOwneeOwnerships(company, shareholder);
 
@@ -111,9 +111,7 @@ export const OwnershipChart = () => {
         ownerTree.current(
           d3.hierarchy({
             ...company,
-            children: ownerOwnerships
-              ?.filter((o) => o.year === year)
-              .slice(0, 5),
+            children: owners?.filter((o) => o.year === year).slice(0, 5),
           })
         ) as d3.HierarchyPointNode<ICompany | IOwnership>;
 
@@ -132,7 +130,7 @@ export const OwnershipChart = () => {
       setOwnerNodes(nodes);
     }
     return () => setOwnerLinks(undefined);
-  }, [width, height, ownerOwnerships, company, year]);
+  }, [width, height, owners, company, year]);
 
   // Creating ownee/investment tree
   useEffect(() => {
@@ -142,13 +140,13 @@ export const OwnershipChart = () => {
           ? (owneeTree.current(
               d3.hierarchy({
                 ...company,
-                children: owneeOwnerships?.filter((o) => o.year === year),
+                children: investments?.filter((o) => o.year === year),
               })
             ) as d3.HierarchyPointNode<ICompany | IOwnership>)
           : (owneeTree.current(
               d3.hierarchy({
                 ...shareholder,
-                children: owneeOwnerships?.filter((o) => o.year === year),
+                children: investments?.filter((o) => o.year === year),
               })
             ) as d3.HierarchyPointNode<ICompany | IOwnership>);
 
@@ -167,7 +165,7 @@ export const OwnershipChart = () => {
       setOwneeNodes(nodes);
     }
     return () => setOwneeLinks(undefined);
-  }, [company, height, width, owneeOwnerships, shareholder, year]);
+  }, [company, height, width, investments, shareholder, year]);
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -323,8 +321,8 @@ export const OwnershipChart = () => {
               shareholder={shareholder}
               history={history}
               ownerCount={ownershipCount}
-              setShareholderOwnerships={setOwnerOwnerships}
-              setCompanyOwnerships={setOwneeOwnerships}
+              setShareholderOwnerships={setOwners}
+              setCompanyOwnerships={setInvestments}
             />
           ))}
         </Layer>
@@ -343,11 +341,9 @@ export const OwnershipChart = () => {
               shareholder={shareholder}
               history={history}
               ownerCount={ownershipCount}
-              owneeCount={
-                owneeOwnerships?.filter((o) => o.year === year).length
-              }
-              setShareholderOwnerships={setOwnerOwnerships}
-              setCompanyOwnerships={setOwneeOwnerships}
+              owneeCount={investments?.filter((o) => o.year === year).length}
+              setShareholderOwnerships={setOwners}
+              setCompanyOwnerships={setInvestments}
             />
           ))}
         </Layer>

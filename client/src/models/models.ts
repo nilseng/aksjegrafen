@@ -36,3 +36,8 @@ export interface IOwnership {
     company?: ICompany
     shareholder?: IShareholder
 }
+
+export interface GraphNodeEntity {
+    company?: ICompany;
+    shareholder?: IShareholder;
+}

@@ -90,9 +90,10 @@ router.get("/shareholder/:searchTerm", async (req, res) => {
 })
 
 router.get("/ownerships", async (req, res) => {
+    const options = req.query.limit ? { limit: +req.query.limit } : { limit: 100 };
     if (req.query?.shareholderId) {
         try {
-            const ownerships = await db.ownerships.find({ shareHolderId: decodeURI(req.query.shareholderId as string) }).toArray()
+            const ownerships = await db.ownerships.find({ shareHolderId: decodeURI(req.query.shareholderId as string) }, options).toArray()
             const companies = await db.companies.find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } }).toArray()
             const data = ownerships.map(o => {
                 o.company = companies.find((c: Company) => c.orgnr === o.orgnr)
@@ -114,7 +115,7 @@ router.get("/ownerships", async (req, res) => {
             return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
         } else {
             try {
-                const ownerships = await db.ownerships.find({ orgnr: req.query.orgnr }).sort({ stocks: -1 }).limit(100).toArray()
+                const ownerships = await db.ownerships.find({ orgnr: req.query.orgnr }, options).sort({ stocks: -1 }).toArray()
                 const shareholders = await db.shareholders.find({ id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) } }).toArray()
                 const data = ownerships.map((o: Ownership) => {
                     o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId)
@@ -132,7 +133,7 @@ router.get("/ownerships", async (req, res) => {
             return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
         } else {
             try {
-                const ownerships = await db.ownerships.find({ shareholderOrgnr: req.query.shareholderOrgnr }).sort({ stocks: -1 }).limit(100).toArray()
+                const ownerships = await db.ownerships.find({ shareholderOrgnr: req.query.shareholderOrgnr }, options).sort({ stocks: -1 }).limit(100).toArray()
                 const companies = await db.companies.find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } }).toArray()
                 const data = ownerships.map((o: Ownership) => {
                     o.company = companies.find((c: Company) => c.orgnr === o.orgnr)
@@ -146,7 +147,6 @@ router.get("/ownerships", async (req, res) => {
         }
     }
     else {
-        const options = req.query.limit ? { limit: +req.query.limit } : undefined
         const ownerships = await db.ownerships.find(req.query.year ? { year: +req.query.year } : {}, options).toArray().catch(e => console.error(e))
         return ownerships ? res.status(200).json(ownerships) : res.status(404).json({ error: 'Something went wrong.' })
     }

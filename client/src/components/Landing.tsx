@@ -86,7 +86,7 @@ export const Landing = () => {
       <div className="d-flex justify-content-center align-items-center flex-fill">
         <Row className="w-100">
           <Col
-            sm
+            lg
             className="d-flex flex-column align-items-center pt-5 m-sm-4 m-2"
             style={{
               backgroundColor: theme.background,
@@ -162,7 +162,7 @@ export const Landing = () => {
             </ListGroup>
           </Col>
           <Col
-            sm
+            lg
             className="d-flex flex-column align-items-center pt-5 m-sm-4 m-2"
             style={{
               backgroundColor: theme.background,

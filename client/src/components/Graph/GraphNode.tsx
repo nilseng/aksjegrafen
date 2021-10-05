@@ -1,20 +1,28 @@
 import { useContext } from "react";
 import { AppContext } from "../../App";
-import { ICompany, IShareholder } from "../../models/models";
+import { GraphNodeEntity } from "../../models/models";
 
 interface IProps {
-  x: number;
-  y: number;
+  x?: number;
+  y?: number;
   width: number;
   height: number;
   data: {
-    entity: Partial<ICompany & IShareholder>;
+    entity: GraphNodeEntity;
     investmentCount?: number;
     ownerCount?: number;
   };
+  isVisible?: boolean;
 }
 
-export const GraphNode = ({ x, y, width, height, data }: IProps) => {
+export const GraphNode = ({
+  x,
+  y,
+  width,
+  height,
+  data,
+  isVisible = true,
+}: IProps) => {
   const { theme } = useContext(AppContext);
 
   return (
@@ -27,11 +35,11 @@ export const GraphNode = ({ x, y, width, height, data }: IProps) => {
         >
           {data.ownerCount && (
             <p className="small m-0" style={{ color: theme.muted }}>
-              {data.ownerCount} owner{data.ownerCount > 1 && "s"}
+              {data.ownerCount} eier{data.ownerCount > 1 && "e"}
             </p>
           )}
           <p className="font-weight-bold" style={{ color: theme.primary }}>
-            {data.entity.name}
+            {data.entity.company?.name ?? data.entity.shareholder?.name}
           </p>
         </div>
       </foreignObject>

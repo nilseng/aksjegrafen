@@ -1,20 +1,16 @@
-import * as d3 from "d3";
-import {
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import { useContext, useEffect, useRef, useState } from "react";
+
 import { AppContext } from "../../App";
 import { useQuery } from "../../hooks/useQuery";
 import {
   useGetCompany,
   useGetShareholder,
+  useOwners,
   useOwnershipCount,
 } from "../../services/apiService";
 import Loading from "../Loading";
 import { GraphNode } from "./GraphNode";
+import { useForceSimulation, useZoom } from "./GraphUtils";
 
 const nodeWidth = 400;
 const nodeHeight = 200;
@@ -28,13 +24,8 @@ export const Graph = () => {
   const [companyId, setCompanyId] = useState<string>();
   const [shareholder_id, setShareholder_id] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
-  const company = useGetCompany(companyId, orgnr);
-  const shareholder = useGetShareholder(shareholder_id);
-  const { count: ownerCount, loading: loadingOwnerCount } = useOwnershipCount(
-    company,
-    year
-  );
 
+  // #1: Query parameters are read
   useEffect(() => {
     const c_id = query.get("_id");
     const orgnr = query.get("orgnr");
@@ -44,31 +35,35 @@ export const Graph = () => {
     setShareholder_id(s_id ?? undefined);
   }, [query]);
 
+  // #2: If there is a shareholder_id, a shareholder is retrieved
+  const shareholder = useGetShareholder(shareholder_id);
+
+  // #3: If there is a shareholder and the shareholder has an orgnr, set orgnr
   useEffect(() => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
   }, [shareholder]);
 
+  // #4: If there is an orgnr, a company is retrieved if it exists
+  const company = useGetCompany(companyId, orgnr);
+
+  const { count: ownerCount, loading: loadingOwnerCount } = useOwnershipCount(
+    company,
+    year
+  );
+
+  // TODO: Add year as parameter
+  const { owners } = useOwners(company, undefined, 5);
+
+  const forceSimulation = useForceSimulation(company, shareholder, owners);
+
   const svgRef = useRef<SVGSVGElement>(null);
-  const [svgTranslate, setSvgTranslate] = useState("translate(0,0) scale(1)");
-
-  useLayoutEffect(() => {
-    const svg: any = d3.select(svgRef.current);
-    const zoom = d3.zoom().on("zoom", zoomed);
-    svg.call(zoom);
-  });
-
-  const zoomed = (event: any) => {
-    let svgTransform = event.transform;
-    setSvgTranslate(
-      `translate(${svgTransform.x},${svgTransform.y}) scale(${svgTransform.k})`
-    );
-  };
+  const svgTranslate = useZoom(svgRef);
 
   if (loadingOwnerCount)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
-    <div className="d-flex w-100 h-100 p-sm-5 p-2">
+    <div className="d-flex w-100 h-100 p-4">
       <div className="d-flex w-100" style={{ ...theme.lowering }}>
         <svg
           ref={svgRef}
@@ -78,13 +73,21 @@ export const Graph = () => {
           viewBox={"0 0 1000 1000"}
         >
           <g transform={svgTranslate}>
-            <GraphNode
-              data={{ entity: { ...company, ...shareholder }, ownerCount }}
-              x={500 - (nodeWidth - 2) / 2}
-              y={500 - nodeHeight / 2}
-              width={nodeWidth - 2}
-              height={nodeHeight - 2}
-            />
+            {forceSimulation?.nodes()?.map((node) => (
+              <GraphNode
+                key={node.index}
+                data={{
+                  entity: {
+                    shareholder: node.shareholder,
+                    company: node.company,
+                  },
+                }}
+                x={node?.x}
+                y={node?.y}
+                width={nodeWidth - 2}
+                height={nodeHeight - 2}
+              />
+            ))}
           </g>
         </svg>
       </div>

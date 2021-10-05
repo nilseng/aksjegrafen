@@ -22,7 +22,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       style={{ zIndex: 10000 }}
     >
       <Link to="/">
-        <Navbar.Brand className="text-light">
+        <Navbar.Brand className="text-light pb-0">
           <span
             className="ml-2"
             style={{

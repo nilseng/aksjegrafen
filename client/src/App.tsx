@@ -41,8 +41,8 @@ const App = () => {
       <div
         className="d-flex w-100"
         style={{
-          minHeight: "calc(100vh - 77.19px)",
-          height: "calc(100vh - 90px)",
+          minHeight: "calc(100vh - 72.19px)",
+          height: "calc(100vh - 72.19px)",
         }}
       >
         <Switch>
