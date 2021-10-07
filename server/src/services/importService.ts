@@ -2,8 +2,10 @@ import csv from 'csv-parser'
 import path from 'path'
 import fs from 'fs'
 
-import { collections as db } from "../database/databaseSetup"
+import { Database } from "../database/databaseSetup"
 import { Company, isCompany, isOwnership, isShareholder, Ownership, OwnershipRaw, Shareholder, ShareholderType } from '../models/models'
+
+const db = Database.getInstance().db;
 
 export const importData = async (year?: number, data?: (number | string)[]) => {
     let fileName: string;

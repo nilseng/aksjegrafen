@@ -7,8 +7,8 @@ import sslRedirect from 'heroku-ssl-redirect'
 import yargs from 'yargs/yargs';
 import { hideBin } from 'yargs/helpers'
 
-import { connectToMongoDb } from "./database/databaseSetup"
-import router from "./routes/api"
+import { Database } from "./database/databaseSetup"
+import { api } from "./routes/api"
 import { deleteData, importData } from './services/importService'
 
 dotenv.config()
@@ -35,16 +35,16 @@ app.use(bodyParser.raw())
 
 app.use(morgan("tiny"))
 
-app.use("/api", router)
+Database.initialize().then(db => {
 
-app.use(express.static(path.join(__dirname, '../../client/build')))
+    const router = api(db);
+    app.use("/api", router);
 
-connectToMongoDb().then(_ => {
-    app.listen({ port: process.env.PORT || 4000 }, () => console.log(`The server is now running on port ${process.env.PORT || 4000}`))
+    app.use(express.static(path.join(__dirname, '../../client/build')));
+    app.use('/*', express.static(path.join(__dirname, '../../client/build', 'index.html')));
 
-    if (argv.import) importData(argv.year, argv.data)
-    if (argv.deletion) deleteData(argv.year, argv.data)
+    app.listen({ port: process.env.PORT || 4000 }, () => console.log(`The server is now running on port ${process.env.PORT || 4000}`));
 
-})
-
-app.use('/*', express.static(path.join(__dirname, '../../client/build', 'index.html')))
+    if (argv.import) importData(argv.year, argv.data);
+    if (argv.deletion) deleteData(argv.year, argv.data);
+});

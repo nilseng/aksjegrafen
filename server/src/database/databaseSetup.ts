@@ -1,14 +1,36 @@
 import db, { Collection } from "mongodb";
+import { Company, Ownership, Shareholder } from "../models/models";
 
-export const collections: {
-  [key: string]: Collection
-} = {};
+export interface IDatabase {
+  ownerships: Collection<Ownership>;
+  shareholders: Collection<Shareholder>;
+  companies: Collection<Company>;
+};
 
-export const connectToMongoDb = async () => {
+export class Database {
+  private static _db: IDatabase;
+  static instance: Database;
+
+  public static async initialize(): Promise<IDatabase> {
+    if (!Database.instance) Database.instance = new Database()
+    Database._db = await connectToMongoDb();
+    return this._db;
+  }
+
+  public static getInstance(): Database {
+    if (!Database.instance) Database.instance = new Database()
+    return Database.instance;
+  }
+
+  get db() {
+    return Database._db;
+  }
+}
+
+const connectToMongoDb = async (): Promise<IDatabase> => {
   const db_uri = process.env.DB_URI || process.env.MONGODB_URI;
   if (!db_uri) {
-    console.error('Could not find a database URI')
-    return;
+    throw Error('Could not find a database URI')
   }
 
   const client = await db.MongoClient.connect(db_uri, {
@@ -20,24 +42,26 @@ export const connectToMongoDb = async () => {
   );
 
   // Retrieving mongodb collections
-  collections.ownerships = client.db().collection('ownerships');
-  collections.shareholders = client.db().collection('shareholders');
-  collections.companies = client.db().collection('companies')
+  const collections = {
+    ownerships: client.db().collection<Ownership>('ownerships'),
+    shareholders: client.db().collection<Shareholder>('shareholders'),
+    companies: client.db().collection<Company>('companies')
+  }
 
   //Creating indices
-  collections.shareholders.createIndex({ id: 1 }, { unique: true })
-  collections.companies.createIndex({ orgnr: 1 }, { unique: true })
-  collections.ownerships.createIndex({ shareholderOrgnr: 1 }, { unique: false })
+  /* await collections.shareholders.createIndex({ id: 1 }, { unique: true })
+  await collections.companies.createIndex({ orgnr: 1 }, { unique: true })
+  await collections.ownerships.dropIndexes()
+  await collections.ownerships.createIndex({ shareholderOrgnr: 1 }, { unique: false })
+  await collections.ownerships.createIndex({ orgnr: 1, year: 1 }, { unique: false })
+  await collections.ownerships.createIndex({ stocks: -1 }); */
 
   //Connection events
-  client.on("connected", () => {
-    console.log("Mongoose connected to " + db_uri);
-  });
   client.on("error", (err) => {
-    console.log("Mongoose connection error: " + err);
+    console.log("Mongoclient connection error: " + err);
   });
   client.on("disconnected", () => {
-    console.log("Mongoose disconnected");
+    console.log("Mongoclient disconnected");
   });
 
   //Capture app termination/restart events
@@ -61,4 +85,6 @@ export const connectToMongoDb = async () => {
       process.exit(0);
     });
   });
+
+  return collections;
 };

@@ -6,7 +6,8 @@
     "strict": true,
     "lib": ["esnext"],
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "target": "ES5"
   },
   "ts-node": {
     "maxOldSpaceSize": 8196
