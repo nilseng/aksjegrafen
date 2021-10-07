@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
-import { select, zoom, forceSimulation, SimulationNodeDatum, Simulation, forceLink, forceManyBody, forceX, forceY, forceCollide } from "d3";
-import { GraphNodeEntity, ICompany, IOwnership, IShareholder } from "../../models/models";
+import { select, zoom, forceSimulation, SimulationNodeDatum, Simulation, forceManyBody, forceX, forceY, forceCollide } from "d3";
+import { GraphNodeEntity, ICompany, IOwnership } from "../../models/models";
 
 export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
 
@@ -24,16 +24,16 @@ export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
     return svgTranslate
 }
 
-export const useForceSimulation = (company?: ICompany, shareholder?: IShareholder, ownerships?: IOwnership[]) => {
+export const useForceSimulation = (company?: ICompany, ownerships?: IOwnership[]) => {
     const [simulation, setSimulation] = useState<Simulation<Partial<IOwnership & GraphNodeEntity> & SimulationNodeDatum, undefined>>()
 
     useEffect(() => {
-        if ((company || shareholder) && ownerships) {
+        if (company && ownerships) {
             setSimulation(
                 forceSimulation<Partial<IOwnership & GraphNodeEntity> & SimulationNodeDatum>()
                     .nodes(
                         [...ownerships.map(o => ({ ...o, id: o._id })), {
-                            company, shareholder,
+                            company,
                             fx: 500 - (400 - 2) / 2,
                             fy: 500 - 200 / 2,
                         }]
@@ -46,6 +46,6 @@ export const useForceSimulation = (company?: ICompany, shareholder?: IShareholde
             )
         }
         return () => setSimulation(undefined);
-    }, [company, ownerships, shareholder])
+    }, [company, ownerships])
     return simulation
 }

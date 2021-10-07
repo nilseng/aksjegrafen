@@ -51,10 +51,9 @@ export const Graph = () => {
     year
   );
 
-  // TODO: Add year as parameter
-  const { owners } = useOwners(company, undefined, 5);
+  const { owners } = useOwners(company, year, 5);
 
-  const forceSimulation = useForceSimulation(company, shareholder, owners);
+  const forceSimulation = useForceSimulation(company, owners);
 
   const svgRef = useRef<SVGSVGElement>(null);
   const svgTranslate = useZoom(svgRef);

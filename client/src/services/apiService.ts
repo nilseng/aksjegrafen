@@ -48,13 +48,9 @@ export const getOwnerships = async (year?: number, limit?: number) => {
     return res.json()
 }
 
-export const getOwners = async (company?: ICompany, shareholder?: IShareholder, limit?: number): Promise<IOwnership[] | undefined> => {
-    if (company) {
-        const res = await fetch(`/api/ownerships?orgnr=${company.orgnr}&limit=${limit}`)
-        return res.json()
-    }
-    else if (shareholder?.orgnr) {
-        const res = await fetch(`/api/ownerships?orgnr=${shareholder.orgnr}&limit=${limit}`)
+export const getOwners = async (entity?: ICompany | IShareholder, year?: number, limit?: number): Promise<IOwnership[] | undefined> => {
+    if (entity?.orgnr) {
+        const res = await fetch(`/api/ownerships?orgnr=${entity.orgnr}&year=${year}&limit=${limit}`)
         return res.json()
     }
 }
@@ -101,29 +97,20 @@ export const useCompanyCount = (searchTerm?: string) => {
     return count
 }
 
-export const useOwners = (company?: ICompany, shareholder?: IShareholder, limit?: number) => {
+export const useOwners = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
     const [owners, setOwners] = useState<IOwnership[]>();
     const [loading, setLoading] = useState<boolean>();
     useEffect(() => {
-        if (company) {
-            setLoading(true);
-            getOwners(company, undefined, limit).then((o) => {
-                setOwners(o);
-                setLoading(false);
-            });
-        }
-        else if (shareholder) {
-            setLoading(true);
-            getOwners(undefined, shareholder, limit).then((o) => {
-                setOwners(o);
-                setLoading(false);
-            });
-        }
+        setLoading(true);
+        getOwners(entity, year, limit).then((o) => {
+            setOwners(o);
+            setLoading(false);
+        });
         return () => {
             setOwners(undefined);
             setLoading(undefined);
         }
-    }, [company, shareholder, limit]);
+    }, [entity, limit, year]);
     return { owners, setOwners, loading }
 }
 
