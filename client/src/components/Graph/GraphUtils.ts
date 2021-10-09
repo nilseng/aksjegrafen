@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useState } from "react";
 import { select, zoom, forceSimulation, SimulationNodeDatum, Simulation, forceManyBody, forceX, forceY, forceCollide } from "d3";
-import { GraphNodeEntity, ICompany, IOwnership } from "../../models/models";
+import { ICompany, IOwnership, IShareholder } from "../../models/models";
 
 export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
 
@@ -24,28 +24,39 @@ export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
     return svgTranslate
 }
 
-export const useForceSimulation = (company?: ICompany, ownerships?: IOwnership[]) => {
-    const [simulation, setSimulation] = useState<Simulation<Partial<IOwnership & GraphNodeEntity> & SimulationNodeDatum, undefined>>()
+export const useForceSimulation = (entity?: ICompany | IShareholder, ownerships?: IOwnership[]) => {
+    const [simulation, setSimulation] = useState<Simulation<{ id: string, entity: ICompany | IShareholder } & SimulationNodeDatum, undefined>>()
 
     useEffect(() => {
-        if (company && ownerships) {
+        if (entity && ownerships) {
+            const o = [...ownerships.map(o => {
+                if (o.company) return { entity: o.company, id: o.company._id }
+                else if (o.shareholder) return { entity: o.shareholder, id: o.shareholder._id }
+                else return null;
+            })];
+            const oFiltered = o.filter(o_ => o_ !== null) as { id: string, entity: ICompany | IShareholder }[];
             setSimulation(
-                forceSimulation<Partial<IOwnership & GraphNodeEntity> & SimulationNodeDatum>()
+                forceSimulation<{ id: string, entity: ICompany | IShareholder } & SimulationNodeDatum>()
                     .nodes(
-                        [...ownerships.map(o => ({ ...o, id: o._id })), {
-                            company,
-                            fx: 500 - (400 - 2) / 2,
-                            fy: 500 - 200 / 2,
-                        }]
+                        [
+                            ...oFiltered,
+                            {
+                                id: entity._id,
+                                entity,
+                                fx: 500 - (400 - 2) / 2,
+                                fy: 500 - 200 / 2,
+                            }
+                        ]
                     )
-                    .force('x', forceX(500 / 2))
-                    .force('y', forceY(500 / 2))
+                    .force('x', forceX(100))
+                    .force('y', forceY(100))
                     .force("collide", forceCollide(200))
                     .force('charge', forceManyBody().strength(-100))
                     .tick(100)
-            )
+            );
         }
         return () => setSimulation(undefined);
-    }, [company, ownerships])
-    return simulation
+    }, [entity, ownerships])
+
+    return simulation;
 }

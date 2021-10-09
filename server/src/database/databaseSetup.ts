@@ -49,12 +49,17 @@ const connectToMongoDb = async (): Promise<IDatabase> => {
   }
 
   //Creating indices
-  /* await collections.shareholders.createIndex({ id: 1 }, { unique: true })
-  await collections.companies.createIndex({ orgnr: 1 }, { unique: true })
-  await collections.ownerships.dropIndexes()
-  await collections.ownerships.createIndex({ shareholderOrgnr: 1 }, { unique: false })
-  await collections.ownerships.createIndex({ orgnr: 1, year: 1 }, { unique: false })
-  await collections.ownerships.createIndex({ stocks: -1 }); */
+  /* await collections.shareholders.dropIndexes();
+  await collections.shareholders.createIndex({ id: 1 }, { unique: true });
+  await collections.shareholders.createIndex({ name: 1 });
+  await collections.shareholders.createIndex({ orgnr: 1 });
+  await collections.companies.createIndex({ orgnr: 1 }, { unique: true });
+  await collections.companies.createIndex({ name: 1 });
+  await collections.ownerships.dropIndexes();
+  await collections.ownerships.createIndex({ shareholderOrgnr: 1 });
+  await collections.ownerships.createIndex({ orgnr: 1, year: 1 });
+  await collections.ownerships.createIndex({ stocks: -1 });
+  await collections.ownerships.createIndex({ shareHolderId: 1, year: 1 }); */
 
   //Connection events
   client.on("error", (err) => {

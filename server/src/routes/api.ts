@@ -1,5 +1,7 @@
 import express from "express"
+import { matchedData, query } from "express-validator";
 import { ObjectID } from "mongodb"
+
 import { IDatabase } from "../database/databaseSetup"
 import { Company, Ownership, Shareholder } from "../models/models"
 
@@ -88,51 +90,39 @@ export const api = (db: IDatabase) => {
         res.status(200).json(shareholders)
     });
 
-    router.get("/ownerships", async (req, res) => {
-        const options = req.query.limit && req.query.limit !== 'undefined' ? { limit: +req.query.limit } : { limit: 100 };
-        if (req.query?.shareholderId) {
-            try {
-                const ownerships = await db.ownerships.find({ shareHolderId: decodeURI(req.query.shareholderId as string) }, options).toArray()
-                const companies = await db.companies.find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } }).toArray()
-                const data = ownerships.map(o => {
-                    o.company = companies.find((c: Company) => c.orgnr === o.orgnr)
-                    return o
-                })
-                const sortedData = data.sort((a: Ownership, b: Ownership) => {
-                    const aShare = a.company?.stocks ? a.stocks / a.company?.stocks : 0
-                    const bShare = b.company?.stocks ? b.stocks / b.company?.stocks : 0
-                    return bShare - aShare
-                })
-                return res.status(200).json(sortedData)
-            } catch (e) {
-                console.error(e)
-                return res.status(500).json({ error: 'Something went wrong.' })
-            }
-        } else if (req.query?.orgnr && typeof req.query.orgnr === 'string') {
-            if (req.query?.count && req.query?.year) {
-                const count = await db.ownerships.countDocuments({ orgnr: req.query.orgnr, year: +req.query.year }).catch(e => ({ error: e }))
-                return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
-            } else {
-                try {
-                    const ownerships = await db.ownerships.find({ orgnr: req.query.orgnr }, options).sort({ stocks: -1 }).toArray()
-                    const shareholders = await db.shareholders.find({ id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) } }).toArray()
-                    const data = ownerships.map((o: Ownership) => {
-                        o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId)
-                        return o
-                    })
-                    return res.status(200).json(data)
-                } catch (e) {
-                    console.error(e)
-                    return res.status(500).json({ error: 'Something went wrong.' })
+
+
+    interface IInvestmentsFilter {
+        shareholderId?: string;
+        shareholderOrgnr?: string;
+        year?: number;
+    }
+    router.get("/investments",
+        query("count").optional().toBoolean(),
+        query(["limit"]).default(100).toInt(),
+        query(["year"]).optional().toInt(),
+        query(["shareHolderId", "shareholderOrgnr"]).optional(),
+        async (req, res) => {
+            const query = matchedData(req);
+
+            if (!(query.shareHolderId ? !query.shareholderOrgnr : query.shareholderOrgnr)) return res.json(404).send("Invalid query");
+
+            const options = { limit: query.limit };
+            const filterProps = ["shareHolderId", "shareholderOrgnr", "year"];
+            const filter: IInvestmentsFilter = {};
+
+            if (query) {
+                for (const prop of filterProps) {
+                    if (query[prop]) (filter as any)[prop] = typeof query[prop] === "string" ? decodeURI(query[prop]) : query[prop]
                 }
             }
-        } else if (req.query?.shareholderOrgnr && typeof req.query.shareholderOrgnr === 'string') {
-            if (req.query?.count && req.query?.year) {
-                const count = await db.ownerships.countDocuments({ shareholderOrgnr: req.query.shareholderOrgnr, year: +req.query.year }).catch(e => ({ error: e }))
-                return (count as { error: any }).error ? res.status(500).json(count) : res.status(200).json(count)
+
+            if (query.count && filter.year) {
+                const c = await db.ownerships.countDocuments(filter).catch(e => ({ error: e }))
+                return (c as { error: any }).error ? res.status(500).json(c) : res.status(200).json(c);
             } else {
                 try {
-                    const ownerships = await db.ownerships.find({ shareholderOrgnr: req.query.shareholderOrgnr }, options).sort({ stocks: -1 }).limit(100).toArray()
+                    const ownerships = await db.ownerships.find(filter, options).sort({ stocks: -1 }).toArray()
                     const companies = await db.companies.find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } }).toArray()
                     const data = ownerships.map((o: Ownership) => {
                         o.company = companies.find((c: Company) => c.orgnr === o.orgnr)
@@ -144,12 +134,81 @@ export const api = (db: IDatabase) => {
                     return res.status(500).json({ error: 'Something went wrong.' })
                 }
             }
-        }
-        else {
-            const ownerships = await db.ownerships.find(req.query.year ? { year: +req.query.year } : {}, options).toArray().catch(e => console.error(e))
-            return ownerships ? res.status(200).json(ownerships) : res.status(404).json({ error: 'Something went wrong.' })
-        }
-    });
+        });
+
+    interface IInvestorsFilter {
+        orgnr?: string;
+        year?: number;
+    }
+    router.get("/investors",
+        query("count").optional().toBoolean(),
+        query(["limit"]).default(100).toInt(),
+        query(["year"]).optional().toInt(),
+        query("orgnr").optional(),
+        async (req, res) => {
+            const query = matchedData(req);
+            const count: boolean = query.count;
+            const options = { limit: query.limit };
+
+            const filterProps = ["orgnr", "year"];
+            const filter: IInvestorsFilter = {};
+
+            if (query) {
+                for (const prop of filterProps) {
+                    if (query[prop]) (filter as any)[prop] = query[prop]
+                }
+            }
+
+            if (filter.orgnr) {
+                if (count && filter.year) {
+                    const c = await db.ownerships.countDocuments(filter).catch(e => ({ error: e }))
+                    return (c as { error: any }).error ? res.status(500).json(c) : res.status(200).json(c)
+                } else {
+                    try {
+                        const ownerships = await db.ownerships.find(filter, options).sort({ stocks: -1 }).toArray()
+                        const shareholders = await db.shareholders.find({ id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) } }).toArray()
+                        const data = ownerships.map((o: Ownership) => {
+                            o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId)
+                            return o
+                        })
+                        return res.status(200).json(data)
+                    } catch (e) {
+                        console.error(e)
+                        return res.status(500).json({ error: 'Something went wrong.' })
+                    }
+                }
+            }
+            else {
+                const ownerships = await db.ownerships.find(filter, options).toArray().catch(e => console.error(e))
+                return ownerships ? res.status(200).json(ownerships) : res.status(404).json({ error: 'Something went wrong.' })
+            }
+        });
+
+    interface IOwnershipsFilter {
+        year?: number;
+    }
+    router.get("/ownerships",
+        query("count").optional().toBoolean(),
+        query(["limit"]).default(100).toInt(),
+        query(["year"]).optional().toInt(),
+        async (req, res) => {
+            const query = matchedData(req);
+            const count: boolean = query.count;
+            const options = { limit: query.limit };
+
+            const filterProps = ["year"];
+            const filter: IOwnershipsFilter = {};
+
+            if (query.year) filter.year = query.year;
+            if (count) {
+                const c = await db.ownerships.countDocuments(filter).catch(e => ({ error: e }))
+                return (c as { error: any }).error ? res.status(500).json(c) : res.status(200).json(c)
+            }
+            else {
+                const ownerships = await db.ownerships.find(filter, options).toArray().catch(e => console.error(e));
+                return ownerships ? res.status(200).json(ownerships) : res.status(404).json({ error: 'Something went wrong.' });
+            }
+        });
 
     router.get("/ownership-graph", async (req, res) => {
         const companyIds = JSON.parse(req.query.companyIds as string)

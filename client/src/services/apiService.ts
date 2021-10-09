@@ -48,26 +48,28 @@ export const getOwnerships = async (year?: number, limit?: number) => {
     return res.json()
 }
 
-export const getOwners = async (entity?: ICompany | IShareholder, year?: number, limit?: number): Promise<IOwnership[] | undefined> => {
+export const getInvestors = async (entity?: ICompany | IShareholder, year?: number, limit?: number): Promise<IOwnership[] | undefined> => {
     if (entity?.orgnr) {
-        const res = await fetch(`/api/ownerships?orgnr=${entity.orgnr}&year=${year}&limit=${limit}`)
-        return res.json()
+        let path = `/api/investors?orgnr=${entity.orgnr}`;
+        if (year) path += `&year=${year}`;
+        if (limit) path += `&limit=${limit}`;
+        const res = await fetch(path).catch(e => console.log(e));
+        return res ? res.json() : [];
     }
 }
 
-export const getInvestments = async (company?: ICompany, shareholder?: IShareholder): Promise<IOwnership[] | undefined> => {
-    if (company) {
-        const res = await fetch(`/api/ownerships?shareholderOrgnr=${company.orgnr}`)
-        return res.json()
-    }
-    else if (shareholder) {
-        const res = await fetch(`/api/ownerships?shareholderId=${shareholder.id}`)
-        return res.json()
-    }
+export const getInvestments = async (entity: ICompany | IShareholder, year?: number, limit?: number): Promise<IOwnership[] | undefined> => {
+    if (!(entity.orgnr || (entity as IShareholder).id)) return;
+    let path = `/api/investments?`;
+    path += entity?.orgnr ? `shareholderOrgnr=${entity.orgnr}` : `shareHolderId=${(entity as IShareholder).id}`;
+    if (year) path += `&year=${year}`;
+    if (limit) path += `&limit=${limit}`;
+    const res = await fetch(path).catch(e => console.log(e));
+    return res ? res.json() : [];
 }
 
-export const getOwnershipCount = async (company: ICompany, year: number) => {
-    const res = await fetch(`/api/ownerships?orgnr=${company.orgnr}&year=${year}&count=true`)
+export const getInvestorCount = async (company: ICompany, year: number) => {
+    const res = await fetch(`/api/investors?orgnr=${company.orgnr}&year=${year}&count=true`)
     return res.json()
 }
 
@@ -97,36 +99,30 @@ export const useCompanyCount = (searchTerm?: string) => {
     return count
 }
 
-export const useOwners = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
-    const [owners, setOwners] = useState<IOwnership[]>();
+export const useInvestors = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
+    const [investors, setInvestors] = useState<IOwnership[]>();
     const [loading, setLoading] = useState<boolean>();
     useEffect(() => {
         setLoading(true);
-        getOwners(entity, year, limit).then((o) => {
-            setOwners(o);
+        getInvestors(entity, year, limit).then((o) => {
+            setInvestors(o);
             setLoading(false);
         });
         return () => {
-            setOwners(undefined);
+            setInvestors(undefined);
             setLoading(undefined);
         }
     }, [entity, limit, year]);
-    return { owners, setOwners, loading }
+    return { investors, setInvestors, loading }
 }
 
-export const useGetOwneeOwnerships = (company?: ICompany, shareholder?: IShareholder) => {
+export const useInvestments = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
     const [investments, setInvestments] = useState<IOwnership[]>();
     const [loading, setLoading] = useState<boolean>();
     useEffect(() => {
-        if (company) {
+        if (entity) {
             setLoading(true);
-            getInvestments(company).then(o => {
-                setInvestments(o)
-                setLoading(false);
-            })
-        } else if (shareholder) {
-            setLoading(true);
-            getInvestments(undefined, shareholder).then(o => {
+            getInvestments(entity, year, limit).then(o => {
                 setInvestments(o)
                 setLoading(false);
             })
@@ -135,7 +131,7 @@ export const useGetOwneeOwnerships = (company?: ICompany, shareholder?: IShareho
             setInvestments(undefined);
             setLoading(undefined);
         }
-    }, [company, shareholder])
+    }, [entity, limit, year])
     return { investments, setInvestments, loading }
 }
 
@@ -210,13 +206,13 @@ export const useGetShareholder = (_id?: string, shareholderId?: string) => {
     return shareholder
 }
 
-export const useOwnershipCount = (company?: ICompany, year?: number): { count: number | undefined, loading: boolean | undefined } => {
+export const useInvestorCount = (company?: ICompany, year?: number): { count: number | undefined, loading: boolean | undefined } => {
     const [count, setCount] = useState<number>();
     const [loading, setLoading] = useState<boolean>()
     useEffect(() => {
         if (company && year) {
             setLoading(true);
-            getOwnershipCount(company, year).then(c => {
+            getInvestorCount(company, year).then(c => {
                 if (c.error) return;
                 setCount(c)
                 setLoading(false);

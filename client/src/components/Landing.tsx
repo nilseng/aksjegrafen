@@ -13,7 +13,6 @@ import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faList,
   faProjectDiagram,
   faSitemap,
   faUserTie,
@@ -148,14 +147,6 @@ export const Landing = () => {
                       className="mr-3"
                       onClick={() => history.push(`/graph?_id=${company._id}`)}
                     />
-                    <FontAwesomeIcon
-                      icon={faList}
-                      color={theme.secondary}
-                      style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        history.push(`/company?_id=${company._id}`)
-                      }
-                    />
                   </div>
                 </ListGroup.Item>
               ))}
@@ -240,14 +231,6 @@ export const Landing = () => {
                       className="mr-3"
                       onClick={() =>
                         history.push(`/graph?shareholder_id=${shareholder._id}`)
-                      }
-                    />
-                    <FontAwesomeIcon
-                      icon={faList}
-                      color={theme.secondary}
-                      style={{ cursor: "pointer" }}
-                      onClick={() =>
-                        history.push(`/shareholder?_id=${shareholder._id}`)
                       }
                     />
                   </div>
