@@ -12,7 +12,7 @@ export interface OwnershipRaw {
 
 export type Ownership = OwnershipRaw & {
     shareHolderId: string
-    shareholderOrgnr?: string | null,
+    shareholderOrgnr?: string | null
     // Legacy property
     stocks: number
     year: number
