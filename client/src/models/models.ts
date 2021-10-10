@@ -70,7 +70,7 @@ export interface IOwnership {
 }
 
 export const isOwnership = (o: any): o is IOwnership => {
-    return o._id && typeof o._id === 'string' &&
+    return o && o._id && typeof o._id === 'string' &&
         o.orgnr && typeof o.orgnr === 'string' &&
         o.shareHolderId && typeof o.shareHolderId === 'string' &&
         (!o.shareholderOrgnr || typeof o.shareholderOrgnr === 'string') &&

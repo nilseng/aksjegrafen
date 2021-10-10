@@ -1,13 +1,12 @@
 import { KonvaEventObject } from "konva/lib/Node";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useEffect } from "react";
 import { useContext } from "react";
 import { Layer, Line, Stage } from "react-konva";
-import * as d3 from "d3";
 
 import { AppContext } from "../../App";
 import { useWindowDimensions } from "../../hooks/useWindowDimensions";
-import { ICompany, IOwnership, IShareholder } from "../../models/models";
+import { ICompany, IShareholder } from "../../models/models";
 import {
   useGetCompany,
   useInvestorCount,
@@ -19,11 +18,32 @@ import { useQuery } from "../../hooks/useQuery";
 import { useHistory } from "react-router-dom";
 import Loading from "../Loading";
 import { TreeNode } from "./TreeNode";
+import { ITreeDimensions, useSimpleTree } from "../Graph/GraphUtils";
+
+const treeConfig: ITreeDimensions = {
+  width: 1000,
+  height: 1000,
+  nodeMargins: {
+    horisontal: 40,
+    vertical: 100,
+  },
+  nodeDimensions: {
+    width: 200,
+    height: 100,
+  },
+};
 
 export const OwnershipChart = () => {
   const { theme } = useContext(AppContext);
 
   const { width, height } = useWindowDimensions();
+
+  useEffect(() => {
+    if (width && height) {
+      treeConfig.width = width;
+      treeConfig.height = height;
+    }
+  }, [width, height]);
 
   const [scroll, setScroll] = useState<{
     stageScale: number;
@@ -57,13 +77,6 @@ export const OwnershipChart = () => {
     setEntity(company ?? shareholder);
   }, [company, shareholder]);
 
-  // Hack to reset state when query changes
-  useEffect(() => {
-    setScroll({ stageScale: 1, stageX: 0, stageY: 0 });
-    setOwnerLinks(undefined);
-    setOwneeLinks(undefined);
-  }, [companyId, orgnr, shareholder_id]);
-
   const {
     investors,
     setInvestors,
@@ -80,97 +93,21 @@ export const OwnershipChart = () => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
   }, [shareholder]);
 
-  const [ownerNodes, setOwnerNodes] =
-    useState<d3.HierarchyPointNode<ICompany | IOwnership>[]>();
+  const {
+    investorNodes,
+    investorLinks,
+    setInvestorLinks,
+    investmentNodes,
+    investmentLinks,
+    setInvestmentLinks,
+  } = useSimpleTree(treeConfig, entity, investors, investments);
 
-  const [owneeNodes, setOwneeNodes] =
-    useState<d3.HierarchyPointNode<ICompany | IOwnership | IShareholder>[]>();
-
-  const [ownerLinks, setOwnerLinks] =
-    useState<d3.HierarchyPointLink<ICompany | IOwnership>[]>();
-
-  const [owneeLinks, setOwneeLinks] =
-    useState<d3.HierarchyPointLink<ICompany | IOwnership | IShareholder>[]>();
-
-  const ownerTree = useRef(d3.tree());
-  const owneeTree = useRef(d3.tree());
-  const nodeWidth = 200;
-  const nodeHeight = 100;
-  const verticalMargin = 100;
-  const horizontalMargin = 40;
-  ownerTree.current.size([width, height]);
-  ownerTree.current.nodeSize([
-    nodeWidth + horizontalMargin,
-    nodeHeight + verticalMargin,
-  ]);
-  owneeTree.current.size([width, height]);
-  owneeTree.current.nodeSize([
-    nodeWidth + horizontalMargin,
-    nodeHeight + verticalMargin,
-  ]);
-
-  // Creating owner tree
+  // Hack to reset state when query changes
   useEffect(() => {
-    if (company) {
-      const root: d3.HierarchyPointNode<ICompany | IOwnership> =
-        ownerTree.current(
-          d3.hierarchy({
-            ...company,
-            children: investors,
-          })
-        ) as d3.HierarchyPointNode<ICompany | IOwnership>;
-
-      const nodes = root.descendants();
-
-      // Centering tree, turning it "upside down" and adding top margin
-      nodes.forEach((node) => {
-        node.x += width / 2;
-        node.y = height - node.y - height / 2;
-      });
-      const links = root.links();
-
-      links.forEach((l) => ((l as any).keyPrefix = "owner"));
-
-      setOwnerLinks(links);
-      setOwnerNodes(nodes);
-    }
-    return () => setOwnerLinks(undefined);
-  }, [width, height, company, year, investors]);
-
-  // Creating ownee/investment tree
-  useEffect(() => {
-    if (company || shareholder) {
-      const root: d3.HierarchyPointNode<ICompany | IOwnership | IShareholder> =
-        company
-          ? (owneeTree.current(
-              d3.hierarchy({
-                ...company,
-                children: investments?.filter((o) => o.year === year),
-              })
-            ) as d3.HierarchyPointNode<ICompany | IOwnership>)
-          : (owneeTree.current(
-              d3.hierarchy({
-                ...shareholder,
-                children: investments?.filter((o) => o.year === year),
-              })
-            ) as d3.HierarchyPointNode<ICompany | IOwnership>);
-
-      const nodes = root.descendants();
-
-      // Aligning company tree with shareholder tree
-      nodes.forEach((node) => {
-        node.x += width / 2;
-        node.y = node.y + height / 2;
-      });
-      const links = root.links();
-
-      links.forEach((l) => ((l as any).keyPrefix = "ownee"));
-
-      setOwneeLinks(links);
-      setOwneeNodes(nodes);
-    }
-    return () => setOwneeLinks(undefined);
-  }, [company, height, width, investments, shareholder, year]);
+    setScroll({ stageScale: 1, stageX: 0, stageY: 0 });
+    setInvestorLinks(undefined);
+    setInvestmentLinks(undefined);
+  }, [companyId, orgnr, setInvestmentLinks, setInvestorLinks, shareholder_id]);
 
   const handleWheel = (e: KonvaEventObject<WheelEvent>) => {
     e.evt.preventDefault();
@@ -281,12 +218,17 @@ export const OwnershipChart = () => {
         draggable
       >
         <Layer>
-          {ownerLinks?.map((l) => (
+          {investorLinks?.map((l) => (
             <Line
-              key={`${(l as any).keyPrefix}-${l.source.data._id}-${
-                l.target.data._id
+              key={`${(l as any).keyPrefix}-${l.source.data.entity._id}-${
+                l.target.data.entity._id
               }`}
-              points={[l.source.x, l.source.y, l.target.x, l.target.y]}
+              points={[
+                l.source.x + treeConfig.nodeDimensions.width / 2,
+                l.source.y + treeConfig.nodeDimensions.height / 2,
+                l.target.x + treeConfig.nodeDimensions.width / 2,
+                l.target.y + treeConfig.nodeDimensions.height / 2,
+              ]}
               stroke={theme.background}
               strokeWidth={1}
               shadowColor={theme.shadowColor}
@@ -297,12 +239,17 @@ export const OwnershipChart = () => {
           ))}
         </Layer>
         <Layer>
-          {owneeLinks?.map((l) => (
+          {investmentLinks?.map((l) => (
             <Line
-              key={`${(l as any).keyPrefix}-${l.source.data._id}-${
-                l.target.data._id
+              key={`${(l as any).keyPrefix}-${l.source.data.entity._id}-${
+                l.target.data.entity._id
               }`}
-              points={[l.source.x, l.source.y, l.target.x, l.target.y]}
+              points={[
+                l.source.x + treeConfig.nodeDimensions.width / 2,
+                l.source.y + treeConfig.nodeDimensions.height / 2,
+                l.target.x + treeConfig.nodeDimensions.width / 2,
+                l.target.y + treeConfig.nodeDimensions.height / 2,
+              ]}
               stroke={theme.background}
               strokeWidth={1}
               shadowColor={theme.shadowColor}
@@ -313,15 +260,15 @@ export const OwnershipChart = () => {
           ))}
         </Layer>
         <Layer>
-          {ownerNodes?.map((node) => (
+          {investorNodes?.map((node) => (
             <TreeNode
-              key={"owner-" + node.data._id}
-              data={node.data}
+              key={"owner-" + node.data.entity._id}
+              data={node.data.entity}
               x={node.x}
               y={node.y}
               theme={theme}
-              width={nodeWidth}
-              height={nodeHeight}
+              width={treeConfig.nodeDimensions.width}
+              height={treeConfig.nodeDimensions.height}
               company={company}
               shareholder={shareholder}
               history={history}
@@ -333,15 +280,15 @@ export const OwnershipChart = () => {
         </Layer>
         <Layer>
           {/* Consider the root as an owner node if there are any, otherwise use the first of the ownee nodes */}
-          {owneeNodes?.slice(ownerNodes ? 1 : 0).map((node) => (
+          {investmentNodes?.slice(investmentNodes ? 1 : 0).map((node) => (
             <TreeNode
-              key={"ownee" + node.data._id}
-              data={node.data}
+              key={"investment" + node.data.entity._id}
+              data={node.data.entity}
               x={node.x}
               y={node.y}
               theme={theme}
-              width={nodeWidth}
-              height={nodeHeight}
+              width={treeConfig.nodeDimensions.width}
+              height={treeConfig.nodeDimensions.height}
               company={company}
               shareholder={shareholder}
               history={history}

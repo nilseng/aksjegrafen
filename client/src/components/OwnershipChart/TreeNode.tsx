@@ -87,8 +87,8 @@ export const TreeNode = ({
     >
       <ChartRect x={x} y={y} theme={theme} width={width} height={height} />
       <Text
-        x={x - width / 2}
-        y={y - height / 2 + 4}
+        x={x}
+        y={y + 4}
         width={width}
         text={
           (data as ICompany)?.name ||
@@ -108,8 +108,8 @@ export const TreeNode = ({
         ((data as IOwnership)?.company || (data as IOwnership)?.shareholder) &&
         !(data as IOwnership)?.company && (
           <Text
-            x={x - width / 2}
-            y={y - height / 2 + 4 + 24}
+            x={x}
+            y={y + 4 + 24}
             width={width}
             text={`${
               (data.stocks / company.stocks) * 100 < 1
@@ -127,8 +127,8 @@ export const TreeNode = ({
       shareholder &&
       owneeCount ? (
         <Text
-          x={x - width / 2}
-          y={y - height / 2 + 4 + 24}
+          x={x}
+          y={y + 4 + 24}
           width={width}
           text={
             owneeCount
@@ -150,8 +150,8 @@ export const TreeNode = ({
       (data as IOwnership)?.company?.stocks &&
       data.stocks ? (
         <Text
-          x={x - width / 2}
-          y={y - height / 2 + 4 + 24}
+          x={x}
+          y={y + 4 + 24}
           width={width}
           text={`${
             companyOwnershipShare < 1
@@ -171,8 +171,8 @@ export const TreeNode = ({
       )}
       {!(data as IOwnership)?.company && !(data as IOwnership)?.shareholder && (
         <Text
-          x={x - width / 2}
-          y={y - height / 2 + 4 + 24}
+          x={x}
+          y={y + 4 + 24}
           width={width}
           text={
             ownerCount
@@ -192,8 +192,8 @@ export const TreeNode = ({
       )}
       {!((data as IShareholder).kind || (data as IShareholder).kind === 0) && (
         <Text
-          x={x - width / 2}
-          y={y - height / 2 + 4 + 60}
+          x={x}
+          y={y + 4 + 60}
           width={width}
           text={`${data.stocks?.toLocaleString()} aksjer`}
           fill={theme.text}

@@ -1,6 +1,5 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
-import { AppContext } from "../../App";
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
@@ -9,15 +8,27 @@ import {
   useInvestments,
   useInvestors,
 } from "../../services/apiService";
-import { GraphNode } from "./GraphNode";
-import { useForceSimulation, useZoom } from "./GraphUtils";
+import {
+  ITreeDimensions,
+  useForceSimulation,
+  useSimpleTree,
+} from "./GraphUtils";
+import { GraphView } from "./GraphView";
 
-const nodeWidth = 400;
-const nodeHeight = 200;
+const treeConfig: ITreeDimensions = {
+  width: 1000,
+  height: 1000,
+  nodeMargins: {
+    horisontal: 40,
+    vertical: 100,
+  },
+  nodeDimensions: {
+    width: 400,
+    height: 200,
+  },
+};
 
 export const Graph = () => {
-  const { theme } = useContext(AppContext);
-
   const query = useQuery();
 
   const [year] = useState<2019 | 2020>(2020);
@@ -57,8 +68,8 @@ export const Graph = () => {
     year
   ); */
 
-  const { investors } = useInvestors(company, year, 10);
-  const { investments } = useInvestments(entity, year, 10);
+  const { investors } = useInvestors(company, year, 5);
+  const { investments } = useInvestments(entity, year, 5);
   const [ownerships, setOwnerships] = useState<IOwnership[]>();
 
   useEffect(() => {
@@ -68,38 +79,19 @@ export const Graph = () => {
     setOwnerships(o);
   }, [investors, investments]);
 
-  const forceSimulation = useForceSimulation(entity, ownerships);
+  /* const { nodes } = useForceSimulation(
+    nodeWidth,
+    nodeHeight,
+    entity,
+    ownerships
+  ); */
 
-  const svgRef = useRef<SVGSVGElement>(null);
-  const svgTranslate = useZoom(svgRef);
+  const { nodes } = useSimpleTree(treeConfig, entity, investors, investments);
 
   /*   if (loadingOwnerCount)
     return <Loading color={theme.primary} backgroundColor={theme.background} />; */
 
-  return (
-    <div className="d-flex w-100 h-100 p-4">
-      <div className="d-flex w-100" style={{ ...theme.lowering }}>
-        <svg
-          ref={svgRef}
-          height="100%"
-          width="100%"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={"0 0 1000 1000"}
-        >
-          <g transform={svgTranslate}>
-            {forceSimulation?.nodes()?.map((node) => {
-              return (
-                <GraphNode
-                  key={node.index}
-                  {...node}
-                  width={nodeWidth - 2}
-                  height={nodeHeight - 2}
-                />
-              );
-            })}
-          </g>
-        </svg>
-      </div>
-    </div>
-  );
+  if (!nodes) return null;
+
+  return <GraphView nodeDimensions={treeConfig.nodeDimensions} nodes={nodes} />;
 };

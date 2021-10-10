@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Rect } from "react-konva";
 
 interface IChartRectProps {
@@ -13,18 +12,11 @@ export const ChartRect = ({ x, y, width, height, theme }: IChartRectProps) => {
   const handleClick = (e: any) => {
     console.log(e);
   };
-  const [offset, setOffset] = useState<{ x: number; y: number }>();
-
-  useEffect(() => {
-    setOffset({ x: width / 2, y: height / 2 });
-  }, [height, width]);
-
-  if (!offset) return null;
 
   return (
     <Rect
-      x={x - offset.x}
-      y={y - offset.y}
+      x={x}
+      y={y}
       width={width}
       height={height}
       fill={theme.background}
