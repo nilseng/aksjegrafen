@@ -27,8 +27,8 @@ export const GraphNode = (node: IGraphNode & IForceSimulationNode) => {
       >
         <div
           data-xmlns="http://www.w3.org/1999/xhtml"
-          className="p-2 w-100 h-100"
-          style={theme.elevation}
+          className="p-2 w-100 h-100 border"
+          style={{ borderColor: theme.secondary }}
         >
           {/* {investorCount && (
             <p className="small m-0" style={{ color: theme.muted }}>
