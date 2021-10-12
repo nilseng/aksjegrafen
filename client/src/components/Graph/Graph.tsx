@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../../App";
 
 import { useQuery } from "../../hooks/useQuery";
-import { ICompany, IOwnership, IShareholder } from "../../models/models";
+import { ICompany, IShareholder } from "../../models/models";
 import {
   useGetCompany,
   useGetShareholder,
   useInvestments,
   useInvestors,
 } from "../../services/apiService";
+import Loading from "../Loading";
 import {
   ITreeDimensions,
-  useForceSimulation,
+  //useForceSimulation,
   useSimpleTree,
 } from "./GraphUtils";
 import { GraphView } from "./GraphView";
@@ -29,6 +31,8 @@ const treeConfig: ITreeDimensions = {
 };
 
 export const Graph = () => {
+  const { theme } = useContext(AppContext);
+
   const query = useQuery();
 
   const [year] = useState<2019 | 2020>(2020);
@@ -63,21 +67,24 @@ export const Graph = () => {
     setEntity(company ?? shareholder);
   }, [company, shareholder]);
 
-  /* const { count: investorCount, loading: loadingOwnerCount } = useInvestorCount(
+  const { investors, loading: loadingInvestors } = useInvestors(
     company,
-    year
-  ); */
-
-  const { investors } = useInvestors(company, year, 5);
-  const { investments } = useInvestments(entity, year, 5);
-  const [ownerships, setOwnerships] = useState<IOwnership[]>();
+    year,
+    5
+  );
+  const { investments, loading: loadingInvestments } = useInvestments(
+    entity,
+    year,
+    5
+  );
+  /* const [ownerships, setOwnerships] = useState<IOwnership[]>();
 
   useEffect(() => {
     const o = [];
     if (investors) o.push(...investors);
     if (investments) o.push(...investments);
     setOwnerships(o);
-  }, [investors, investments]);
+  }, [investors, investments]); */
 
   /* const { nodes } = useForceSimulation(
     nodeWidth,
@@ -88,8 +95,8 @@ export const Graph = () => {
 
   const { nodes } = useSimpleTree(treeConfig, entity, investors, investments);
 
-  /*   if (loadingOwnerCount)
-    return <Loading color={theme.primary} backgroundColor={theme.background} />; */
+  if (loadingInvestments || loadingInvestors)
+    return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   if (!nodes) return null;
 
