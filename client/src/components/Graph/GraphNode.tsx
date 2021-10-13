@@ -16,9 +16,9 @@ export const GraphNode = (node: IGraphNode) => {
         <div
           data-xmlns="http://www.w3.org/1999/xhtml"
           className="p-2 w-100 h-100 d-flex flex-column align-items-middle justify-content-center"
-          style={theme.elevation}
+          style={{ ...theme.elevation, backgroundColor: theme.background }}
         >
-          <div className="font-weight-bold" style={{ color: theme.primary }}>
+          <div className="font-weight-bold" style={{ color: theme.text }}>
             {node.entity?.name}
           </div>
         </div>

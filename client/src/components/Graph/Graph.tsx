@@ -93,12 +93,29 @@ export const Graph = () => {
     ownerships
   ); */
 
-  const { nodes } = useSimpleTree(treeConfig, entity, investors, investments);
+  const { nodes, links, creatingTree } = useSimpleTree(
+    treeConfig,
+    entity,
+    investors,
+    investments
+  );
 
-  if (loadingInvestments || loadingInvestors)
+  if (loadingInvestments || loadingInvestors || creatingTree)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
-  if (!nodes) return null;
+  if (!nodes || !links)
+    return (
+      <p>
+        "Oh, noes! Something went terribly wrong. If you're suuuuper nice you'll
+        let Teodor know @ teodor.nilseng@gmail.com ;)"
+      </p>
+    );
 
-  return <GraphView nodeDimensions={treeConfig.nodeDimensions} nodes={nodes} />;
+  return (
+    <GraphView
+      nodeDimensions={treeConfig.nodeDimensions}
+      nodes={nodes}
+      links={links}
+    />
+  );
 };

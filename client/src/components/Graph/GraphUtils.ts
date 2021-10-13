@@ -24,10 +24,31 @@ export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
     return svgTranslate
 }
 
-type ISimulationNodeDatum = { id: string; entity: ICompany | IShareholder; investorCount?: number; investmentCount?: number } & INodeDimensions & SimulationNodeDatum;
-export type IGraphNode = { x: number; y: number } & ISimulationNodeDatum;
+type ISimulationNodeDatum = {
+    id: string; entity: ICompany | IShareholder;
+    investorCount?: number;
+    investmentCount?: number
+} &
+    INodeDimensions &
+    SimulationNodeDatum;
 
-export interface INodeDimensions { width: number; height: number; }
+export type IGraphNode = {
+    x: number;
+    y: number
+} &
+    ISimulationNodeDatum;
+
+export interface INodeDimensions {
+    width: number;
+    height: number;
+}
+
+export interface IGraphLink {
+    index?: number;
+    source: IGraphNode;
+    target: IGraphNode;
+    ownerships: IOwnership[];
+}
 
 // Used to differ between ForceSimulationNode and SimpleTreeNode. Update if strict type guard is needed
 export const isGraphNode = (o: any): o is IGraphNode => {
@@ -92,7 +113,6 @@ export interface ITreeDimensions {
 }
 
 export type ISimpleTreeNode = d3.HierarchyPointNode<ISimpleTreeDatum> & { fx?: number; fy?: number };
-type ISimpleTreeLink = d3.HierarchyPointLink<ISimpleTreeDatum>;
 
 interface ISimpleTreeDatum {
     id: string;
@@ -104,16 +124,22 @@ interface ISimpleTreeDatum {
 
 export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | IShareholder, investors?: IOwnership[], investments?: IOwnership[]) => {
 
+    const [creatingInvestorNodes, setCreatingInvestorNodes] = useState<boolean>(false);
+    const [creatingInvestmentNodes, setCreatingInvestmentNodes] = useState<boolean>(false);
+    const [creatingTree, setCreatingTree] = useState<boolean>(false);
+
     const [nodes, setNodes] = useState<IGraphNode[]>();
+    const [links, setLinks] = useState<IGraphLink[]>();
 
     const [investorNodes, setInvestorNodes] = useState<IGraphNode[]>();
-    const [investorLinks, setInvestorLinks] = useState<ISimpleTreeLink[]>();
+    const [investorLinks, setInvestorLinks] = useState<IGraphLink[]>();
     const [investmentNodes, setInvestmentNodes] = useState<IGraphNode[]>();
-    const [investmentLinks, setInvestmentLinks] = useState<ISimpleTreeLink[]>();
+    const [investmentLinks, setInvestmentLinks] = useState<IGraphLink[]>();
 
     // Creating investor tree
     useEffect(() => {
         if (entity && investors) {
+            setCreatingInvestorNodes(true);
             const investorTree = tree<ISimpleTreeDatum>();
             investorTree.size([treeConfig.width, treeConfig.height]);
             investorTree.nodeSize([
@@ -128,14 +154,14 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                         entity,
                         width: treeConfig.nodeDimensions.width,
                         height: treeConfig.nodeDimensions.height,
-                        children: [...filteredInvestors.map(o => ({ entity: o.company ?? o.shareholder, id: o.orgnr ?? o.shareHolderId }) as any)],
+                        children: [...filteredInvestors.map(o => ({ entity: o.company ?? o.shareholder, id: o.shareholderOrgnr ?? o.shareHolderId }) as any)],
                     })
                 );
 
-            const nodes = root.descendants();
+            const treeNodes = root.descendants();
 
             // Centering tree, turning it "upside down" and adding top margin
-            nodes.forEach((node) => {
+            treeNodes.forEach((node) => {
                 node.x += treeConfig.width / 2 - treeConfig.nodeDimensions.width / 2;
                 node.y = treeConfig.height - node.y - treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
                 // Adding fx and fy in order to fix the nodes to position when using them in force simulation
@@ -143,8 +169,24 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                 node.fy = node.y;
             });
 
-            setInvestorLinks(root.links());
-            setInvestorNodes(mapToGraphNodes(nodes));
+            const graphNodes = mapToGraphNodes(treeNodes);
+            const links: IGraphLink[] = [];
+
+            for (const inv of investors) {
+                const sourceId = inv.shareholderOrgnr ?? inv.shareHolderId;
+                const targetId = entity.orgnr;
+                const target = graphNodes.find(node => node.id === targetId);
+                const source = graphNodes.find(node => node.id === sourceId);
+                if (source && target) {
+                    const link = links.find(link => link.source.id === sourceId && link.target.id === targetId);
+                    if (link) link.ownerships.push(inv);
+                    else links.push({ source, target, ownerships: [inv] });
+                }
+            }
+
+            setInvestorLinks(links);
+            setInvestorNodes(graphNodes);
+            setCreatingInvestorNodes(false);
         }
         return () => {
             setInvestorNodes(undefined);
@@ -155,6 +197,7 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
     // Creating investment tree
     useEffect(() => {
         if (entity && investments) {
+            setCreatingInvestmentNodes(true)
             const investmentTree = tree();
             investmentTree.size([treeConfig.width, treeConfig.height]);
             investmentTree.nodeSize([
@@ -173,10 +216,10 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                     })
                 ) as ISimpleTreeNode
 
-            const nodes: ISimpleTreeNode[] = root.descendants();
+            const treeNodes: ISimpleTreeNode[] = root.descendants();
 
             // Aligning company tree with shareholder tree
-            nodes.forEach((node) => {
+            treeNodes.forEach((node) => {
                 node.x += treeConfig.width / 2 - treeConfig.nodeDimensions.width / 2;
                 node.y = node.y + treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
                 // Adding fx and fy in order to fix the nodes to position when using them in force simulation
@@ -184,8 +227,19 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                 node.fy = node.y;
             });
 
-            setInvestmentLinks(root.links());
-            setInvestmentNodes(mapToGraphNodes(nodes));
+            const graphNodes = mapToGraphNodes(treeNodes);
+            const links = [];
+
+            for (const inv of investments) {
+                const targetId = inv.orgnr;
+                const source = graphNodes.find(node => node.id === entity.orgnr);
+                const target = graphNodes.find(node => node.id === targetId);
+                if (source && target) links.push({ source, target, ownerships: [inv] });
+            }
+
+            setInvestmentLinks(links);
+            setInvestmentNodes(graphNodes);
+            setCreatingInvestmentNodes(false);
         }
         return () => {
             setInvestmentNodes(undefined);
@@ -197,15 +251,25 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
         if (investorNodes && investmentNodes) setNodes([...investmentNodes.slice(1), ...investorNodes]);
         else if (investorNodes) setNodes(investorNodes);
         else if (investmentNodes) setNodes(investmentNodes);
-    }, [investmentNodes, investorNodes])
+    }, [investmentNodes, investorNodes]);
 
-    return { nodes, investorNodes, investorLinks, setInvestorLinks, investmentNodes, investmentLinks, setInvestmentLinks }
+    useEffect(() => {
+        if (investorLinks && investmentLinks) setLinks([...investorLinks, ...investmentLinks]);
+        else if (investorLinks) setLinks(investorLinks);
+        else if (investmentLinks) setLinks(investmentLinks);
+    }, [investmentLinks, investorLinks]);
+
+    useEffect(() => {
+        setCreatingTree(creatingInvestmentNodes || creatingInvestorNodes)
+    }, [creatingInvestmentNodes, creatingInvestorNodes])
+
+    return { nodes, links, creatingTree, investorNodes, investorLinks, setInvestorLinks, investmentNodes, investmentLinks, setInvestmentLinks }
 }
 
 const mapToGraphNodes = (treeNodes: ISimpleTreeNode[]): IGraphNode[] => {
     const filteredNodes = treeNodes.filter(node => node.data.entity)
-    const graphNodes = filteredNodes.map(treeNode => (
-        {
+    const graphNodes = filteredNodes.map(treeNode => {
+        return {
             id: treeNode.data.id,
             entity: treeNode.data.entity,
             x: treeNode.x,
@@ -215,7 +279,7 @@ const mapToGraphNodes = (treeNodes: ISimpleTreeNode[]): IGraphNode[] => {
             width: treeNode.data.width,
             height: treeNode.data.height
         }
-    )
+    }
     );
-    return graphNodes.filter(node => isGraphNode(node));;
+    return graphNodes.filter(node => isGraphNode(node));
 }

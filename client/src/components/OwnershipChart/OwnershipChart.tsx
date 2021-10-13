@@ -220,8 +220,8 @@ export const OwnershipChart = () => {
         <Layer>
           {investorLinks?.map((l) => (
             <Line
-              key={`${(l as any).keyPrefix}-${l.source.data.entity._id}-${
-                l.target.data.entity._id
+              key={`${(l as any).keyPrefix}-${l.source.entity._id}-${
+                l.target.entity._id
               }`}
               points={[
                 l.source.x + treeConfig.nodeDimensions.width / 2,
@@ -241,8 +241,8 @@ export const OwnershipChart = () => {
         <Layer>
           {investmentLinks?.map((l) => (
             <Line
-              key={`${(l as any).keyPrefix}-${l.source.data.entity._id}-${
-                l.target.data.entity._id
+              key={`${(l as any).keyPrefix}-${l.source.entity._id}-${
+                l.target.entity._id
               }`}
               points={[
                 l.source.x + treeConfig.nodeDimensions.width / 2,
