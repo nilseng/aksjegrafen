@@ -262,8 +262,8 @@ export const OwnershipChart = () => {
         <Layer>
           {investorNodes?.map((node) => (
             <TreeNode
-              key={"owner-" + node.data.entity._id}
-              data={node.data.entity}
+              key={"owner-" + node.entity._id}
+              data={node.entity}
               x={node.x}
               y={node.y}
               theme={theme}
@@ -282,8 +282,8 @@ export const OwnershipChart = () => {
           {/* Consider the root as an owner node if there are any, otherwise use the first of the ownee nodes */}
           {investmentNodes?.slice(investmentNodes ? 1 : 0).map((node) => (
             <TreeNode
-              key={"investment" + node.data.entity._id}
-              data={node.data.entity}
+              key={"investment" + node.entity._id}
+              data={node.entity}
               x={node.x}
               y={node.y}
               theme={theme}

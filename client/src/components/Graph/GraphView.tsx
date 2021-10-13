@@ -1,18 +1,11 @@
 import { useContext, useRef } from "react";
 import { AppContext } from "../../App";
-import { ICompany, IShareholder, isOwnership } from "../../models/models";
 import { GraphNode } from "./GraphNode";
-import {
-  IForceSimulationNode,
-  INodeDimensions,
-  ISimpleTreeNode,
-  isSimpleTreeNode,
-  useZoom,
-} from "./GraphUtils";
+import { IGraphNode, INodeDimensions, useZoom } from "./GraphUtils";
 
 interface IProps {
   nodeDimensions: INodeDimensions;
-  nodes: (IForceSimulationNode | ISimpleTreeNode)[];
+  nodes: IGraphNode[];
 }
 
 export const GraphView = ({ nodeDimensions, nodes }: IProps) => {
@@ -31,54 +24,15 @@ export const GraphView = ({ nodeDimensions, nodes }: IProps) => {
           viewBox={"0 0 1000 1000"}
         >
           <g transform={svgTranslate}>
-            {nodes.map((node) => {
-              if (isSimpleTreeNode(node)) {
-                const ownership = isOwnership(node.data.entity)
-                  ? node.data.entity
-                  : null;
-                const company = ownership?.company;
-                const shareholder = ownership?.shareholder;
-                if (company && company?.orgnr) {
-                  return (
-                    <GraphNode
-                      key={ownership?._id}
-                      {...node}
-                      id={company.orgnr}
-                      entity={company}
-                      {...nodeDimensions}
-                    />
-                  );
-                }
-                if (shareholder) {
-                  return (
-                    <GraphNode
-                      key={ownership?._id}
-                      {...node}
-                      id={shareholder.id}
-                      entity={shareholder}
-                      {...nodeDimensions}
-                    />
-                  );
-                } else {
-                  return (
-                    <GraphNode
-                      key={node.data.entity._id}
-                      {...node}
-                      {...node.data}
-                      entity={node.data.entity as ICompany | IShareholder}
-                      {...nodeDimensions}
-                    />
-                  );
-                }
-              } else {
-                return (
-                  <GraphNode
-                    key={node.entity._id}
-                    {...node}
-                    {...nodeDimensions}
-                  />
-                );
-              }
+            {/* TODO: Detect duplicate nodes instead of using the i here. */}
+            {nodes.map((node, i) => {
+              return (
+                <GraphNode
+                  key={node.entity._id + i}
+                  {...node}
+                  {...nodeDimensions}
+                />
+              );
             })}
           </g>
         </svg>

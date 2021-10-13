@@ -21,12 +21,12 @@ const treeConfig: ITreeDimensions = {
   width: 1000,
   height: 1000,
   nodeMargins: {
-    horisontal: 40,
+    horisontal: 0,
     vertical: 100,
   },
   nodeDimensions: {
     width: 400,
-    height: 200,
+    height: 240,
   },
 };
 
