@@ -58,6 +58,25 @@ export const GraphLink = ({ link, offset }: IProps) => {
           }}
           rotation={0}
         />
+        <foreignObject
+          x={link.source.x + 2 * offset.x + 10}
+          y={link.source.y + offset.y}
+          width={100}
+          height={20}
+        >
+          <div data-xmlns="http://www.w3.org/1999/xhtml">
+            <div className="font-weight-bold" style={{ color: theme.primary }}>
+              {(
+                link.ownerships.reduce((ownershipPercentage: number, o) => {
+                  return (
+                    ownershipPercentage +
+                    +o.shareholderStocks / +o.companyStocks
+                  );
+                }, 0) * 100
+              ).toFixed(3) + "%"}
+            </div>
+          </div>
+        </foreignObject>
       </g>
     );
 
@@ -87,6 +106,19 @@ export const GraphLink = ({ link, offset }: IProps) => {
           </div>
         </foreignObject>
       )}
+      <foreignObject x={arrowPos.x + 10} y={arrowPos.y} width={100} height={20}>
+        <div data-xmlns="http://www.w3.org/1999/xhtml">
+          <div className="font-weight-bold" style={{ color: theme.primary }}>
+            {(
+              link.ownerships.reduce((ownershipPercentage: number, o) => {
+                return (
+                  ownershipPercentage + +o.shareholderStocks / +o.companyStocks
+                );
+              }, 0) * 100
+            ).toFixed(3) + "%"}
+          </div>
+        </div>
+      </foreignObject>
     </g>
   );
 };

@@ -67,6 +67,8 @@ export interface IOwnership {
     year: 2019 | 2020
     company?: ICompany
     shareholder?: IShareholder
+    companyStocks: string | number;
+    shareholderStocks: string | number;
 }
 
 export const isOwnership = (o: any): o is IOwnership => {
