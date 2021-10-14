@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
+import { GraphLinkArrow } from "./GraphLinkArrow";
 import { IGraphLink } from "./GraphUtils";
 
 interface IProps {
@@ -45,24 +46,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
         stroke={theme.muted}
       />
       {(rotation || rotation === 0) && (
-        <g transform={`rotate(${rotation} ${center.x} ${center.y})`}>
-          <line
-            x1={center.x - 10}
-            y1={center.y - 10}
-            x2={center.x}
-            y2={center.y}
-            stroke={theme.muted}
-            strokeWidth="4"
-          />
-          <line
-            x1={center.x}
-            y1={center.y}
-            x2={center.x + 10}
-            y2={center.y - 10}
-            stroke={theme.muted}
-            strokeWidth="4"
-          />
-        </g>
+        <GraphLinkArrow rotation={rotation} center={center} />
       )}
       {link.ownerships.length > 1 && (
         <foreignObject x={center.x + 10} y={center.y} width={50} height={50}>
