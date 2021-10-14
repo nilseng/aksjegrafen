@@ -15,9 +15,13 @@ export const GraphLink = ({ link, offset }: IProps) => {
   const { theme } = useContext(AppContext);
 
   const [rotation, setRotation] = useState<number>();
-  const [center] = useState<{ x: number; y: number }>({
+  const [arrowPos] = useState<{ x: number; y: number }>({
     x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
     y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
+  });
+  const [countPos] = useState<{ x: number; y: number }>({
+    x: (link.source.x + link.target.x) / 2 + offset.x,
+    y: (link.source.y + link.target.y) / 2 + offset.y,
   });
 
   useEffect(() => {
@@ -46,10 +50,15 @@ export const GraphLink = ({ link, offset }: IProps) => {
         stroke={theme.muted}
       />
       {(rotation || rotation === 0) && (
-        <GraphLinkArrow rotation={rotation} center={center} />
+        <GraphLinkArrow rotation={rotation} center={arrowPos} />
       )}
       {link.ownerships.length > 1 && (
-        <foreignObject x={center.x + 10} y={center.y} width={50} height={50}>
+        <foreignObject
+          x={countPos.x + 10}
+          y={countPos.y}
+          width={50}
+          height={50}
+        >
           <div data-xmlns="http://www.w3.org/1999/xhtml">
             <div className="font-weight-bold" style={{ color: theme.primary }}>
               {link.ownerships.length}
