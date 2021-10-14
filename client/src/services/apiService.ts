@@ -84,6 +84,8 @@ export const useShareholderCount = () => {
 
     useEffect(() => {
         getShareholderCount().then(res => setCount(res))
+
+        return () => setCount(undefined);
     }, [setCount])
 
     return count
@@ -94,6 +96,8 @@ export const useCompanyCount = (searchTerm?: string) => {
 
     useEffect(() => {
         getCompanyCount(searchTerm).then(res => setCount(res))
+
+        return () => setCount(undefined);
     }, [setCount, searchTerm])
 
     return count

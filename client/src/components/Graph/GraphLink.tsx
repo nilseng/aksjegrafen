@@ -40,6 +40,27 @@ export const GraphLink = ({ link, offset }: IProps) => {
 
   if (!link) return null;
 
+  if (link.source === link.target)
+    return (
+      <g>
+        <circle
+          fill="transparent"
+          stroke={theme.muted}
+          strokeWidth="1"
+          cx={link.source.x + 2 * offset.x - 40}
+          cy={link.source.y + offset.y}
+          r="40"
+        />
+        <GraphLinkArrow
+          center={{
+            x: link.source.x + 2 * offset.x,
+            y: link.source.y + offset.y,
+          }}
+          rotation={0}
+        />
+      </g>
+    );
+
   return (
     <g>
       <line

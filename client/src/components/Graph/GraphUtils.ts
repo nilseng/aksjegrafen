@@ -146,7 +146,7 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                 treeConfig.nodeDimensions.width + treeConfig.nodeMargins.horisontal,
                 treeConfig.nodeDimensions.height + treeConfig.nodeMargins.vertical,
             ]);
-            const investorDatums = createInvestorDatums(investors, treeConfig);
+            const investorDatums = createInvestorDatums(investors, treeConfig, entity);
             const root: ISimpleTreeNode =
                 investorTree(
                     hierarchy<ISimpleTreeDatum>({
@@ -172,10 +172,10 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
             const graphNodes = mapToGraphNodes(treeNodes);
             const links: IGraphLink[] = [];
 
+            const targetId = entity.orgnr;
+            const target = graphNodes.find(node => node.id === targetId);
             for (const inv of investors) {
                 const sourceId = inv.shareholderOrgnr ?? inv.shareHolderId;
-                const targetId = entity.orgnr;
-                const target = graphNodes.find(node => node.id === targetId);
                 const source = graphNodes.find(node => node.id === sourceId);
                 if (source && target) {
                     const link = links.find(link => link.source.id === sourceId && link.target.id === targetId);
@@ -205,7 +205,7 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                 treeConfig.nodeDimensions.height + treeConfig.nodeMargins.vertical,
             ]);
 
-            const investmentDatums = createInvestmentDatums(investments, treeConfig);
+            const investmentDatums = createInvestmentDatums(investments, treeConfig, entity);
             const root: ISimpleTreeNode =
                 investmentTree(
                     hierarchy<ISimpleTreeDatum>({
@@ -231,9 +231,9 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
             const graphNodes = mapToGraphNodes(treeNodes);
             const links = [];
 
+            const source = graphNodes.find(node => node.id === entity.orgnr || node.id === (entity as IShareholder).id);
             for (const inv of investments) {
                 const targetId = inv.orgnr;
-                const source = graphNodes.find(node => node.id === entity.orgnr);
                 const target = graphNodes.find(node => node.id === targetId);
                 if (source && target) links.push({ source, target, ownerships: [inv] });
             }
@@ -267,8 +267,8 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
     return { nodes, links, creatingTree, investorNodes, investorLinks, setInvestorLinks, investmentNodes, investmentLinks, setInvestmentLinks }
 }
 
-const createInvestorDatums = (o: IOwnership[], nodeDimensions: INodeDimensions): ISimpleTreeDatum[] => {
-    const ownershipsWithEntity = o.filter(o => o.company || o.shareholder);
+const createInvestorDatums = (o: IOwnership[], nodeDimensions: INodeDimensions, entity: ICompany | IShareholder): ISimpleTreeDatum[] => {
+    const ownershipsWithEntity = o.filter(o => (o.company && o.company.orgnr !== entity.orgnr) || (o.shareholder && o.shareholder.id !== (entity as IShareholder).id));
     const uniqueIds = new Set(ownershipsWithEntity.map(o => o.shareholderOrgnr ?? o.shareHolderId));
     const uniqueOwnerships: IOwnership[] = [];
     for (const id of Array.from(uniqueIds)) {
@@ -283,8 +283,8 @@ const createInvestorDatums = (o: IOwnership[], nodeDimensions: INodeDimensions):
     ))
 }
 
-const createInvestmentDatums = (o: IOwnership[], nodeDimensions: INodeDimensions): ISimpleTreeDatum[] => {
-    const ownershipsWithCompany = o.filter(o => o.company);
+const createInvestmentDatums = (o: IOwnership[], nodeDimensions: INodeDimensions, entity: ICompany | IShareholder): ISimpleTreeDatum[] => {
+    const ownershipsWithCompany = o.filter(o => o.company && o.company.orgnr !== entity.orgnr);
     const uniqueOrgnrs = new Set(ownershipsWithCompany.map(o => o.company?.orgnr as string));
     const uniqueOwnerships: IOwnership[] = [];
     for (const orgnr of Array.from(uniqueOrgnrs)) {
