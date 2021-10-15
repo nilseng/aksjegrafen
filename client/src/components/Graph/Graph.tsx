@@ -21,12 +21,12 @@ const treeConfig: ITreeDimensions = {
   width: 1000,
   height: 1000,
   nodeMargins: {
-    horisontal: 0,
-    vertical: 100,
+    horisontal: 40,
+    vertical: 120,
   },
   nodeDimensions: {
-    width: 400,
-    height: 240,
+    width: 300,
+    height: 120,
   },
 };
 
@@ -106,8 +106,8 @@ export const Graph = () => {
   if (!nodes || !links)
     return (
       <p>
-        "Oh, noes! Something went terribly wrong. If you're suuuuper nice you'll
-        let Teodor know @ teodor.nilseng@gmail.com ;)"
+        "Oh, noes! Something went terribly wrong. If you're suuuuper nice,
+        you'll let Teodor know @ teodor.nilseng@gmail.com ;)"
       </p>
     );
 

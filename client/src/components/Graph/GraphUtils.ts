@@ -26,15 +26,17 @@ export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
 
 type ISimulationNodeDatum = {
     id: string; entity: ICompany | IShareholder;
-    investorCount?: number;
-    investmentCount?: number
 } &
     INodeDimensions &
     SimulationNodeDatum;
 
 export type IGraphNode = {
     x: number;
-    y: number
+    y: number;
+    investorCount?: number;
+    investmentCount?: number
+    loadedInvestors?: number;
+    loadedInvestments?: number;
 } &
     ISimulationNodeDatum;
 
@@ -174,10 +176,14 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
 
             const targetId = entity.orgnr;
             const target = graphNodes.find(node => node.id === targetId);
+            if (!target) return;
+            target.loadedInvestors = investors.length;
+            target.loadedInvestments = investments?.length;
             for (const inv of investors) {
                 const sourceId = inv.shareholderOrgnr ?? inv.shareHolderId;
                 const source = graphNodes.find(node => node.id === sourceId);
                 if (source && target) {
+                    source.loadedInvestments = 1;
                     const link = links.find(link => link.source.id === sourceId && link.target.id === targetId);
                     if (link) link.ownerships.push(inv);
                     else links.push({ source, target, ownerships: [inv] });
@@ -192,7 +198,7 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
             setInvestorNodes(undefined);
             setInvestorLinks(undefined);
         }
-    }, [treeConfig, entity, investors]);
+    }, [treeConfig, entity, investors, investments]);
 
     // Creating investment tree
     useEffect(() => {
@@ -232,10 +238,17 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
             const links = [];
 
             const source = graphNodes.find(node => node.id === entity.orgnr || node.id === (entity as IShareholder).id);
+            if (!source) return;
+
+            source.loadedInvestors = investors?.length;
+            source.loadedInvestments = investments.length;
             for (const inv of investments) {
                 const targetId = inv.orgnr;
                 const target = graphNodes.find(node => node.id === targetId);
-                if (source && target) links.push({ source, target, ownerships: [inv] });
+                if (source && target) {
+                    target.loadedInvestors = 1;
+                    links.push({ source, target, ownerships: [inv] });
+                }
             }
 
             setInvestmentLinks(links);
@@ -246,7 +259,7 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
             setInvestmentNodes(undefined);
             setInvestmentLinks(undefined);
         }
-    }, [investments, entity, treeConfig]);
+    }, [investments, investors, entity, treeConfig]);
 
     useEffect(() => {
         if (investorNodes && investmentNodes) setNodes([...investmentNodes.slice(1), ...investorNodes]);

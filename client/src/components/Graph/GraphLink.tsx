@@ -20,7 +20,11 @@ export const GraphLink = ({ link, offset }: IProps) => {
     y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
   });
   const [countPos] = useState<{ x: number; y: number }>({
-    x: (link.source.x + link.target.x) / 2 + offset.x,
+    x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
+    y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
+  });
+  const [percentagePos] = useState<{ x: number; y: number }>({
+    x: (link.source.x + link.target.x) / 2 + offset.x + 10,
     y: (link.source.y + link.target.y) / 2 + offset.y,
   });
 
@@ -47,19 +51,19 @@ export const GraphLink = ({ link, offset }: IProps) => {
           fill="transparent"
           stroke={theme.muted}
           strokeWidth="1"
-          cx={link.source.x + 2 * offset.x - 40}
+          cx={link.source.x + 2 * offset.x}
           cy={link.source.y + offset.y}
           r="40"
         />
         <GraphLinkArrow
           center={{
-            x: link.source.x + 2 * offset.x,
+            x: link.source.x + 2 * offset.x + 40,
             y: link.source.y + offset.y,
           }}
           rotation={0}
         />
         <foreignObject
-          x={link.source.x + 2 * offset.x + 10}
+          x={link.source.x + 2 * offset.x + 40}
           y={link.source.y + offset.y}
           width={100}
           height={20}
@@ -73,7 +77,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
                     +o.shareholderStocks / +o.companyStocks
                   );
                 }, 0) * 100
-              ).toFixed(3) + "%"}
+              ).toFixed(2) + "%"}
             </div>
           </div>
         </foreignObject>
@@ -93,12 +97,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
         <GraphLinkArrow rotation={rotation} center={arrowPos} />
       )}
       {link.ownerships.length > 1 && (
-        <foreignObject
-          x={countPos.x + 10}
-          y={countPos.y}
-          width={50}
-          height={50}
-        >
+        <foreignObject x={countPos.x} y={countPos.y} width={50} height={50}>
           <div data-xmlns="http://www.w3.org/1999/xhtml">
             <div className="font-weight-bold" style={{ color: theme.primary }}>
               {link.ownerships.length}
@@ -106,7 +105,12 @@ export const GraphLink = ({ link, offset }: IProps) => {
           </div>
         </foreignObject>
       )}
-      <foreignObject x={arrowPos.x + 10} y={arrowPos.y} width={100} height={20}>
+      <foreignObject
+        x={percentagePos.x}
+        y={percentagePos.y}
+        width={100}
+        height={20}
+      >
         <div data-xmlns="http://www.w3.org/1999/xhtml">
           <div className="font-weight-bold" style={{ color: theme.primary }}>
             {(
@@ -115,7 +119,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
                   ownershipPercentage + +o.shareholderStocks / +o.companyStocks
                 );
               }, 0) * 100
-            ).toFixed(3) + "%"}
+            ).toFixed(2) + "%"}
           </div>
         </div>
       </foreignObject>
