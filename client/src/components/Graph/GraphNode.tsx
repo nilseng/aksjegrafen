@@ -12,7 +12,11 @@ export const GraphNode = (node: IGraphNode) => {
         y={node.y}
         width={node.width}
         height={node.height}
-        style={{ ...theme.elevation, backgroundColor: theme.background }}
+        style={{
+          ...theme.elevation,
+          backgroundColor: theme.background,
+          cursor: "pointer",
+        }}
       >
         <div
           data-xmlns="http://www.w3.org/1999/xhtml"
@@ -22,12 +26,12 @@ export const GraphNode = (node: IGraphNode) => {
             {node.entity?.name}
           </div>
           <div>
-            {node.loadedInvestors && (
+            {(node.loadedInvestors || node.loadedInvestors === 0) && (
               <p className="small m-0" style={{ color: theme.text }}>
                 {node.loadedInvestors} av x investorer
               </p>
             )}
-            {node.loadedInvestments && (
+            {(node.loadedInvestments || node.loadedInvestments === 0) && (
               <p className="small m-0" style={{ color: theme.text }}>
                 {node.loadedInvestments} av y investeringer
               </p>

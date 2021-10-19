@@ -183,7 +183,8 @@ export const useSimpleTree = (treeConfig: ITreeDimensions, entity?: ICompany | I
                 const sourceId = inv.shareholderOrgnr ?? inv.shareHolderId;
                 const source = graphNodes.find(node => node.id === sourceId);
                 if (source && target) {
-                    source.loadedInvestments = 1;
+                    if (source.loadedInvestments) source.loadedInvestments += 1;
+                    else source.loadedInvestments = 1;
                     const link = links.find(link => link.source.id === sourceId && link.target.id === targetId);
                     if (link) link.ownerships.push(inv);
                     else links.push({ source, target, ownerships: [inv] });
