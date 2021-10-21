@@ -6,12 +6,13 @@ import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions, useZoom } from "./GraphUtils";
 
 interface IProps {
+  year: 2020 | 2019;
   nodeDimensions: INodeDimensions;
   nodes: IGraphNode[];
   links: IGraphLink[];
 }
 
-export const GraphView = ({ nodeDimensions, nodes, links }: IProps) => {
+export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
   const { theme } = useContext(AppContext);
 
   const [menu, setMenu] = useState<IMenu>({ open: false });
@@ -77,7 +78,10 @@ export const GraphView = ({ nodeDimensions, nodes, links }: IProps) => {
                     });
                   }}
                 >
-                  <GraphNode {...node} {...nodeDimensions} />
+                  <GraphNode
+                    node={{ ...node, ...nodeDimensions }}
+                    year={year}
+                  />
                 </g>
               );
             })}

@@ -6,6 +6,14 @@ export interface ICompany {
     location?: string;
     countryCode?: string;
     stocks?: number;
+    investorCount?: {
+        2020?: number;
+        2019?: number;
+    };
+    investmentCount?: {
+        2020?: number;
+        2019?: number;
+    }
 }
 
 export const isCompany = (o: any): o is ICompany => {

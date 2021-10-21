@@ -113,6 +113,7 @@ export const Graph = () => {
 
   return (
     <GraphView
+      year={year}
       nodeDimensions={treeConfig.nodeDimensions}
       nodes={nodes}
       links={links}

@@ -2,7 +2,12 @@ import { useContext } from "react";
 import { AppContext } from "../../App";
 import { IGraphNode } from "./GraphUtils";
 
-export const GraphNode = (node: IGraphNode) => {
+interface IProps {
+  node: IGraphNode;
+  year: 2020 | 2019;
+}
+
+export const GraphNode = ({ node, year }: IProps) => {
   const { theme } = useContext(AppContext);
 
   return (
@@ -26,16 +31,20 @@ export const GraphNode = (node: IGraphNode) => {
             {node.entity?.name}
           </div>
           <div>
-            {(node.loadedInvestors || node.loadedInvestors === 0) && (
-              <p className="small m-0" style={{ color: theme.text }}>
-                {node.loadedInvestors} av x investorer
-              </p>
-            )}
-            {(node.loadedInvestments || node.loadedInvestments === 0) && (
-              <p className="small m-0" style={{ color: theme.text }}>
-                {node.loadedInvestments} av y investeringer
-              </p>
-            )}
+            {(node.loadedInvestors || node.loadedInvestors === 0) &&
+              node.entity.investorCount && (
+                <p className="small m-0" style={{ color: theme.text }}>
+                  {node.loadedInvestors} av {node.entity.investorCount[year]}{" "}
+                  investorer
+                </p>
+              )}
+            {(node.loadedInvestments || node.loadedInvestments === 0) &&
+              node.entity.investmentCount && (
+                <p className="small m-0" style={{ color: theme.text }}>
+                  {node.loadedInvestments} av{" "}
+                  {node.entity.investmentCount[year]} investeringer
+                </p>
+              )}
           </div>
         </div>
       </foreignObject>

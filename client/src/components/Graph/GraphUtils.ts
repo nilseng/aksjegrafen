@@ -33,8 +33,6 @@ type ISimulationNodeDatum = {
 export type IGraphNode = {
     x: number;
     y: number;
-    investorCount?: number;
-    investmentCount?: number
     loadedInvestors?: number;
     loadedInvestments?: number;
 } &
