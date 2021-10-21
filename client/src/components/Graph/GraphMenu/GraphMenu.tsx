@@ -7,22 +7,32 @@ import {
   IconDefinition,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
-import { AppContext } from "../../App";
-import { ICompany, IShareholder } from "../../models/models";
+import { AppContext } from "../../../App";
+import { ICompany, IShareholder } from "../../../models/models";
+import { GraphContext, IGraphContext } from "../Graph";
+import { GraphMenuItem } from "./GraphMenuItem";
 
-interface IMenuItem {
+export interface IMenuItem {
   name: string;
-  icon: IconDefinition;
+  icon?: IconDefinition;
+  border?: boolean;
+  action?: {
+    name: keyof IGraphContext["actions"];
+    action?: Function;
+  };
 }
 
 const entityItems: IMenuItem[] = [
   { name: "Se detaljer", icon: faInfo },
   { name: "Åpne i nytt vindu", icon: faWindowRestore },
   { name: "Sentrér på siden", icon: faAnchor },
-  { name: "Last 5 flere investorer", icon: faUsers },
+  {
+    name: "Last 5 flere investorer",
+    icon: faUsers,
+    action: { name: "loadInvestors" },
+  },
   { name: "Last 5 flere investeringer", icon: faBuilding },
 ];
 
@@ -38,13 +48,29 @@ export interface IMenu {
 
 export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
   const { theme } = useContext(AppContext);
+  const graphContext = useContext(GraphContext);
 
   const [visibleItems, setVisibleItems] = useState<IMenuItem[]>();
 
   useEffect(() => {
-    if (entity) setVisibleItems([...entityItems, ...defaultItems]);
-    else setVisibleItems(defaultItems);
-  }, [entity]);
+    if (entity) {
+      const items = [...entityItems, ...defaultItems];
+      if (graphContext.actions) {
+        for (const item of items) {
+          switch (item.action?.name) {
+            case "loadInvestors":
+              item.action.action = () => {
+                if (graphContext.actions.loadInvestors) {
+                  graphContext.actions.loadInvestors(entity);
+                }
+              };
+              break;
+          }
+        }
+      }
+      setVisibleItems(items);
+    } else setVisibleItems(defaultItems);
+  }, [entity, graphContext.actions]);
 
   if (!open) return null;
 
@@ -62,40 +88,15 @@ export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
       }}
     >
       {entity && (
-        <ListGroup.Item
-          key={entity._id}
-          className="small font-weight-bold"
-          style={{
-            backgroundColor: theme.background,
-            color: theme.text,
-            cursor: "pointer",
-            borderLeft: 0,
-            borderTop: 0,
-            borderRight: 0,
-            borderBottom: `1px solid ${theme.muted}`,
-          }}
-        >
-          {entity.name}
-        </ListGroup.Item>
+        <GraphMenuItem key={entity._id} name={entity.name} border={true} />
       )}
       {visibleItems?.map((item) => (
-        <ListGroup.Item
+        <GraphMenuItem
           key={item.name}
-          className="small font-weight-bold border-0"
-          style={{
-            backgroundColor: theme.background,
-            color: theme.text,
-            cursor: "pointer",
-          }}
-        >
-          <FontAwesomeIcon
-            icon={item.icon}
-            color={theme.primary}
-            style={{ cursor: "pointer" }}
-            className="mr-3"
-          />
-          {item.name}
-        </ListGroup.Item>
+          name={item.name}
+          action={item.action}
+          icon={item.icon}
+        />
       ))}
     </ListGroup>
   );

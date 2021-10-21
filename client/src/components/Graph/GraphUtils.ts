@@ -59,16 +59,16 @@ export const isSimpleTreeNode = (o: any): o is ISimpleTreeNode => {
     return o && o.data;
 }
 
-export const useForceSimulation = (width: number, height: number, entity?: ICompany | IShareholder, ownerships?: IOwnership[]) => {
+export const useForceSimulation = (dimensions: INodeDimensions, existingNodes?: IGraphNode[], existingLinks?: IGraphLink[], ownerships?: IOwnership[]) => {
     const [simulation, setSimulation] = useState<Simulation<IGraphNode, undefined>>()
     const [nodes, setNodes] = useState<IGraphNode[]>()
+    const [links, setLinks] = useState<IGraphLink[]>()
 
     useEffect(() => {
-        if (entity && ownerships) {
-            const nodeDimensions = { width, height };
+        if (existingNodes && existingLinks && ownerships) {
             const o = [...ownerships.map(o => {
-                if (o.company) return { entity: o.company, id: o._id, ...nodeDimensions }
-                else if (o.shareholder) return { entity: o.shareholder, id: o._id, ...nodeDimensions }
+                if (o.company) return { entity: o.company, id: o._id, ...dimensions }
+                else if (o.shareholder) return { entity: o.shareholder, id: o._id, ...dimensions }
                 else return null;
             })];
             const oFiltered = o.filter(o_ => o_ !== null) as ({ id: string, entity: ICompany | IShareholder } & INodeDimensions)[];
@@ -76,13 +76,7 @@ export const useForceSimulation = (width: number, height: number, entity?: IComp
                 .nodes(
                     [
                         ...oFiltered,
-                        {
-                            id: entity._id,
-                            entity,
-                            ...nodeDimensions,
-                            fx: 500 - (width - 2) / 2,
-                            fy: 500 - height / 2,
-                        }
+                        ...existingNodes
                     ]
                 )
                 .force('x', forceX(100))
@@ -91,15 +85,17 @@ export const useForceSimulation = (width: number, height: number, entity?: IComp
                 .force('charge', forceManyBody().strength(-100))
                 .tick(100) as Simulation<IGraphNode, undefined>;
             setSimulation(simulation);
-            setNodes(simulation?.nodes())
+            setNodes(simulation?.nodes());
+            setLinks(existingLinks);
         }
         return () => {
             setSimulation(undefined);
             setNodes(undefined);
+            setLinks(undefined);
         };
-    }, [entity, height, ownerships, width])
+    }, [dimensions, existingLinks, existingNodes, ownerships])
 
-    return { simulation, nodes };
+    return { simulation, nodes, links };
 }
 
 export interface ITreeDimensions {

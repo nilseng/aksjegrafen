@@ -1,9 +1,11 @@
+import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
 
 import { useQuery } from "../../hooks/useQuery";
-import { ICompany, IShareholder } from "../../models/models";
+import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
+  getInvestors,
   useGetCompany,
   useGetShareholder,
   useInvestments,
@@ -12,7 +14,7 @@ import {
 import Loading from "../Loading";
 import {
   ITreeDimensions,
-  //useForceSimulation,
+  useForceSimulation,
   useSimpleTree,
 } from "./GraphUtils";
 import { GraphView } from "./GraphView";
@@ -30,12 +32,29 @@ const treeConfig: ITreeDimensions = {
   },
 };
 
+export interface IGraphContext {
+  actions: IGraphActions;
+  year: 2020 | 2019;
+  limit: number;
+}
+
+export interface IGraphActions {
+  loadInvestors?: (entity: ICompany | IShareholder) => Promise<void>;
+}
+
+export const GraphContext = React.createContext<IGraphContext>({
+  actions: {},
+  year: 2020,
+  limit: 5,
+});
+
 export const Graph = () => {
   const { theme } = useContext(AppContext);
 
   const query = useQuery();
 
   const [year] = useState<2019 | 2020>(2020);
+  const [limit] = useState<number>(5);
   const [companyId, setCompanyId] = useState<string>();
   const [shareholder_id, setShareholder_id] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
@@ -77,46 +96,53 @@ export const Graph = () => {
     year,
     5
   );
-  /* const [ownerships, setOwnerships] = useState<IOwnership[]>();
+
+  const {
+    nodes: treeNodes,
+    links: treeLinks,
+    creatingTree,
+  } = useSimpleTree(treeConfig, entity, investors, investments);
+
+  const [newOwnerships, setNewOwnerships] = useState<IOwnership[]>([]);
+
+  const [actions, setActions] = useState<IGraphActions>({});
 
   useEffect(() => {
-    const o = [];
-    if (investors) o.push(...investors);
-    if (investments) o.push(...investments);
-    setOwnerships(o);
-  }, [investors, investments]); */
+    setActions({
+      loadInvestors: async (entity: ICompany | IShareholder) => {
+        console.log("loading investors");
+        const ownerships = await getInvestors(entity, year, limit);
+        if (ownerships) setNewOwnerships(ownerships);
+      },
+    });
+  }, [limit, year]);
 
-  /* const { nodes } = useForceSimulation(
-    nodeWidth,
-    nodeHeight,
-    entity,
-    ownerships
-  ); */
-
-  const { nodes, links, creatingTree } = useSimpleTree(
-    treeConfig,
-    entity,
-    investors,
-    investments
+  const { nodes, links } = useForceSimulation(
+    treeConfig.nodeDimensions,
+    treeNodes,
+    treeLinks,
+    newOwnerships
   );
 
   if (loadingInvestments || loadingInvestors || creatingTree)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
-  if (!nodes || !links)
+  if (!nodes || !links) {
     return (
-      <p>
-        "Oh, noes! Something went terribly wrong. If you're suuuuper nice,
-        you'll let Teodor know @ teodor.nilseng@gmail.com ;)"
+      <p className="container mt-5" style={{ color: theme.text }}>
+        Oh, noes! Something went terribly wrong.
       </p>
     );
+  }
 
   return (
-    <GraphView
-      year={year}
-      nodeDimensions={treeConfig.nodeDimensions}
-      nodes={nodes}
-      links={links}
-    />
+    <GraphContext.Provider value={{ year, limit: 5, actions }}>
+      <GraphView
+        year={year}
+        nodeDimensions={treeConfig.nodeDimensions}
+        nodes={nodes}
+        links={links}
+      />
+    </GraphContext.Provider>
   );
 };

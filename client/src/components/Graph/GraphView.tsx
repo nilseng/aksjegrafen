@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react";
 import { AppContext } from "../../App";
 import { GraphLink } from "./GraphLink";
-import { GraphMenu, IMenu } from "./GraphMenu";
+import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions, useZoom } from "./GraphUtils";
 
