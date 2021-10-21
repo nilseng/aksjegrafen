@@ -17,34 +17,38 @@ export const GraphNode = ({ node, year }: IProps) => {
         y={node.y}
         width={node.width}
         height={node.height}
-        style={{
-          ...theme.elevation,
-          backgroundColor: theme.background,
-          cursor: "pointer",
-        }}
       >
         <div
           data-xmlns="http://www.w3.org/1999/xhtml"
-          className="p-2 w-100 h-100 d-flex flex-column align-items-middle justify-content-between"
+          className="w-100 h-100 p-4"
         >
-          <div className="font-weight-bold" style={{ color: theme.text }}>
-            {node.entity?.name}
-          </div>
-          <div>
-            {(node.loadedInvestors || node.loadedInvestors === 0) &&
-              node.entity.investorCount && (
-                <p className="small m-0" style={{ color: theme.text }}>
-                  {node.loadedInvestors} av {node.entity.investorCount[year]}{" "}
-                  investorer
-                </p>
-              )}
-            {(node.loadedInvestments || node.loadedInvestments === 0) &&
-              node.entity.investmentCount && (
-                <p className="small m-0" style={{ color: theme.text }}>
-                  {node.loadedInvestments} av{" "}
-                  {node.entity.investmentCount[year]} investeringer
-                </p>
-              )}
+          <div
+            className="h-100 w-100 d-flex flex-column align-items-middle justify-content-between p-2"
+            style={{
+              ...theme.elevation,
+              backgroundColor: theme.background,
+              cursor: "pointer",
+            }}
+          >
+            <div className="font-weight-bold" style={{ color: theme.text }}>
+              {node.entity?.name}
+            </div>
+            <div>
+              {(node.loadedInvestors || node.loadedInvestors === 0) &&
+                node.entity.investorCount && (
+                  <p className="small m-0" style={{ color: theme.text }}>
+                    {node.loadedInvestors} av {node.entity.investorCount[year]}{" "}
+                    investorer
+                  </p>
+                )}
+              {(node.loadedInvestments || node.loadedInvestments === 0) &&
+                node.entity.investmentCount && (
+                  <p className="small m-0" style={{ color: theme.text }}>
+                    {node.loadedInvestments} av{" "}
+                    {node.entity.investmentCount[year]} investeringer
+                  </p>
+                )}
+            </div>
           </div>
         </div>
       </foreignObject>

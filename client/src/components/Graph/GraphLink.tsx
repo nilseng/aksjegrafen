@@ -24,7 +24,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
     y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
   });
   const [percentagePos] = useState<{ x: number; y: number }>({
-    x: (link.source.x + link.target.x) / 2 + offset.x + 10,
+    x: (link.source.x + link.target.x) / 2 + offset.x,
     y: (link.source.y + link.target.y) / 2 + offset.y,
   });
 

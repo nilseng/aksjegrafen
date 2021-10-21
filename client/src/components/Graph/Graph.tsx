@@ -25,8 +25,8 @@ const treeConfig: ITreeDimensions = {
     vertical: 120,
   },
   nodeDimensions: {
-    width: 300,
-    height: 120,
+    width: 360,
+    height: 180,
   },
 };
 
