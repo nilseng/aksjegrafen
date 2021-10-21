@@ -5,7 +5,6 @@ import { CytoGraph } from "./components/CytoGraph";
 import { Graph } from "./components/Graph/Graph";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
-import { OwnershipChart } from "./components/OwnershipChart/OwnershipChart";
 import { Stats } from "./components/Stats";
 
 import { theming } from "./theming/theme";
@@ -47,7 +46,6 @@ const App = () => {
           <AppContext.Provider value={{ theme }}>
             <Route path="/" component={Landing} exact />
             <Route path="/graph" component={Graph} />
-            <Route path="/ownership-chart" component={OwnershipChart} />
             <Route path="/stats" component={Stats} />
             <Route path="/cyto-graph" component={CytoGraph} />
           </AppContext.Provider>

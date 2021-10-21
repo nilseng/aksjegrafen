@@ -12,11 +12,7 @@ import { AppContext } from "../App";
 import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faProjectDiagram,
-  faSitemap,
-  faUserTie,
-} from "@fortawesome/free-solid-svg-icons";
+import { faSitemap, faUserTie } from "@fortawesome/free-solid-svg-icons";
 
 import { faBuilding } from "@fortawesome/free-regular-svg-icons";
 
@@ -121,8 +117,10 @@ export const Landing = () => {
                   className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-1"
                   style={{
                     backgroundColor: theme.background,
+                    cursor: "pointer",
                     ...theme.elevation,
                   }}
+                  onClick={() => history.push(`/graph?_id=${company._id}`)}
                 >
                   <div>
                     <div className="mr-2">{company.name}</div>
@@ -130,24 +128,12 @@ export const Landing = () => {
                       {company.orgnr}
                     </span>
                   </div>
-                  <div className="text-nowrap">
-                    <FontAwesomeIcon
-                      icon={faSitemap}
-                      color={theme.primary}
-                      style={{ cursor: "pointer" }}
-                      className="mr-3"
-                      onClick={() =>
-                        history.push(`/ownership-chart?_id=${company._id}`)
-                      }
-                    />
-                    <FontAwesomeIcon
-                      icon={faProjectDiagram}
-                      color={theme.primary}
-                      style={{ cursor: "pointer" }}
-                      className="mr-3"
-                      onClick={() => history.push(`/graph?_id=${company._id}`)}
-                    />
-                  </div>
+                  <FontAwesomeIcon
+                    icon={faSitemap}
+                    color={theme.primary}
+                    style={{ cursor: "pointer" }}
+                    className="mr-3"
+                  />
                 </ListGroup.Item>
               ))}
             </ListGroup>
@@ -189,8 +175,12 @@ export const Landing = () => {
                   className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-1"
                   style={{
                     backgroundColor: theme.background,
+                    cursor: "pointer",
                     ...theme.elevation,
                   }}
+                  onClick={() =>
+                    history.push(`/graph?shareholder_id=${shareholder._id}`)
+                  }
                 >
                   <div>
                     <span className="mr-2">{shareholder.name}</span>
@@ -212,28 +202,11 @@ export const Landing = () => {
                       )}
                     </div>
                   </div>
-                  <div className="text-nowrap">
-                    <FontAwesomeIcon
-                      icon={faSitemap}
-                      color={theme.primary}
-                      style={{ cursor: "pointer" }}
-                      className="mr-3"
-                      onClick={() =>
-                        history.push(
-                          `/ownership-chart?shareholder_id=${shareholder._id}`
-                        )
-                      }
-                    />
-                    <FontAwesomeIcon
-                      icon={faProjectDiagram}
-                      color={theme.primary}
-                      style={{ cursor: "pointer" }}
-                      className="mr-3"
-                      onClick={() =>
-                        history.push(`/graph?shareholder_id=${shareholder._id}`)
-                      }
-                    />
-                  </div>
+                  <FontAwesomeIcon
+                    icon={faSitemap}
+                    color={theme.primary}
+                    className="mr-3"
+                  />
                 </ListGroup.Item>
               ))}
             </ListGroup>
