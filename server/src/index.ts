@@ -10,12 +10,14 @@ import { hideBin } from 'yargs/helpers'
 import { Database } from "./database/databaseSetup"
 import { api } from "./routes/api"
 import { deleteData, importData } from './services/importService'
+import { transformData } from "./services/transformationService"
 
 dotenv.config()
 
 const argv = yargs(hideBin(process.argv)).options({
     import: { type: 'boolean', default: false, description: 'Run an import when starting the server' },
     deletion: { type: 'boolean', default: false, description: 'Run data deletion when starting the server' },
+    transform: { type: 'boolean', default: false, description: 'Run data transformation when starting the server.' },
     year: { type: 'number', description: 'Specify from which year data should be imported - 2019 or 2020' },
     data: { type: 'array', description: 'Specify data to be included - ownerships, companies and/or shareholders' }
 }).parseSync()
@@ -47,4 +49,5 @@ Database.initialize().then(db => {
 
     if (argv.import) importData(argv.year, argv.data);
     if (argv.deletion) deleteData(argv.year, argv.data);
+    if (argv.transform && argv.year) transformData(db, argv.year as 2020 | 2019);
 });

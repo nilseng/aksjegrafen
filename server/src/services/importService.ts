@@ -5,6 +5,7 @@ import fs from 'fs'
 import { Database } from "../database/databaseSetup"
 import { Company, isCompany, isOwnership, isShareholder, Ownership, OwnershipRaw, Shareholder, ShareholderType } from '../models/models'
 
+//TODO: Use dependency injection instead
 const db = Database.getInstance().db;
 
 export const importData = async (year?: number, data?: (number | string)[]) => {

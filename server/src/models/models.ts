@@ -1,3 +1,5 @@
+import { ObjectID } from "mongodb";
+
 export interface OwnershipRaw {
     orgnr: string
     companyName: string
@@ -29,12 +31,21 @@ export enum ShareholderType {
 }
 
 export interface Company {
+    _id: ObjectID;
     orgnr: string
     name: string
     zipCode?: string
     location?: string
     countryCode?: string
     stocks?: number
+    investorCount?: {
+        2020?: number;
+        2019?: number;
+    };
+    investmentCount?: {
+        2020?: number;
+        2019?: number;
+    }
 }
 
 export interface Person {
