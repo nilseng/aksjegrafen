@@ -33,10 +33,16 @@ const entityItems: IMenuItem[] = [
     icon: faUsers,
     action: { name: "loadInvestors" },
   },
-  { name: "Last 5 flere investeringer", icon: faBuilding },
+  {
+    name: "Last 5 flere investeringer",
+    icon: faBuilding,
+    action: { name: "loadInvestments" },
+  },
 ];
 
-const defaultItems: IMenuItem[] = [{ name: "Tilbakestill graf", icon: faHome }];
+const defaultItems: IMenuItem[] = [
+  { name: "Tilbakestill graf", icon: faHome, action: { name: "resetGraph" } },
+];
 
 export interface IMenu {
   open: boolean;
@@ -65,11 +71,35 @@ export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
                 }
               };
               break;
+            case "loadInvestments":
+              item.action.action = () => {
+                if (graphContext.actions.loadInvestments) {
+                  graphContext.actions.loadInvestments(entity);
+                }
+              };
+              break;
+            case "resetGraph":
+              item.action.action = () => {
+                if (graphContext.actions.resetGraph) {
+                  graphContext.actions.resetGraph();
+                }
+              };
           }
         }
       }
       setVisibleItems(items);
-    } else setVisibleItems(defaultItems);
+    } else {
+      for (const item of defaultItems) {
+        if (item.action?.name === "resetGraph") {
+          item.action.action = () => {
+            if (graphContext.actions.resetGraph) {
+              graphContext.actions.resetGraph();
+            }
+          };
+        }
+      }
+      setVisibleItems(defaultItems);
+    }
   }, [entity, graphContext.actions]);
 
   if (!open) return null;

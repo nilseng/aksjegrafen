@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { AppContext } from "../../App";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
@@ -10,15 +10,28 @@ interface IProps {
   nodeDimensions: INodeDimensions;
   nodes: IGraphNode[];
   links: IGraphLink[];
+  svgTranslate: string;
+  setSvgTranslate: React.Dispatch<React.SetStateAction<string>>;
+  resetZoom: boolean;
+  setResetZoom: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
+export const GraphView = ({
+  year,
+  nodeDimensions,
+  nodes,
+  links,
+  svgTranslate,
+  setSvgTranslate,
+  resetZoom,
+  setResetZoom,
+}: IProps) => {
   const { theme } = useContext(AppContext);
 
   const [menu, setMenu] = useState<IMenu>({ open: false });
 
   const svgRef = useRef<SVGSVGElement>(null);
-  const svgTranslate = useZoom(svgRef);
+  useZoom(setSvgTranslate, resetZoom, setResetZoom, svgRef);
   return (
     <div className="d-flex w-100 h-100 p-4">
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>

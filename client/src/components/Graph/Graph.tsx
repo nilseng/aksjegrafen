@@ -5,6 +5,7 @@ import { AppContext } from "../../App";
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, IShareholder } from "../../models/models";
 import {
+  getInvestments,
   getInvestors,
   useGetCompany,
   useGetShareholder,
@@ -34,6 +35,8 @@ const treeConfig: ITreeDimensions = {
   },
 };
 
+const defaultSvgTranslate = "translate(0,0) scale(1)";
+
 export interface IGraphContext {
   actions: IGraphActions;
   year: 2020 | 2019;
@@ -42,6 +45,8 @@ export interface IGraphContext {
 
 export interface IGraphActions {
   loadInvestors?: (entity: ICompany | IShareholder) => Promise<void>;
+  loadInvestments?: (entity: ICompany | IShareholder) => Promise<void>;
+  resetGraph?: () => void;
 }
 
 export const GraphContext = React.createContext<IGraphContext>({
@@ -60,6 +65,9 @@ export const Graph = () => {
   const [companyId, setCompanyId] = useState<string>();
   const [shareholder_id, setShareholder_id] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
+
+  const [svgTranslate, setSvgTranslate] = useState("translate(0,0) scale(1)");
+  const [resetZoom, setResetZoom] = useState<boolean>(true);
 
   // #1: Query parameters are read
   useEffect(() => {
@@ -126,6 +134,26 @@ export const Graph = () => {
           setLinks(simulationLinks);
         }
       },
+      loadInvestments: async (entity: ICompany | IShareholder) => {
+        const ownerships = await getInvestments(entity, year, limit);
+        if (ownerships) {
+          const { nodes: simulationNodes, links: simulationLinks } =
+            graphSimulation(
+              treeConfig.nodeDimensions,
+              ownerships,
+              nodes ?? treeNodes,
+              links ?? treeLinks
+            );
+          setNodes(simulationNodes);
+          setLinks(simulationLinks);
+        }
+      },
+      resetGraph: () => {
+        setNodes(undefined);
+        setLinks(undefined);
+        setSvgTranslate(defaultSvgTranslate);
+        setResetZoom(true);
+      },
     });
   }, [limit, links, nodes, treeLinks, treeNodes, year]);
 
@@ -147,6 +175,10 @@ export const Graph = () => {
         nodeDimensions={treeConfig.nodeDimensions}
         nodes={nodes ?? treeNodes}
         links={links ?? treeLinks}
+        svgTranslate={svgTranslate}
+        setSvgTranslate={setSvgTranslate}
+        resetZoom={resetZoom}
+        setResetZoom={setResetZoom}
       />
     </GraphContext.Provider>
   );
