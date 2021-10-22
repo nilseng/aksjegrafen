@@ -115,13 +115,15 @@ export const Graph = () => {
       loadInvestors: async (entity: ICompany | IShareholder) => {
         const ownerships = await getInvestors(entity, year, limit);
         if (ownerships) {
-          const { nodes: simulationNodes } = graphSimulation(
-            treeConfig.nodeDimensions,
-            ownerships,
-            nodes ?? treeNodes,
-            links ?? treeLinks
-          );
+          const { nodes: simulationNodes, links: simulationLinks } =
+            graphSimulation(
+              treeConfig.nodeDimensions,
+              ownerships,
+              nodes ?? treeNodes,
+              links ?? treeLinks
+            );
           setNodes(simulationNodes);
+          setLinks(simulationLinks);
         }
       },
     });

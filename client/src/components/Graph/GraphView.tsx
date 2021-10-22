@@ -55,11 +55,10 @@ export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
                 }}
               />
             ))}
-            {/* TODO: Detect duplicate nodes instead of using the i here. */}
-            {nodes.map((node, i) => {
+            {nodes.map((node) => {
               return (
                 <g
-                  key={node.entity._id + i}
+                  key={node.id}
                   onClick={(e) => {
                     setMenu({
                       open: true,

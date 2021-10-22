@@ -15,15 +15,15 @@ export const GraphLink = ({ link, offset }: IProps) => {
   const { theme } = useContext(AppContext);
 
   const [rotation, setRotation] = useState<number>();
-  const [arrowPos] = useState<{ x: number; y: number }>({
+  const [arrowPos, setArrowPos] = useState<{ x: number; y: number }>({
     x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
     y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
   });
-  const [countPos] = useState<{ x: number; y: number }>({
+  const [countPos, setCountPos] = useState<{ x: number; y: number }>({
     x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
     y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
   });
-  const [percentagePos] = useState<{ x: number; y: number }>({
+  const [percentagePos, setPercentagePos] = useState<{ x: number; y: number }>({
     x: (link.source.x + link.target.x) / 2 + offset.x,
     y: (link.source.y + link.target.y) / 2 + offset.y,
   });
@@ -40,7 +40,19 @@ export const GraphLink = ({ link, offset }: IProps) => {
         ? -(Math.acos(cos_theta) / (2 * Math.PI)) * 360
         : (Math.acos(cos_theta) / (2 * Math.PI)) * 360
     );
-  }, [link]);
+    setArrowPos({
+      x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
+      y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
+    });
+    setCountPos({
+      x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
+      y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
+    });
+    setPercentagePos({
+      x: (link.source.x + link.target.x) / 2 + offset.x,
+      y: (link.source.y + link.target.y) / 2 + offset.y,
+    });
+  }, [link, offset]);
 
   if (!link) return null;
 

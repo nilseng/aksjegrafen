@@ -5,12 +5,10 @@ import {
   forceSimulation,
   SimulationNodeDatum,
   Simulation,
-  forceManyBody,
-  forceX,
-  forceY,
   forceCollide,
   tree,
   hierarchy,
+  forceLink,
 } from "d3";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 
@@ -77,10 +75,24 @@ export const graphSimulation = (
 ) => {
   const o = [
     ...newOwnerships.map((o) => {
-      if (o.company) return { entity: o.company, id: o._id, ...dimensions };
-      else if (o.shareholder)
-        return { entity: o.shareholder, id: o._id, ...dimensions };
-      else return null;
+      if (o.company) {
+        // Not adding node if it exists
+        if (currentNodes?.find((n) => n.id === o.company?.orgnr)) return null;
+        return { entity: o.company, id: o.orgnr, ...dimensions };
+      } else if (o.shareholder) {
+        // Not adding node if it exists
+        if (
+          currentNodes?.find(
+            (n) => n.id === o.shareholder?.orgnr || n.id === o.shareholder?.id
+          )
+        )
+          return null;
+        return {
+          entity: o.shareholder,
+          id: o.shareholder?.orgnr ?? o.shareholder?.id,
+          ...dimensions,
+        };
+      } else return null;
     }),
   ];
   const oFiltered = o.filter((o_) => o_ !== null) as ({
@@ -89,14 +101,45 @@ export const graphSimulation = (
   } & INodeDimensions)[];
 
   const nodeDatums = currentNodes ? [...oFiltered, ...currentNodes] : oFiltered;
-  const simulation = forceSimulation<ISimulationNodeDatum>()
+  const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
-    .force("x", forceX(100))
-    .force("y", forceY(100))
-    .force("collide", forceCollide(200))
-    .force("charge", forceManyBody().strength(-100))
-    .tick(100) as Simulation<IGraphNode, undefined>;
-  return { simulation, nodes: simulation.nodes() };
+    .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
+
+  const nodes = simulation.nodes();
+  const links = updateLinks(newOwnerships, currentLinks, nodes);
+
+  simulation.force("link", forceLink(links)).tick();
+
+  return { simulation, nodes: simulation.nodes(), links };
+};
+
+const updateLinks = (
+  ownerships: IOwnership[],
+  currentLinks?: IGraphLink[],
+  nodes?: IGraphNode[]
+) => {
+  const links = currentLinks ? [...currentLinks] : [];
+  const currentOwnerships = links.map((link) => link.ownerships).flat();
+  for (const o of ownerships) {
+    if (currentOwnerships.find((c) => c._id === o._id)) continue;
+    const sourceId = o.shareholderOrgnr ?? o.shareHolderId;
+    const targetId = o.orgnr;
+    const link = links.find(
+      (l) => l.source.id === sourceId && l.target.id === targetId
+    );
+    if (link) link.ownerships.push(o);
+    else {
+      const source = nodes?.find((node) => node.id === sourceId);
+      const target = nodes?.find((node) => node.id === targetId);
+      if (!source || !target) {
+        console.error(
+          "Something went wrong when updating links - source or target not found."
+        );
+      } else links.push({ source, target, ownerships: [o] });
+    }
+  }
+
+  return links;
 };
 
 export interface ITreeDimensions {
