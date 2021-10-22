@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
 
 import { useQuery } from "../../hooks/useQuery";
-import { ICompany, IOwnership, IShareholder } from "../../models/models";
+import { ICompany, IShareholder } from "../../models/models";
 import {
   getInvestors,
   useGetCompany,
@@ -13,8 +13,10 @@ import {
 } from "../../services/apiService";
 import Loading from "../Loading";
 import {
+  graphSimulation,
+  IGraphLink,
+  IGraphNode,
   ITreeDimensions,
-  useForceSimulation,
   useSimpleTree,
 } from "./GraphUtils";
 import { GraphView } from "./GraphView";
@@ -103,31 +105,32 @@ export const Graph = () => {
     creatingTree,
   } = useSimpleTree(treeConfig, entity, investors, investments);
 
-  const [newOwnerships, setNewOwnerships] = useState<IOwnership[]>([]);
-
   const [actions, setActions] = useState<IGraphActions>({});
+
+  const [nodes, setNodes] = useState<IGraphNode[]>();
+  const [links, setLinks] = useState<IGraphLink[]>();
 
   useEffect(() => {
     setActions({
       loadInvestors: async (entity: ICompany | IShareholder) => {
-        console.log("loading investors");
         const ownerships = await getInvestors(entity, year, limit);
-        if (ownerships) setNewOwnerships(ownerships);
+        if (ownerships) {
+          const { nodes: simulationNodes } = graphSimulation(
+            treeConfig.nodeDimensions,
+            ownerships,
+            nodes ?? treeNodes,
+            links ?? treeLinks
+          );
+          setNodes(simulationNodes);
+        }
       },
     });
-  }, [limit, year]);
-
-  const { nodes, links } = useForceSimulation(
-    treeConfig.nodeDimensions,
-    treeNodes,
-    treeLinks,
-    newOwnerships
-  );
+  }, [limit, links, nodes, treeLinks, treeNodes, year]);
 
   if (loadingInvestments || loadingInvestors || creatingTree)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
-  if (!nodes || !links) {
+  if (!treeNodes || !treeLinks) {
     return (
       <p className="container mt-5" style={{ color: theme.text }}>
         Oh, noes! Something went terribly wrong.
@@ -140,8 +143,8 @@ export const Graph = () => {
       <GraphView
         year={year}
         nodeDimensions={treeConfig.nodeDimensions}
-        nodes={nodes}
-        links={links}
+        nodes={nodes ?? treeNodes}
+        links={links ?? treeLinks}
       />
     </GraphContext.Provider>
   );
