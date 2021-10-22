@@ -1,14 +1,14 @@
 {
-    "name": "norske-aksjer",
-    "version": "1.0.0",
-    "description": "Web app for å finne aksjeselskaper og aksjonærer.",
-    "main": "server/src/index.ts",
-    "scripts": {
-        "heroku-prebuild": "npm i && cd client && npm i && npm i --save-dev && npm run build && cd .. && cd server && npm i && tsc"
-    },
-    "author": "Teodor Nilseng Danielsen",
-    "license": "ISC",
-    "dependencies": {
-        "typescript": "^4.1.3"
-    }
+  "name": "norske-aksjer",
+  "version": "1.0.0",
+  "description": "Web app for å finne aksjeselskaper og aksjonærer.",
+  "main": "server/src/index.ts",
+  "scripts": {
+    "heroku-prebuild": "npm i && cd client && npm i && npm i --save-dev && npm run build && cd .. && cd server && npm i && tsc"
+  },
+  "author": "Teodor Nilseng Danielsen",
+  "license": "ISC",
+  "dependencies": {
+    "typescript": "^4.1.3"
+  }
 }
