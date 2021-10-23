@@ -75,7 +75,7 @@ export const GraphView = ({
                   onClick={(e) => {
                     setMenu({
                       open: true,
-                      entity: node.entity,
+                      node,
                       x: e.pageX,
                       y: e.pageY,
                     });
@@ -84,7 +84,7 @@ export const GraphView = ({
                     e.preventDefault();
                     setMenu({
                       open: true,
-                      entity: node.entity,
+                      node,
                       x: e.pageX,
                       y: e.pageY,
                     });

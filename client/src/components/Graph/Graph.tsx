@@ -44,8 +44,14 @@ export interface IGraphContext {
 }
 
 export interface IGraphActions {
-  loadInvestors?: (entity: ICompany | IShareholder) => Promise<void>;
-  loadInvestments?: (entity: ICompany | IShareholder) => Promise<void>;
+  loadInvestors?: (
+    entity: ICompany | IShareholder,
+    skip?: number
+  ) => Promise<void>;
+  loadInvestments?: (
+    entity: ICompany | IShareholder,
+    skip?: number
+  ) => Promise<void>;
   resetGraph?: () => void;
 }
 
@@ -120,8 +126,11 @@ export const Graph = () => {
 
   useEffect(() => {
     setActions({
-      loadInvestors: async (entity: ICompany | IShareholder) => {
-        const ownerships = await getInvestors(entity, year, limit);
+      loadInvestors: async (
+        entity: ICompany | IShareholder,
+        skip: number = 0
+      ) => {
+        const ownerships = await getInvestors(entity, year, limit, skip);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } =
             graphSimulation(
@@ -134,8 +143,11 @@ export const Graph = () => {
           setLinks(simulationLinks);
         }
       },
-      loadInvestments: async (entity: ICompany | IShareholder) => {
-        const ownerships = await getInvestments(entity, year, limit);
+      loadInvestments: async (
+        entity: ICompany | IShareholder,
+        skip: number = 0
+      ) => {
+        const ownerships = await getInvestments(entity, year, limit, skip);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } =
             graphSimulation(

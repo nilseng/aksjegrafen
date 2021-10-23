@@ -85,36 +85,7 @@ export const graphSimulation = (
   currentNodes?: IGraphNode[],
   currentLinks?: IGraphLink[]
 ) => {
-  const o = [
-    ...newOwnerships.map((o) => {
-      if (o.company) {
-        // Not adding node if it exists
-        if (currentNodes?.find((n) => n.id === o.company?.orgnr)) return null;
-        return { entity: o.company, id: o.orgnr, ...dimensions };
-      } else if (o.shareholder) {
-        // Not adding node if it exists
-        if (
-          currentNodes?.find(
-            (n) => n.id === o.shareholder?.orgnr || n.id === o.shareholder?.id
-          )
-        )
-          return null;
-        return {
-          entity: o.shareholder,
-          id: o.shareholder?.orgnr ?? o.shareholder?.id,
-          ...dimensions,
-        };
-      } else return null;
-    }),
-  ];
-  const newNodeDatums = o.filter((o_) => o_ !== null) as ({
-    id: string;
-    entity: ICompany | IShareholder;
-  } & INodeDimensions)[];
-
-  const nodeDatums = currentNodes
-    ? [...newNodeDatums, ...currentNodes]
-    : newNodeDatums;
+  const nodeDatums = createNodeDatums(newOwnerships, dimensions, currentNodes);
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
     .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
@@ -122,9 +93,47 @@ export const graphSimulation = (
   const nodes = simulation.nodes();
   const links = updateLinks(newOwnerships, currentLinks, nodes);
 
-  simulation.force("link", forceLink(links)).tick();
+  simulation.force("link", forceLink(links)).tick(1000);
 
   return { simulation, nodes: simulation.nodes(), links };
+};
+
+const createNodeDatums = (
+  ownerships: IOwnership[],
+  dimensions: INodeDimensions,
+  currentNodes?: IGraphNode[]
+) => {
+  const newDatums: ({
+    id: string;
+    entity: ICompany | IShareholder;
+  } & INodeDimensions)[] = [];
+  for (const o of ownerships) {
+    const identifier =
+      o.company?.orgnr ?? o.shareholder?.orgnr ?? o.shareholder?.id;
+    if (!identifier) {
+      console.error("Entity identifier not found in:", o);
+      continue;
+    }
+    // If datum exists in graph or in unfilteredDatums, do nothing
+    if (
+      currentNodes?.find((n) => n.id === identifier) ||
+      newDatums.find((d) => d.id === identifier)
+    )
+      continue;
+    newDatums.push(
+      o.company
+        ? { entity: o.company, id: identifier, ...dimensions }
+        : {
+            entity: o.shareholder as IShareholder,
+            id: identifier,
+            ...dimensions,
+          }
+    );
+  }
+
+  const nodeDatums = currentNodes ? [...newDatums, ...currentNodes] : newDatums;
+
+  return nodeDatums;
 };
 
 const updateLinks = (

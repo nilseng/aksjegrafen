@@ -10,8 +10,8 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
-import { ICompany, IShareholder } from "../../../models/models";
 import { GraphContext, IGraphContext } from "../Graph";
+import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
 
 export interface IMenuItem {
@@ -29,12 +29,12 @@ const entityItems: IMenuItem[] = [
   { name: "Åpne i nytt vindu", icon: faWindowRestore },
   { name: "Sentrér på siden", icon: faAnchor },
   {
-    name: "Last 5 flere investorer",
+    name: "Last flere investorer",
     icon: faUsers,
     action: { name: "loadInvestors" },
   },
   {
-    name: "Last 5 flere investeringer",
+    name: "Last flere investeringer",
     icon: faBuilding,
     action: { name: "loadInvestments" },
   },
@@ -46,20 +46,20 @@ const defaultItems: IMenuItem[] = [
 
 export interface IMenu {
   open: boolean;
-  entity?: ICompany | IShareholder;
+  node?: IGraphNode;
   x?: number;
   y?: number;
   setMenu?: React.Dispatch<React.SetStateAction<IMenu>>;
 }
 
-export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
+export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
   const { theme } = useContext(AppContext);
   const graphContext = useContext(GraphContext);
 
   const [visibleItems, setVisibleItems] = useState<IMenuItem[]>();
 
   useEffect(() => {
-    if (entity) {
+    if (node?.entity) {
       const items = [...entityItems, ...defaultItems];
       if (graphContext.actions) {
         for (const item of items) {
@@ -67,14 +67,22 @@ export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
             case "loadInvestors":
               item.action.action = () => {
                 if (graphContext.actions.loadInvestors) {
-                  graphContext.actions.loadInvestors(entity);
+                  const investorCount = node.loadedInvestors ?? 0;
+                  graphContext.actions.loadInvestors(
+                    node.entity,
+                    investorCount
+                  );
                 }
               };
               break;
             case "loadInvestments":
               item.action.action = () => {
                 if (graphContext.actions.loadInvestments) {
-                  graphContext.actions.loadInvestments(entity);
+                  const investmentCount = node.loadedInvestments ?? 0;
+                  graphContext.actions.loadInvestments(
+                    node.entity,
+                    investmentCount
+                  );
                 }
               };
               break;
@@ -100,7 +108,7 @@ export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
       }
       setVisibleItems(defaultItems);
     }
-  }, [entity, graphContext.actions]);
+  }, [node, graphContext.actions]);
 
   if (!open) return null;
 
@@ -117,8 +125,8 @@ export const GraphMenu = ({ open, entity, x, y, setMenu }: IMenu) => {
         if (setMenu) setMenu((menu) => ({ ...menu, open: false }));
       }}
     >
-      {entity && (
-        <GraphMenuItem key={entity._id} name={entity.name} border={true} />
+      {node?.entity && (
+        <GraphMenuItem key={node.id} name={node.entity.name} border={true} />
       )}
       {visibleItems?.map((item) => (
         <GraphMenuItem
