@@ -24,7 +24,7 @@ export interface IMenuItem {
 }
 
 const entityItems: IMenuItem[] = [
-  { name: "Se detaljer", icon: faInfo },
+  { name: "Se detaljer", icon: faInfo, action: { name: "showDetails" } },
   {
     name: "Åpne i nytt vindu",
     icon: faWindowRestore,
@@ -102,6 +102,12 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
                 }
               };
               break;
+            case "showDetails":
+              item.action.action = () => {
+                if (graphContext.actions.showDetails) {
+                  graphContext.actions.showDetails(node.entity);
+                }
+              };
           }
         }
       }

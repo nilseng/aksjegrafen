@@ -33,7 +33,7 @@ export const GraphView = ({
   const svgRef = useRef<SVGSVGElement>(null);
   useZoom(setSvgTranslate, resetZoom, setResetZoom, svgRef);
   return (
-    <div className="d-flex w-100 h-100 p-4">
+    <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
         <GraphMenu {...menu} setMenu={setMenu} />
         <svg

@@ -22,7 +22,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       style={{ zIndex: 10000 }}
     >
       <Link to="/">
-        <Navbar.Brand className="text-light pb-0">
+        <Navbar.Brand className="text-light">
           <span
             className="ml-2"
             style={{
@@ -34,6 +34,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               width: "3.2rem",
               height: "3.2rem",
               paddingTop: "0.4rem",
+              paddingBottom: "0.4rem",
             }}
           >
             <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />

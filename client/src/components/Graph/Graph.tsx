@@ -13,6 +13,7 @@ import {
   useInvestors,
 } from "../../services/apiService";
 import Loading from "../Loading";
+import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
 import {
   graphSimulation,
   IGraphLink,
@@ -54,6 +55,7 @@ export interface IGraphActions {
   ) => Promise<void>;
   resetGraph?: () => void;
   openInNewWindow?: (entity: ICompany | IShareholder) => void;
+  showDetails?: (entity: ICompany | IShareholder) => void;
 }
 
 export const GraphContext = React.createContext<IGraphContext>({
@@ -125,6 +127,10 @@ export const Graph = () => {
   const [nodes, setNodes] = useState<IGraphNode[]>();
   const [links, setLinks] = useState<IGraphLink[]>();
 
+  const [selectedEntity, setSelectedEntity] = useState<
+    ICompany | IShareholder
+  >();
+
   useEffect(() => {
     setActions({
       loadInvestors: async (
@@ -175,6 +181,9 @@ export const Graph = () => {
             : `https://${window.location.hostname}`;
         window.open(`${baseUrl}/graph?${key}=${entity._id}`);
       },
+      showDetails: (entity: ICompany | IShareholder) => {
+        setSelectedEntity(entity);
+      },
     });
   }, [limit, links, nodes, treeLinks, treeNodes, year]);
 
@@ -191,6 +200,12 @@ export const Graph = () => {
 
   return (
     <GraphContext.Provider value={{ year, limit: 5, actions }}>
+      {selectedEntity && (
+        <GraphDetailsModal
+          entity={selectedEntity}
+          setEntity={setSelectedEntity}
+        />
+      )}
       <GraphView
         year={year}
         nodeDimensions={treeConfig.nodeDimensions}

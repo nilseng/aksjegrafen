@@ -36,10 +36,10 @@ const App = () => {
     <Router history={history}>
       <NavBar theme={theme} setTheme={setTheme} />
       <div
-        className="d-flex w-100"
+        className="d-flex w-100 justify-content-center align-items-middle"
         style={{
-          minHeight: "calc(100vh - 72.19px)",
-          height: "calc(100vh - 72.19px)",
+          minHeight: "calc(100vh - 77.19px)",
+          height: "calc(100vh - 77.19px)",
         }}
       >
         <Switch>
