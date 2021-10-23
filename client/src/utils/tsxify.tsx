@@ -2,7 +2,7 @@ import React from "react";
 
 export const tsxify = (o: any, theme: any, parent?: string) => {
   return (
-    <div key={parent} style={{ marginLeft: 4 }}>
+    <div key={parent} style={{ paddingLeft: 4 }}>
       {Object.keys(o).map((key: string) =>
         typeof o[key] === "string" ||
         typeof o[key] === "number" ||

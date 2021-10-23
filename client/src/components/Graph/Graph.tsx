@@ -187,16 +187,14 @@ export const Graph = () => {
     });
   }, [limit, links, nodes, treeLinks, treeNodes, year]);
 
-  if (loadingInvestments || loadingInvestors || creatingTree)
+  if (
+    loadingInvestments ||
+    loadingInvestors ||
+    creatingTree ||
+    !treeNodes ||
+    !treeLinks
+  )
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
-
-  if (!treeNodes || !treeLinks) {
-    return (
-      <p className="container mt-5" style={{ color: theme.text }}>
-        Oh, noes! Something went terribly wrong.
-      </p>
-    );
-  }
 
   return (
     <GraphContext.Provider value={{ year, limit: 5, actions }}>
