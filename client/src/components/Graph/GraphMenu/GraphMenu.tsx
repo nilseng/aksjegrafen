@@ -3,7 +3,6 @@ import {
   faBuilding,
   faInfo,
   faUsers,
-  faAnchor,
   IconDefinition,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
@@ -31,7 +30,6 @@ const entityItems: IMenuItem[] = [
     icon: faWindowRestore,
     action: { name: "openInNewWindow" },
   },
-  { name: "Sentrér på siden", icon: faAnchor },
   {
     name: "Last flere investorer",
     icon: faUsers,
