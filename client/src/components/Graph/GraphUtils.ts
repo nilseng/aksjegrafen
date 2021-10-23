@@ -107,12 +107,14 @@ export const graphSimulation = (
       } else return null;
     }),
   ];
-  const oFiltered = o.filter((o_) => o_ !== null) as ({
+  const newNodeDatums = o.filter((o_) => o_ !== null) as ({
     id: string;
     entity: ICompany | IShareholder;
   } & INodeDimensions)[];
 
-  const nodeDatums = currentNodes ? [...oFiltered, ...currentNodes] : oFiltered;
+  const nodeDatums = currentNodes
+    ? [...newNodeDatums, ...currentNodes]
+    : newNodeDatums;
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
     .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
@@ -133,22 +135,32 @@ const updateLinks = (
   const links = currentLinks ? [...currentLinks] : [];
   const currentOwnerships = links.map((link) => link.ownerships).flat();
   for (const o of ownerships) {
+    // If the ownership is already in the graph, do nothing
     if (currentOwnerships.find((c) => c._id === o._id)) continue;
+
     const sourceId = o.shareholderOrgnr ?? o.shareHolderId;
     const targetId = o.orgnr;
+    const source = nodes?.find((node) => node.id === sourceId);
+    const target = nodes?.find((node) => node.id === targetId);
+    if (!source || !target) {
+      console.error(
+        "Something went wrong when updating links - source or target not found."
+      );
+      continue;
+    }
     const link = links.find(
       (l) => l.source.id === sourceId && l.target.id === targetId
     );
     if (link) link.ownerships.push(o);
     else {
-      const source = nodes?.find((node) => node.id === sourceId);
-      const target = nodes?.find((node) => node.id === targetId);
-      if (!source || !target) {
-        console.error(
-          "Something went wrong when updating links - source or target not found."
-        );
-      } else links.push({ source, target, ownerships: [o] });
+      links.push({ source, target, ownerships: [o] });
     }
+    source.loadedInvestments = source.loadedInvestments
+      ? source.loadedInvestments + 1
+      : 1;
+    target.loadedInvestors = target.loadedInvestors
+      ? target.loadedInvestors + 1
+      : 1;
   }
 
   return links;
