@@ -19,6 +19,10 @@ export const GraphLink = ({ link, offset }: IProps) => {
     x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
     y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
   });
+  const [arrowPos2, setArrowPos2] = useState<{ x: number; y: number }>({
+    x: (2 * link.source.x + link.target.x) / 3 + offset.x,
+    y: (2 * link.source.y + link.target.y) / 3 + offset.y,
+  });
   const [countPos, setCountPos] = useState<{ x: number; y: number }>({
     x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
     y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
@@ -43,6 +47,10 @@ export const GraphLink = ({ link, offset }: IProps) => {
     setArrowPos({
       x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
       y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
+    });
+    setArrowPos2({
+      x: (2 * link.source.x + link.target.x) / 3 + offset.x,
+      y: (2 * link.source.y + link.target.y) / 3 + offset.y,
     });
     setCountPos({
       x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
@@ -106,7 +114,10 @@ export const GraphLink = ({ link, offset }: IProps) => {
         stroke={theme.muted}
       />
       {(rotation || rotation === 0) && (
-        <GraphLinkArrow rotation={rotation} center={arrowPos} />
+        <>
+          <GraphLinkArrow rotation={rotation} center={arrowPos} />
+          <GraphLinkArrow rotation={rotation} center={arrowPos2} />
+        </>
       )}
       {link.ownerships.length > 1 && (
         <foreignObject x={countPos.x} y={countPos.y} width={50} height={50}>
