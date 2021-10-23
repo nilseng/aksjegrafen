@@ -66,7 +66,10 @@ export const getInvestors = async (
   if (entity?.orgnr) {
     const query = buildQuery({ orgnr: entity.orgnr, year, limit, skip });
     const path = `/api/investors${query}`;
-    const res = await fetch(path).catch((e) => console.log(e));
+    const res = await fetch(path).catch((e) => {
+      console.error(e);
+      return undefined;
+    });
     return res ? res.json() : [];
   }
 };
@@ -80,10 +83,13 @@ export const getInvestments = async (
   if (!(entity.orgnr || (entity as IShareholder).id)) return;
   const identifier = entity.orgnr
     ? { shareholderOrgnr: entity.orgnr }
-    : { shareholderId: (entity as IShareholder).id };
+    : { shareHolderId: (entity as IShareholder).id };
   const query = buildQuery({ ...identifier, year, limit, skip });
   const path = `/api/investments${query}`;
-  const res = await fetch(path).catch((e) => console.log(e));
+  const res = await fetch(path).catch((e) => {
+    console.log(e);
+    return undefined;
+  });
   return res ? res.json() : [];
 };
 

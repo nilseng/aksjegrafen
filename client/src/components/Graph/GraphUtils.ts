@@ -118,8 +118,9 @@ const createNodeDatums = (
     if (
       currentNodes?.find((n) => n.id === identifier) ||
       newDatums.find((d) => d.id === identifier)
-    )
+    ) {
       continue;
+    }
     newDatums.push(
       o.company
         ? { entity: o.company, id: identifier, ...dimensions }
