@@ -69,22 +69,14 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
             case "loadInvestors":
               item.action.action = () => {
                 if (graphContext.actions.loadInvestors) {
-                  const investorCount = node.loadedInvestors ?? 0;
-                  graphContext.actions.loadInvestors(
-                    node.entity,
-                    investorCount
-                  );
+                  graphContext.actions.loadInvestors(node);
                 }
               };
               break;
             case "loadInvestments":
               item.action.action = () => {
                 if (graphContext.actions.loadInvestments) {
-                  const investmentCount = node.loadedInvestments ?? 0;
-                  graphContext.actions.loadInvestments(
-                    node.entity,
-                    investmentCount
-                  );
+                  graphContext.actions.loadInvestments(node);
                 }
               };
               break;

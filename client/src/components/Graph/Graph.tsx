@@ -45,14 +45,8 @@ export interface IGraphContext {
 }
 
 export interface IGraphActions {
-  loadInvestors?: (
-    entity: ICompany | IShareholder,
-    skip?: number
-  ) => Promise<void>;
-  loadInvestments?: (
-    entity: ICompany | IShareholder,
-    skip?: number
-  ) => Promise<void>;
+  loadInvestors?: (node: IGraphNode) => Promise<void>;
+  loadInvestments?: (node: IGraphNode) => Promise<void>;
   resetGraph?: () => void;
   openInNewWindow?: (entity: ICompany | IShareholder) => void;
   showDetails?: (entity: ICompany | IShareholder) => void;
@@ -133,11 +127,13 @@ export const Graph = () => {
 
   useEffect(() => {
     setActions({
-      loadInvestors: async (
-        entity: ICompany | IShareholder,
-        skip: number = 0
-      ) => {
-        const ownerships = await getInvestors(entity, year, limit, skip);
+      loadInvestors: async (node: IGraphNode) => {
+        const ownerships = await getInvestors(
+          node.entity,
+          year,
+          limit,
+          node.skipInvestors
+        );
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } =
             graphSimulation(
@@ -146,15 +142,26 @@ export const Graph = () => {
               nodes ?? treeNodes,
               links ?? treeLinks
             );
-          setNodes(simulationNodes);
+          setNodes(
+            simulationNodes.map((n) => {
+              if (n.id === node.id) {
+                n.skipInvestors = n.skipInvestors
+                  ? n.skipInvestors + ownerships.length
+                  : ownerships.length;
+              }
+              return n;
+            })
+          );
           setLinks(simulationLinks);
         }
       },
-      loadInvestments: async (
-        entity: ICompany | IShareholder,
-        skip: number = 0
-      ) => {
-        const ownerships = await getInvestments(entity, year, limit, skip);
+      loadInvestments: async (node: IGraphNode) => {
+        const ownerships = await getInvestments(
+          node.entity,
+          year,
+          limit,
+          node.skipInvestments
+        );
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } =
             graphSimulation(
@@ -163,7 +170,16 @@ export const Graph = () => {
               nodes ?? treeNodes,
               links ?? treeLinks
             );
-          setNodes(simulationNodes);
+          setNodes(
+            simulationNodes.map((n) => {
+              if (n.id === node.id) {
+                n.skipInvestments = n.skipInvestments
+                  ? n.skipInvestments + ownerships.length
+                  : ownerships.length;
+              }
+              return n;
+            })
+          );
           setLinks(simulationLinks);
         }
       },

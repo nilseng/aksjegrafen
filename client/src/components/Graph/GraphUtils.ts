@@ -55,7 +55,9 @@ export type IGraphNode = {
   x: number;
   y: number;
   loadedInvestors?: number;
+  skipInvestors?: number;
   loadedInvestments?: number;
+  skipInvestments?: number;
 } & ISimulationNodeDatum;
 
 export interface INodeDimensions {
@@ -265,6 +267,7 @@ export const useSimpleTree = (
       const targetId = entity.orgnr;
       const target = graphNodes.find((node) => node.id === targetId);
       if (!target) return;
+      target.skipInvestors = investors.length;
       target.loadedInvestors = investors.length;
       target.loadedInvestments = investments?.length;
       for (const inv of investors) {
@@ -337,7 +340,7 @@ export const useSimpleTree = (
           node.id === entity.orgnr || node.id === (entity as IShareholder).id
       );
       if (!source) return;
-
+      source.skipInvestments = investments.length;
       source.loadedInvestors = investors?.length;
       source.loadedInvestments = investments.length;
       for (const inv of investments) {
