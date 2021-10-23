@@ -183,7 +183,7 @@ export const api = (db: IDatabase) => {
         try {
           const ownerships = await db.ownerships
             .find(filter, options)
-            .sort({ stocks: -1 })
+            .sort({ stocks: -1, _id: 1 })
             .skip(skip)
             .toArray();
           const companies = await db.companies
@@ -240,7 +240,7 @@ export const api = (db: IDatabase) => {
           try {
             const ownerships = await db.ownerships
               .find(filter, options)
-              .sort({ stocks: -1 })
+              .sort({ stocks: -1, _id: 1 })
               .skip(skip)
               .toArray();
             const shareholders = await db.shareholders

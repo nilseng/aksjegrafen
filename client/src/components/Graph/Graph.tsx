@@ -203,6 +203,7 @@ export const Graph = () => {
     });
   }, [limit, links, nodes, treeLinks, treeNodes, year]);
 
+  //TODO: Assuming here that if treeNodes and treeLinks are undefined, the graph is loading...
   if (
     loadingInvestments ||
     loadingInvestors ||

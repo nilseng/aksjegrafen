@@ -143,12 +143,15 @@ const updateLinks = (
   ownerships: IOwnership[],
   currentLinks?: IGraphLink[],
   nodes?: IGraphNode[]
-) => {
+): IGraphLink[] => {
   const links = currentLinks ? [...currentLinks] : [];
   const currentOwnerships = links.map((link) => link.ownerships).flat();
   for (const o of ownerships) {
     // If the ownership is already in the graph, do nothing
-    if (currentOwnerships.find((c) => c._id === o._id)) continue;
+    if (currentOwnerships.find((c) => c._id === o._id)) {
+      console.log("ownership already in graph", o);
+      continue;
+    }
 
     const sourceId = o.shareholderOrgnr ?? o.shareHolderId;
     const targetId = o.orgnr;
@@ -333,7 +336,7 @@ export const useSimpleTree = (
       });
 
       const graphNodes = mapToGraphNodes(treeNodes);
-      const links = [];
+      const links: IGraphLink[] = [];
 
       const source = graphNodes.find(
         (node) =>
@@ -347,8 +350,14 @@ export const useSimpleTree = (
         const targetId = inv.orgnr;
         const target = graphNodes.find((node) => node.id === targetId);
         if (source && target) {
-          target.loadedInvestors = 1;
-          links.push({ source, target, ownerships: [inv] });
+          if (target.loadedInvestors) target.loadedInvestors += 1;
+          else target.loadedInvestors = 1;
+          const link = links.find(
+            (link) =>
+              link.source.id === source.id && link.target.id === targetId
+          );
+          if (link) link.ownerships.push(inv);
+          else links.push({ source, target, ownerships: [inv] });
         }
       }
 
