@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
 
 import { useQuery } from "../../hooks/useQuery";
-import { ICompany, IShareholder } from "../../models/models";
+import { ICompany, isCompany, IShareholder } from "../../models/models";
 import {
   getInvestments,
   getInvestors,
@@ -53,6 +53,7 @@ export interface IGraphActions {
     skip?: number
   ) => Promise<void>;
   resetGraph?: () => void;
+  openInNewWindow?: (entity: ICompany | IShareholder) => void;
 }
 
 export const GraphContext = React.createContext<IGraphContext>({
@@ -165,6 +166,14 @@ export const Graph = () => {
         setLinks(undefined);
         setSvgTranslate(defaultSvgTranslate);
         setResetZoom(true);
+      },
+      openInNewWindow: (entity: ICompany | IShareholder) => {
+        const key = isCompany(entity) ? "_id" : "shareholder_id";
+        const baseUrl =
+          window.location.hostname === "localhost"
+            ? `http://${window.location.hostname}:${window.location.port}`
+            : `https://${window.location.hostname}`;
+        window.open(`${baseUrl}/graph?${key}=${entity._id}`);
       },
     });
   }, [limit, links, nodes, treeLinks, treeNodes, year]);
