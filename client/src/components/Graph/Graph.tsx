@@ -139,8 +139,10 @@ export const Graph = () => {
             graphSimulation(
               treeConfig.nodeDimensions,
               ownerships,
+              node,
               nodes ?? treeNodes,
-              links ?? treeLinks
+              links ?? treeLinks,
+              node.y - treeConfig.nodeDimensions.height
             );
           setNodes(
             simulationNodes.map((n) => {
@@ -167,8 +169,10 @@ export const Graph = () => {
             graphSimulation(
               treeConfig.nodeDimensions,
               ownerships,
+              node,
               nodes ?? treeNodes,
-              links ?? treeLinks
+              links ?? treeLinks,
+              node.y + treeConfig.nodeDimensions.height
             );
           setNodes(
             simulationNodes.map((n) => {

@@ -11,6 +11,9 @@ import {
   forceLink,
   zoomIdentity,
   zoomTransform,
+  forceY,
+  forceX,
+  forceManyBody,
 } from "d3";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 
@@ -84,18 +87,62 @@ export const isSimpleTreeNode = (o: any): o is ISimpleTreeNode => {
 export const graphSimulation = (
   dimensions: INodeDimensions,
   newOwnerships: IOwnership[],
+  clickedNode: IGraphNode,
   currentNodes?: IGraphNode[],
-  currentLinks?: IGraphLink[]
+  currentLinks?: IGraphLink[],
+  yForce?: number
 ) => {
-  const nodeDatums = createNodeDatums(newOwnerships, dimensions, currentNodes);
+  // Fixing the clicked node to current position
+  const inputNodes = currentNodes?.map((n) => {
+    if (n.id === clickedNode?.id) {
+      n.fx = n.x;
+      n.fy = n.y;
+    }
+    return n;
+  });
+  const nodeDatums = createNodeDatums(newOwnerships, dimensions, inputNodes);
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
+    .force("charge", forceManyBody().strength(-20))
     .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
 
   const nodes = simulation.nodes();
   const links = updateLinks(newOwnerships, currentLinks, nodes);
 
-  simulation.force("link", forceLink(links)).tick(1000);
+  simulation
+    .force("link", forceLink(links).strength(0.05)) // Using x and y forces to keep nodes in current position if possible, doesn't seem to have much effect...
+    .force(
+      "y",
+      forceY()
+        .y((d: any) => {
+          if (d.isNew) {
+            d.isNew = false;
+            return yForce;
+          } else {
+            return d.y;
+          }
+        })
+        .strength(10)
+    )
+    .force(
+      "x",
+      forceX()
+        .x((d: any) => {
+          if (d.isNew) {
+            d.isNew = false;
+            return clickedNode.x;
+          } else {
+            return d.x;
+          }
+        })
+        .strength(10)
+    )
+    .tick(1000);
+
+  for (const node of nodes) {
+    delete node.fx;
+    delete node.fy;
+  }
 
   return { simulation, nodes: simulation.nodes(), links };
 };
@@ -108,6 +155,7 @@ const createNodeDatums = (
   const newDatums: ({
     id: string;
     entity: ICompany | IShareholder;
+    isNew?: boolean;
   } & INodeDimensions)[] = [];
   for (const o of ownerships) {
     const identifier =
@@ -125,11 +173,12 @@ const createNodeDatums = (
     }
     newDatums.push(
       o.company
-        ? { entity: o.company, id: identifier, ...dimensions }
+        ? { entity: o.company, id: identifier, ...dimensions, isNew: true }
         : {
             entity: o.shareholder as IShareholder,
             id: identifier,
             ...dimensions,
+            isNew: true,
           }
     );
   }
@@ -144,7 +193,14 @@ const updateLinks = (
   currentLinks?: IGraphLink[],
   nodes?: IGraphNode[]
 ): IGraphLink[] => {
-  const links = currentLinks ? [...currentLinks] : [];
+  const links = currentLinks ?? [];
+
+  // Making sure links have the most recent nodes. Could possibly be removed when useSimpleTree is.
+  for (const link of links) {
+    link.source = nodes?.find((n) => n.id === link.source.id) ?? link.source;
+    link.target = nodes?.find((n) => n.id === link.target.id) ?? link.target;
+  }
+
   const currentOwnerships = links.map((link) => link.ownerships).flat();
   for (const o of ownerships) {
     // If the ownership is already in the graph, do nothing
@@ -191,10 +247,7 @@ export interface ITreeDimensions {
   nodeDimensions: INodeDimensions;
 }
 
-export type ISimpleTreeNode = d3.HierarchyPointNode<ISimpleTreeDatum> & {
-  fx?: number;
-  fy?: number;
-};
+export type ISimpleTreeNode = d3.HierarchyPointNode<ISimpleTreeDatum>;
 
 interface ISimpleTreeDatum {
   id: string;
@@ -259,9 +312,6 @@ export const useSimpleTree = (
           node.y -
           treeConfig.height / 2 -
           treeConfig.nodeDimensions.height / 2;
-        // Adding fx and fy in order to fix the nodes to position when using them in force simulation
-        node.fx = node.x;
-        node.fy = node.y;
       });
 
       const graphNodes = mapToGraphNodes(treeNodes);
@@ -330,9 +380,6 @@ export const useSimpleTree = (
         node.x += treeConfig.width / 2 - treeConfig.nodeDimensions.width / 2;
         node.y =
           node.y + treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
-        // Adding fx and fy in order to fix the nodes to position when using them in force simulation
-        node.fx = node.x;
-        node.fy = node.y;
       });
 
       const graphNodes = mapToGraphNodes(treeNodes);
@@ -472,8 +519,6 @@ const mapToGraphNodes = (treeNodes: ISimpleTreeNode[]): IGraphNode[] => {
       entity: treeNode.data.entity,
       x: treeNode.x,
       y: treeNode.y,
-      fx: treeNode.fx,
-      fy: treeNode.fy,
       width: treeNode.data.width,
       height: treeNode.data.height,
     };
