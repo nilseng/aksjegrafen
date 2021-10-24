@@ -1,0 +1,15 @@
+.about-image {
+  height: 800px;
+}
+
+@media only screen and (max-width: 768px) {
+  .about-image {
+    height: 600px;
+  }
+}
+
+@media only screen and (max-width: 576px) {
+  .about-image {
+    height: 240px;
+  }
+}

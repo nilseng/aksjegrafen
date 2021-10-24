@@ -1,6 +1,9 @@
 import { useContext } from "react";
 import { Container } from "react-bootstrap";
 import { AppContext } from "../App";
+
+import "./About.scss";
+
 import pureokrs_img_light from "../images/aksjegrafen_pureokrs_light.png";
 import pureokrs_img_dark from "../images/aksjegrafen_pureokrs_dark.png";
 import telenor_img_light from "../images/telenor_asa_light.png";
@@ -15,11 +18,11 @@ export const About = () => {
       className="d-flex justify-content-center align-items-middle"
       style={{ color: theme.text }}
     >
-      <div className="p-md-5 p-2 my-5 rounded">
+      <div className="my-5 rounded">
         <div
           className="p-4"
           style={{
-            backgroundColor: theme.backgroundSecondary,
+            backgroundColor: theme.background,
             ...theme.lowering,
           }}
         >
@@ -39,7 +42,7 @@ export const About = () => {
           </p>
           <div className="d-flex justify-content-center py-4">
             <img
-              style={{ height: "600px" }}
+              className="about-image"
               src={theme.id === "light" ? telenor_img_light : telenor_img_dark}
               alt="Eksempel fra Aksjegrafen - Teodor eier PureOKRs AS"
             />
@@ -52,7 +55,7 @@ export const About = () => {
           </p>
           <div className="d-flex justify-content-center py-4">
             <img
-              style={{ height: "600px" }}
+              className="about-image"
               src={theme.id === "light" ? kjendis_light : kjendis_dark}
               alt="Eksempel fra Aksjegrafen - Teodor eier PureOKRs AS"
             />
