@@ -68,6 +68,7 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
     if ((x || x === 0) && (y || y === 0) && node) {
       setPos({ x: Math.min(x, width - 310), y: Math.min(y, height - 280) });
     }
+    return () => setPos(undefined);
   }, [height, width, x, y, node]);
 
   useEffect(() => {
