@@ -9,6 +9,7 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
+import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { GraphContext, IGraphContext } from "../Graph";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
@@ -56,9 +57,18 @@ export interface IMenu {
 
 export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
   const { theme } = useContext(AppContext);
+  const { width, height } = useWindowDimensions();
+
   const graphContext = useContext(GraphContext);
 
+  const [pos, setPos] = useState<{ x: number; y: number }>();
   const [visibleItems, setVisibleItems] = useState<IMenuItem[]>();
+
+  useEffect(() => {
+    if ((x || x === 0) && (y || y === 0) && node) {
+      setPos({ x: Math.min(x, width - 310), y: Math.min(y, height - 280) });
+    }
+  }, [height, width, x, y, node]);
 
   useEffect(() => {
     if (node?.entity) {
@@ -124,8 +134,8 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
     <ListGroup
       style={{
         position: "absolute",
-        top: y,
-        left: x,
+        top: pos?.y ?? y,
+        left: pos?.x ?? x,
         backgroundColor: theme.background,
         ...theme.elevation,
       }}
