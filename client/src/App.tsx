@@ -6,7 +6,6 @@ import { Graph } from "./components/Graph/Graph";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { Stats } from "./components/Stats";
-import { useWindowDimensions } from "./hooks/useWindowDimensions";
 
 import { theming } from "./theming/theme";
 
@@ -24,8 +23,6 @@ export const AppContext = React.createContext({
 const App = () => {
   const [theme, setTheme] = useState(theming[Theme.light]);
 
-  const { height } = useWindowDimensions();
-
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
   }, [theme]);
@@ -41,8 +38,8 @@ const App = () => {
       <div
         className="d-flex w-100 justify-content-center align-items-middle"
         style={{
-          minHeight: `calc(${height} - 77.19px)`,
-          height: `calc(${height} - 77.19px)`,
+          minHeight: "calc(100vh - 77.19px)",
+          height: "calc(100vh - 77.19px)",
         }}
       >
         <Switch>
