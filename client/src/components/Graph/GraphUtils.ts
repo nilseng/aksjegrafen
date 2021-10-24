@@ -372,9 +372,17 @@ export const useSimpleTree = (
   }, [investments, investors, entity, treeConfig]);
 
   useEffect(() => {
-    if (investorNodes && investmentNodes)
-      setNodes([...investmentNodes.slice(1), ...investorNodes]);
-    else if (investorNodes) setNodes(investorNodes);
+    if (investorNodes && investmentNodes) {
+      const centerInvestorNode = investorNodes[0];
+      const centerInvestmentNode = investmentNodes[0];
+      // Merging the 'center nodes' in order to get both skipInvestors and skipInvestments
+      const centerNode = { ...centerInvestorNode, ...centerInvestmentNode };
+      setNodes([
+        centerNode,
+        ...investmentNodes.slice(1),
+        ...investorNodes.slice(1),
+      ]);
+    } else if (investorNodes) setNodes(investorNodes);
     else if (investmentNodes) setNodes(investmentNodes);
   }, [investmentNodes, investorNodes]);
 
