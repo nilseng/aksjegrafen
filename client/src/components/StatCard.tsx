@@ -2,6 +2,7 @@ import { IconDefinition } from "@fortawesome/fontawesome-common-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { AppContext } from "../App";
+import Loading from "./Loading";
 
 interface IProps {
   label?: string;
@@ -21,7 +22,14 @@ export const StatCard = ({ label, stat, labelIcon }: IProps) => {
         minHeight: "5rem",
       }}
     >
-      <p className="h4">{stat?.toLocaleString()}</p>
+      {stat && <p className="h4">{stat?.toLocaleString()}</p>}
+      {!stat && (
+        <Loading
+          backgroundColor="transparent"
+          height="2.25rem"
+          color={theme.primary}
+        />
+      )}
       <span className="m-0" style={{ color: theme.primary }}>
         {labelIcon && <FontAwesomeIcon icon={labelIcon} className="mr-2" />}
         {label}

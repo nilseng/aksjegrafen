@@ -32,7 +32,7 @@ const treeConfig: ITreeDimensions = {
   },
   nodeDimensions: {
     width: 360,
-    height: 180,
+    height: 150,
   },
 };
 
