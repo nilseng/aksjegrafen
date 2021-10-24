@@ -10,7 +10,7 @@ export const Landing = () => {
       >
         <SearchView />
       </div>
-      <div style={{ minHeight: "100vh", height: "100%" }}>
+      <div className="d-flex" style={{ minHeight: "100vh" }}>
         <About />
       </div>
     </div>
