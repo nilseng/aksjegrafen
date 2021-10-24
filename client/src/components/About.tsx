@@ -24,7 +24,7 @@ export const About = () => {
         </p>
         <p>
           Aksjegrafen er utviklet av selskapet PureOKRs AS som eies av meg,
-          Teodor Nilseng Danielsen. Bare ser her:
+          Teodor Nilseng Danielsen. Bare se her:
         </p>
         <div
           className="w-100 d-flex justify-content-center"
