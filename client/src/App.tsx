@@ -42,7 +42,7 @@ const App = () => {
         className="d-flex w-100 justify-content-center align-items-middle"
         style={{
           minHeight: `calc(${height} - 77.19px)`,
-          height: "calc(100vh - 77.19px)",
+          height: `calc(${height} - 77.19px)`,
         }}
       >
         <Switch>
