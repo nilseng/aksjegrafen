@@ -24,19 +24,19 @@ export interface IMenuItem {
 }
 
 const entityItems: IMenuItem[] = [
-  { name: "Se detaljer", icon: faInfo, action: { name: "showDetails" } },
+  { name: "Detaljer", icon: faInfo, action: { name: "showDetails" } },
   {
     name: "Åpne i nytt vindu",
     icon: faWindowRestore,
     action: { name: "openInNewWindow" },
   },
   {
-    name: "Last flere investorer",
+    name: "Flere investorer",
     icon: faUsers,
     action: { name: "loadInvestors" },
   },
   {
-    name: "Last flere investeringer",
+    name: "Flere investeringer",
     icon: faBuilding,
     action: { name: "loadInvestments" },
   },
