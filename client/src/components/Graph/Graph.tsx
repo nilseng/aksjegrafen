@@ -49,6 +49,7 @@ export interface IGraphActions {
   loadInvestments?: (node: IGraphNode) => Promise<void>;
   resetGraph?: () => void;
   openInNewWindow?: (entity: ICompany | IShareholder) => void;
+  openInNewGraph?: (entity: ICompany | IShareholder) => void;
   showDetails?: (entity: ICompany | IShareholder) => void;
 }
 
@@ -100,7 +101,7 @@ export const Graph = () => {
   }, [company, shareholder]);
 
   const { investors, loading: loadingInvestors } = useInvestors(
-    company,
+    entity,
     year,
     5
   );
@@ -208,6 +209,15 @@ export const Graph = () => {
       },
       showDetails: (entity: ICompany | IShareholder) => {
         setSelectedEntity(entity);
+      },
+      openInNewGraph: (nodeEntity: ICompany | IShareholder) => {
+        setNodes(undefined);
+        setLinks(undefined);
+        setTreeNodes(undefined);
+        setTreeLinks(undefined);
+        setSvgTranslate(defaultSvgTranslate);
+        setResetZoom(true);
+        setEntity(nodeEntity);
       },
     });
   }, [

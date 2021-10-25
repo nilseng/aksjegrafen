@@ -10,6 +10,7 @@ import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
+import { GraphLogo } from "../../GraphLogo";
 import { GraphContext, IGraphContext } from "../Graph";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
@@ -17,6 +18,7 @@ import { GraphMenuItem } from "./GraphMenuItem";
 export interface IMenuItem {
   name: string;
   icon?: IconDefinition;
+  svgIcon?: JSX.Element;
   border?: boolean;
   action?: {
     name: keyof IGraphContext["actions"];
@@ -27,7 +29,12 @@ export interface IMenuItem {
 const entityItems: IMenuItem[] = [
   { name: "Detaljer", icon: faInfo, action: { name: "showDetails" } },
   {
-    name: "Åpne i nytt vindu",
+    name: "Åpne i ny graf",
+    svgIcon: <GraphLogo color="#17a2b8" width="1em" height="1em" />,
+    action: { name: "openInNewGraph" },
+  },
+  {
+    name: "Åpne i ny fane",
     icon: faWindowRestore,
     action: { name: "openInNewWindow" },
   },
@@ -105,6 +112,13 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
                 }
               };
               break;
+            case "openInNewGraph":
+              item.action.action = () => {
+                if (graphContext.actions.openInNewGraph) {
+                  graphContext.actions.openInNewGraph(node.entity);
+                }
+              };
+              break;
             case "showDetails":
               item.action.action = () => {
                 if (graphContext.actions.showDetails) {
@@ -153,6 +167,7 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
           name={item.name}
           action={item.action}
           icon={item.icon}
+          svgIcon={item.svgIcon}
         />
       ))}
     </ListGroup>

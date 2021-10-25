@@ -4,7 +4,13 @@ import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { IMenuItem } from "./GraphMenu";
 
-export const GraphMenuItem = ({ name, icon, border, action }: IMenuItem) => {
+export const GraphMenuItem = ({
+  name,
+  icon,
+  svgIcon,
+  border,
+  action,
+}: IMenuItem) => {
   const { theme } = useContext(AppContext);
 
   const [hovered, setHovered] = useState<boolean>(false);
@@ -40,6 +46,7 @@ export const GraphMenuItem = ({ name, icon, border, action }: IMenuItem) => {
           className="mr-3"
         />
       )}
+      {svgIcon && <span className="mr-3">{svgIcon}</span>}
       {name}
     </ListGroup.Item>
   );
