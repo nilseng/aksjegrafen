@@ -447,6 +447,8 @@ export const useSimpleTree = (
   return {
     nodes,
     links,
+    setNodes,
+    setLinks,
     creatingTree,
     investorNodes,
     investorLinks,

@@ -112,7 +112,9 @@ export const Graph = () => {
 
   const {
     nodes: treeNodes,
+    setNodes: setTreeNodes,
     links: treeLinks,
+    setLinks: setTreeLinks,
     creatingTree,
   } = useSimpleTree(treeConfig, entity, investors, investments);
 
@@ -190,8 +192,11 @@ export const Graph = () => {
       resetGraph: () => {
         setNodes(undefined);
         setLinks(undefined);
+        setTreeNodes(undefined);
+        setTreeLinks(undefined);
         setSvgTranslate(defaultSvgTranslate);
         setResetZoom(true);
+        setEntity(entity ? { ...entity } : undefined);
       },
       openInNewWindow: (entity: ICompany | IShareholder) => {
         const key = isCompany(entity) ? "_id" : "shareholder_id";
@@ -205,7 +210,17 @@ export const Graph = () => {
         setSelectedEntity(entity);
       },
     });
-  }, [limit, links, nodes, treeLinks, treeNodes, year]);
+  }, [
+    entity,
+    limit,
+    links,
+    nodes,
+    setTreeLinks,
+    setTreeNodes,
+    treeLinks,
+    treeNodes,
+    year,
+  ]);
 
   //TODO: Assuming here that if treeNodes and treeLinks are undefined, the graph is loading...
   if (
