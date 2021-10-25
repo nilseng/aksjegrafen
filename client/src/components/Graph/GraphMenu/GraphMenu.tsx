@@ -30,6 +30,7 @@ const entityItems: IMenuItem[] = [
   { name: "Detaljer", icon: faInfo, action: { name: "showDetails" } },
   {
     name: "Åpne i ny graf",
+    //TODO: Fix hard coded color
     svgIcon: <GraphLogo color="#17a2b8" width="1em" height="1em" />,
     action: { name: "openInNewGraph" },
   },
