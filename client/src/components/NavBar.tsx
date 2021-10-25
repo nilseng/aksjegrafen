@@ -4,9 +4,9 @@ import Navbar from "react-bootstrap/Navbar";
 
 import "./NavBar.scss";
 
-import AnimatedLogo from "./AnimatedLogo";
 import { ThemeButton } from "./ThemeButton";
 import { Link } from "react-router-dom";
+import { GraphLogo } from "./GraphLogo";
 
 interface IProps {
   theme: any;
@@ -33,11 +33,11 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               verticalAlign: "middle",
               width: "3.2rem",
               height: "3.2rem",
-              paddingTop: "0.4rem",
-              paddingBottom: "0.4rem",
+              paddingTop: "0.6rem",
+              paddingBottom: "0.6rem",
             }}
           >
-            <AnimatedLogo color={theme.primary} height="2rem" width="2rem" />
+            <GraphLogo color={theme.primary} />
           </span>
         </Navbar.Brand>
       </Link>
