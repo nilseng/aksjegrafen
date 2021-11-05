@@ -44,7 +44,7 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const db = await Database.initialize();
 
-  const cache = new Redis(process.env.REDIS_TLS_URL);
+  const cache = new Redis(process.env.REDIS_URL);
 
   const router = api(db, cache);
   app.use("/api", router);
