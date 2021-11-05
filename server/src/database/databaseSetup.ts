@@ -5,20 +5,20 @@ export interface IDatabase {
   ownerships: Collection<Ownership>;
   shareholders: Collection<Shareholder>;
   companies: Collection<Company>;
-};
+}
 
 export class Database {
   private static _db: IDatabase;
   static instance: Database;
 
   public static async initialize(): Promise<IDatabase> {
-    if (!Database.instance) Database.instance = new Database()
+    if (!Database.instance) Database.instance = new Database();
     Database._db = await connectToMongoDb();
     return this._db;
   }
 
   public static getInstance(): Database {
-    if (!Database.instance) Database.instance = new Database()
+    if (!Database.instance) Database.instance = new Database();
     return Database.instance;
   }
 
@@ -30,23 +30,21 @@ export class Database {
 const connectToMongoDb = async (): Promise<IDatabase> => {
   const db_uri = process.env.DB_URI || process.env.MONGODB_URI;
   if (!db_uri) {
-    throw Error('Could not find a database URI')
+    throw Error("Could not find a database URI");
   }
 
   const client = await db.MongoClient.connect(db_uri, {
     useUnifiedTopology: true,
   });
 
-  console.log(
-    `Mongoclient connected to database server:${client.isConnected()}`
-  );
+  console.log(`Mongoclient connected to database server:${client.isConnected()}`);
 
   // Retrieving mongodb collections
   const collections = {
-    ownerships: client.db().collection<Ownership>('ownerships'),
-    shareholders: client.db().collection<Shareholder>('shareholders'),
-    companies: client.db().collection<Company>('companies')
-  }
+    ownerships: client.db().collection<Ownership>("ownerships"),
+    shareholders: client.db().collection<Shareholder>("shareholders"),
+    companies: client.db().collection<Company>("companies"),
+  };
 
   //Creating indices
   /* await collections.shareholders.dropIndexes();
