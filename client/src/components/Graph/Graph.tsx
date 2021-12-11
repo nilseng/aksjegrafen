@@ -96,6 +96,8 @@ export const Graph = () => {
     setEntity(company ?? shareholder);
     if (company) document.title = company.name;
     else if (shareholder) document.title = shareholder.name;
+    else document.title = "Aksjegrafen";
+    return () => setEntity(undefined);
   }, [company, shareholder]);
 
   const { investors, loading: loadingInvestors, setInvestors } = useInvestors(entity, year, 5);
