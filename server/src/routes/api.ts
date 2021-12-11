@@ -229,8 +229,12 @@ export const api = (db: IDatabase, cache: Redis) => {
                 id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) },
               })
               .toArray();
+            const companies = await db.companies
+              .find({ orgnr: { $in: shareholders.filter((s) => s.orgnr).map((s) => s.orgnr) as string[] } })
+              .toArray();
             const data = ownerships.map((o: Ownership) => {
               o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId);
+              o.company = companies.find((c: Company) => c.orgnr === o.shareholderOrgnr);
               return o;
             });
             return res.status(200).json(data);

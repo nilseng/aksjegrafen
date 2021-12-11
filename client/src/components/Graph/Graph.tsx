@@ -96,8 +96,8 @@ export const Graph = () => {
     setEntity(company ?? shareholder);
   }, [company, shareholder]);
 
-  const { investors, loading: loadingInvestors } = useInvestors(entity, year, 5);
-  const { investments, loading: loadingInvestments } = useInvestments(entity, year, 5);
+  const { investors, loading: loadingInvestors, setInvestors } = useInvestors(entity, year, 5);
+  const { investments, loading: loadingInvestments, setInvestments } = useInvestments(entity, year, 5);
 
   const {
     nodes: treeNodes,
@@ -187,17 +187,32 @@ export const Graph = () => {
         setTreeLinks(undefined);
         setSvgTranslate(defaultSvgTranslate);
         setResetZoom(true);
-        setEntity(undefined);
+        setEntity(nodeEntity);
         setCompanyId(undefined);
         setOrgnr(undefined);
         setShareholder_id(undefined);
+        setInvestments(undefined);
+        setInvestors(undefined);
         // If nodeEntity is a shareholder, use shareholderId, else assume it's a company and use _id
         history.push(
           `/graph?${isShareholder(nodeEntity) ? "shareholder_id=" + nodeEntity._id : "_id=" + nodeEntity._id}`
         );
       },
     });
-  }, [entity, history, limit, links, nodes, setTreeLinks, setTreeNodes, treeLinks, treeNodes, year]);
+  }, [
+    entity,
+    history,
+    limit,
+    links,
+    nodes,
+    setInvestments,
+    setInvestors,
+    setTreeLinks,
+    setTreeNodes,
+    treeLinks,
+    treeNodes,
+    year,
+  ]);
 
   //TODO: Assuming here that if treeNodes and treeLinks are undefined, the graph is loading...
   if (loadingInvestments || loadingInvestors || creatingTree || !treeNodes || !treeLinks)
