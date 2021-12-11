@@ -94,6 +94,8 @@ export const Graph = () => {
 
   useEffect(() => {
     setEntity(company ?? shareholder);
+    if (company) document.title = company.name;
+    else if (shareholder) document.title = shareholder.name;
   }, [company, shareholder]);
 
   const { investors, loading: loadingInvestors, setInvestors } = useInvestors(entity, year, 5);
