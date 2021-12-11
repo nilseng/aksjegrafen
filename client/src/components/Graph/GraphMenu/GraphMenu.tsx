@@ -51,9 +51,7 @@ const entityItems: IMenuItem[] = [
   },
 ];
 
-const defaultItems: IMenuItem[] = [
-  { name: "Tilbakestill graf", icon: faHome, action: { name: "resetGraph" } },
-];
+const defaultItems: IMenuItem[] = [{ name: "Tilbakestill graf", icon: faHome, action: { name: "resetGraph" } }];
 
 export interface IMenu {
   open: boolean;
@@ -72,9 +70,11 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
   const [pos, setPos] = useState<{ x: number; y: number }>();
   const [visibleItems, setVisibleItems] = useState<IMenuItem[]>();
 
+  // If there is not enough space to display the ctx menu to the right/below clicked item,
+  // adjust the position with the height/width of the ctx menu.
   useEffect(() => {
     if ((x || x === 0) && (y || y === 0) && node) {
-      setPos({ x: Math.min(x, width - 310), y: Math.min(y, height - 280) });
+      setPos({ x: Math.min(x, width - 310), y: Math.min(y, height - 305) });
     }
     return () => setPos(undefined);
   }, [height, width, x, y, node]);
@@ -159,17 +159,9 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
         if (setMenu) setMenu((menu) => ({ ...menu, open: false }));
       }}
     >
-      {node?.entity && (
-        <GraphMenuItem key={node.id} name={node.entity.name} border={true} />
-      )}
+      {node?.entity && <GraphMenuItem key={node.id} name={node.entity.name} border={true} />}
       {visibleItems?.map((item) => (
-        <GraphMenuItem
-          key={item.name}
-          name={item.name}
-          action={item.action}
-          icon={item.icon}
-          svgIcon={item.svgIcon}
-        />
+        <GraphMenuItem key={item.name} name={item.name} action={item.action} icon={item.icon} svgIcon={item.svgIcon} />
       ))}
     </ListGroup>
   );

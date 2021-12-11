@@ -25,20 +25,14 @@ export const useZoom = (
 ) => {
   useLayoutEffect(() => {
     const zoomed = (transform: any) => {
-      setSvgTranslate(
-        `translate(${transform.x},${transform.y}) scale(${transform.k})`
-      );
+      setSvgTranslate(`translate(${transform.x},${transform.y}) scale(${transform.k})`);
     };
 
     if (svgEl) {
       const svg: any = select(svgEl.current);
       if (resetZoom) {
         const z = zoom().on("zoom", (e) => zoomed(e.transform));
-        svg.call(
-          z.transform,
-          zoomIdentity,
-          zoomTransform(svg.node()).invert([0, 0])
-        );
+        svg.call(z.transform, zoomIdentity, zoomTransform(svg.node()).invert([0, 0]));
         setResetZoom(false);
       } else {
         const z = zoom().on("zoom", (e) => zoomed(e.transform));
@@ -147,28 +141,20 @@ export const graphSimulation = (
   return { simulation, nodes: simulation.nodes(), links };
 };
 
-const createNodeDatums = (
-  ownerships: IOwnership[],
-  dimensions: INodeDimensions,
-  currentNodes?: IGraphNode[]
-) => {
+const createNodeDatums = (ownerships: IOwnership[], dimensions: INodeDimensions, currentNodes?: IGraphNode[]) => {
   const newDatums: ({
     id: string;
     entity: ICompany | IShareholder;
     isNew?: boolean;
   } & INodeDimensions)[] = [];
   for (const o of ownerships) {
-    const identifier =
-      o.company?.orgnr ?? o.shareholder?.orgnr ?? o.shareholder?.id;
+    const identifier = o.company?.orgnr ?? o.shareholder?.orgnr ?? o.shareholder?.id;
     if (!identifier) {
       console.error("Entity identifier not found in:", o);
       continue;
     }
     // If datum exists in graph or in unfilteredDatums, do nothing
-    if (
-      currentNodes?.find((n) => n.id === identifier) ||
-      newDatums.find((d) => d.id === identifier)
-    ) {
+    if (currentNodes?.find((n) => n.id === identifier) || newDatums.find((d) => d.id === identifier)) {
       continue;
     }
     newDatums.push(
@@ -188,11 +174,7 @@ const createNodeDatums = (
   return nodeDatums;
 };
 
-const updateLinks = (
-  ownerships: IOwnership[],
-  currentLinks?: IGraphLink[],
-  nodes?: IGraphNode[]
-): IGraphLink[] => {
+const updateLinks = (ownerships: IOwnership[], currentLinks?: IGraphLink[], nodes?: IGraphNode[]): IGraphLink[] => {
   const links = currentLinks ?? [];
 
   // Making sure links have the most recent nodes. Could possibly be removed when useSimpleTree is.
@@ -214,24 +196,16 @@ const updateLinks = (
     const source = nodes?.find((node) => node.id === sourceId);
     const target = nodes?.find((node) => node.id === targetId);
     if (!source || !target) {
-      console.error(
-        "Something went wrong when updating links - source or target not found."
-      );
+      console.error("Something went wrong when updating links - source or target not found.");
       continue;
     }
-    const link = links.find(
-      (l) => l.source.id === sourceId && l.target.id === targetId
-    );
+    const link = links.find((l) => l.source.id === sourceId && l.target.id === targetId);
     if (link) link.ownerships.push(o);
     else {
       links.push({ source, target, ownerships: [o] });
     }
-    source.loadedInvestments = source.loadedInvestments
-      ? source.loadedInvestments + 1
-      : 1;
-    target.loadedInvestors = target.loadedInvestors
-      ? target.loadedInvestors + 1
-      : 1;
+    source.loadedInvestments = source.loadedInvestments ? source.loadedInvestments + 1 : 1;
+    target.loadedInvestors = target.loadedInvestors ? target.loadedInvestors + 1 : 1;
   }
 
   return links;
@@ -263,10 +237,8 @@ export const useSimpleTree = (
   investors?: IOwnership[],
   investments?: IOwnership[]
 ) => {
-  const [creatingInvestorNodes, setCreatingInvestorNodes] =
-    useState<boolean>(false);
-  const [creatingInvestmentNodes, setCreatingInvestmentNodes] =
-    useState<boolean>(false);
+  const [creatingInvestorNodes, setCreatingInvestorNodes] = useState<boolean>(false);
+  const [creatingInvestmentNodes, setCreatingInvestmentNodes] = useState<boolean>(false);
   const [creatingTree, setCreatingTree] = useState<boolean>(false);
 
   const [nodes, setNodes] = useState<IGraphNode[]>();
@@ -287,11 +259,7 @@ export const useSimpleTree = (
         treeConfig.nodeDimensions.width + treeConfig.nodeMargins.horisontal,
         treeConfig.nodeDimensions.height + treeConfig.nodeMargins.vertical,
       ]);
-      const investorDatums = createInvestorDatums(
-        investors,
-        treeConfig,
-        entity
-      );
+      const investorDatums = createInvestorDatums(investors, treeConfig, entity);
       const root: ISimpleTreeNode = investorTree(
         hierarchy<ISimpleTreeDatum>({
           id: entity.orgnr ?? (entity as IShareholder).id,
@@ -307,11 +275,7 @@ export const useSimpleTree = (
       // Centering tree, turning it "upside down" and adding top margin
       treeNodes.forEach((node) => {
         node.x += treeConfig.width / 2 - treeConfig.nodeDimensions.width / 2;
-        node.y =
-          treeConfig.height -
-          node.y -
-          treeConfig.height / 2 -
-          treeConfig.nodeDimensions.height / 2;
+        node.y = treeConfig.height - node.y - treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
       });
 
       const graphNodes = mapToGraphNodes(treeNodes);
@@ -329,9 +293,7 @@ export const useSimpleTree = (
         if (source && target) {
           if (source.loadedInvestments) source.loadedInvestments += 1;
           else source.loadedInvestments = 1;
-          const link = links.find(
-            (link) => link.source.id === sourceId && link.target.id === targetId
-          );
+          const link = links.find((link) => link.source.id === sourceId && link.target.id === targetId);
           if (link) link.ownerships.push(inv);
           else links.push({ source, target, ownerships: [inv] });
         }
@@ -358,11 +320,7 @@ export const useSimpleTree = (
         treeConfig.nodeDimensions.height + treeConfig.nodeMargins.vertical,
       ]);
 
-      const investmentDatums = createInvestmentDatums(
-        investments,
-        treeConfig,
-        entity
-      );
+      const investmentDatums = createInvestmentDatums(investments, treeConfig, entity);
       const root: ISimpleTreeNode = investmentTree(
         hierarchy<ISimpleTreeDatum>({
           id: entity.orgnr ?? (entity as IShareholder).id,
@@ -378,17 +336,13 @@ export const useSimpleTree = (
       // Aligning company tree with shareholder tree
       treeNodes.forEach((node) => {
         node.x += treeConfig.width / 2 - treeConfig.nodeDimensions.width / 2;
-        node.y =
-          node.y + treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
+        node.y = node.y + treeConfig.height / 2 - treeConfig.nodeDimensions.height / 2;
       });
 
       const graphNodes = mapToGraphNodes(treeNodes);
       const links: IGraphLink[] = [];
 
-      const source = graphNodes.find(
-        (node) =>
-          node.id === entity.orgnr || node.id === (entity as IShareholder).id
-      );
+      const source = graphNodes.find((node) => node.id === entity.orgnr || node.id === (entity as IShareholder).id);
       if (!source) return;
       source.skipInvestments = investments.length;
       source.loadedInvestors = investors?.length;
@@ -399,10 +353,7 @@ export const useSimpleTree = (
         if (source && target) {
           if (target.loadedInvestors) target.loadedInvestors += 1;
           else target.loadedInvestors = 1;
-          const link = links.find(
-            (link) =>
-              link.source.id === source.id && link.target.id === targetId
-          );
+          const link = links.find((link) => link.source.id === source.id && link.target.id === targetId);
           if (link) link.ownerships.push(inv);
           else links.push({ source, target, ownerships: [inv] });
         }
@@ -424,19 +375,16 @@ export const useSimpleTree = (
       const centerInvestmentNode = investmentNodes[0];
       // Merging the 'center nodes' in order to get both skipInvestors and skipInvestments
       const centerNode = { ...centerInvestorNode, ...centerInvestmentNode };
-      setNodes([
-        centerNode,
-        ...investmentNodes.slice(1),
-        ...investorNodes.slice(1),
-      ]);
+      setNodes([centerNode, ...investmentNodes.slice(1), ...investorNodes.slice(1)]);
     } else if (investorNodes) setNodes(investorNodes);
     else if (investmentNodes) setNodes(investmentNodes);
   }, [investmentNodes, investorNodes]);
 
   useEffect(() => {
-    if (investorLinks && investmentLinks)
-      setLinks([...investorLinks, ...investmentLinks]);
-    else if (investorLinks) setLinks(investorLinks);
+    if (investorLinks && investmentLinks) {
+      // If investor has an investment in itself, use only the investor link in order to avoid duplicates
+      setLinks([...investorLinks, ...investmentLinks.filter((link) => link.target !== link.source)]);
+    } else if (investorLinks) setLinks(investorLinks);
     else if (investmentLinks) setLinks(investmentLinks);
   }, [investmentLinks, investorLinks]);
 
@@ -466,18 +414,15 @@ const createInvestorDatums = (
 ): ISimpleTreeDatum[] => {
   const ownershipsWithEntity = o.filter(
     (o) =>
-      (o.company && o.company.orgnr !== entity.orgnr) ||
-      (o.shareholder && o.shareholder.id !== (entity as IShareholder).id)
+      (!o.company || o.company?.orgnr !== entity.orgnr) &&
+      (!o.shareholder || o.shareholder?.id !== (entity as IShareholder).id) &&
+      (!o.shareholder?.orgnr || o.shareholder?.orgnr !== entity.orgnr)
   );
-  const uniqueIds = new Set(
-    ownershipsWithEntity.map((o) => o.shareholderOrgnr ?? o.shareHolderId)
-  );
+  const uniqueIds = new Set(ownershipsWithEntity.map((o) => o.shareholderOrgnr ?? o.shareHolderId));
   const uniqueOwnerships: IOwnership[] = [];
   for (const id of Array.from(uniqueIds)) {
     uniqueOwnerships.push(
-      ownershipsWithEntity.find(
-        (o) => o.shareholderOrgnr === id || o.shareHolderId === id
-      ) as IOwnership
+      ownershipsWithEntity.find((o) => o.shareholderOrgnr === id || o.shareHolderId === id) as IOwnership
     );
   }
   return uniqueOwnerships.map((o) => ({
@@ -492,19 +437,11 @@ const createInvestmentDatums = (
   nodeDimensions: INodeDimensions,
   entity: ICompany | IShareholder
 ): ISimpleTreeDatum[] => {
-  const ownershipsWithCompany = o.filter(
-    (o) => o.company && o.company.orgnr !== entity.orgnr
-  );
-  const uniqueOrgnrs = new Set(
-    ownershipsWithCompany.map((o) => o.company?.orgnr as string)
-  );
+  const ownershipsWithCompany = o.filter((o) => o.company && o.company.orgnr !== entity.orgnr);
+  const uniqueOrgnrs = new Set(ownershipsWithCompany.map((o) => o.company?.orgnr as string));
   const uniqueOwnerships: IOwnership[] = [];
   for (const orgnr of Array.from(uniqueOrgnrs)) {
-    uniqueOwnerships.push(
-      ownershipsWithCompany.find(
-        (o) => o.company?.orgnr === orgnr
-      ) as IOwnership
-    );
+    uniqueOwnerships.push(ownershipsWithCompany.find((o) => o.company?.orgnr === orgnr) as IOwnership);
   }
   return uniqueOwnerships.map((o) => ({
     entity: o.company as ICompany,
