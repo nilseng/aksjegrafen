@@ -47,7 +47,7 @@ export const SearchView = () => {
         });
       }
     },
-    250,
+    100,
     {
       leading: false,
       trailing: true,
@@ -64,7 +64,7 @@ export const SearchView = () => {
         });
       }
     },
-    250,
+    100,
     {
       leading: false,
       trailing: true,
