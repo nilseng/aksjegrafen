@@ -13,20 +13,12 @@ export const getCompanyByOrgnr = async (orgnr: string) => {
 };
 
 export const getCompanies = async (searchTerm?: string, limit?: number) => {
-  const res = await fetch(
-    searchTerm
-      ? `/api/company/${searchTerm}?limit=${limit}`
-      : `/api/companies?limit=${limit}`
-  );
+  const res = await fetch(searchTerm ? `/api/company/${searchTerm}?limit=${limit}` : `/api/companies?limit=${limit}`);
   return res.json();
 };
 
 export const getCompanyCount = async (searchTerm?: string) => {
-  const res = await fetch(
-    searchTerm
-      ? `/api/company/${searchTerm}?count=true`
-      : "/api/company?count=true"
-  );
+  const res = await fetch(searchTerm ? `/api/company/${searchTerm}?count=true` : "/api/company?count=true");
   return res.json();
 };
 
@@ -81,9 +73,7 @@ export const getInvestments = async (
   skip: number = 0
 ): Promise<IOwnership[] | undefined> => {
   if (!(entity.orgnr || (entity as IShareholder).id)) return;
-  const identifier = entity.orgnr
-    ? { shareholderOrgnr: entity.orgnr }
-    : { shareHolderId: (entity as IShareholder).id };
+  const identifier = entity.orgnr ? { shareholderOrgnr: entity.orgnr } : { shareHolderId: (entity as IShareholder).id };
   const query = buildQuery({ ...identifier, year, limit, skip });
   const path = `/api/investments${query}`;
   const res = await fetch(path).catch((e) => {
@@ -94,9 +84,7 @@ export const getInvestments = async (
 };
 
 export const getInvestorCount = async (company: ICompany, year: number) => {
-  const res = await fetch(
-    `/api/investors?orgnr=${company.orgnr}&year=${year}&count=true`
-  );
+  const res = await fetch(`/api/investors?orgnr=${company.orgnr}&year=${year}&count=true`);
   return res.json();
 };
 
@@ -135,11 +123,7 @@ export const useCompanyCount = (searchTerm?: string) => {
   return count;
 };
 
-export const useInvestors = (
-  entity?: ICompany | IShareholder,
-  year?: number,
-  limit?: number
-) => {
+export const useInvestors = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
   const [investors, setInvestors] = useState<IOwnership[]>();
   const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
@@ -156,11 +140,7 @@ export const useInvestors = (
   return { investors, setInvestors, loading };
 };
 
-export const useInvestments = (
-  entity?: ICompany | IShareholder,
-  year?: number,
-  limit?: number
-) => {
+export const useInvestments = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
   const [investments, setInvestments] = useState<IOwnership[]>();
   const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
@@ -193,6 +173,7 @@ export const useGetCompany = (id?: string, orgnr?: string) => {
         setCompany(c);
       });
     }
+    return () => setCompany(undefined);
   }, [id, orgnr]);
 
   return company;
@@ -276,8 +257,7 @@ export const useInvestorCount = (
 
 export const useCompanyGraph = (year?: number, limit?: number) => {
   const [ownerships, setOwnerships] = useState<IOwnership[]>();
-  const [nodes, setNodes] =
-    useState<{ [key: string]: Partial<ICompany & IShareholder> }>();
+  const [nodes, setNodes] = useState<{ [key: string]: Partial<ICompany & IShareholder> }>();
 
   useEffect(() => {
     if (year) {
