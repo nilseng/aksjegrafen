@@ -4,7 +4,9 @@ import { ICompany, IShareholder } from "../models/models";
 const brregUrl = "https://data.brreg.no/enhetsregisteret/api/enheter";
 
 export const getBrregUnit = async (orgnr: string) => {
-  const res = await fetch(`${brregUrl}/${orgnr}`).catch(e => console.error(e));
+  const res = await fetch(`${brregUrl}/${orgnr}`).catch((e) =>
+    console.warn(`Could not fetch info from brreg for company with orgnr=${orgnr}`)
+  );
   return res ? res.json() : res;
 };
 
