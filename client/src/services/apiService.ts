@@ -169,7 +169,10 @@ export const useGetCompany = (id?: string, orgnr?: string) => {
       });
     } else if (orgnr) {
       getCompanyByOrgnr(orgnr).then((c) => {
-        if (c.error) return;
+        if (c.error || !c) {
+          console.warn(`No company with orgnr=${orgnr} found.`);
+          return;
+        }
         setCompany(c);
       });
     }

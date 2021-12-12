@@ -2,6 +2,7 @@ import React from "react";
 import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../App";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";
@@ -15,10 +16,10 @@ import {
 } from "../../services/apiService";
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
-import { graphSimulation, IGraphLink, IGraphNode, ITreeDimensions, useSimpleTree } from "./GraphUtils";
+import { graphSimulation, IGraphLink, IGraphNode, IGraphDimensions, initializeGraphSimulation } from "./GraphUtils";
 import { GraphView } from "./GraphView";
 
-const treeConfig: ITreeDimensions = {
+const graphConfig: IGraphDimensions = {
   width: 1000,
   height: 1000,
   nodeMargins: {
@@ -79,37 +80,40 @@ export const Graph = () => {
     setShareholder_id(s_id ?? undefined);
   }, [query]);
 
-  // #2: If there is a shareholder_id, a shareholder is retrieved
+  // #2.1.1: If there is a shareholder_id, a shareholder is retrieved
   const shareholder = useGetShareholder(shareholder_id);
 
-  // #3: If there is a shareholder and the shareholder has an orgnr, set orgnr
+  // #2.1.2: If there is a shareholder and the shareholder has an orgnr, set orgnr
   useEffect(() => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
   }, [shareholder]);
 
-  // #4: If there is an orgnr, a company is retrieved if it exists
+  // #2.2.1 || #2.1.3: If there is an orgnr, a company is retrieved if it exists
   const company = useGetCompany(companyId, orgnr);
 
   const [entity, setEntity] = useState<ICompany | IShareholder>();
 
   useEffect(() => {
     setEntity(company ?? shareholder);
-    if (company) document.title = company.name;
-    else if (shareholder) document.title = shareholder.name;
-    else document.title = "Aksjegrafen";
-    return () => setEntity(undefined);
   }, [company, shareholder]);
+
+  useDocumentTitle("Aksjegrafen", entity?.name);
 
   const { investors, loading: loadingInvestors, setInvestors } = useInvestors(entity, year, 5);
   const { investments, loading: loadingInvestments, setInvestments } = useInvestments(entity, year, 5);
 
-  const {
-    nodes: treeNodes,
-    setNodes: setTreeNodes,
-    links: treeLinks,
-    setLinks: setTreeLinks,
-    creatingTree,
-  } = useSimpleTree(treeConfig, entity, investors, investments);
+  useEffect(() => {
+    if (entity && !loadingInvestments && !loadingInvestors) {
+      const { nodes: simulationNodes, links: simulationLinks } = initializeGraphSimulation(
+        graphConfig,
+        entity,
+        investors,
+        investments
+      );
+      setNodes(simulationNodes);
+      setLinks(simulationLinks);
+    }
+  }, [investors, investments, loadingInvestments, loadingInvestors, entity]);
 
   const [actions, setActions] = useState<IGraphActions>({});
 
@@ -118,18 +122,19 @@ export const Graph = () => {
 
   const [selectedEntity, setSelectedEntity] = useState<ICompany | IShareholder>();
 
+  // Initializing actions for graph menu
   useEffect(() => {
     setActions({
       loadInvestors: async (node: IGraphNode) => {
         const ownerships = await getInvestors(node.entity, year, limit, node.skipInvestors);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            treeConfig.nodeDimensions,
+            graphConfig.nodeDimensions,
             ownerships,
             node,
-            nodes ?? treeNodes,
-            links ?? treeLinks,
-            node.y - treeConfig.nodeDimensions.height
+            nodes,
+            links,
+            node.y - graphConfig.nodeDimensions.height
           );
           setNodes(
             simulationNodes.map((n) => {
@@ -146,12 +151,12 @@ export const Graph = () => {
         const ownerships = await getInvestments(node.entity, year, limit, node.skipInvestments);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            treeConfig.nodeDimensions,
+            graphConfig.nodeDimensions,
             ownerships,
             node,
-            nodes ?? treeNodes,
-            links ?? treeLinks,
-            node.y + treeConfig.nodeDimensions.height
+            nodes,
+            links,
+            node.y + graphConfig.nodeDimensions.height
           );
           setNodes(
             simulationNodes.map((n) => {
@@ -167,8 +172,6 @@ export const Graph = () => {
       resetGraph: () => {
         setNodes(undefined);
         setLinks(undefined);
-        setTreeNodes(undefined);
-        setTreeLinks(undefined);
         setSvgTranslate(defaultSvgTranslate);
         setResetZoom(true);
         setEntity(entity ? { ...entity } : undefined);
@@ -187,8 +190,6 @@ export const Graph = () => {
       openInNewGraph: (nodeEntity: ICompany | IShareholder) => {
         setNodes(undefined);
         setLinks(undefined);
-        setTreeNodes(undefined);
-        setTreeLinks(undefined);
         setSvgTranslate(defaultSvgTranslate);
         setResetZoom(true);
         setEntity(nodeEntity);
@@ -203,23 +204,10 @@ export const Graph = () => {
         );
       },
     });
-  }, [
-    entity,
-    history,
-    limit,
-    links,
-    nodes,
-    setInvestments,
-    setInvestors,
-    setTreeLinks,
-    setTreeNodes,
-    treeLinks,
-    treeNodes,
-    year,
-  ]);
+  }, [entity, history, limit, links, nodes, setInvestments, setInvestors, year]);
 
   //TODO: Assuming here that if treeNodes and treeLinks are undefined, the graph is loading...
-  if (loadingInvestments || loadingInvestors || creatingTree || !treeNodes || !treeLinks)
+  if (loadingInvestments || loadingInvestors || !nodes || !links)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
@@ -227,9 +215,9 @@ export const Graph = () => {
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
       <GraphView
         year={year}
-        nodeDimensions={treeConfig.nodeDimensions}
-        nodes={nodes ?? treeNodes}
-        links={links ?? treeLinks}
+        nodeDimensions={graphConfig.nodeDimensions}
+        nodes={nodes}
+        links={links}
         svgTranslate={svgTranslate}
         setSvgTranslate={setSvgTranslate}
         resetZoom={resetZoom}
