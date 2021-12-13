@@ -16,7 +16,8 @@ import {
 } from "../../services/apiService";
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
-import { graphSimulation, IGraphLink, IGraphNode, IGraphDimensions, initializeGraphSimulation } from "./GraphUtils";
+import { graphSimulation, initializeGraphSimulation } from "./GraphService";
+import { IGraphLink, IGraphNode, IGraphDimensions } from "./GraphUtils";
 import { GraphView } from "./GraphView";
 
 const graphConfig: IGraphDimensions = {
@@ -78,6 +79,11 @@ export const Graph = () => {
     setCompanyId(c_id ?? undefined);
     setOrgnr(orgnr ?? undefined);
     setShareholder_id(s_id ?? undefined);
+    return () => {
+      setCompanyId(undefined);
+      setOrgnr(undefined);
+      setShareholder_id(undefined);
+    };
   }, [query]);
 
   // #2.1.1: If there is a shareholder_id, a shareholder is retrieved
@@ -86,6 +92,7 @@ export const Graph = () => {
   // #2.1.2: If there is a shareholder and the shareholder has an orgnr, set orgnr
   useEffect(() => {
     if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
+    return () => setOrgnr(undefined);
   }, [shareholder]);
 
   // #2.2.1 || #2.1.3: If there is an orgnr, a company is retrieved if it exists
@@ -95,6 +102,7 @@ export const Graph = () => {
 
   useEffect(() => {
     setEntity(company ?? shareholder);
+    return () => setEntity(undefined);
   }, [company, shareholder]);
 
   useDocumentTitle("Aksjegrafen", entity?.name);
@@ -113,6 +121,10 @@ export const Graph = () => {
       setNodes(simulationNodes);
       setLinks(simulationLinks);
     }
+    return () => {
+      setNodes(undefined);
+      setLinks(undefined);
+    };
   }, [investors, investments, loadingInvestments, loadingInvestors, entity]);
 
   const [actions, setActions] = useState<IGraphActions>({});

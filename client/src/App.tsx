@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
-import { Route, Router, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { CytoGraph } from "./components/CytoGraph";
 import { Graph } from "./components/Graph/Graph";
 import { Landing } from "./components/Landing";
@@ -8,8 +8,6 @@ import NavBar from "./components/NavBar";
 import { Stats } from "./components/Stats";
 
 import { theming } from "./theming/theme";
-
-import history from "./utils/history";
 
 export enum Theme {
   light = "light",
@@ -33,7 +31,7 @@ const App = () => {
   }, []);
 
   return (
-    <Router history={history}>
+    <Router>
       <NavBar theme={theme} setTheme={setTheme} />
       <div
         className="d-flex w-100 justify-content-center align-items-middle"

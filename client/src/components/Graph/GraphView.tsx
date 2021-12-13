@@ -3,7 +3,8 @@ import { AppContext } from "../../App";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";
-import { IGraphLink, IGraphNode, INodeDimensions, useZoom } from "./GraphUtils";
+import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
+import { useZoom } from "../../hooks/useSvgZoom";
 
 interface IProps {
   year: 2020 | 2019;
@@ -36,13 +37,7 @@ export const GraphView = ({
     <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
         <GraphMenu {...menu} setMenu={setMenu} />
-        <svg
-          ref={svgRef}
-          height="100%"
-          width="100%"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox={"0 0 1000 1000"}
-        >
+        <svg ref={svgRef} height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox={"0 0 1000 1000"}>
           <rect
             fill="transparent"
             width="3000"
@@ -90,10 +85,7 @@ export const GraphView = ({
                     });
                   }}
                 >
-                  <GraphNode
-                    node={{ ...node, ...nodeDimensions }}
-                    year={year}
-                  />
+                  <GraphNode node={{ ...node, ...nodeDimensions }} year={year} />
                 </g>
               );
             })}
