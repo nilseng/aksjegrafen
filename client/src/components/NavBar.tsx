@@ -15,12 +15,7 @@ interface IProps {
 
 const NavBar = ({ theme, setTheme }: IProps) => {
   return (
-    <Navbar
-      variant="light"
-      expand="md"
-      collapseOnSelect
-      style={{ zIndex: 10000 }}
-    >
+    <Navbar variant="light" expand="md" collapseOnSelect style={{ zIndex: 10000 }}>
       <Link to="/">
         <Navbar.Brand className="text-light">
           <span
@@ -37,7 +32,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               paddingBottom: "0.6rem",
             }}
           >
-            <GraphLogo color={theme.primary} />
+            <GraphLogo inputColor={theme.primary} />
           </span>
         </Navbar.Brand>
       </Link>

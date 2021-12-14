@@ -1,10 +1,20 @@
+import { useContext, useEffect, useState } from "react";
+import { AppContext } from "../App";
+
 interface IProps {
-  color: string;
+  inputColor?: string;
   width?: string;
   height?: string;
 }
 
-export const GraphLogo = ({ color, width, height }: IProps) => {
+export const GraphLogo = ({ inputColor, width, height }: IProps) => {
+  const [color, setColor] = useState<string>();
+  const { theme } = useContext(AppContext);
+
+  useEffect(() => {
+    setColor(inputColor ?? theme.primary);
+  }, [inputColor, theme]);
+
   return (
     <svg
       height={height ?? "100%"}

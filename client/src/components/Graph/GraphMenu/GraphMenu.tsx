@@ -11,47 +11,47 @@ import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { GraphLogo } from "../../GraphLogo";
-import { GraphContext, IGraphContext } from "../Graph";
+import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../Graph";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
 
 export interface IMenuItem {
+  node?: IGraphNode;
   name: string;
   icon?: IconDefinition;
   svgIcon?: JSX.Element;
   border?: boolean;
-  action?: {
-    name: keyof IGraphContext["actions"];
-    action?: Function;
-  };
+  nodeActionId?: keyof IGraphNodeActions;
+  nodeAction?: ((node: IGraphNode) => Promise<void>) | ((node: IGraphNode) => void);
+  actionId?: keyof IGraphDefaultActions;
+  action?: (() => Promise<void>) | (() => void);
 }
 
-const entityItems: IMenuItem[] = [
-  { name: "Detaljer", icon: faInfo, action: { name: "showDetails" } },
+const nodeItems: IMenuItem[] = [
+  { nodeActionId: "showDetails", name: "Detaljer", icon: faInfo },
   {
+    nodeActionId: "openInNewGraph",
     name: "Åpne i ny graf",
-    //TODO: Fix hard coded color
-    svgIcon: <GraphLogo color="#17a2b8" width="1em" height="1em" />,
-    action: { name: "openInNewGraph" },
+    svgIcon: <GraphLogo width="1rem" height="1rem" />,
   },
   {
+    nodeActionId: "openInNewWindow",
     name: "Åpne i ny fane",
     icon: faWindowRestore,
-    action: { name: "openInNewWindow" },
   },
   {
+    nodeActionId: "loadInvestors",
     name: "Flere investorer",
     icon: faUsers,
-    action: { name: "loadInvestors" },
   },
   {
+    nodeActionId: "loadInvestments",
     name: "Flere investeringer",
     icon: faBuilding,
-    action: { name: "loadInvestments" },
   },
 ];
 
-const defaultItems: IMenuItem[] = [{ name: "Tilbakestill graf", icon: faHome, action: { name: "resetGraph" } }];
+const defaultItems: IMenuItem[] = [{ actionId: "resetGraph", name: "Tilbakestill graf", icon: faHome }];
 
 export interface IMenu {
   open: boolean;
@@ -68,7 +68,6 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
   const graphContext = useContext(GraphContext);
 
   const [pos, setPos] = useState<{ x: number; y: number }>();
-  const [visibleItems, setVisibleItems] = useState<IMenuItem[]>();
 
   // If there is not enough space to display the ctx menu to the right/below clicked item,
   // adjust the position with the height/width of the ctx menu.
@@ -79,72 +78,7 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
     return () => setPos(undefined);
   }, [height, width, x, y, node]);
 
-  useEffect(() => {
-    if (node?.entity) {
-      const items = [...entityItems, ...defaultItems];
-      if (graphContext.actions) {
-        for (const item of items) {
-          switch (item.action?.name) {
-            case "loadInvestors":
-              item.action.action = () => {
-                if (graphContext.actions.loadInvestors) {
-                  graphContext.actions.loadInvestors(node);
-                }
-              };
-              break;
-            case "loadInvestments":
-              item.action.action = () => {
-                if (graphContext.actions.loadInvestments) {
-                  graphContext.actions.loadInvestments(node);
-                }
-              };
-              break;
-            case "resetGraph":
-              item.action.action = () => {
-                if (graphContext.actions.resetGraph) {
-                  graphContext.actions.resetGraph();
-                }
-              };
-              break;
-            case "openInNewWindow":
-              item.action.action = () => {
-                if (graphContext.actions.openInNewWindow) {
-                  graphContext.actions.openInNewWindow(node.entity);
-                }
-              };
-              break;
-            case "openInNewGraph":
-              item.action.action = () => {
-                if (graphContext.actions.openInNewGraph) {
-                  graphContext.actions.openInNewGraph(node.entity);
-                }
-              };
-              break;
-            case "showDetails":
-              item.action.action = () => {
-                if (graphContext.actions.showDetails) {
-                  graphContext.actions.showDetails(node.entity);
-                }
-              };
-          }
-        }
-      }
-      setVisibleItems(items);
-    } else {
-      for (const item of defaultItems) {
-        if (item.action?.name === "resetGraph") {
-          item.action.action = () => {
-            if (graphContext.actions.resetGraph) {
-              graphContext.actions.resetGraph();
-            }
-          };
-        }
-      }
-      setVisibleItems(defaultItems);
-    }
-  }, [node, graphContext.actions]);
-
-  if (!open) return null;
+  if (!open || !graphContext) return null;
 
   return (
     <ListGroup
@@ -160,9 +94,22 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
       }}
     >
       {node?.entity && <GraphMenuItem key={node.id} name={node.entity.name} border={true} />}
-      {visibleItems?.map((item) => (
-        <GraphMenuItem key={item.name} name={item.name} action={item.action} icon={item.icon} svgIcon={item.svgIcon} />
-      ))}
+      {node &&
+        nodeItems?.map((item) => {
+          if (!item.nodeActionId) return null;
+          return (
+            <GraphMenuItem
+              key={item.name}
+              node={node}
+              {...item}
+              nodeAction={graphContext?.nodeActions[item.nodeActionId]}
+            />
+          );
+        })}
+      {defaultItems?.map((item) => {
+        if (!item.actionId) return null;
+        return <GraphMenuItem key={item.name} {...item} action={graphContext?.actions[item.actionId]} />;
+      })}
     </ListGroup>
   );
 };

@@ -31,10 +31,6 @@ export interface IGraphLink {
 export interface IGraphDimensions {
   width: number;
   height: number;
-  nodeMargins: {
-    horisontal: number;
-    vertical: number;
-  };
   nodeDimensions: INodeDimensions;
 }
 

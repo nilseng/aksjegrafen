@@ -23,10 +23,6 @@ import { GraphView } from "./GraphView";
 const graphConfig: IGraphDimensions = {
   width: 1000,
   height: 1000,
-  nodeMargins: {
-    horisontal: 40,
-    vertical: 120,
-  },
   nodeDimensions: {
     width: 360,
     height: 150,
@@ -36,25 +32,25 @@ const graphConfig: IGraphDimensions = {
 const defaultSvgTranslate = "translate(0,0) scale(1)";
 
 export interface IGraphContext {
-  actions: IGraphActions;
+  nodeActions: IGraphNodeActions;
+  actions: IGraphDefaultActions;
   year: 2020 | 2019;
   limit: number;
 }
 
-export interface IGraphActions {
-  loadInvestors?: (node: IGraphNode) => Promise<void>;
-  loadInvestments?: (node: IGraphNode) => Promise<void>;
-  resetGraph?: () => void;
-  openInNewWindow?: (entity: ICompany | IShareholder) => void;
-  openInNewGraph?: (entity: ICompany | IShareholder) => void;
-  showDetails?: (entity: ICompany | IShareholder) => void;
+export interface IGraphNodeActions {
+  loadInvestors: (node: IGraphNode) => Promise<void>;
+  loadInvestments: (node: IGraphNode) => Promise<void>;
+  openInNewWindow: (node: IGraphNode) => void;
+  openInNewGraph: (node: IGraphNode) => void;
+  showDetails: (node: IGraphNode) => void;
 }
 
-export const GraphContext = React.createContext<IGraphContext>({
-  actions: {},
-  year: 2020,
-  limit: 5,
-});
+export interface IGraphDefaultActions {
+  resetGraph: () => void;
+}
+
+export const GraphContext = React.createContext<IGraphContext | undefined>(undefined);
 
 export const Graph = () => {
   const { theme } = useContext(AppContext);
@@ -127,7 +123,8 @@ export const Graph = () => {
     };
   }, [investors, investments, loadingInvestments, loadingInvestors, entity]);
 
-  const [actions, setActions] = useState<IGraphActions>({});
+  const [nodeActions, setNodeActions] = useState<IGraphNodeActions>();
+  const [actions, setActions] = useState<IGraphDefaultActions>();
 
   const [nodes, setNodes] = useState<IGraphNode[]>();
   const [links, setLinks] = useState<IGraphLink[]>();
@@ -136,7 +133,26 @@ export const Graph = () => {
 
   // Initializing actions for graph menu
   useEffect(() => {
+    const resetState = () => {
+      setNodes(undefined);
+      setLinks(undefined);
+      setSvgTranslate(defaultSvgTranslate);
+      setResetZoom(true);
+      setCompanyId(undefined);
+      setOrgnr(undefined);
+      setShareholder_id(undefined);
+      setInvestments(undefined);
+      setInvestors(undefined);
+    };
+
     setActions({
+      resetGraph: () => {
+        resetState();
+        setEntity(entity);
+      },
+    });
+
+    setNodeActions({
       loadInvestors: async (node: IGraphNode) => {
         const ownerships = await getInvestors(node.entity, year, limit, node.skipInvestors);
         if (ownerships) {
@@ -181,49 +197,33 @@ export const Graph = () => {
           setLinks(simulationLinks);
         }
       },
-      resetGraph: () => {
-        setNodes(undefined);
-        setLinks(undefined);
-        setSvgTranslate(defaultSvgTranslate);
-        setResetZoom(true);
-        setEntity(entity ? { ...entity } : undefined);
-      },
-      openInNewWindow: (entity: ICompany | IShareholder) => {
-        const key = isCompany(entity) ? "_id" : "shareholder_id";
+      openInNewWindow: (node: IGraphNode) => {
+        const key = isCompany(node.entity) ? "_id" : "shareholder_id";
         const baseUrl =
           window.location.hostname === "localhost"
             ? `http://${window.location.hostname}:${window.location.port}`
             : `https://${window.location.hostname}`;
-        window.open(`${baseUrl}/graph?${key}=${entity._id}`);
+        window.open(`${baseUrl}/graph?${key}=${node.entity._id}`);
       },
-      showDetails: (entity: ICompany | IShareholder) => {
-        setSelectedEntity(entity);
+      showDetails: (node: IGraphNode) => {
+        setSelectedEntity(node.entity);
       },
-      openInNewGraph: (nodeEntity: ICompany | IShareholder) => {
-        setNodes(undefined);
-        setLinks(undefined);
-        setSvgTranslate(defaultSvgTranslate);
-        setResetZoom(true);
-        setEntity(nodeEntity);
-        setCompanyId(undefined);
-        setOrgnr(undefined);
-        setShareholder_id(undefined);
-        setInvestments(undefined);
-        setInvestors(undefined);
+      openInNewGraph: (node: IGraphNode) => {
+        resetState();
+        setEntity(node.entity);
         // If nodeEntity is a shareholder, use shareholderId, else assume it's a company and use _id
         history.push(
-          `/graph?${isShareholder(nodeEntity) ? "shareholder_id=" + nodeEntity._id : "_id=" + nodeEntity._id}`
+          `/graph?${isShareholder(node.entity) ? "shareholder_id=" + node.entity._id : "_id=" + node.entity._id}`
         );
       },
     });
   }, [entity, history, limit, links, nodes, setInvestments, setInvestors, year]);
 
-  //TODO: Assuming here that if treeNodes and treeLinks are undefined, the graph is loading...
-  if (loadingInvestments || loadingInvestors || !nodes || !links)
+  if (loadingInvestments || loadingInvestors || !nodes || !links || !actions || !nodeActions)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
-    <GraphContext.Provider value={{ year, limit: 5, actions }}>
+    <GraphContext.Provider value={{ year, limit: 5, actions, nodeActions }}>
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
       <GraphView
         year={year}

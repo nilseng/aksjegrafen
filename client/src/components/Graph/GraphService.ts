@@ -1,4 +1,4 @@
-import { forceCollide, forceLink, forceManyBody, forceSimulation, forceX, forceY, Simulation } from "d3";
+import { forceCollide, forceSimulation, forceX, forceY, Simulation } from "d3";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
   createNodeDatums,
@@ -53,14 +53,12 @@ export const graphSimulation = (
   const nodeDatums = createNodeDatums(newOwnerships, dimensions, inputNodes);
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
-    .force("charge", forceManyBody().strength(-20))
-    .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
+    .force("collide", forceCollide(240)) as Simulation<IGraphNode, IGraphLink>;
 
   const nodes = simulation.nodes();
   const links = updateLinks(newOwnerships, nodes, currentLinks);
 
   simulation
-    .force("link", forceLink(links).strength(0.05)) // Using x and y forces to keep nodes in current position if possible, doesn't seem to have much effect...
     .force(
       "y",
       forceY()
