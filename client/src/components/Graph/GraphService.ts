@@ -1,4 +1,5 @@
 import { forceCollide, forceSimulation, forceX, forceY, Simulation } from "d3";
+import { uniqBy } from "lodash";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
   createNodeDatums,
@@ -29,7 +30,9 @@ export const initializeGraphSimulation = (
     ...(investors?.map((inv) => ({ ...inv, yForce: centerNode.y - centerNode.height })) ?? []),
     ...(investments?.map((inv) => ({ ...inv, yForce: centerNode.y + centerNode.height })) ?? []),
   ];
-  return graphSimulation(dimensions, newOwnerships, centerNode);
+  // Making sure all ownerships are unique (needed in case company has invested in itself)
+  const filteredOwnerships = uniqBy(newOwnerships, "_id");
+  return graphSimulation(dimensions, filteredOwnerships, centerNode);
 };
 
 export const graphSimulation = (

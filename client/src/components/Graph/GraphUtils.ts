@@ -112,6 +112,7 @@ export const updateLinks = (
       continue;
     }
     const link = links.find((l) => l.source.id === sourceId && l.target.id === targetId);
+    if (link && link.source.id === link.target.id) console.log(link);
     if (link) link.ownerships.push(o);
     else {
       links.push({ source, target, ownerships: [o] });
