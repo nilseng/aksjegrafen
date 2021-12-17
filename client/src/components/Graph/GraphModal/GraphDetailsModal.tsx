@@ -46,13 +46,11 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
               borderRadius: "50%",
               backgroundColor: theme.background,
               right: 0,
+              cursor: "pointer",
             }}
+            onClick={() => setEntity(undefined)}
           >
-            <FontAwesomeIcon
-              icon={faTimes}
-              style={{ cursor: "pointer", color: theme.text }}
-              onClick={() => setEntity(undefined)}
-            />
+            <FontAwesomeIcon icon={faTimes} style={{ color: theme.text }} />
           </div>
         </div>
         <div style={{ overflow: "scroll" }}>
