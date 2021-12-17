@@ -1,9 +1,9 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../../App";
 import { ICompany, IShareholder } from "../../../models/models";
-import { useBrregEntityInfo } from "../../../services/brregService";
+import { useBrregEntityInfo, useBrregFinancials } from "../../../services/brregService";
 import { EntityRelationships } from "./EntityRelationships";
 import { ModalInfo } from "./ModalInfo";
 
@@ -16,6 +16,13 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const { theme } = useContext(AppContext);
 
   const brregInfo = useBrregEntityInfo(entity);
+  const financials = useBrregFinancials(entity);
+
+  useEffect(() => {
+    if (financials) {
+      console.log(financials);
+    }
+  }, [financials]);
 
   return (
     <div className="row d-flex justify-content-center position-absolute h-75 w-100 mt-5">
@@ -46,13 +53,11 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
               borderRadius: "50%",
               backgroundColor: theme.background,
               right: 0,
+              cursor: "pointer",
             }}
+            onClick={() => setEntity(undefined)}
           >
-            <FontAwesomeIcon
-              icon={faTimes}
-              style={{ cursor: "pointer", color: theme.text }}
-              onClick={() => setEntity(undefined)}
-            />
+            <FontAwesomeIcon icon={faTimes} style={{ color: theme.text }} />
           </div>
         </div>
         <div style={{ overflow: "scroll" }}>
