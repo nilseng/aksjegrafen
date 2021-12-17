@@ -22,24 +22,37 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
       <div
         className="col col-lg-8 col-11 h-100 w-100 p-4"
         style={{
+          overflow: "scroll",
           backgroundColor: theme.background,
           color: theme.text,
           ...theme.elevation,
         }}
       >
-        <div className="w-100">
-          <div className="w-100 text-right">
+        <div className="d-flex justify-content-between align-items-center w-100 pb-4">
+          <div className="d-flex flex-wrap align-items-center">
+            <p className="h4 mb-0 mr-3">{entity.name}</p>
+            <p className="small align-middle h-100 mb-0" style={{ color: theme.muted }}>
+              {entity.orgnr}
+            </p>
+          </div>
+          <div
+            className="p-2 mr-2"
+            style={{
+              textAlign: "center",
+              verticalAlign: "middle",
+              width: "2.4rem",
+              height: "2.4rem",
+              ...theme.button,
+              borderRadius: "50%",
+              backgroundColor: theme.background,
+              right: 0,
+            }}
+          >
             <FontAwesomeIcon
               icon={faTimes}
               style={{ cursor: "pointer", color: theme.text }}
               onClick={() => setEntity(undefined)}
             />
-          </div>
-          <div className="d-flex flex-wrap align-items-center py-4">
-            <p className="h4 mb-0 mr-3">{entity.name}</p>
-            <p className="small align-middle h-100 mb-0" style={{ color: theme.muted }}>
-              {entity.orgnr}
-            </p>
           </div>
         </div>
         <div style={{ overflow: "scroll" }}>
