@@ -25,6 +25,7 @@ export interface IMenuItem {
   nodeAction?: ((node: IGraphNode) => Promise<void>) | ((node: IGraphNode) => void);
   actionId?: keyof IGraphDefaultActions;
   action?: (() => Promise<void>) | (() => void);
+  condition?: (node: IGraphNode, year: 2019 | 2020) => boolean;
 }
 
 const nodeItems: IMenuItem[] = [
@@ -42,11 +43,15 @@ const nodeItems: IMenuItem[] = [
   {
     nodeActionId: "loadInvestors",
     name: "Flere investorer",
+    condition: (node: IGraphNode, year: 2019 | 2020) =>
+      !!(node.entity.investorCount && (node.entity.investorCount[year] || 0) > (node.loadedInvestors || 0)),
     icon: faUsers,
   },
   {
     nodeActionId: "loadInvestments",
     name: "Flere investeringer",
+    condition: (node: IGraphNode, year: 2019 | 2020) =>
+      !!(node.entity.investmentCount && (node.entity.investmentCount[year] || 0) > (node.loadedInvestments || 0)),
     icon: faBuilding,
   },
 ];
