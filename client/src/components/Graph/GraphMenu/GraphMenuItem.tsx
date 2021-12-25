@@ -25,7 +25,8 @@ export const GraphMenuItem = (item: IMenuItem) => {
         borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
       }}
       onClick={() => {
-        if (item.nodeAction && item.node) {
+        if (isDisabled(item, graphContext?.year)) return;
+        else if (item.nodeAction && item.node) {
           item.nodeAction(item.node);
         } else if (item.action) {
           item.action();
