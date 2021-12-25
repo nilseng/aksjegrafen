@@ -15,7 +15,7 @@ export const YearSelector = () => {
   if (!graphContext) return null;
 
   return (
-    <div className="position-fixed d-flex m-2" style={{ userSelect: "none" }}>
+    <div className="position-absolute d-flex m-2" style={{ userSelect: "none" }}>
       <div
         className={graphContext.year === 2019 ? "font-weight-bold p-2" : "p-2"}
         style={
