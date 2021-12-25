@@ -5,9 +5,10 @@ import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
 import { useZoom } from "../../hooks/useSvgZoom";
+import { YearSelector } from "./YearSelector";
 
 interface IProps {
-  year: 2020 | 2019;
+  year: 2019 | 2020;
   nodeDimensions: INodeDimensions;
   nodes: IGraphNode[];
   links: IGraphLink[];
@@ -35,6 +36,7 @@ export const GraphView = ({
   useZoom(setSvgTranslate, resetZoom, setResetZoom, svgRef);
   return (
     <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
+      <YearSelector />
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
         <GraphMenu {...menu} setMenu={setMenu} />
         <svg ref={svgRef} height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox={"0 0 1000 1000"}>

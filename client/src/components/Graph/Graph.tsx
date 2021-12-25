@@ -35,6 +35,7 @@ export interface IGraphContext {
   nodeActions: IGraphNodeActions;
   actions: IGraphDefaultActions;
   year: 2020 | 2019;
+  setYear: React.Dispatch<React.SetStateAction<2020 | 2019>>;
   limit: number;
 }
 
@@ -58,7 +59,7 @@ export const Graph = () => {
   const history = useHistory();
   const query = useQuery();
 
-  const [year] = useState<2019 | 2020>(2020);
+  const [year, setYear] = useState<2019 | 2020>(2020);
   const [limit] = useState<number>(5);
   const [companyId, setCompanyId] = useState<string>();
   const [shareholder_id, setShareholder_id] = useState<string>();
@@ -223,7 +224,7 @@ export const Graph = () => {
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
-    <GraphContext.Provider value={{ year, limit: 5, actions, nodeActions }}>
+    <GraphContext.Provider value={{ year, setYear, limit: 5, actions, nodeActions }}>
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
       <GraphView
         year={year}

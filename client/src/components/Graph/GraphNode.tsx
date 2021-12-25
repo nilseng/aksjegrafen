@@ -26,12 +26,12 @@ export const GraphNode = ({ node, year }: IProps) => {
               {node.entity?.name}
             </div>
             <div>
-              {node.entity.investorCount && (
+              {node.entity.investorCount && node.entity.investorCount[year] && (
                 <p className="small m-0" style={{ color: theme.text }}>
                   {node.loadedInvestors ?? 0} av {node.entity.investorCount[year]} investorer
                 </p>
               )}
-              {node.entity.investmentCount && (
+              {node.entity.investmentCount && node.entity.investmentCount[year] && (
                 <p className="small m-0" style={{ color: theme.text }}>
                   {node.loadedInvestments ?? 0} av {node.entity.investmentCount[year]} investeringer
                 </p>
