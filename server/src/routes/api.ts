@@ -11,7 +11,9 @@ const router = express.Router();
 export const api = (db: IDatabase, cache: Redis) => {
   router.get("/company", async (req, res) => {
     if (req.query.count) {
-      const cachedCount = await cache.get("company_count");
+      const cachedCount = await cache
+        .get("company_count")
+        .catch((e) => console.error("Redis timeout - could not get company count."));
       if (cachedCount) return res.status(200).json(cachedCount);
       const count = await db.companies.countDocuments();
       cache.set("company_count", count);
@@ -32,7 +34,9 @@ export const api = (db: IDatabase, cache: Redis) => {
   router.get("/shareholder", async (req, res) => {
     if (req.query.count) {
       try {
-        const cachedCount = await cache.get("shareholder_count");
+        const cachedCount = await cache
+          .get("shareholder_count")
+          .catch((e) => console.error("Redis timeout - could not get shareholder count."));
         if (cachedCount) return res.status(200).json(cachedCount);
         const count = await db.shareholders.countDocuments();
         cache.set("shareholder_count", count);

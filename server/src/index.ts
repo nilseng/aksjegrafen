@@ -6,12 +6,12 @@ import bodyParser from "body-parser";
 import sslRedirect from "heroku-ssl-redirect";
 import yargs from "yargs/yargs";
 import { hideBin } from "yargs/helpers";
-import Redis from "ioredis";
 
 import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
 import { deleteData, importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
+import { initializeCache } from "./cache/cache";
 
 dotenv.config();
 
@@ -44,7 +44,7 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const db = await Database.initialize();
 
-  const cache = new Redis(process.env.REDIS_URL);
+  const cache = await initializeCache();
 
   const router = api(db, cache);
   app.use("/api", router);

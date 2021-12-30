@@ -37,7 +37,11 @@ const connectToMongoDb = async (): Promise<IDatabase> => {
     useUnifiedTopology: true,
   });
 
-  console.log(`Mongoclient connected to database server:${client.isConnected()}`);
+  if (client.isConnected()) {
+    console.log(`Mongoclient connected to database server`);
+  } else {
+    console.error("Mongoclient could not connect to database server");
+  }
 
   // Retrieving mongodb collections
   const collections = {
