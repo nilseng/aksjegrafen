@@ -89,7 +89,8 @@ export const SearchView = () => {
               <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
               <Form.Group className="w-100 mt-5 px-3">
                 <Form.Control
-                  name="peakSearchTerm"
+                  name="selskapsSøk"
+                  autoComplete="off"
                   type="text"
                   placeholder="Søk etter selskap..."
                   style={{
@@ -141,7 +142,8 @@ export const SearchView = () => {
               <StatCard label="aksjonærer" labelIcon={faUserTie} stat={shareholderCount} />
               <Form.Group className="w-100 mt-5 px-3">
                 <Form.Control
-                  name="peakSearchTerm"
+                  name="aksjonærsøk"
+                  autoComplete="off"
                   type="text"
                   placeholder="...eller aksjonær..."
                   style={{
