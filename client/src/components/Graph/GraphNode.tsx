@@ -68,7 +68,8 @@ const addDraggableBehaviour = (
   const dragOffset = { x: node.width / 2, y: node.height / 2 };
   return drag()
     .on("start", (e) => dragStarted(e, dragOffset, node, setNodes, setLinks))
-    .on("drag", (e) => dragged(e, dragOffset, node, setNodes, setLinks));
+    .on("drag", (e) => dragged(e, dragOffset, node, setNodes, setLinks))
+    .touchable(false);
 };
 
 export const GraphNode = ({ node, year }: IProps) => {
