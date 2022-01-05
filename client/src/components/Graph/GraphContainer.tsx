@@ -37,6 +37,8 @@ export interface IGraphContext {
   year: 2020 | 2019;
   setYear: React.Dispatch<React.SetStateAction<2020 | 2019>>;
   limit: number;
+  setNodes: React.Dispatch<React.SetStateAction<IGraphNode[] | undefined>>;
+  setLinks: React.Dispatch<React.SetStateAction<IGraphLink[] | undefined>>;
 }
 
 export interface IGraphNodeActions {
@@ -53,7 +55,7 @@ export interface IGraphDefaultActions {
 
 export const GraphContext = React.createContext<IGraphContext | undefined>(undefined);
 
-export const Graph = () => {
+export const GraphContainer = () => {
   const { theme } = useContext(AppContext);
 
   const history = useHistory();
@@ -224,7 +226,7 @@ export const Graph = () => {
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
-    <GraphContext.Provider value={{ year, setYear, limit: 5, actions, nodeActions }}>
+    <GraphContext.Provider value={{ year, setYear, limit: 5, actions, nodeActions, setNodes, setLinks }}>
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
       <GraphView
         year={year}

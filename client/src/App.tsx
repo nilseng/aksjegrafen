@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { CytoGraph } from "./components/CytoGraph";
-import { Graph } from "./components/Graph/Graph";
+import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { Stats } from "./components/Stats";
@@ -43,7 +43,7 @@ const App = () => {
         <Switch>
           <AppContext.Provider value={{ theme }}>
             <Route path="/" component={Landing} exact />
-            <Route path="/graph" component={Graph} />
+            <Route path="/graph" component={GraphContainer} />
             <Route path="/stats" component={Stats} />
             <Route path="/cyto-graph" component={CytoGraph} />
           </AppContext.Provider>

@@ -92,10 +92,5 @@ export const graphSimulation = (
     )
     .tick(1000);
 
-  for (const node of nodes) {
-    delete node.fx;
-    delete node.fy;
-  }
-
   return { simulation, nodes: simulation.nodes(), links };
 };

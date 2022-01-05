@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { AppContext } from "../../App";
-import { GraphContext } from "./Graph";
+import { GraphContext } from "./GraphContainer";
 
 export const YearSelector = () => {
   const { theme } = useContext(AppContext);

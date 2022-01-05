@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
-import { GraphContext } from "../Graph";
+import { GraphContext } from "../GraphContainer";
 import { IMenuItem } from "./GraphMenu";
 
 export const GraphMenuItem = (item: IMenuItem) => {

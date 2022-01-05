@@ -14,12 +14,11 @@ export const useZoom = (
 
     if (svgEl) {
       const svg: any = select(svgEl.current);
+      const z = zoom().on("zoom", (e) => zoomed(e.transform));
       if (resetZoom) {
-        const z = zoom().on("zoom", (e) => zoomed(e.transform));
         svg.call(z.transform, zoomIdentity, zoomTransform(svg.node()).invert([0, 0]));
         setResetZoom(false);
       } else {
-        const z = zoom().on("zoom", (e) => zoomed(e.transform));
         svg.call(z);
       }
     }

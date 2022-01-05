@@ -11,7 +11,7 @@ import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { GraphLogo } from "../../GraphLogo";
-import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../Graph";
+import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../GraphContainer";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
 
