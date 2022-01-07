@@ -65,32 +65,30 @@ export const GraphView = ({
                 }}
               />
             ))}
-            {nodes.map((node) => {
-              return (
-                <g
-                  key={node.id}
-                  onClick={(e) => {
-                    setMenu({
-                      open: true,
-                      node,
-                      x: e.pageX,
-                      y: e.pageY,
-                    });
-                  }}
-                  onContextMenu={(e) => {
-                    e.preventDefault();
-                    setMenu({
-                      open: true,
-                      node,
-                      x: e.pageX,
-                      y: e.pageY,
-                    });
-                  }}
-                >
-                  <GraphNode node={{ ...node, ...nodeDimensions }} year={year} />
-                </g>
-              );
-            })}
+            {nodes.map((node) => (
+              <g
+                key={node.id}
+                onClick={(e) => {
+                  setMenu({
+                    open: true,
+                    node,
+                    x: e.pageX,
+                    y: e.pageY,
+                  });
+                }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  setMenu({
+                    open: true,
+                    node,
+                    x: e.pageX,
+                    y: e.pageY,
+                  });
+                }}
+              >
+                <GraphNode node={{ ...node, ...nodeDimensions }} year={year} />
+              </g>
+            ))}
           </g>
         </svg>
       </div>
