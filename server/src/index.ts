@@ -9,6 +9,7 @@ import { hideBin } from "yargs/helpers";
 
 import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
+import brregRouter from "./routes/brreg";
 import { deleteData, importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
 import { initializeCache } from "./cache/cache";
@@ -48,6 +49,8 @@ const initializeApp = async () => {
 
   const router = api(db, cache);
   app.use("/api", router);
+
+  app.use("/brreg", brregRouter);
 
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));

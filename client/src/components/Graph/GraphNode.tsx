@@ -24,27 +24,6 @@ const updateLinks = (newNode: IGraphNode, links: IGraphLink[]): IGraphLink[] => 
   return newLinks;
 };
 
-const dragStarted = (
-  e: D3DragEvent<any, any, any>,
-  dragOffset: { x: number; y: number },
-  nodeId: string,
-  setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>,
-  setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
-) => {
-  const pos = {
-    x: e.subject.x - dragOffset.x,
-    y: e.subject.y - dragOffset.y,
-    fx: e.subject.x - dragOffset.x,
-    fy: e.subject.y - dragOffset.y,
-  };
-  setNodes((nodes) => {
-    const draggedNode = nodes?.find((node) => node.id === nodeId);
-    if (!draggedNode) return nodes;
-    setLinks((links) => updateLinks(draggedNode, links ?? []));
-    return replaceNode({ ...draggedNode, ...pos }, nodes ?? []);
-  });
-};
-
 const dragged = (
   e: D3DragEvent<any, any, any>,
   dragOffset: { x: number; y: number },
@@ -74,9 +53,7 @@ const addDraggableBehaviour = (
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
 ) => {
   const dragOffset = { x: nodeWidth / 2, y: nodeHeight / 2 };
-  return drag()
-    .on("start", (e) => dragStarted(e, dragOffset, nodeId, setNodes, setLinks))
-    .on("drag", (e) => dragged(e, dragOffset, nodeId, setNodes, setLinks));
+  return drag().on("drag", (e) => dragged(e, dragOffset, nodeId, setNodes, setLinks));
 };
 
 export const GraphNode = ({ node, year }: IProps) => {

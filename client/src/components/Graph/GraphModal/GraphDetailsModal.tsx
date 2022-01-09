@@ -5,6 +5,7 @@ import { AppContext } from "../../../App";
 import { ICompany, IShareholder } from "../../../models/models";
 import { useBrregEntityInfo } from "../../../services/brregService";
 import { EntityRelationships } from "./EntityRelationships";
+import { Financials } from "./Financials";
 import { ModalInfo } from "./ModalInfo";
 
 interface IProps {
@@ -54,6 +55,7 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
           </div>
         </div>
         <div style={{ overflow: "scroll" }}>
+          <Financials entity={entity} />
           <EntityRelationships entity={entity} />
           {brregInfo?.organisasjonsform?.beskrivelse && (
             <ModalInfo title="Organisasjonsform" value={brregInfo.organisasjonsform.beskrivelse} />
