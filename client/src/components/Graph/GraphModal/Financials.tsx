@@ -12,7 +12,7 @@ export const Financials = ({ entity }: IProps) => {
 
   const financials = useFinancialsByUnit(entity);
 
-  if (!financials) return null;
+  if (!financials || (financials as any).error) return null;
 
   return (
     <div className="p-4 mb-4" style={{ ...theme.lowering }}>
