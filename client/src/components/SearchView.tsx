@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import { debounce } from "lodash";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -27,49 +26,56 @@ export const SearchView = () => {
   const [companySearchList, setCompanySearchList] = useState<ICompany[]>([]);
   const [shareholderSearchList, setShareholderSearchList] = useState<IShareholder[]>([]);
 
+  const [companySearchTerm, setCompanySearchTerm] = useState<string>();
+  const [shareholderSearchTerm, setShareholderSearchTerm] = useState<string>();
+
   const handleCompanySearch = (e: any) => {
-    const searchTerm = e.target.value;
-    searchCompany(searchTerm);
+    setCompanySearchTerm(e.target.value);
   };
 
   const handleShareholderSearch = (e: any) => {
-    const searchTerm = e.target.value;
-    searchShareholder(searchTerm);
+    setShareholderSearchTerm(e.target.value);
   };
 
-  const searchCompany = debounce(
-    (searchTerm: string) => {
-      if (!searchTerm || searchTerm?.length < 3) setCompanySearchList([]);
-      else {
-        fetch(`/api/company/${searchTerm}?limit=10`).then(async (res: any) => {
-          const companies = await res.json();
+  useEffect(() => {
+    setCompanySearchList([]);
+    const abortController = new AbortController();
+    if (!companySearchTerm || companySearchTerm?.length < 3) setCompanySearchList([]);
+    else {
+      fetch(`/api/company/${companySearchTerm}?limit=10`, { signal: abortController.signal }).then(
+        async (res) => {
+          if (abortController.signal.aborted) return;
+          const companies: ICompany[] = await res.json();
           setCompanySearchList(companies);
-        });
-      }
-    },
-    100,
-    {
-      leading: false,
-      trailing: true,
+        },
+        (_) => _
+      );
     }
-  );
 
-  const searchShareholder = debounce(
-    (searchTerm: string) => {
-      if (!searchTerm || searchTerm?.length < 3) setShareholderSearchList([]);
-      else {
-        fetch(`/api/shareholder/${searchTerm}`).then(async (res: any) => {
-          const shareholders = await res.json();
+    return () => {
+      abortController.abort();
+    };
+  }, [companySearchTerm]);
+
+  useEffect(() => {
+    setShareholderSearchList([]);
+    const abortController = new AbortController();
+    if (!shareholderSearchTerm || shareholderSearchTerm?.length < 3) setShareholderSearchList([]);
+    else {
+      fetch(`/api/shareholder/${shareholderSearchTerm}`, { signal: abortController.signal }).then(
+        async (res) => {
+          if (abortController.signal.aborted) return;
+          const shareholders: IShareholder[] = await res.json();
           setShareholderSearchList(shareholders);
-        });
-      }
-    },
-    100,
-    {
-      leading: false,
-      trailing: true,
+        },
+        (_) => _
+      );
     }
-  );
+
+    return () => {
+      abortController.abort();
+    };
+  }, [shareholderSearchTerm]);
 
   return (
     <div className="d-flex w-100 justify-content-center align-items-middle" style={{ minHeight: "100%" }}>
@@ -100,7 +106,7 @@ export const SearchView = () => {
                     ...theme.lowering,
                     borderRadius: "4rem",
                   }}
-                  onChange={(e) => handleCompanySearch(e)}
+                  onChange={handleCompanySearch}
                 ></Form.Control>
               </Form.Group>
               <ListGroup className="w-100 mw-100" style={{ zIndex: 100 }}>
@@ -153,7 +159,7 @@ export const SearchView = () => {
                     ...theme.lowering,
                     borderRadius: "4rem",
                   }}
-                  onChange={(e) => handleShareholderSearch(e)}
+                  onChange={handleShareholderSearch}
                 ></Form.Control>
               </Form.Group>
               <ListGroup className="w-100 mw-100" style={{ zIndex: 100 }}>
