@@ -83,12 +83,14 @@ const connectToMongoDb = async (): Promise<IDatabase> => {
   //For app termination
   process.on("SIGINT", () => {
     gracefulShutdown("app termination", () => {
+      // TODO: App termination should be handled elsewhere
       process.exit(0);
     });
   });
   //For Heroku app termination
   process.on("SIGTERM", () => {
     gracefulShutdown("Heroku app termination", () => {
+      // TODO: App termination should be handled elsewhere
       process.exit(0);
     });
   });

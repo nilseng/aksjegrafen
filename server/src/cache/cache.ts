@@ -5,8 +5,7 @@ export const initializeCache = async (): Promise<Redis.Redis> => {
   console.log(`Redis status: ${cache.status}`);
 
   // TODO: Figure out why status always is 'connecting'
-  if (cache.status === "connecting") console.log("Server is already connecting to Redis cache.");
-  else {
+  if (cache.status !== "connecting") {
     try {
       await cache.connect();
       console.log("Server is connected to Redis cache.");
