@@ -160,7 +160,7 @@ export const GraphContainer = () => {
         const ownerships = await getInvestors(node.entity, year, limit, node.skipInvestors);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            graphConfig.nodeDimensions,
+            graphConfig,
             ownerships,
             node,
             nodes,
@@ -182,7 +182,7 @@ export const GraphContainer = () => {
         const ownerships = await getInvestments(node.entity, year, limit, node.skipInvestments);
         if (ownerships) {
           const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            graphConfig.nodeDimensions,
+            graphConfig,
             ownerships,
             node,
             nodes,

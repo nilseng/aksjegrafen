@@ -1,4 +1,4 @@
-import { forceCollide, forceSimulation, forceX, forceY, Simulation } from "d3";
+import { forceCollide, forceLink, forceSimulation, forceX, forceY, Simulation } from "d3";
 import { uniqBy } from "lodash";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
@@ -7,7 +7,6 @@ import {
   IGraphDimensions,
   IGraphLink,
   IGraphNode,
-  INodeDimensions,
   ISimulationNodeDatum,
   updateLinks,
 } from "./GraphUtils";
@@ -36,7 +35,7 @@ export const initializeGraphSimulation = (
 };
 
 export const graphSimulation = (
-  dimensions: INodeDimensions,
+  dimensions: IGraphDimensions,
   newOwnerships: (IOwnership & { yForce?: number })[],
   activeNode: IGraphNode,
   currentNodes?: IGraphNode[],
@@ -89,6 +88,13 @@ export const graphSimulation = (
           }
         })
         .strength(10)
+    )
+    .force(
+      "link",
+      forceLink(links)
+        .id((d: any) => d.id)
+        .distance(0)
+        .strength(1)
     )
     .tick(1000);
 
