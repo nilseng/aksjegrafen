@@ -8,6 +8,8 @@ import { EntityRelationships } from "./EntityRelationships";
 import { Financials } from "./Financials";
 import { ModalInfo } from "./ModalInfo";
 
+import "./GraphDetailsModal.scss";
+
 interface IProps {
   entity: ICompany | IShareholder;
   setEntity: React.Dispatch<React.SetStateAction<ICompany | IShareholder | undefined>>;
@@ -19,7 +21,7 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const brregInfo = useBrregEntityInfo(entity);
 
   return (
-    <div className="row d-flex justify-content-center position-absolute h-75 w-100 mt-5">
+    <div className="ag-modal row d-flex justify-content-center position-absolute h-75 mt-5 mx-auto">
       <div
         className="col col-lg-8 col-11 h-100 w-100 p-4"
         style={{
@@ -36,23 +38,20 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
               {entity.orgnr}
             </p>
           </div>
-          <div
-            className="p-2 mr-2"
+          <button
+            className="btn px-2 pt-0"
             style={{
               textAlign: "center",
               verticalAlign: "middle",
               width: "2.4rem",
               height: "2.4rem",
-              ...theme.button,
-              borderRadius: "50%",
-              backgroundColor: theme.background,
               right: 0,
               cursor: "pointer",
             }}
             onClick={() => setEntity(undefined)}
           >
-            <FontAwesomeIcon icon={faTimes} style={{ color: theme.text }} />
-          </div>
+            <FontAwesomeIcon icon={faTimes} style={{ color: theme.muted }} />
+          </button>
         </div>
         <div style={{ overflow: "scroll" }}>
           <Financials entity={entity} />
