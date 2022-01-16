@@ -32,8 +32,8 @@ export const HowToModal = () => {
         overflow: "scroll",
       }}
     >
-      <div className="btn float-right m-4">
-        <FontAwesomeIcon icon={faTimes} style={{ color: theme.muted }} onClick={() => setIsOpen(false)} />
+      <div className="btn float-right m-4" onClick={() => setIsOpen(false)}>
+        <FontAwesomeIcon icon={faTimes} style={{ color: theme.muted }} />
       </div>
       <h5 className="p-4">
         <FontAwesomeIcon className="mr-4" style={{ color: theme.primary }} icon={faInfoCircle} />
