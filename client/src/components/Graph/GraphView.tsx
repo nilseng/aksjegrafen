@@ -6,6 +6,7 @@ import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
 import { useZoom } from "../../hooks/useSvgZoom";
 import { YearSelector } from "./YearSelector";
+import { HowToModal } from "./GraphModal/HowToModal";
 
 interface IProps {
   year: 2019 | 2020;
@@ -39,6 +40,7 @@ export const GraphView = ({
       <YearSelector />
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
         <GraphMenu {...menu} setMenu={setMenu} />
+        <HowToModal />
         <svg ref={svgRef} height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox={"0 0 1000 1000"}>
           <rect
             fill="transparent"
