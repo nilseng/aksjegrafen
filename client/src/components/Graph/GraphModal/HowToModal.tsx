@@ -25,6 +25,7 @@ export const HowToModal = () => {
     <div
       className="position-absolute h-75 w-50 mr-4"
       style={{
+        color: theme.text,
         right: 0,
         top: "77.19px",
         ...theme.elevation,
