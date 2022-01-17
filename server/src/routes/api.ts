@@ -95,17 +95,17 @@ export const api = (db: IDatabase, cache: Redis) => {
       const options = req.query.limit ? { limit: +req.query.limit } : undefined;
       const companies = await db.companies
         .find(
-          {
+          /*           {
             $or: [
               {
                 orgnr: {
                   $regex: new RegExp(`^${req.params.searchTerm}`),
                   $options: "i",
                 },
-              },
-              { name: { $regex: req.params.searchTerm, $options: "i" } },
-            ],
-          },
+              }, */
+          { name: { $regex: new RegExp(`^${req.params.searchTerm.toUpperCase()}`) } },
+          /*             ],
+          }, */
           options
         )
         .toArray()
@@ -117,17 +117,19 @@ export const api = (db: IDatabase, cache: Redis) => {
 
   router.get("/shareholder/:searchTerm", async (req, res) => {
     const shareholders = await db.shareholders
-      .find({
+      .find(
+        /* {
         $or: [
           {
             orgnr: {
               $regex: new RegExp(`^${req.params.searchTerm}`),
               $options: "i",
             },
-          },
-          { name: { $regex: req.params.searchTerm, $options: "i" } },
-        ],
-      })
+          }, */
+        { name: { $regex: new RegExp(`^${req.params.searchTerm.toUpperCase()}`) } }
+        /*         ],
+      } */
+      )
       .limit(10)
       .toArray()
       .catch((e) => console.error(e));
