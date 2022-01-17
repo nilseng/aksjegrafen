@@ -1,5 +1,5 @@
 import express from "express";
-import { matchedData, query } from "express-validator";
+import { matchedData, param, query } from "express-validator";
 import { Redis } from "ioredis";
 import { ObjectID } from "mongodb";
 
@@ -74,68 +74,79 @@ export const api = (db: IDatabase, cache: Redis) => {
     return companies ? res.status(200).json(companies) : res.status(404).json({ error: "Something went wrong." });
   });
 
-  router.get("/company/:searchTerm", async (req, res) => {
-    if (req.query.count) {
-      const count = await db.companies
-        .countDocuments({
-          $or: [
+  router.get(
+    "/company/:searchTerm",
+    query(["limit"]).default(10).toInt(),
+    query("count").optional().toBoolean(),
+    async (req, res) => {
+      const query = matchedData(req);
+      const params = req.params;
+      if (query.count) {
+        const count = await db.companies
+          .aggregate([
             {
-              orgnr: {
-                $regex: new RegExp(`^${req.params.searchTerm}`),
-                $options: "i",
+              $search: {
+                index: "company search",
+                text: {
+                  query: params?.searchTerm,
+                  path: ["name", "orgnr"],
+                },
               },
             },
-            { name: { $regex: req.params.searchTerm, $options: "i" } },
-          ],
-        })
-        .catch((e) => console.error(e));
-      if (!count && count !== 0) return res.status(400).json({ error: "Search failed." });
-      res.status(200).json(count);
-    } else {
-      const options = req.query.limit ? { limit: +req.query.limit } : undefined;
-      const companies = await db.companies
-        .find(
-          /*           {
-            $or: [
-              {
-                orgnr: {
-                  $regex: new RegExp(`^${req.params.searchTerm}`),
-                  $options: "i",
+          ])
+          .count()
+          .catch((e) => console.error(e));
+        if (!count && count !== 0) return res.status(400).json({ error: "Search failed." });
+        res.status(200).json(count);
+      } else {
+        const options = query.limit ? { limit: query.limit } : undefined;
+        const companies = await db.companies
+          .aggregate([
+            {
+              $search: {
+                index: "company search",
+                text: {
+                  query: params?.searchTerm,
+                  path: ["name", "orgnr"],
                 },
-              }, */
-          { name: { $regex: new RegExp(`^${req.params.searchTerm.toUpperCase()}`) } },
-          /*             ],
-          }, */
-          options
-        )
+              },
+            },
+          ])
+          .limit(query.limit)
+          .toArray()
+          .catch((e) => console.error(e));
+        if (!companies) return res.status(400).json({ error: "Search failed." });
+        res.status(200).json(companies);
+      }
+    }
+  );
+
+  router.get(
+    "/shareholder/:searchTerm",
+    query(["limit"]).default(10).toInt(),
+    query("count").optional().toBoolean(),
+    async (req, res) => {
+      const query = matchedData(req);
+      const params = req.params;
+      const shareholders = await db.shareholders
+        .aggregate([
+          {
+            $search: {
+              index: "shareholder search",
+              text: {
+                query: params?.searchTerm,
+                path: ["name", "orgnr"],
+              },
+            },
+          },
+        ])
+        .limit(query.limit)
         .toArray()
         .catch((e) => console.error(e));
-      if (!companies) return res.status(400).json({ error: "Search failed." });
-      res.status(200).json(companies);
+      if (!shareholders) return res.status(400).json({ error: "Search failed." });
+      res.status(200).json(shareholders);
     }
-  });
-
-  router.get("/shareholder/:searchTerm", async (req, res) => {
-    const shareholders = await db.shareholders
-      .find(
-        /* {
-        $or: [
-          {
-            orgnr: {
-              $regex: new RegExp(`^${req.params.searchTerm}`),
-              $options: "i",
-            },
-          }, */
-        { name: { $regex: new RegExp(`^${req.params.searchTerm.toUpperCase()}`) } }
-        /*         ],
-      } */
-      )
-      .limit(10)
-      .toArray()
-      .catch((e) => console.error(e));
-    if (!shareholders) return res.status(400).json({ error: "Search failed." });
-    res.status(200).json(shareholders);
-  });
+  );
 
   interface IInvestmentsFilter {
     shareholderId?: string;
