@@ -38,9 +38,12 @@
     "start:external": "HOST=teo.local react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test:all": "react-scripts test --watchAll --transformIgnorePatterns 'node_modules/(?!(d3.*|internmap|delaunator|robust-predicates)/)'",
-    "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(d3.*|internmap|delaunator|robust-predicates)/)'",
+    "test:all": "react-scripts test --watchAll",
+    "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "transformIgnorePatterns": ["node_modules/(?!(d3.*|internmap|delaunator|robust-predicates)/)"]
   },
   "proxy": "http://localhost:4000",
   "eslintConfig": {

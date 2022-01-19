@@ -34,6 +34,7 @@ const App = () => {
     <Router>
       <NavBar theme={theme} setTheme={setTheme} />
       <div
+        id="ag-main"
         className="d-flex w-100 justify-content-center align-items-middle"
         style={{
           minHeight: "calc(100vh - 77.19px)",

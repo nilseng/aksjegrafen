@@ -4,6 +4,6 @@ import App from "./App";
 
 test("renders learn react link", () => {
   render(<App />);
-  const linkElement = screen.getAllByText(/aksjeselskaper/i);
-  expect(linkElement.length).toBeGreaterThan(0);
+  const containerEl = document.getElementById("ag-main");
+  expect(containerEl).toBeInTheDocument();
 });
