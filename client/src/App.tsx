@@ -37,8 +37,8 @@ const App = () => {
         id="ag-main"
         className="d-flex w-100 justify-content-center align-items-middle"
         style={{
-          minHeight: "calc(100vh - 77.19px)",
-          height: "calc(100vh - 77.19px)",
+          minHeight: "calc(100% - 77.188px)",
+          height: "calc(100% - 77.188px)",
         }}
       >
         <Switch>

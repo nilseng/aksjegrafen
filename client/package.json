@@ -35,7 +35,6 @@
     "web-vitals": "^1.1.1"
   },
   "scripts": {
-    "start:external": "HOST=teo.local react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test:all": "react-scripts test --watchAll",

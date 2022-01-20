@@ -8,8 +8,6 @@ import { EntityRelationships } from "./EntityRelationships";
 import { Financials } from "./Financials";
 import { ModalInfo } from "./ModalInfo";
 
-import "./GraphDetailsModal.scss";
-
 interface IProps {
   entity: ICompany | IShareholder;
   setEntity: React.Dispatch<React.SetStateAction<ICompany | IShareholder | undefined>>;
@@ -21,7 +19,7 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const brregInfo = useBrregEntityInfo(entity);
 
   return (
-    <div className="ag-modal row d-flex justify-content-center position-absolute h-75 mt-5 mx-auto">
+    <div className="ag-modal row d-flex justify-content-center position-absolute w-100 h-75 mt-5 mx-auto">
       <div
         className="col col-lg-8 col-11 h-100 w-100 p-4"
         style={{
