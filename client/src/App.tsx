@@ -31,26 +31,32 @@ const App = () => {
   }, []);
 
   return (
-    <Router>
-      <NavBar theme={theme} setTheme={setTheme} />
+    <>
       <div
-        id="ag-main"
-        className="d-flex w-100 justify-content-center align-items-middle"
-        style={{
-          minHeight: "calc(100% - 77.188px)",
-          height: "calc(100% - 77.188px)",
-        }}
-      >
-        <Switch>
-          <AppContext.Provider value={{ theme }}>
-            <Route path="/" component={Landing} exact />
-            <Route path="/graph" component={GraphContainer} />
-            <Route path="/stats" component={Stats} />
-            <Route path="/cyto-graph" component={CytoGraph} />
-          </AppContext.Provider>
-        </Switch>
-      </div>
-    </Router>
+        className="position-absolute top-0"
+        style={{ backgroundColor: theme.background, height: "100vh", width: "100vw", zIndex: -1000 }}
+      ></div>
+      <Router>
+        <NavBar theme={theme} setTheme={setTheme} />
+        <div
+          id="ag-main"
+          className="d-flex w-100 justify-content-center align-items-middle"
+          style={{
+            minHeight: "calc(100% - 77.188px)",
+            height: "calc(100% - 77.188px)",
+          }}
+        >
+          <Switch>
+            <AppContext.Provider value={{ theme }}>
+              <Route path="/" component={Landing} exact />
+              <Route path="/graph" component={GraphContainer} />
+              <Route path="/stats" component={Stats} />
+              <Route path="/cyto-graph" component={CytoGraph} />
+            </AppContext.Provider>
+          </Switch>
+        </div>
+      </Router>
+    </>
   );
 };
 
