@@ -1,6 +1,7 @@
 import { createContext, Dispatch, SetStateAction } from "react";
 import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 import { AppContext } from "../../App";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
@@ -17,7 +18,7 @@ import {
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
 import { graphSimulation, initializeGraphSimulation } from "./GraphService";
-import { IGraphLink, IGraphNode, IGraphDimensions } from "./GraphUtils";
+import { IGraphLink, IGraphNode, IGraphDimensions, getDuplicateCount } from "./GraphUtils";
 import { GraphView } from "./GraphView";
 
 const graphConfig: IGraphDimensions = {
@@ -180,6 +181,11 @@ export const GraphContainer = () => {
             })
           );
           setLinks(simulationLinks);
+          toast(`Lastet ${ownerships.length} av investorene i ${node.entity.name}`, { type: toast.TYPE.SUCCESS });
+          const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
+          if (duplicates > 0) {
+            toast(`${duplicates} av investorene var allerede i grafen`, { type: toast.TYPE.INFO });
+          }
         }
       },
       loadInvestments: async (node: IGraphNode) => {
@@ -202,6 +208,11 @@ export const GraphContainer = () => {
             })
           );
           setLinks(simulationLinks);
+          toast(`Lastet ${ownerships.length} av investeringene til ${node.entity.name}`, { type: toast.TYPE.SUCCESS });
+          const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
+          if (duplicates > 0) {
+            toast(`${duplicates} av investeringene var allerede i grafen`, { type: toast.TYPE.INFO });
+          }
         }
       },
       openInNewWindow: (node: IGraphNode) => {

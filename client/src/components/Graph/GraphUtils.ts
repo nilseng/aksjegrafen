@@ -124,3 +124,6 @@ export const updateLinks = (
 
   return links;
 };
+
+export const getDuplicateCount = (loadedNodes: number, oldNodes: number, newNodes: number) =>
+  loadedNodes - (newNodes - oldNodes);

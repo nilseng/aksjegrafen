@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Slide, ToastContainer } from "react-toastify";
 import { CytoGraph } from "./components/CytoGraph";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
@@ -50,6 +51,13 @@ const App = () => {
           </AppContext.Provider>
         </Switch>
       </div>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={4000}
+        transition={Slide}
+        hideProgressBar={true}
+        theme={theme.id === "dark" ? "dark" : "light"}
+      />
     </Router>
   );
 };
