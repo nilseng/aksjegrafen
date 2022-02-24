@@ -71,12 +71,25 @@ export const GraphNode = ({ node, year }: IProps) => {
     }
   }, [node.id, node.width, node.height, graphContext?.setNodes, graphContext?.setLinks]);
 
+  const handleFocused = () => {
+    graphContext?.setHoveredNode(node);
+  };
+
+  const handleFocusEnd = () => {
+    graphContext?.setHoveredNode(undefined);
+  };
+
   return (
     <g ref={nodeRef}>
       <foreignObject x={node.x} y={node.y} width={node.width} height={node.height}>
         <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4">
           <div
             className="h-100 w-100 d-flex flex-column align-items-middle justify-content-between p-2"
+            onMouseOver={handleFocused}
+            onMouseLeave={handleFocusEnd}
+            onTouchStartCapture={handleFocused}
+            onTouchEndCapture={handleFocusEnd}
+            onTouchCancelCapture={handleFocusEnd}
             style={{
               ...theme.elevation,
               backgroundColor: theme.background,

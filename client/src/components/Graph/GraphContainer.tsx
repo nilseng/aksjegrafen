@@ -1,4 +1,4 @@
-import React from "react";
+import { createContext, Dispatch, SetStateAction } from "react";
 import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../App";
@@ -35,10 +35,12 @@ export interface IGraphContext {
   nodeActions: IGraphNodeActions;
   actions: IGraphDefaultActions;
   year: 2020 | 2019;
-  setYear: React.Dispatch<React.SetStateAction<2020 | 2019>>;
+  setYear: Dispatch<SetStateAction<2020 | 2019>>;
   limit: number;
-  setNodes: React.Dispatch<React.SetStateAction<IGraphNode[] | undefined>>;
-  setLinks: React.Dispatch<React.SetStateAction<IGraphLink[] | undefined>>;
+  setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>;
+  setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>;
+  hoveredNode: IGraphNode | undefined;
+  setHoveredNode: Dispatch<SetStateAction<IGraphNode | undefined>>;
 }
 
 export interface IGraphNodeActions {
@@ -53,7 +55,7 @@ export interface IGraphDefaultActions {
   resetGraph: () => void;
 }
 
-export const GraphContext = React.createContext<IGraphContext | undefined>(undefined);
+export const GraphContext = createContext<IGraphContext | undefined>(undefined);
 
 export const GraphContainer = () => {
   const { theme } = useContext(AppContext);
@@ -131,6 +133,8 @@ export const GraphContainer = () => {
 
   const [nodes, setNodes] = useState<IGraphNode[]>();
   const [links, setLinks] = useState<IGraphLink[]>();
+
+  const [hoveredNode, setHoveredNode] = useState<IGraphNode>();
 
   const [selectedEntity, setSelectedEntity] = useState<ICompany | IShareholder>();
 
@@ -226,7 +230,9 @@ export const GraphContainer = () => {
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
 
   return (
-    <GraphContext.Provider value={{ year, setYear, limit: 5, actions, nodeActions, setNodes, setLinks }}>
+    <GraphContext.Provider
+      value={{ year, setYear, limit: 5, actions, nodeActions, setNodes, setLinks, hoveredNode, setHoveredNode }}
+    >
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
       <GraphView
         year={year}

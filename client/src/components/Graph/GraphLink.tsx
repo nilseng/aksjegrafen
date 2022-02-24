@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
+import { GraphContext } from "./GraphContainer";
 import { GraphLinkArrow } from "./GraphLinkArrow";
-import { IGraphLink } from "./GraphUtils";
+import { IGraphLink, IGraphNode } from "./GraphUtils";
 
 interface IProps {
   link: IGraphLink;
@@ -11,8 +12,13 @@ interface IProps {
   };
 }
 
+const isLinkHighlighted = (link: IGraphLink, node?: IGraphNode) => {
+  return node?.id === link.source.id || node?.id === link.target.id;
+};
+
 export const GraphLink = ({ link, offset }: IProps) => {
   const { theme } = useContext(AppContext);
+  const graphContext = useContext(GraphContext);
 
   const [rotation, setRotation] = useState<number>();
   const [arrowPos, setArrowPos] = useState<{ x: number; y: number }>({
@@ -35,10 +41,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
   useEffect(() => {
     const cos_theta =
       (link.target.y - link.source.y) /
-      Math.sqrt(
-        Math.pow(link.target.x - link.source.x, 2) +
-          Math.pow(link.target.y - link.source.y, 2)
-      );
+      Math.sqrt(Math.pow(link.target.x - link.source.x, 2) + Math.pow(link.target.y - link.source.y, 2));
     setRotation(
       link.target.x > link.source.x
         ? -(Math.acos(cos_theta) / (2 * Math.PI)) * 360
@@ -82,20 +85,12 @@ export const GraphLink = ({ link, offset }: IProps) => {
           }}
           rotation={0}
         />
-        <foreignObject
-          x={link.source.x + 2 * offset.x + 40}
-          y={link.source.y + offset.y}
-          width={100}
-          height={20}
-        >
+        <foreignObject x={link.source.x + 2 * offset.x + 40} y={link.source.y + offset.y} width={100} height={20}>
           <div data-xmlns="http://www.w3.org/1999/xhtml">
             <div className="font-weight-bold" style={{ color: theme.primary }}>
               {(
                 link.ownerships.reduce((ownershipPercentage: number, o) => {
-                  return (
-                    ownershipPercentage +
-                    +o.shareholderStocks / +o.companyStocks
-                  );
+                  return ownershipPercentage + +o.shareholderStocks / +o.companyStocks;
                 }, 0) * 100
               ).toFixed(2) + "%"}
             </div>
@@ -111,7 +106,8 @@ export const GraphLink = ({ link, offset }: IProps) => {
         y1={link.source.y + offset.y}
         x2={link.target.x + offset.x}
         y2={link.target.y + offset.y}
-        stroke={theme.muted}
+        stroke={isLinkHighlighted(link, graphContext?.hoveredNode) ? theme.primary : theme.muted}
+        strokeWidth={isLinkHighlighted(link, graphContext?.hoveredNode) ? 2 : 1}
       />
       {(rotation || rotation === 0) && (
         <>
@@ -128,19 +124,12 @@ export const GraphLink = ({ link, offset }: IProps) => {
           </div>
         </foreignObject>
       )}
-      <foreignObject
-        x={percentagePos.x}
-        y={percentagePos.y}
-        width={100}
-        height={20}
-      >
+      <foreignObject x={percentagePos.x} y={percentagePos.y} width={100} height={20}>
         <div data-xmlns="http://www.w3.org/1999/xhtml">
           <div className="font-weight-bold" style={{ color: theme.primary }}>
             {(
               link.ownerships.reduce((ownershipPercentage: number, o) => {
-                return (
-                  ownershipPercentage + +o.shareholderStocks / +o.companyStocks
-                );
+                return ownershipPercentage + +o.shareholderStocks / +o.companyStocks;
               }, 0) * 100
             ).toFixed(2) + "%"}
           </div>
