@@ -42,13 +42,11 @@ export const graphSimulation = (
   currentLinks?: IGraphLink[],
   yForce?: number
 ) => {
-  // Fixing the clicked node to current position
+  // Fixing the nodes to current position
   const inputNodes = currentNodes
     ? currentNodes?.map((n) => {
-        if (n.id === activeNode?.id) {
-          n.fx = n.x;
-          n.fy = n.y;
-        }
+        n.fx = n.x;
+        n.fy = n.y;
         return n;
       })
     : [{ ...activeNode, fx: activeNode.x, fy: activeNode.y }];
@@ -66,7 +64,6 @@ export const graphSimulation = (
       forceY()
         .y((d: any) => {
           if (d.isNew) {
-            d.isNew = false;
             // TODO: Figure out an accurate number for the offset
             return d.yForce ?? yForce ?? d.y + dimensions.height / 2;
           } else {
@@ -80,11 +77,10 @@ export const graphSimulation = (
       forceX()
         .x((d: any) => {
           if (d.isNew) {
-            d.isNew = false;
             // TODO: Figure out an accurate number for the offset
-            return activeNode.x + dimensions.width / 3;
+            return activeNode.x;
           } else {
-            return d.x + dimensions.width / 3;
+            return d.x;
           }
         })
         .strength(10)
@@ -97,6 +93,10 @@ export const graphSimulation = (
         .strength(1)
     )
     .tick(1000);
+
+  simulation.nodes().forEach((n) => {
+    n.isNew = false;
+  });
 
   return { simulation, nodes: simulation.nodes(), links };
 };

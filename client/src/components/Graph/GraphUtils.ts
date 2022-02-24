@@ -4,6 +4,7 @@ import { ICompany, IOwnership, IShareholder } from "../../models/models";
 export type ISimulationNodeDatum = {
   id: string;
   entity: ICompany | IShareholder;
+  isNew?: boolean;
 } & INodeDimensions &
   SimulationNodeDatum;
 
