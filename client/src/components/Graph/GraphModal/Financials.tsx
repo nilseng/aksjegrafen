@@ -16,56 +16,51 @@ export const Financials = ({ entity }: IProps) => {
 
   return (
     <div className="p-4 mb-4" style={{ ...theme.lowering }}>
-      {financials?.length > 0 && (
-        <>
-          <p style={{ color: theme.muted }}>{new Date(financials[0].regnskapsperiode?.fraDato).getFullYear()}</p>
+      {financials?.map((f) => (
+        <div key={f.id}>
+          <p style={{ color: theme.muted }}>{new Date(f.regnskapsperiode?.fraDato).getFullYear()}</p>
           <p className="font-weight-bold mb-1">Driftsinntekter</p>
           <p style={{ color: theme.primary }}>
-            {financials[0].resultatregnskapResultat?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(
+            {f.resultatregnskapResultat?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(
               navigator?.language
             )}
           </p>
           <p className="font-weight-bold mb-1">Driftsresultat</p>
           <p
             style={{
-              color:
-                financials[0].resultatregnskapResultat?.driftsresultat?.driftsresultat > 0
-                  ? theme.primary
-                  : theme.danger,
+              color: f.resultatregnskapResultat?.driftsresultat?.driftsresultat > 0 ? theme.primary : theme.danger,
             }}
           >
-            {financials[0].resultatregnskapResultat?.driftsresultat?.driftsresultat?.toLocaleString(
-              navigator?.language
-            )}
+            {f.resultatregnskapResultat?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
           </p>
-          {financials[0].resultatregnskapResultat?.totalresultat && (
+          {f.resultatregnskapResultat?.totalresultat && (
             <>
               <p className="font-weight-bold mb-1">Totalresultat</p>
               <p
                 className="mb-0"
                 style={{
-                  color: financials[0].resultatregnskapResultat?.totalresultat > 0 ? theme.primary : theme.danger,
+                  color: f.resultatregnskapResultat?.totalresultat > 0 ? theme.primary : theme.danger,
                 }}
               >
-                {financials[0].resultatregnskapResultat?.totalresultat?.toLocaleString(navigator?.language)}
+                {f.resultatregnskapResultat?.totalresultat?.toLocaleString(navigator?.language)}
               </p>
             </>
           )}
-          {financials[0].resultatregnskapResultat?.aarsresultat && (
+          {f.resultatregnskapResultat?.aarsresultat && (
             <>
               <p className="font-weight-bold mb-1">Årsresultat</p>
               <p
                 className="mb-0"
                 style={{
-                  color: financials[0].resultatregnskapResultat?.aarsresultat > 0 ? theme.primary : theme.danger,
+                  color: f.resultatregnskapResultat?.aarsresultat > 0 ? theme.primary : theme.danger,
                 }}
               >
-                {financials[0].resultatregnskapResultat?.aarsresultat?.toLocaleString(navigator?.language)}
+                {f.resultatregnskapResultat?.aarsresultat?.toLocaleString(navigator?.language)}
               </p>
             </>
           )}
-        </>
-      )}
+        </div>
+      ))}
     </div>
   );
 };
