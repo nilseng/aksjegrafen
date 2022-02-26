@@ -30,7 +30,7 @@ const graphConfig: IGraphDimensions = {
   },
 };
 
-const defaultSvgTranslate = "translate(0,0) scale(1)";
+export const defaultSvgTransform = "translate(0,0) scale(1)";
 
 export interface IGraphContext {
   nodeActions: IGraphNodeActions;
@@ -42,6 +42,10 @@ export interface IGraphContext {
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>;
   hoveredNode: IGraphNode | undefined;
   setHoveredNode: Dispatch<SetStateAction<IGraphNode | undefined>>;
+  svgTransform: string;
+  setSvgTransform: Dispatch<SetStateAction<string>>;
+  resetZoom: boolean;
+  setResetZoom: Dispatch<SetStateAction<boolean>>;
 }
 
 export interface IGraphNodeActions {
@@ -70,7 +74,7 @@ export const GraphContainer = () => {
   const [shareholder_id, setShareholder_id] = useState<string>();
   const [orgnr, setOrgnr] = useState<string>();
 
-  const [svgTranslate, setSvgTranslate] = useState("translate(0,0) scale(1)");
+  const [svgTransform, setSvgTransform] = useState(defaultSvgTransform);
   const [resetZoom, setResetZoom] = useState<boolean>(true);
 
   // #1: Query parameters are read
@@ -144,7 +148,7 @@ export const GraphContainer = () => {
     const resetState = () => {
       setNodes(undefined);
       setLinks(undefined);
-      setSvgTranslate(defaultSvgTranslate);
+      setSvgTransform(defaultSvgTransform);
       setResetZoom(true);
       setCompanyId(undefined);
       setOrgnr(undefined);
@@ -242,19 +246,24 @@ export const GraphContainer = () => {
 
   return (
     <GraphContext.Provider
-      value={{ year, setYear, limit: 5, actions, nodeActions, setNodes, setLinks, hoveredNode, setHoveredNode }}
+      value={{
+        year,
+        setYear,
+        limit: 5,
+        actions,
+        nodeActions,
+        setNodes,
+        setLinks,
+        hoveredNode,
+        setHoveredNode,
+        svgTransform,
+        setSvgTransform,
+        resetZoom,
+        setResetZoom,
+      }}
     >
       {selectedEntity && <GraphDetailsModal entity={selectedEntity} setEntity={setSelectedEntity} />}
-      <GraphView
-        year={year}
-        nodeDimensions={graphConfig.nodeDimensions}
-        nodes={nodes}
-        links={links}
-        svgTranslate={svgTranslate}
-        setSvgTranslate={setSvgTranslate}
-        resetZoom={resetZoom}
-        setResetZoom={setResetZoom}
-      />
+      <GraphView year={year} nodeDimensions={graphConfig.nodeDimensions} nodes={nodes} links={links} />
     </GraphContext.Provider>
   );
 };

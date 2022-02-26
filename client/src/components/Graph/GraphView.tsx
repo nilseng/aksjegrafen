@@ -7,34 +7,23 @@ import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
 import { useZoom } from "../../hooks/useSvgZoom";
 import { YearSelector } from "./YearSelector";
 import { HowToModal } from "./GraphModal/HowToModal";
+import { GraphContext } from "./GraphContainer";
 
 interface IProps {
   year: 2019 | 2020;
   nodeDimensions: INodeDimensions;
   nodes: IGraphNode[];
   links: IGraphLink[];
-  svgTranslate: string;
-  setSvgTranslate: React.Dispatch<React.SetStateAction<string>>;
-  resetZoom: boolean;
-  setResetZoom: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const GraphView = ({
-  year,
-  nodeDimensions,
-  nodes,
-  links,
-  svgTranslate,
-  setSvgTranslate,
-  resetZoom,
-  setResetZoom,
-}: IProps) => {
+export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
   const { theme } = useContext(AppContext);
+  const graphContext = useContext(GraphContext);
 
   const [menu, setMenu] = useState<IMenu>({ open: false });
 
   const svgRef = useRef<SVGSVGElement>(null);
-  useZoom(setSvgTranslate, resetZoom, setResetZoom, svgRef);
+  useZoom(svgRef);
   return (
     <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
       <YearSelector />
@@ -56,7 +45,7 @@ export const GraphView = ({
               setMenu({ open: !menu.open, x: e.pageX, y: e.pageY });
             }}
           ></rect>
-          <g transform={svgTranslate}>
+          <g transform={graphContext?.svgTransform}>
             {links.map((link) => (
               <GraphLink
                 key={`${link.source.id}-${link.target.id}`}

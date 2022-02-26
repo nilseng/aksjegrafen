@@ -9,6 +9,7 @@ export const YearSelector = () => {
   const handleClick = (year: 2019 | 2020) => {
     if (graphContext) {
       graphContext.setYear(year);
+      graphContext.setResetZoom(true);
     }
   };
 
