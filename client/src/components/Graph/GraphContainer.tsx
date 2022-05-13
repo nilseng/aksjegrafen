@@ -7,6 +7,7 @@ import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";
+import { ITest, ITest2 } from "schema";
 import {
   getInvestments,
   getInvestors,
