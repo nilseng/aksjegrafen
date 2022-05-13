@@ -1,12 +1,12 @@
 import { D3DragEvent, drag, select } from "d3";
 import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../App";
-import { GraphContext } from "./GraphContainer";
+import { GraphContext, Year } from "./GraphContainer";
 import { IGraphLink, IGraphNode } from "./GraphUtils";
 
 interface IProps {
   node: IGraphNode;
-  year: 2020 | 2019;
+  year: Year;
 }
 
 const replaceNode = (newNode: IGraphNode, nodes: IGraphNode[]): IGraphNode[] => {

@@ -1,16 +1,16 @@
 import React, { useContext, useRef, useState } from "react";
 import { AppContext } from "../../App";
+import { useZoom } from "../../hooks/useSvgZoom";
+import { GraphContext, Year } from "./GraphContainer";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
+import { HowToModal } from "./GraphModal/HowToModal";
 import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
-import { useZoom } from "../../hooks/useSvgZoom";
 import { YearSelector } from "./YearSelector";
-import { HowToModal } from "./GraphModal/HowToModal";
-import { GraphContext } from "./GraphContainer";
 
 interface IProps {
-  year: 2019 | 2020;
+  year: Year;
   nodeDimensions: INodeDimensions;
   nodes: IGraphNode[];
   links: IGraphLink[];

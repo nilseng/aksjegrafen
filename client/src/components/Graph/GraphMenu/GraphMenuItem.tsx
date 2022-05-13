@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
-import { GraphContext } from "../GraphContainer";
+import { GraphContext, Year } from "../GraphContainer";
 import { IMenuItem } from "./GraphMenu";
 
 export const GraphMenuItem = (item: IMenuItem) => {
@@ -46,7 +46,7 @@ export const GraphMenuItem = (item: IMenuItem) => {
   );
 };
 
-const isDisabled = (item: IMenuItem, year: 2019 | 2020 | undefined) => {
+const isDisabled = (item: IMenuItem, year: Year | undefined) => {
   if (!year) return true;
   return !hasAction(item) || (item.node && item.condition && !item.condition(item.node, year));
 };

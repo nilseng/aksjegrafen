@@ -1,17 +1,17 @@
 import {
-  faWindowRestore,
   faBuilding,
+  faHome,
   faInfo,
   faUsers,
+  faWindowRestore,
   IconDefinition,
-  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { GraphLogo } from "../../GraphLogo";
-import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../GraphContainer";
+import { GraphContext, IGraphDefaultActions, IGraphNodeActions, Year } from "../GraphContainer";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
 
@@ -25,7 +25,7 @@ export interface IMenuItem {
   nodeAction?: ((node: IGraphNode) => Promise<void>) | ((node: IGraphNode) => void);
   actionId?: keyof IGraphDefaultActions;
   action?: (() => Promise<void>) | (() => void);
-  condition?: (node: IGraphNode, year: 2019 | 2020) => boolean;
+  condition?: (node: IGraphNode, year: Year) => boolean;
 }
 
 const nodeItems: IMenuItem[] = [
@@ -43,14 +43,14 @@ const nodeItems: IMenuItem[] = [
   {
     nodeActionId: "loadInvestors",
     name: "Flere investorer",
-    condition: (node: IGraphNode, year: 2019 | 2020) =>
+    condition: (node: IGraphNode, year: Year) =>
       !!(node.entity.investorCount && (node.entity.investorCount[year] || 0) > (node.loadedInvestors || 0)),
     icon: faUsers,
   },
   {
     nodeActionId: "loadInvestments",
     name: "Flere investeringer",
-    condition: (node: IGraphNode, year: 2019 | 2020) =>
+    condition: (node: IGraphNode, year: Year) =>
       !!(node.entity.investmentCount && (node.entity.investmentCount[year] || 0) > (node.loadedInvestments || 0)),
     icon: faBuilding,
   },

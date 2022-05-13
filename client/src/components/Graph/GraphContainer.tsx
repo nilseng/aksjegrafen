@@ -1,10 +1,8 @@
-import { createContext, Dispatch, SetStateAction } from "react";
-import { useContext, useEffect, useState } from "react";
+import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../App";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
-
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";
 import {
@@ -18,8 +16,10 @@ import {
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
 import { graphSimulation, initializeGraphSimulation } from "./GraphService";
-import { IGraphLink, IGraphNode, IGraphDimensions, getDuplicateCount } from "./GraphUtils";
+import { getDuplicateCount, IGraphDimensions, IGraphLink, IGraphNode } from "./GraphUtils";
 import { GraphView } from "./GraphView";
+
+export type Year = 2021 | 2020 | 2019;
 
 const graphConfig: IGraphDimensions = {
   width: 1000,
@@ -35,8 +35,8 @@ export const defaultSvgTransform = "translate(0,0) scale(1)";
 export interface IGraphContext {
   nodeActions: IGraphNodeActions;
   actions: IGraphDefaultActions;
-  year: 2020 | 2019;
-  setYear: Dispatch<SetStateAction<2020 | 2019>>;
+  year: Year;
+  setYear: Dispatch<SetStateAction<Year>>;
   limit: number;
   setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>;
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>;
@@ -68,7 +68,7 @@ export const GraphContainer = () => {
   const history = useHistory();
   const query = useQuery();
 
-  const [year, setYear] = useState<2019 | 2020>(2020);
+  const [year, setYear] = useState<Year>(2021);
   const [limit] = useState<number>(5);
   const [companyId, setCompanyId] = useState<string>();
   const [shareholder_id, setShareholder_id] = useState<string>();

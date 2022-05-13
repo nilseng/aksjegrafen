@@ -1,3 +1,5 @@
+export type Year = 2021 | 2020 | 2019;
+
 export interface ICompany {
   _id: string;
   orgnr?: string;
@@ -7,10 +9,12 @@ export interface ICompany {
   countryCode?: string;
   stocks?: number;
   investorCount?: {
+    2021?: number;
     2020?: number;
     2019?: number;
   };
   investmentCount?: {
+    2021?: number;
     2020?: number;
     2019?: number;
   };
@@ -84,7 +88,7 @@ export interface IOwnership {
   shareholderOrgnr?: string;
   shareClass: string;
   stocks: number;
-  year: 2019 | 2020;
+  year: Year;
   company?: ICompany;
   shareholder?: IShareholder;
   companyStocks: string | number;
@@ -107,7 +111,7 @@ export const isOwnership = (o: any): o is IOwnership => {
     typeof o.stocks === "number" &&
     o.year &&
     typeof o.year === "number" &&
-    (o.year === 2019 || o.year === 2020) &&
+    (o.year === 2019 || o.year === 2020 || o.year === 2021) &&
     (!o.company || isCompany(o.company)) &&
     (!o.shareholder || isShareholder(o.shareholder))
   );

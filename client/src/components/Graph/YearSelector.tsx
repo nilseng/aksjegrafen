@@ -1,12 +1,12 @@
 import { useContext } from "react";
 import { AppContext } from "../../App";
-import { GraphContext } from "./GraphContainer";
+import { GraphContext, Year } from "./GraphContainer";
 
 export const YearSelector = () => {
   const { theme } = useContext(AppContext);
   const graphContext = useContext(GraphContext);
 
-  const handleClick = (year: 2019 | 2020) => {
+  const handleClick = (year: Year) => {
     if (graphContext) {
       graphContext.setYear(year);
       graphContext.setResetZoom(true);
@@ -29,7 +29,7 @@ export const YearSelector = () => {
         2019
       </div>
       <div
-        className={graphContext.year === 2020 ? "font-weight-bold p-2" : "p-2"}
+        className={graphContext.year === 2020 ? "font-weight-bold p-2 mx-2" : "p-2 mx-2"}
         style={
           graphContext.year === 2020
             ? { color: theme.primary }
@@ -38,6 +38,17 @@ export const YearSelector = () => {
         onClick={() => handleClick(2020)}
       >
         2020
+      </div>
+      <div
+        className={graphContext.year === 2021 ? "font-weight-bold p-2" : "p-2"}
+        style={
+          graphContext.year === 2021
+            ? { color: theme.primary }
+            : { ...theme.button, color: theme.text, cursor: "pointer" }
+        }
+        onClick={() => handleClick(2021)}
+      >
+        2021
       </div>
     </div>
   );

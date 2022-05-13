@@ -10,6 +10,7 @@ export const EntityRelationships = ({ entity }: IProps) => {
       {entity.investmentCount && (
         <div className="col">
           <p className="font-weight-bold">Investeringer</p>
+          {entity.investmentCount[2021] && <p className="small pl-2">2021: {entity.investmentCount[2021]}</p>}
           {entity.investmentCount[2020] && <p className="small pl-2">2020: {entity.investmentCount[2020]}</p>}
           {entity.investmentCount[2019] && <p className="small pl-2">2019: {entity.investmentCount[2019]}</p>}
         </div>
@@ -17,6 +18,7 @@ export const EntityRelationships = ({ entity }: IProps) => {
       {entity.investorCount && (
         <div className="col">
           <p className="font-weight-bold">Investorer</p>
+          {entity.investorCount[2021] && <p className="small pl-2">2021: {entity.investorCount[2021]}</p>}
           {entity.investorCount[2020] && <p className="small pl-2">2020: {entity.investorCount[2020]}</p>}
           {entity.investorCount[2019] && <p className="small pl-2">2019: {entity.investorCount[2019]}</p>}
         </div>
