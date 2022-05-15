@@ -6,13 +6,13 @@ import morgan from "morgan";
 import path from "path";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
+import { Year } from "../../common/src/index";
 import { initializeCache } from "./cache/cache";
 import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { deleteData, importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
-import { Year } from "./types";
 
 dotenv.config();
 

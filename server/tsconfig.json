@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDirs": [".", "../common"],
+    "paths": { "@common": ["../common/src"] },
     "downlevelIteration": true,
     "sourceMap": false,
     "outDir": "dist",
