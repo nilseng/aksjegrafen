@@ -7,9 +7,10 @@ interface IProps {
     y: number;
   };
   rotation: number;
+  stroke?: string;
 }
 
-export const GraphLinkArrow = ({ rotation, center }: IProps) => {
+export const GraphLinkArrow = ({ rotation, center, stroke }: IProps) => {
   const { theme } = useContext(AppContext);
 
   return (
@@ -19,7 +20,7 @@ export const GraphLinkArrow = ({ rotation, center }: IProps) => {
         y1={center.y - 5}
         x2={center.x}
         y2={center.y}
-        stroke={theme.muted}
+        stroke={stroke ?? theme.muted}
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -28,7 +29,7 @@ export const GraphLinkArrow = ({ rotation, center }: IProps) => {
         y1={center.y}
         x2={center.x + 5}
         y2={center.y - 5}
-        stroke={theme.muted}
+        stroke={stroke ?? theme.muted}
         strokeWidth="2"
         strokeLinecap="round"
       />

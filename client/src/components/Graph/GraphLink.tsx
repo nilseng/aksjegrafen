@@ -111,8 +111,8 @@ export const GraphLink = ({ link, offset }: IProps) => {
       />
       {(rotation || rotation === 0) && (
         <>
-          <GraphLinkArrow rotation={rotation} center={arrowPos} />
-          <GraphLinkArrow rotation={rotation} center={arrowPos2} />
+          <GraphLinkArrow rotation={rotation} center={arrowPos} stroke={theme.secondary} />
+          <GraphLinkArrow rotation={rotation} center={arrowPos2} stroke={theme.primary} />
         </>
       )}
       {link.ownerships.length > 1 && (
