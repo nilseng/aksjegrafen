@@ -57,27 +57,8 @@ export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
               />
             ))}
             {nodes.map((node) => (
-              <g
-                key={node.id}
-                onClick={(e) => {
-                  setMenu({
-                    open: true,
-                    node,
-                    x: e.pageX,
-                    y: e.pageY,
-                  });
-                }}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  setMenu({
-                    open: true,
-                    node,
-                    x: e.pageX,
-                    y: e.pageY,
-                  });
-                }}
-              >
-                <GraphNode node={{ ...node, ...nodeDimensions }} year={year} />
+              <g key={node.id}>
+                <GraphNode node={{ ...node, ...nodeDimensions }} year={year} setMenu={setMenu} />
               </g>
             ))}
           </g>

@@ -2,11 +2,13 @@ import { D3DragEvent, drag, select } from "d3";
 import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../App";
 import { GraphContext, Year } from "./GraphContainer";
+import { IMenu } from "./GraphMenu/GraphMenu";
 import { IGraphLink, IGraphNode } from "./GraphUtils";
 
 interface IProps {
   node: IGraphNode;
   year: Year;
+  setMenu: Dispatch<SetStateAction<IMenu>>;
 }
 
 const replaceNode = (newNode: IGraphNode, nodes: IGraphNode[]): IGraphNode[] => {
@@ -56,7 +58,21 @@ const addDraggableBehaviour = (
   return drag().on("drag", (e) => dragged(e, dragOffset, nodeId, setNodes, setLinks));
 };
 
-export const GraphNode = ({ node, year }: IProps) => {
+const hasUnloadedInvestors = (node: IGraphNode, year: Year): boolean => {
+  const investorCount = node.entity.investorCount ? node.entity.investorCount[year] : 0;
+  if (!investorCount) return false;
+  if ((node.loadedInvestors ?? 0) >= investorCount) return false;
+  else return true;
+};
+
+const hasUnloadedInvestments = (node: IGraphNode, year: Year): boolean => {
+  const investmentCount = node.entity.investmentCount ? node.entity.investmentCount[year] : 0;
+  if (!investmentCount) return false;
+  if ((node.loadedInvestments ?? 0) >= investmentCount) return false;
+  else return true;
+};
+
+export const GraphNode = ({ node, year, setMenu }: IProps) => {
   const { theme } = useContext(AppContext);
   const graphContext = useContext(GraphContext);
 
@@ -85,6 +101,23 @@ export const GraphNode = ({ node, year }: IProps) => {
         <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4">
           <div
             className="h-100 w-100 d-flex flex-column align-items-middle justify-content-between p-2"
+            onClick={(e) => {
+              setMenu({
+                open: true,
+                node,
+                x: e.pageX,
+                y: e.pageY,
+              });
+            }}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setMenu({
+                open: true,
+                node,
+                x: e.pageX,
+                y: e.pageY,
+              });
+            }}
             onMouseOver={handleFocused}
             onMouseLeave={handleFocusEnd}
             onTouchStartCapture={handleFocused}
@@ -96,24 +129,40 @@ export const GraphNode = ({ node, year }: IProps) => {
               cursor: "pointer",
             }}
           >
-            <div className="font-weight-bold" style={{ color: theme.text }}>
+            {node.entity.investorCount && node.entity.investorCount[year] && (
+              <p className="text-center small m-0" style={{ color: theme.text }}>
+                <strong style={{ color: theme.secondary }}>{node.loadedInvestors ?? 0}</strong> av{" "}
+                <strong style={{ color: theme.secondary }}>{node.entity.investorCount[year]}</strong> investorer
+              </p>
+            )}
+            <div className="text-center font-weight-bold" style={{ color: theme.text }}>
               {node.entity?.name}
             </div>
-            <div>
-              {node.entity.investorCount && node.entity.investorCount[year] && (
-                <p className="small m-0" style={{ color: theme.text }}>
-                  {node.loadedInvestors ?? 0} av {node.entity.investorCount[year]} investorer
-                </p>
-              )}
-              {node.entity.investmentCount && node.entity.investmentCount[year] && (
-                <p className="small m-0" style={{ color: theme.text }}>
-                  {node.loadedInvestments ?? 0} av {node.entity.investmentCount[year]} investeringer
-                </p>
-              )}
-            </div>
+            {node.entity.investmentCount && node.entity.investmentCount[year] && (
+              <p className="text-center small m-0" style={{ color: theme.text }}>
+                <strong style={{ color: theme.primary }}>{node.loadedInvestments ?? 0}</strong> av{" "}
+                <strong style={{ color: theme.primary }}>{node.entity.investmentCount[year]}</strong> investeringer
+              </p>
+            )}
           </div>
         </div>
       </foreignObject>
+      {hasUnloadedInvestors(node, year) && (
+        <path
+          style={{ cursor: "pointer" }}
+          d={`M${node.x + node.width / 2 - 10},${node.y + 24} a10,10 0 0,1 20,0`}
+          fill={theme.secondary}
+          onClick={() => graphContext?.nodeActions.loadInvestors(node)}
+        />
+      )}
+      {hasUnloadedInvestments(node, year) && (
+        <path
+          style={{ cursor: "pointer" }}
+          d={`M${node.x + node.width / 2 - 10},${node.y + node.height - 24} a10,10 0 0,0 20,0`}
+          fill={theme.primary}
+          onClick={() => graphContext?.nodeActions.loadInvestments(node)}
+        />
+      )}
     </g>
   );
 };
