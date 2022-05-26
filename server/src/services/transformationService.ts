@@ -1,5 +1,5 @@
-import { Year } from "../../../common/src/index";
 import { IDatabase } from "../database/databaseSetup";
+import { Year } from "../models/models";
 
 export const transformData = async (db: IDatabase, year: Year) => {
   console.log("Data transformation started.");

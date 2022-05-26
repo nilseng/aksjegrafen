@@ -1,4 +1,3 @@
-import { Year } from "@common";
 import csv from "csv-parser";
 import fs from "fs";
 import path from "path";
@@ -12,6 +11,7 @@ import {
   OwnershipRaw,
   Shareholder,
   ShareholderType,
+  Year,
 } from "../models/models";
 
 export const importData = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
