@@ -4,33 +4,19 @@ import { AppContext } from "../App";
 
 import "./About.scss";
 
-import pureokrs_img_light from "../images/aksjegrafen_pureokrs_light.png";
 import pureokrs_img_dark from "../images/aksjegrafen_pureokrs_dark.png";
-import telenor_img_light from "../images/telenor_asa_light.png";
-import telenor_img_dark from "../images/telenor_asa_dark.png";
-import kjendis_light from "../images/kjendis_light.png";
+import pureokrs_img_light from "../images/aksjegrafen_pureokrs_light.png";
 import kjendis_dark from "../images/kjendis_dark.png";
+import kjendis_light from "../images/kjendis_light.png";
+import telenor_img_dark from "../images/telenor_asa_dark.png";
+import telenor_img_light from "../images/telenor_asa_light.png";
 
 export const About = () => {
   const { theme } = useContext(AppContext);
   return (
     <div className="d-flex w-100" style={{ minHeight: "100vh" }}>
-      <Container className="d-flex justify-content-center align-items-middle" style={{ color: theme.text }}>
-        <div className="my-5 rounded">
-          <div
-            className="p-4"
-            style={{
-              backgroundColor: theme.background,
-              ...theme.lowering,
-            }}
-          >
-            <h4>Om Aksjegrafen</h4>
-            <p className="m-0">
-              Aksjegrafen kan brukes til å søke opp norske aksjonærer og aksjeselskaper. Aksjonærene, selskapene og
-              deres relasjoner presenteres i en <i>graf</i> - eller nettverk om du vil. Denne typen visualisering gjør
-              at man enkelt kan se komplekse sammenhenger i ett bilde.
-            </p>
-          </div>
+      <Container className="d-flex justify-content-center align-items-middle py-5" style={{ color: theme.text }}>
+        <div>
           <div className="text-center mt-5 p-4" style={{ ...theme.elevation }}>
             <a href="/graph?_id=61229167c79b48b7e3e0bc90" style={{ textDecoration: "none", color: theme.text }}>
               <p className="m-0">
