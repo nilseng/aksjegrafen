@@ -1,11 +1,17 @@
 import { About } from "./About";
+import { Disclaimer } from "./Disclaimer";
+import { Heading } from "./Heading";
 import { SearchView } from "./SearchView";
 
 export const Landing = () => {
   return (
-    <div>
-      <SearchView />
+    <div className="w-100">
+      <div className="d-flex flex-column justify-content-center" style={{ minHeight: "100%" }}>
+        <SearchView />
+        <Heading />
+      </div>
       <About />
+      <Disclaimer />
     </div>
   );
 };
