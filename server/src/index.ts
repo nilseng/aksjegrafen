@@ -61,7 +61,7 @@ const initializeApp = async () => {
 
   app.use((err: Error, _: Request, res: Response, __: () => void) => {
     console.error(err.stack);
-    return res.status(500).json({ msg: "An unexpected error occured." });
+    return res.status(500).json({ error: "An unexpected error occured." });
   });
 
   if (argv.import) importData(db, argv.year as Year, argv.data);
