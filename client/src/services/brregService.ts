@@ -3,7 +3,7 @@ import { ICompany, IShareholder } from "../models/models";
 
 const brregUrl = "https://data.brreg.no/enhetsregisteret/api/enheter";
 
-interface IFinancials {
+export interface IFinancials {
   id: number;
   journalnr: string;
   regnskapstype: string;
