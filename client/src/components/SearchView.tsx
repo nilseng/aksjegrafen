@@ -1,11 +1,11 @@
+import { faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { useContext } from "react";
+import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import { useContext } from "react";
 import { AppContext } from "../App";
-import { StatCard } from "./StatCard";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
-import { faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { StatCard } from "./StatCard";
 
 import { faBuilding } from "@fortawesome/free-regular-svg-icons";
 import { SearchComponent } from "./SearchComponent";
@@ -21,7 +21,7 @@ export const SearchView = () => {
   const shareholderCount = useShareholderCount();
 
   return (
-    <div className="d-flex w-100 justify-content-center align-items-middle" style={{ minHeight: "100%" }}>
+    <div className="d-flex w-100 justify-content-center align-items-middle">
       <Container className="d-flex flex-column justify-content-between flex-fill" style={{ color: theme.text }}>
         <div className="d-flex justify-content-center align-items-center flex-fill">
           <Row className="w-100">
@@ -62,12 +62,6 @@ export const SearchView = () => {
               />
             </Col>
           </Row>
-        </div>
-        <div className="pt-4 px-4 my-4" style={theme.lowering}>
-          <p className="small text-muted">
-            All data er gjort offentlig tilgjengelig av Skatteetaten eller Brønnøysundregistrene og bearbeidet av
-            Aksjegrafen. Feil kan forekomme. Siden eies og er utviklet av Pureokrs AS (contact@pureokrs.com).
-          </p>
         </div>
       </Container>
     </div>
