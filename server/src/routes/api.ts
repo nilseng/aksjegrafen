@@ -1,7 +1,8 @@
 import express from "express";
-import { matchedData, param, query } from "express-validator";
+import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
 import { ObjectID } from "mongodb";
+import { asyncRouter } from "../asyncRouter";
 
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
@@ -78,7 +79,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     "/company/:searchTerm",
     query(["limit"]).default(10).toInt(),
     query("count").optional().toBoolean(),
-    async (req, res) => {
+    asyncRouter(async (req, res) => {
       const query = matchedData(req);
       const params = req.params;
       if (query.count) {
@@ -94,10 +95,8 @@ export const api = (db: IDatabase, cache: Redis) => {
               },
             },
           ])
-          .count()
-          .catch((e) => console.error(e));
-        if (!count && count !== 0) return res.status(400).json({ error: "Search failed." });
-        res.status(200).json(count);
+          .count();
+        return res.status(200).json(count);
       } else {
         const options = query.limit ? { limit: query.limit } : undefined;
         const companies = await db.companies
@@ -116,9 +115,9 @@ export const api = (db: IDatabase, cache: Redis) => {
           .toArray()
           .catch((e) => console.error(e));
         if (!companies) return res.status(400).json({ error: "Search failed." });
-        res.status(200).json(companies);
+        return res.status(200).json(companies);
       }
-    }
+    })
   );
 
   router.get(
