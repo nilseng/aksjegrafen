@@ -33,7 +33,7 @@ const nodeItems: IMenuItem[] = [
   {
     nodeActionId: "openInNewGraph",
     name: "Åpne i ny graf",
-    svgIcon: <GraphLogo width="1rem" height="1rem" />,
+    svgIcon: <GraphLogo width="16px" height="16px" />,
   },
   {
     nodeActionId: "openInNewWindow",
