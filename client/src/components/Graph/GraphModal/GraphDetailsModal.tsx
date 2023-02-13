@@ -55,9 +55,11 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
           <Financials entity={entity} />
           <EntityRelationships entity={entity} />
           <div className="p-4">
-            <p style={{ color: theme.primary }} className="font-weight-bold">
-              Annen informasjon om selskapet
-            </p>
+            {brregInfo && (
+              <p style={{ color: theme.primary }} className="font-weight-bold">
+                Annen informasjon om selskapet
+              </p>
+            )}
             {brregInfo?.organisasjonsform?.beskrivelse && (
               <ModalInfo title="Organisasjonsform" value={brregInfo.organisasjonsform.beskrivelse} />
             )}
