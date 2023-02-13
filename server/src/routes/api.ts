@@ -84,7 +84,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const params = req.params;
       if (query.count) {
         const count = await db.companies
-          .aggregate([
+          .aggregate<{ count: number }>([
             {
               $search: {
                 index: "company search",
@@ -94,9 +94,12 @@ export const api = (db: IDatabase, cache: Redis) => {
                 },
               },
             },
+            {
+              $count: "count",
+            },
           ])
-          .count();
-        return res.status(200).json(count);
+          .toArray();
+        return res.status(200).json(count[0].count);
       } else {
         const options = query.limit ? { limit: query.limit } : undefined;
         const companies = await db.companies
