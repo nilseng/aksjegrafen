@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import express from "express";
+import express, { Request, Response } from "express";
 import sslRedirect from "heroku-ssl-redirect";
 import morgan from "morgan";
 import path from "path";
@@ -58,6 +58,11 @@ const initializeApp = async () => {
   app.listen({ port: process.env.PORT || 4000 }, () =>
     console.log(`The server is now running on port ${process.env.PORT || 4000}`)
   );
+
+  app.use((err: Error, _: Request, res: Response, __: () => void) => {
+    console.error(err.stack);
+    return res.status(500).json({ msg: "An unexpected error occured." });
+  });
 
   if (argv.import) importData(db, argv.year as Year, argv.data);
   if (argv.deletion) deleteData(db, argv.year, argv.data);
