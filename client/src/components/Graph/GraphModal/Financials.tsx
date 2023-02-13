@@ -1,7 +1,10 @@
 import { useContext } from "react";
+import { Col, Row } from "react-bootstrap";
 import { AppContext } from "../../../App";
 import { ICompany, IShareholder } from "../../../models/models";
 import { useFinancialsByUnit } from "../../../services/brregService";
+import { BalanceSheet } from "./BalanceSheet";
+import { ProfitAndLoss } from "./ProfitAndLoss";
 
 interface IProps {
   entity: ICompany | IShareholder;
@@ -15,50 +18,29 @@ export const Financials = ({ entity }: IProps) => {
   if (!financials || (financials as any).error) return null;
 
   return (
-    <div className="p-4 mb-4" style={{ ...theme.lowering }}>
+    <div className="mb-4">
+      <p style={{ color: theme.primary }} className="font-weight-bold">
+        Finansielle nøkkeltall fra forrige regnskapsår
+      </p>
       {financials?.map((f) => (
-        <div key={f.id}>
-          <p style={{ color: theme.muted }}>{new Date(f.regnskapsperiode?.fraDato).getFullYear()}</p>
-          <p className="font-weight-bold mb-1">Driftsinntekter</p>
-          <p style={{ color: theme.primary }}>
-            {f.resultatregnskapResultat?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(
-              navigator?.language
-            )}
-          </p>
-          <p className="font-weight-bold mb-1">Driftsresultat</p>
-          <p
-            style={{
-              color: f.resultatregnskapResultat?.driftsresultat?.driftsresultat > 0 ? theme.primary : theme.danger,
-            }}
-          >
-            {f.resultatregnskapResultat?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
-          </p>
-          {f.resultatregnskapResultat?.totalresultat && (
-            <>
-              <p className="font-weight-bold mb-1">Totalresultat</p>
-              <p
-                className="mb-0"
-                style={{
-                  color: f.resultatregnskapResultat?.totalresultat > 0 ? theme.primary : theme.danger,
-                }}
-              >
-                {f.resultatregnskapResultat?.totalresultat?.toLocaleString(navigator?.language)}
-              </p>
-            </>
-          )}
-          {f.resultatregnskapResultat?.aarsresultat && (
-            <>
-              <p className="font-weight-bold mb-1">Årsresultat</p>
-              <p
-                className="mb-0"
-                style={{
-                  color: f.resultatregnskapResultat?.aarsresultat > 0 ? theme.primary : theme.danger,
-                }}
-              >
-                {f.resultatregnskapResultat?.aarsresultat?.toLocaleString(navigator?.language)}
-              </p>
-            </>
-          )}
+        <div key={f.id} style={{ border: `${theme.primary} solid 1px` }} className="rounded p-4">
+          <Row>
+            <Col>
+              <ProfitAndLoss pAndL={f.resultatregnskapResultat} />
+            </Col>
+            <Col>
+              <BalanceSheet assets={f.eiendeler} equityAndDebt={f.egenkapitalGjeld} />
+            </Col>
+          </Row>
+          <div className="text-center">
+            <p style={{ color: theme.text }} className="small pt-2 m-0">
+              Periode: {new Date(f.regnskapsperiode?.fraDato).toLocaleDateString(navigator?.language)}-
+              {new Date(f.regnskapsperiode.tilDato).toLocaleDateString(navigator?.language)}
+            </p>
+            <p style={{ color: theme.text }} className="small m-0">
+              Valuta: {f.valuta}
+            </p>
+          </div>
         </div>
       ))}
     </div>
