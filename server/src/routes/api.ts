@@ -15,16 +15,16 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       if (req.query.count) {
         const cachedCount = await cache.get("company_count");
-        if (cachedCount) return res.status(200).json(cachedCount);
+        if (cachedCount) return res.json(cachedCount);
         const count = await db.companies.countDocuments();
         cache.set("company_count", count);
-        return res.status(200).json(count);
+        return res.json(count);
       } else if (req.query._id) {
         const company = await db.companies.findOne({ _id: new ObjectID(req.query._id as string) });
-        return res.status(200).json(company);
+        return res.json(company);
       } else if (req.query.orgnr && typeof req.query.orgnr === "string") {
         const company = await db.companies.findOne({ orgnr: req.query.orgnr });
-        return res.status(200).json(company);
+        return res.json(company);
       } else {
         return res.status(400).json({ error: "Invalid query." });
       }
@@ -36,13 +36,13 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       if (req.query.count) {
         const cachedCount = await cache.get("shareholder_count");
-        if (cachedCount) return res.status(200).json(cachedCount);
+        if (cachedCount) return res.json(cachedCount);
         const count = await db.shareholders.countDocuments();
         cache.set("shareholder_count", count);
-        return res.status(200).json(count);
+        return res.json(count);
       } else if (req.query._id) {
         const shareholder = await db.shareholders.findOne({ _id: new ObjectID(req.query._id as string) });
-        return res.status(200).json(shareholder);
+        return res.json(shareholder);
       } else {
         return res.status(400).json({ error: "Invalid query." });
       }
@@ -54,7 +54,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       const options = req.query.limit ? { limit: +req.query.limit } : undefined;
       const shareholders = await db.shareholders.find({}, options).toArray();
-      return res.status(200).json(shareholders);
+      return res.json(shareholders);
     })
   );
 
@@ -63,7 +63,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       const options = req.query.limit ? { limit: +req.query.limit } : undefined;
       const companies = await db.companies.find({}, options).toArray();
-      return res.status(200).json(companies);
+      return res.json(companies);
     })
   );
 
@@ -91,7 +91,7 @@ export const api = (db: IDatabase, cache: Redis) => {
             },
           ])
           .toArray();
-        return res.status(200).json(count[0].count);
+        return res.json(count[0].count);
       } else {
         const companies = await db.companies
           .aggregate([
@@ -107,7 +107,7 @@ export const api = (db: IDatabase, cache: Redis) => {
           ])
           .limit(query.limit)
           .toArray();
-        return res.status(200).json(companies);
+        return res.json(companies);
       }
     })
   );
@@ -169,7 +169,7 @@ export const api = (db: IDatabase, cache: Redis) => {
 
       if (query.count && filter.year) {
         const c = await db.ownerships.countDocuments(filter);
-        return res.status(200).json(c);
+        return res.json(c);
       } else {
         const ownerships = await db.ownerships.find(filter, options).sort({ stocks: -1, _id: 1 }).skip(skip).toArray();
         const companies = await db.companies
@@ -179,7 +179,7 @@ export const api = (db: IDatabase, cache: Redis) => {
           o.company = companies.find((c: Company) => c.orgnr === o.orgnr);
           return o;
         });
-        return res.status(200).json(data);
+        return res.json(data);
       }
     })
   );
@@ -213,7 +213,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       if (filter.orgnr) {
         if (count && filter.year) {
           const c = await db.ownerships.countDocuments(filter);
-          return res.status(200).json(c);
+          return res.json(c);
         } else {
           const ownerships = await db.ownerships
             .find(filter, options)
@@ -233,11 +233,11 @@ export const api = (db: IDatabase, cache: Redis) => {
             o.company = companies.find((c: Company) => c.orgnr === o.shareholderOrgnr);
             return o;
           });
-          return res.status(200).json(data);
+          return res.json(data);
         }
       } else {
         const ownerships = await db.ownerships.find(filter, options).toArray();
-        return res.status(200).json(ownerships);
+        return res.json(ownerships);
       }
     })
   );
@@ -258,10 +258,10 @@ export const api = (db: IDatabase, cache: Redis) => {
       if (query.year) filter.year = query.year;
       if (count) {
         const c = await db.ownerships.countDocuments(filter);
-        return res.status(200).json(c);
+        return res.json(c);
       } else {
         const ownerships = await db.ownerships.find(filter, options).toArray();
-        return res.status(200).json(ownerships);
+        return res.json(ownerships);
       }
     })
   );
@@ -275,8 +275,9 @@ export const api = (db: IDatabase, cache: Redis) => {
         const ownerships = await db.ownerships.find({ orgnr: { $in: companyIdStrings }, year: 2020 }).toArray();
         const uniqueShareholderIds = new Set(ownerships.map((o: Ownership) => o.shareHolderId));
         const shareholders = await db.shareholders.find({ id: { $in: Array.from(uniqueShareholderIds) } }).toArray();
-        return res.status(200).json({ ownerships, shareholders });
-      } else return res.status(400).send("Please specify an array with companyIds");
+        return res.json({ ownerships, shareholders });
+      }
+      return res.status(400).send("Please specify an array with companyIds");
     })
   );
 
@@ -334,7 +335,7 @@ export const api = (db: IDatabase, cache: Redis) => {
         }
       }
       console.log(`--------- Found ${Object.keys(nodes).length} unique nodes ---------`);
-      return res.status(200).json({ ownerships, nodes });
+      return res.json({ ownerships, nodes });
     })
   );
 
