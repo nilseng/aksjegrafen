@@ -83,14 +83,14 @@ export interface IFinancials {
 }
 
 export const getBrregUnit = async (orgnr: string) => {
-  const res = await fetch(`${brregUrl}/${orgnr}`).catch((e) =>
+  const res = await fetch(`${brregUrl}/${orgnr}`).catch(() =>
     console.warn(`Could not fetch info from brreg for company with orgnr=${orgnr}`)
   );
   return res ? res.json() : res;
 };
 
 export const getFinancialsByUnit = async (orgnr: string) => {
-  const res = await fetch(`brreg/financials?orgnr=${orgnr}`).catch((e) =>
+  const res = await fetch(`brreg/financials?orgnr=${orgnr}`).catch(() =>
     console.warn(`Could not fetch financials from brreg for company with orgnr=${orgnr}`)
   );
   return res ? res.json() : res;
