@@ -100,7 +100,7 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
       <foreignObject x={node.x} y={node.y} width={node.width} height={node.height}>
         <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4">
           <div
-            className="h-100 w-100 d-flex flex-column align-items-middle justify-content-between p-2"
+            className="h-100 w-100 p-1"
             onClick={(e) => {
               setMenu({
                 open: true,
@@ -129,21 +129,26 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
               cursor: "pointer",
             }}
           >
-            {node.entity.investorCount && node.entity.investorCount[year] && (
-              <p className="text-center small m-0" style={{ color: theme.text }}>
-                <strong style={{ color: theme.secondary }}>{node.loadedInvestors ?? 0}</strong> av{" "}
-                <strong style={{ color: theme.secondary }}>{node.entity.investorCount[year]}</strong> investorer
-              </p>
-            )}
-            <div className="text-center font-weight-bold" style={{ color: theme.text }}>
-              {node.entity?.name}
+            <div
+              className="w-100 h-100 d-flex flex-column align-items-middle justify-content-between p-1"
+              style={{ border: `${theme.primary} solid 1px`, borderRadius: "0.5rem" }}
+            >
+              {node.entity.investorCount && node.entity.investorCount[year] && (
+                <p className="text-center small m-0" style={{ color: theme.text }}>
+                  <strong style={{ color: theme.secondary }}>{node.loadedInvestors ?? 0}</strong> av{" "}
+                  <strong style={{ color: theme.secondary }}>{node.entity.investorCount[year]}</strong> investorer
+                </p>
+              )}
+              <div className="text-center font-weight-bold" style={{ color: theme.text }}>
+                {node.entity?.name}
+              </div>
+              {node.entity.investmentCount && node.entity.investmentCount[year] && (
+                <p className="text-center small m-0" style={{ color: theme.text }}>
+                  <strong style={{ color: theme.primary }}>{node.loadedInvestments ?? 0}</strong> av{" "}
+                  <strong style={{ color: theme.primary }}>{node.entity.investmentCount[year]}</strong> investeringer
+                </p>
+              )}
             </div>
-            {node.entity.investmentCount && node.entity.investmentCount[year] && (
-              <p className="text-center small m-0" style={{ color: theme.text }}>
-                <strong style={{ color: theme.primary }}>{node.loadedInvestments ?? 0}</strong> av{" "}
-                <strong style={{ color: theme.primary }}>{node.entity.investmentCount[year]}</strong> investeringer
-              </p>
-            )}
           </div>
         </div>
       </foreignObject>
