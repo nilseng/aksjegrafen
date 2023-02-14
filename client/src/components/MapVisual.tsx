@@ -12,9 +12,7 @@ const createMap = (container: HTMLDivElement) => {
 };
 
 export const MapVisual = () => {
-  const {
-    theme: { id: theme },
-  } = useContext(AppContext);
+  const { theme } = useContext(AppContext);
 
   const mapContainer = useRef<HTMLDivElement>(null);
 
@@ -26,7 +24,7 @@ export const MapVisual = () => {
   }, []);
 
   useEffect(() => {
-    map?.setStyle(theme === "light" ? "mapbox://styles/mapbox/streets-v12" : "mapbox://styles/mapbox/dark-v11");
+    map?.setStyle(theme.mapbox.style);
   }, [theme, map]);
 
   return <div ref={mapContainer} className="h-100 w-100 rounded"></div>;

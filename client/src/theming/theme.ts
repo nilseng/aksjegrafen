@@ -21,6 +21,9 @@ export const theming = {
     secondary: "#6f42c1",
     danger: "#dc3545",
     shadowColor: "#000",
+    mapbox: {
+      style: "mapbox://styles/mapbox/streets-v12",
+    },
   },
   dark: {
     id: "dark",
@@ -44,5 +47,8 @@ export const theming = {
     secondary: "#6f42c1",
     danger: "#a32e26",
     shadowColor: "#fff",
+    mapbox: {
+      style: "mapbox://styles/mapbox/dark-v11",
+    },
   },
 };
