@@ -1,13 +1,13 @@
-import { Map } from "mapbox-gl";
+import { Map as MapboxMap } from "mapbox-gl";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../App";
 
 const createMap = (theme: string) => {
-  new Map({
+  new MapboxMap({
     container: "mapVisualContainer",
     style: theme === "light" ? "mapbox://styles/mapbox/streets-v12" : "mapbox://styles/mapbox/dark-v11",
     center: [10, 65],
-    zoom: 4.2,
+    zoom: 3.9,
     accessToken: process.env.REACT_APP_MAPBOX_ACCESS_TOKEN,
   });
 };
