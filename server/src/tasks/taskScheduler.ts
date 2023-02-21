@@ -1,8 +1,8 @@
-import { getAllUnits } from "../services/unitService";
+import { importUnits } from "./importUnits";
 import { updateUnits } from "./updateUnits";
 
-const tasks: { [key: string]: () => void | Promise<unknown> } = {
-  getAllUnits,
+const tasks: { [key: string]: () => void | Promise<void> } = {
+  importUnits,
   updateUnits,
 };
 
