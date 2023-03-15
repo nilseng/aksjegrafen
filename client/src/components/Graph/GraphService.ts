@@ -66,9 +66,8 @@ export const graphSimulation = (
           if (d.isNew) {
             // TODO: Figure out an accurate number for the offset
             return d.yForce ?? yForce ?? d.y + dimensions.height / 2;
-          } else {
-            return d.yForce ?? d.y + dimensions.height / 2;
           }
+          return d.yForce ?? d.y + dimensions.height / 2;
         })
         .strength(10)
     )
@@ -79,9 +78,8 @@ export const graphSimulation = (
           if (d.isNew) {
             // TODO: Figure out an accurate number for the offset
             return activeNode.x;
-          } else {
-            return d.x;
           }
+          return d.x;
         })
         .strength(10)
     )
