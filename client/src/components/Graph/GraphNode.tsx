@@ -1,5 +1,5 @@
 import { D3DragEvent, drag, select } from "d3";
-import { Dispatch, SetStateAction, useContext, useLayoutEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../App";
 import { GraphContext, Year } from "./GraphContainer";
 import { IMenu } from "./GraphMenu/GraphMenu";
@@ -47,7 +47,7 @@ const addDraggableBehaviour = (
   setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>,
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
 ) => {
-  return drag<HTMLElement, IGraphNode>().on("drag", (e) => dragged(e, node, setNodes, setLinks));
+  return drag<SVGGElement, IGraphNode>().on("drag", (e) => dragged(e, node, setNodes, setLinks));
 };
 
 const hasUnloadedInvestors = (node: IGraphNode, year: Year): boolean => {
@@ -68,12 +68,16 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
   const { theme } = useContext(AppContext);
   const graphContext = useContext(GraphContext);
 
-  const nodeRef: any = useRef<SVGGElement>(null);
+  const nodeRef = useRef<SVGGElement>(null);
+  const hasDrag = useRef<boolean>(false);
 
-  useLayoutEffect(() => {
-    if (graphContext?.setNodes && graphContext.setLinks) {
-      const nodeEl = select(nodeRef.current).datum(node);
-      addDraggableBehaviour(node, graphContext?.setNodes, graphContext.setLinks)(nodeEl);
+  useEffect(() => {
+    if (graphContext?.setNodes && graphContext.setLinks && nodeRef.current) {
+      const nodeEl = select<SVGGElement, IGraphNode>(nodeRef.current).datum<IGraphNode>(node);
+      if (!hasDrag.current) {
+        addDraggableBehaviour(node, graphContext?.setNodes, graphContext.setLinks)(nodeEl);
+        hasDrag.current = true;
+      }
     }
   }, [node, graphContext?.setNodes, graphContext?.setLinks]);
 
