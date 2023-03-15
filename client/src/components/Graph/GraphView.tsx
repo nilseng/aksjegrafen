@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { AppContext } from "../../App";
 import { useZoom } from "../../hooks/useSvgZoom";
 import { GraphContext, Year } from "./GraphContainer";
