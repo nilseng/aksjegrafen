@@ -42,14 +42,7 @@ export const graphSimulation = (
   currentLinks?: IGraphLink[],
   yForce?: number
 ) => {
-  // Fixing the nodes to current position
-  const inputNodes = currentNodes
-    ? currentNodes?.map((n) => {
-        n.fx = n.x;
-        n.fy = n.y;
-        return n;
-      })
-    : [{ ...activeNode, fx: activeNode.x, fy: activeNode.y }];
+  const inputNodes = currentNodes ?? [{ ...activeNode, fx: activeNode.x, fy: activeNode.y }];
   const nodeDatums = createNodeDatums(newOwnerships, dimensions, inputNodes);
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
