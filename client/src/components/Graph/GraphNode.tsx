@@ -1,5 +1,5 @@
 import { D3DragEvent, drag, select } from "d3";
-import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useLayoutEffect, useRef } from "react";
 import { AppContext } from "../../App";
 import { GraphContext, Year } from "./GraphContainer";
 import { IMenu } from "./GraphMenu/GraphMenu";
@@ -27,35 +27,27 @@ const updateLinks = (newNode: IGraphNode, links: IGraphLink[]): IGraphLink[] => 
 };
 
 const dragged = (
-  e: D3DragEvent<any, any, any>,
-  dragOffset: { x: number; y: number },
-  nodeId: string,
+  e: D3DragEvent<HTMLElement, any, any>,
+  node: IGraphNode,
   setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>,
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
 ) => {
-  const pos = {
-    x: e.x - dragOffset.x,
-    y: e.y - dragOffset.y,
-    fx: e.x - dragOffset.x,
-    fy: e.y - dragOffset.y,
-  };
+  node.x = e.x;
+  node.y = e.y;
+  node.fx = e.x;
+  node.fy = e.y;
   setNodes((nodes) => {
-    const draggedNode = nodes?.find((node) => node.id === nodeId);
-    if (!draggedNode) return nodes;
-    setLinks((links) => updateLinks(draggedNode, links ?? []));
-    return replaceNode({ ...draggedNode, ...pos }, nodes ?? []);
+    setLinks((links) => updateLinks(node, links ?? []));
+    return replaceNode(node, nodes ?? []);
   });
 };
 
 const addDraggableBehaviour = (
-  nodeId: string,
-  nodeWidth: number,
-  nodeHeight: number,
+  node: IGraphNode,
   setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>,
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
 ) => {
-  const dragOffset = { x: nodeWidth / 2, y: nodeHeight / 2 };
-  return drag().on("drag", (e) => dragged(e, dragOffset, nodeId, setNodes, setLinks));
+  return drag<HTMLElement, IGraphNode>().on("drag", (e) => dragged(e, node, setNodes, setLinks));
 };
 
 const hasUnloadedInvestors = (node: IGraphNode, year: Year): boolean => {
@@ -78,14 +70,12 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
 
   const nodeRef: any = useRef<SVGGElement>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (graphContext?.setNodes && graphContext.setLinks) {
-      const nodeEl = select(nodeRef.current);
-      nodeEl.call(
-        addDraggableBehaviour(node.id, node.width, node.height, graphContext?.setNodes, graphContext.setLinks)
-      );
+      const nodeEl = select(nodeRef.current).datum(node);
+      addDraggableBehaviour(node, graphContext?.setNodes, graphContext.setLinks)(nodeEl);
     }
-  }, [node.id, node.width, node.height, graphContext?.setNodes, graphContext?.setLinks]);
+  }, [node, graphContext?.setNodes, graphContext?.setLinks]);
 
   const handleFocused = () => {
     graphContext?.setHoveredNode(node);
