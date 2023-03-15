@@ -6,6 +6,7 @@ import { EntityMap } from "./components/EntityMap";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
+import { SearchPage } from "./components/SearchPage";
 import { Stats } from "./components/Stats";
 
 import { theming } from "./theming/theme";
@@ -46,6 +47,7 @@ const App = () => {
           <AppContext.Provider value={{ theme }}>
             <Route path="/" component={Landing} exact />
             <Route path="/graph" component={GraphContainer} />
+            <Route path="/search" component={SearchPage} />
             <Route path="/stats" component={Stats} />
             <Route path="/cyto-graph" component={CytoGraph} />
             <Route path="/entity-map" component={EntityMap} />
