@@ -1,4 +1,4 @@
-import { forceCollide, forceLink, forceSimulation, forceX, forceY, Simulation } from "d3";
+import { forceCollide, forceSimulation, forceX, forceY, Simulation } from "d3";
 import { uniqBy } from "lodash";
 import { ICompany, IOwnership, IShareholder } from "../../models/models";
 import {
@@ -82,13 +82,6 @@ export const graphSimulation = (
           return d.x;
         })
         .strength(10)
-    )
-    .force(
-      "link",
-      forceLink<IGraphNode, IGraphLink>(links)
-        .id((d) => d.id)
-        .distance(0)
-        .strength(1)
     )
     .tick(1000);
 
