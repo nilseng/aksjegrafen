@@ -61,7 +61,7 @@ export const graphSimulation = (
   simulation
     .force(
       "y",
-      forceY()
+      forceY<IGraphNode>()
         .y((d: any) => {
           if (d.isNew) {
             // TODO: Figure out an accurate number for the offset
@@ -85,8 +85,8 @@ export const graphSimulation = (
     )
     .force(
       "link",
-      forceLink(links)
-        .id((d: any) => d.id)
+      forceLink<IGraphNode, IGraphLink>(links)
+        .id((d) => d.id)
         .distance(0)
         .strength(1)
     )
