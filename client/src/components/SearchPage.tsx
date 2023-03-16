@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../App";
 import { IBrregUnitResult, IBrregUnitSearchParams, searchBrregUnits } from "../services/brregService";
 
@@ -12,12 +12,16 @@ export const SearchPage = () => {
     setSearchRes(res);
   };
 
+  useEffect(() => {
+    handleSearch();
+  }, []);
+
   return (
     <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-5">
       <h3 className="text-center">Søk i enhetsregisteret</h3>
-      <div>
+      <div className="d-flex justify-content-center">
         <button
-          className="btn font-weight-bold m-4"
+          className="btn font-weight-bold mt-2 mx-4 mb-4"
           style={{ ...theme.button, color: theme.primary, minWidth: "8rem" }}
           onClick={() => handleSearch()}
         >
@@ -25,7 +29,7 @@ export const SearchPage = () => {
         </button>
       </div>
       {searchRes && (
-        <div className="d-flex align-items-center justify-content-center pb-4">
+        <div className="d-flex align-items-center justify-content-center pb-2">
           <button
             className="btn font-weight-bold mr-4"
             disabled={searchRes.page.number < 1}
