@@ -25,7 +25,7 @@ export const SearchPage = () => {
         </button>
       </div>
       {searchRes && (
-        <div className="d-flex align-items-center pb-4 pl-4">
+        <div className="d-flex align-items-center justify-content-center pb-4">
           <button
             className="btn font-weight-bold mr-4"
             disabled={searchRes.page.number < 1}
