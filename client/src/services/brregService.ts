@@ -83,8 +83,8 @@ export interface IFinancials {
   };
 }
 
-export interface IBrregUnitResult {
-  _embedded: {
+export interface IBrregUnitSuccessResult {
+  _embedded?: {
     enheter: IBrregUnit[];
   };
   page: {
@@ -109,6 +109,24 @@ export interface IBrregUnitResult {
   };
 }
 
+interface IBrregUnitErrorResult {
+  tidsstempel: number;
+  status: number;
+  feilmelding: string;
+  sti: string;
+  antallFeil: number;
+  valideringsfeil: {
+    feilmelding: string;
+    parametere: string[];
+    feilaktigVerdi: string;
+  }[];
+}
+
+export type IBrregUnitResult = IBrregUnitSuccessResult | IBrregUnitErrorResult;
+
+export const isBrregUnitSearchError = (res: IBrregUnitResult): res is IBrregUnitErrorResult =>
+  !!(res as unknown as IBrregUnitErrorResult).feilmelding;
+
 interface IBrregUnit {
   organisasjonsnummer: string;
   navn: string;
@@ -123,30 +141,6 @@ interface IBrregUnit {
   };
 }
 
-const unitSearchParameters = {
-  navn: { type: "string", value: null },
-  organisasjonsnummer: { type: "string", value: null },
-  overordnetEnhet: { type: "string", value: null },
-  fraAntallAnsatte: { type: "number", value: null },
-  tilAntallAnsatte: { type: "number", value: null },
-  konkurs: { type: "boolean", value: null },
-  registrertIMvaregisteret: { type: "boolean", value: null },
-  registrertIForetaksregisteret: { type: "boolean", value: null },
-  registrertIStiftelsesregisteret: { type: "boolean", value: null },
-  registrertIFrivillighetsregisteret: { type: "boolean", value: null },
-  frivilligRegistrertIMvaregisteret: { type: "string", value: null },
-  underTvangsavviklingEllerTvangsopplosning: { type: "boolean", value: null },
-  underAvvikling: { type: "boolean", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  fraRegistreringsdatoEnhetsregisteret: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  tilRegistreringsdatoEnhetsregisteret: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  fraStiftelsesdato: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  tilStiftelsesdato: { type: "string", value: null },
-};
-
 export const getBrregUnit = async (orgnr: string) => {
   const res = await fetch(`${brregUrl}/${orgnr}`).catch(() =>
     console.warn(`Could not fetch info from brreg for company with orgnr=${orgnr}`)
@@ -157,10 +151,11 @@ export const getBrregUnit = async (orgnr: string) => {
 export interface IBrregUnitSearchParams {
   page?: number;
   navn?: string;
+  [key: string]: number | string | undefined;
 }
 export const searchBrregUnits = async (searchParams?: IBrregUnitSearchParams): Promise<IBrregUnitResult> => {
   const queryString = buildQuery(searchParams as { [key: string]: number | string });
-  const res = await fetch(`${brregUrl}/${queryString}`).catch(() => console.warn(`Failed to search brreg for units`));
+  const res = await fetch(`${brregUrl}/${queryString}`);
   return res ? res.json() : res;
 };
 
