@@ -155,7 +155,7 @@ export interface IBrregUnitSearchParams {
 }
 export const searchBrregUnits = async (searchParams?: IBrregUnitSearchParams): Promise<IBrregUnitResult> => {
   const queryString = buildQuery(searchParams as { [key: string]: number | string });
-  const res = await fetch(`${brregUrl}/${queryString}`);
+  const res = await fetch(`${brregUrl}${queryString}`);
   return res ? res.json() : res;
 };
 
