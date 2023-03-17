@@ -76,6 +76,13 @@ export const SearchPage = () => {
           <Form.Control
             key={key}
             className="col-4 m-1"
+            style={{
+              backgroundColor: "transparent",
+              borderColor: "transparent",
+              color: theme.text,
+              ...theme.lowering,
+              borderRadius: "4rem",
+            }}
             name={key}
             value={searchParams[key].value}
             placeholder={`${searchParams[key].placeholder ?? ""}`}
