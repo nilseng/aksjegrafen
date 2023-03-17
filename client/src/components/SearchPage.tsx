@@ -60,14 +60,16 @@ export const SearchPage = () => {
       )}
       <div className="flex-fill overflow-auto" style={{ ...theme.lowering }}>
         {searchRes?._embedded.enheter.map((enhet) => (
-          <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-4">
-            <p className="mb-0">{enhet.navn}</p>
-            <p className="p-0 m-0" style={{ color: theme.muted }}>
-              {enhet.organisasjonsnummer}
-            </p>
-            <p className="p-0 m-0" style={{ color: theme.muted }}>
-              {enhet.organisasjonsform.beskrivelse}
-            </p>
+          <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-2">
+            <div className="p-4" style={theme.borderPrimary}>
+              <p className="mb-0">{enhet.navn}</p>
+              <p className="p-0 m-0" style={{ color: theme.muted }}>
+                {enhet.organisasjonsnummer}
+              </p>
+              <p className="p-0 m-0" style={{ color: theme.muted }}>
+                {enhet.organisasjonsform.beskrivelse}
+              </p>
+            </div>
           </div>
         ))}
       </div>
