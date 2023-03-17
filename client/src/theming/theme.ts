@@ -21,6 +21,12 @@ export const theming = {
     secondary: "#6f42c1",
     danger: "#dc3545",
     shadowColor: "#000",
+    borderPrimary: {
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderColor: "#17a2b8",
+      borderRadius: "8px",
+    },
     mapbox: {
       style: "mapbox://styles/mapbox/streets-v12",
     },
@@ -47,6 +53,12 @@ export const theming = {
     secondary: "#6f42c1",
     danger: "#a32e26",
     shadowColor: "#fff",
+    borderPrimary: {
+      borderWidth: "1px",
+      borderStyle: "solid",
+      borderColor: "#17a2b8",
+      borderRadius: "8px",
+    },
     mapbox: {
       style: "mapbox://styles/mapbox/dark-v11",
     },
