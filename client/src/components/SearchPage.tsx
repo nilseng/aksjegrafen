@@ -9,6 +9,7 @@ import {
   searchBrregUnits,
 } from "../services/brregService";
 import { GraphLogo } from "./GraphLogo";
+import Loading from "./Loading";
 
 const unitSearchParameters = {
   navn: { name: "Navn", value: "", placeholder: "Navn..." },
@@ -51,6 +52,7 @@ export const SearchPage = () => {
   const { theme } = useContext(AppContext);
 
   const [searchParams, setSearchParams] = useState<ISearchParam>(unitSearchParameters);
+  const [isLoading, setIsLoading] = useState<boolean>();
   const [searchRes, setSearchRes] = useState<IBrregUnitSuccessResult>();
   const [searchError, setSearchError] = useState<string>();
 
@@ -59,8 +61,10 @@ export const SearchPage = () => {
   };
 
   const handleSearch = async (searchParams?: IBrregUnitSearchParams) => {
+    setIsLoading(true);
     setSearchError("");
     const res = await searchBrregUnits(searchParams).catch(() => undefined);
+    setIsLoading(false);
     if (!res || isBrregUnitSearchError(res)) {
       setSearchRes(undefined);
       setSearchError("Beklager, søket feilet. Sjekk søkeparameterne og prøv igjen!🤞");
@@ -134,55 +138,61 @@ export const SearchPage = () => {
         </div>
       )}
       <div className="flex-fill overflow-auto" style={{ ...theme.lowering }}>
-        {searchRes ? (
-          searchRes._embedded ? (
-            searchRes._embedded.enheter.map((enhet) => (
-              <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-2">
-                <div className="d-flex justify-content-between align-items-center p-4" style={theme.borderPrimary}>
-                  <div>
-                    <p className="mb-0">{enhet.navn}</p>
-                    <p className="p-0 m-0" style={{ color: theme.muted }}>
-                      {enhet.organisasjonsnummer}
-                    </p>
-                    <p className="p-0 m-0" style={{ color: theme.muted }}>
-                      {enhet.organisasjonsform.beskrivelse}
-                    </p>
-                  </div>
-                  {(enhet.organisasjonsform.kode === "AS" || enhet.organisasjonsform.kode === "ASA") && (
-                    <Link to={`/graph?orgnr=${enhet.organisasjonsnummer}`} style={{ textDecoration: "none" }}>
-                      <span
-                        style={{
-                          ...theme.button,
-                          borderRadius: "100%",
-                          display: "inline-block",
-                          textAlign: "center",
-                          verticalAlign: "middle",
-                          width: "3.2rem",
-                          height: "3.2rem",
-                          paddingTop: "0.6rem",
-                          paddingBottom: "0.6rem",
-                        }}
-                      >
-                        <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
-                      </span>
-                      <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
-                        se i graf
-                      </p>
-                    </Link>
-                  )}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div style={{ color: theme.primary }} className="text-center p-4">
-              Ingen enheter funnet 🔍
+        <>
+          {isLoading ? (
+            <div className="p-4">
+              <Loading color={theme.primary} height="5rem" backgroundColor="transparent" />
             </div>
-          )
-        ) : (
-          <div style={{ color: theme.danger }} className="text-center p-4">
-            {searchError}
-          </div>
-        )}
+          ) : searchRes ? (
+            searchRes._embedded ? (
+              searchRes._embedded.enheter.map((enhet) => (
+                <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-2">
+                  <div className="d-flex justify-content-between align-items-center p-4" style={theme.borderPrimary}>
+                    <div>
+                      <p className="mb-0">{enhet.navn}</p>
+                      <p className="p-0 m-0" style={{ color: theme.muted }}>
+                        {enhet.organisasjonsnummer}
+                      </p>
+                      <p className="p-0 m-0" style={{ color: theme.muted }}>
+                        {enhet.organisasjonsform.beskrivelse}
+                      </p>
+                    </div>
+                    {(enhet.organisasjonsform.kode === "AS" || enhet.organisasjonsform.kode === "ASA") && (
+                      <Link to={`/graph?orgnr=${enhet.organisasjonsnummer}`} style={{ textDecoration: "none" }}>
+                        <span
+                          style={{
+                            ...theme.button,
+                            borderRadius: "100%",
+                            display: "inline-block",
+                            textAlign: "center",
+                            verticalAlign: "middle",
+                            width: "3.2rem",
+                            height: "3.2rem",
+                            paddingTop: "0.6rem",
+                            paddingBottom: "0.6rem",
+                          }}
+                        >
+                          <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                        </span>
+                        <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
+                          se i graf
+                        </p>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ color: theme.primary }} className="text-center p-4">
+                Ingen enheter funnet 🔍
+              </div>
+            )
+          ) : (
+            <div style={{ color: theme.danger }} className="text-center p-4">
+              {searchError}
+            </div>
+          )}
+        </>
       </div>
     </div>
   );
