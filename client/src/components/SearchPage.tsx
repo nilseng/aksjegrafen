@@ -1,5 +1,6 @@
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import { AppContext } from "../App";
 import {
   IBrregUnitSearchParams,
@@ -7,10 +8,12 @@ import {
   isBrregUnitSearchError,
   searchBrregUnits,
 } from "../services/brregService";
+import { GraphLogo } from "./GraphLogo";
 
 const unitSearchParameters = {
   navn: { name: "Navn", value: "", placeholder: "Navn..." },
   organisasjonsnummer: { name: "Org.nr.", value: "", placeholder: "Orgnr..." },
+  naeringskode: { name: "Næringskode", value: "", placeholder: "Næringskode..." },
   /* overordnetEnhet: { name: "string", value: null },
   fraAntallAnsatte: { type: "number", value: null },
   tilAntallAnsatte: { type: "number", value: null },
@@ -75,7 +78,7 @@ export const SearchPage = () => {
         {Object.keys(searchParams).map((key) => (
           <Form.Control
             key={key}
-            className="col-4 m-1"
+            className="col-3 m-1"
             style={{
               backgroundColor: "transparent",
               borderColor: "transparent",
@@ -135,14 +138,38 @@ export const SearchPage = () => {
           searchRes._embedded ? (
             searchRes._embedded.enheter.map((enhet) => (
               <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-2">
-                <div className="p-4" style={theme.borderPrimary}>
-                  <p className="mb-0">{enhet.navn}</p>
-                  <p className="p-0 m-0" style={{ color: theme.muted }}>
-                    {enhet.organisasjonsnummer}
-                  </p>
-                  <p className="p-0 m-0" style={{ color: theme.muted }}>
-                    {enhet.organisasjonsform.beskrivelse}
-                  </p>
+                <div className="d-flex justify-content-between align-items-center p-4" style={theme.borderPrimary}>
+                  <div>
+                    <p className="mb-0">{enhet.navn}</p>
+                    <p className="p-0 m-0" style={{ color: theme.muted }}>
+                      {enhet.organisasjonsnummer}
+                    </p>
+                    <p className="p-0 m-0" style={{ color: theme.muted }}>
+                      {enhet.organisasjonsform.beskrivelse}
+                    </p>
+                  </div>
+                  {(enhet.organisasjonsform.kode === "AS" || enhet.organisasjonsform.kode === "ASA") && (
+                    <Link to={`/graph?orgnr=${enhet.organisasjonsnummer}`} style={{ textDecoration: "none" }}>
+                      <span
+                        style={{
+                          ...theme.button,
+                          borderRadius: "100%",
+                          display: "inline-block",
+                          textAlign: "center",
+                          verticalAlign: "middle",
+                          width: "3.2rem",
+                          height: "3.2rem",
+                          paddingTop: "0.6rem",
+                          paddingBottom: "0.6rem",
+                        }}
+                      >
+                        <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                      </span>
+                      <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
+                        se i graf
+                      </p>
+                    </Link>
+                  )}
                 </div>
               </div>
             ))
