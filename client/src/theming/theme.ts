@@ -18,7 +18,7 @@ export const theming = {
       borderRadius: 8,
     },
     primary: "#17a2b8",
-    secondary: "#6f42c1",
+    secondary: "#ad82fa",
     danger: "#dc3545",
     shadowColor: "#000",
     borderPrimary: {
@@ -50,7 +50,7 @@ export const theming = {
       borderRadius: 8,
     },
     primary: "#17a2b8",
-    secondary: "#6f42c1",
+    secondary: "#bf9dfc",
     danger: "#a32e26",
     shadowColor: "#fff",
     borderPrimary: {
