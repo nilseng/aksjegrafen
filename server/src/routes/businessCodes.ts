@@ -36,6 +36,17 @@ export const businessCodeRoutes = (db: IDatabase) => {
                     autocomplete: { query: req.params?.searchTerm, path: "name" },
                   },
                   {
+                    text: {
+                      query: req.params?.searchTerm,
+                      path: "name",
+                      score: {
+                        boost: {
+                          value: 3,
+                        },
+                      },
+                    },
+                  },
+                  {
                     autocomplete: { query: req.params?.searchTerm, path: "shortName" },
                   },
                   {
