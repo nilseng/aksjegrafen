@@ -16,7 +16,33 @@ export const businessCodeRoutes = (db: IDatabase) => {
           {
             $search: {
               index: "business_codes",
-              text: { query: req.params?.searchTerm, path: ["code", "name", "shortName", "notes"] },
+              compound: {
+                should: [
+                  {
+                    autocomplete: { query: req.params?.searchTerm, path: "code" },
+                  },
+                  {
+                    text: {
+                      query: req.params?.searchTerm,
+                      path: "code",
+                      score: {
+                        boost: {
+                          value: 3,
+                        },
+                      },
+                    },
+                  },
+                  {
+                    autocomplete: { query: req.params?.searchTerm, path: "name" },
+                  },
+                  {
+                    autocomplete: { query: req.params?.searchTerm, path: "shortName" },
+                  },
+                  {
+                    autocomplete: { query: req.params?.searchTerm, path: "notes" },
+                  },
+                ],
+              },
             },
           },
         ])
