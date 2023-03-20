@@ -76,24 +76,22 @@ export const SearchPage = () => {
   }, []);
 
   return (
-    <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-5">
+    <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-3 sm-pb-5">
       <h3 className="text-center">Søk i enhetsregisteret</h3>
-      <Form.Group className="d-flex justify-content-center row">
+      <Form.Group className="d-flex justify-content-center row px-2 mt-3">
         {Object.keys(searchParams).map((key) => (
           <Form.Control
             key={key}
-            className="col-3 m-1"
+            className="col-sm-3 m-1"
             style={{
               backgroundColor: "transparent",
               borderColor: "transparent",
               color: theme.text,
               ...theme.lowering,
-              borderRadius: "4rem",
             }}
             name={key}
             value={searchParams[key].value}
             placeholder={`${searchParams[key].placeholder ?? ""}`}
-            size={"sm"}
             onChange={handleInputChange}
           ></Form.Control>
         ))}
