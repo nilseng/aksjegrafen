@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { IDatabase } from "../database/databaseSetup";
 import {
+  BusinessCode,
   Company,
   isCompany,
   isOwnership,
@@ -15,6 +16,11 @@ import {
 } from "../models/models";
 
 export const importData = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
+  //importShareholderRegistry(db, year, data);
+  importBusinessCodes(db);
+};
+
+const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
   console.log("Importing", data);
   let fileName: string;
   const headers = [
@@ -107,6 +113,32 @@ export const importData = async (db: IDatabase, year?: Year, data?: (number | st
         );
       }
       console.log("------------- Data import complete -------------");
+    });
+};
+
+const importBusinessCodes = async (db: IDatabase) => {
+  console.info("Importing business codes");
+  const fileName = "naeringskoder.csv";
+  const headers = ["code", "parentCode", "level", "name", "shortName", "notes"];
+  const businessCodes: BusinessCode[] = [];
+  fs.createReadStream(path.join(__dirname, "../../..", "data", fileName))
+    .pipe(
+      csv({
+        separator: ";",
+        strict: true,
+        headers,
+        skipLines: 1,
+        quote: '"',
+      })
+    )
+    .on("data", (code: BusinessCode) => {
+      businessCodes.push({ ...code, level: +code.level });
+    })
+    .on("end", async () => {
+      await db.businessCodes.bulkWrite(
+        businessCodes.map((c) => ({ updateOne: { filter: { code: c.code }, update: { $set: c }, upsert: true } }))
+      );
+      console.info("------------- Business code import complete -------------");
     });
 };
 
