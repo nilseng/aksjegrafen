@@ -60,6 +60,15 @@ export interface Person {
   countryCode?: string;
 }
 
+export interface BusinessCode {
+  code: string;
+  parentCode: string;
+  level: number;
+  name: string;
+  shortName: string;
+  notes: string;
+}
+
 export const isOwnership = (o: any): o is Ownership => {
   return (
     o.orgnr &&
