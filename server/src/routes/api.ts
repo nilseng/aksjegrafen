@@ -1,4 +1,4 @@
-import express from "express";
+import { Router } from "express";
 import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
 import { ObjectID } from "mongodb";
@@ -7,7 +7,7 @@ import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
 
-const router = express.Router();
+const router = Router();
 
 export const api = (db: IDatabase, cache: Redis) => {
   router.get(
