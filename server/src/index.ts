@@ -11,6 +11,7 @@ import { Database } from "./database/databaseSetup";
 import { Year } from "./models/models";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
+import { businessCodeRoutes } from "./routes/businessCodes";
 import { deleteData, importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
 import { scheduleTasks } from "./tasks/taskScheduler";
@@ -49,9 +50,8 @@ const initializeApp = async () => {
 
   const cache = await initializeCache();
 
-  const router = api(db, cache);
-  app.use("/api", router);
-
+  app.use("/api", api(db, cache));
+  app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
 
   app.use(express.static(path.join(__dirname, "../../client/build")));
