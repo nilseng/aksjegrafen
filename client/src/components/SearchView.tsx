@@ -1,4 +1,4 @@
-import { faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { faSitemap, faUserTie } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -8,6 +8,8 @@ import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { StatCard } from "./StatCard";
 
 import { faBuilding } from "@fortawesome/free-regular-svg-icons";
+import { useHistory } from "react-router-dom";
+import { ICompany, IShareholder } from "../models/models";
 import { SearchComponent } from "./SearchComponent";
 
 const searchQueryParams = { limit: 10 };
@@ -16,6 +18,7 @@ const shareholderSearchPath = "/api/shareholder";
 
 export const SearchView = () => {
   const { theme } = useContext(AppContext);
+  const history = useHistory();
 
   const companyCount = useCompanyCount();
   const shareholderCount = useShareholderCount();
@@ -37,7 +40,13 @@ export const SearchView = () => {
             >
               <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
               <SearchComponent
-                type="company"
+                handleClick={(company: ICompany) => history.push(`/graph?_id=${company._id}`)}
+                mapResultToListItem={(company: ICompany) => ({
+                  key: company._id,
+                  name: company.name,
+                  tags: company.orgnr ? [company.orgnr] : [],
+                  icon: faSitemap,
+                })}
                 placeholder="Søk etter selskap..."
                 apiPath={companySearchPath}
                 query={searchQueryParams}
@@ -55,7 +64,15 @@ export const SearchView = () => {
             >
               <StatCard label="aksjonærer" labelIcon={faUserTie} stat={shareholderCount} />
               <SearchComponent
-                type="shareholder"
+                handleClick={(shareholder: IShareholder) => history.push(`/graph?shareholder_id=${shareholder._id}`)}
+                mapResultToListItem={(shareholder: IShareholder) => ({
+                  key: shareholder._id,
+                  name: shareholder.name,
+                  tags: [shareholder.orgnr, shareholder.yearOfBirth, shareholder.countryCode].filter(
+                    (tag) => !!tag
+                  ) as (number | string)[],
+                  icon: faSitemap,
+                })}
                 placeholder="...eller aksjonær..."
                 apiPath={shareholderSearchPath}
                 query={searchQueryParams}
