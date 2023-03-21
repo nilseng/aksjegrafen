@@ -1,32 +1,38 @@
-import { faSitemap } from "@fortawesome/free-solid-svg-icons";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { Form, ListGroup } from "react-bootstrap";
-import { useHistory } from "react-router-dom";
 import { AppContext } from "../App";
 import { useSearch } from "../hooks/useSearch";
-import { ICompany, IShareholder, isShareholder } from "../models/models";
 
-interface IProps {
-  type: "company" | "shareholder";
+interface ListItem {
+  key: string;
+  name: string;
+  tags: (string | number)[];
+  icon: IconProp;
+}
+
+interface IProps<Result extends unknown> {
+  handleClick: (res: Result) => void;
+  mapResultToListItem: (res: Result) => ListItem;
   placeholder: string;
   apiPath: string;
   searchTerm?: string;
   query?: { [key: string]: string | number };
 }
 
-export const SearchComponent = <Entity extends ICompany | IShareholder>({
-  type,
+export const SearchComponent = <Result extends unknown>({
+  handleClick,
+  mapResultToListItem,
   placeholder,
   apiPath,
   query,
-}: IProps) => {
+}: IProps<Result>) => {
   const { theme } = useContext(AppContext);
-  const history = useHistory();
 
   const [searchTerm, setSearchTerm] = useState<string>();
 
-  const searchList = useSearch<Entity[]>(apiPath, searchTerm, query);
+  const searchList = useSearch<Result[]>(apiPath, searchTerm, query);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
@@ -60,40 +66,36 @@ export const SearchComponent = <Entity extends ICompany | IShareholder>({
               style={{ ...theme.lowering, zIndex: 102 }}
             >
               {searchList.length ? (
-                searchList.map((entity) => (
-                  <ListGroup.Item
-                    key={entity._id}
-                    className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-2"
-                    style={{
-                      zIndex: 101,
-                      backgroundColor: "transparent",
-                      cursor: "pointer",
-                      ...theme.elevation,
-                    }}
-                    onClick={() =>
-                      history.push(
-                        type === "company" ? `/graph?_id=${entity._id}` : `/graph?shareholder_id=${entity._id}`
-                      )
-                    }
-                  >
-                    <div>
-                      <div className="mr-2">{entity.name}</div>
-                      {entity.orgnr && <span className="small text-muted mr-3">{entity.orgnr}</span>}
-                      {isShareholder(entity) && entity.yearOfBirth && (
-                        <span className="small text-muted mr-2">{entity.yearOfBirth}</span>
-                      )}
-                      {isShareholder(entity) && entity.countryCode && (
-                        <span className="small text-muted">{entity.countryCode}</span>
-                      )}
-                    </div>
-                    <FontAwesomeIcon
-                      icon={faSitemap}
-                      color={theme.primary}
-                      style={{ cursor: "pointer" }}
-                      className="mr-3"
-                    />
-                  </ListGroup.Item>
-                ))
+                searchList
+                  .map((result) => ({ result, item: mapResultToListItem(result) }))
+                  .map(({ result, item }) => (
+                    <ListGroup.Item
+                      key={item.key}
+                      className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-2"
+                      style={{
+                        zIndex: 101,
+                        backgroundColor: "transparent",
+                        cursor: "pointer",
+                        ...theme.elevation,
+                      }}
+                      onClick={() => handleClick(result)}
+                    >
+                      <div>
+                        <div className="mr-2">{item.name}</div>
+                        {item.tags.map((tag) => (
+                          <span key={tag} className="small text-muted mx-2">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        color={theme.primary}
+                        style={{ cursor: "pointer" }}
+                        className="mr-3"
+                      />
+                    </ListGroup.Item>
+                  ))
               ) : (
                 <p className="m-0" style={{ color: theme.primary }}>
                   Ingen resultater 🔍
