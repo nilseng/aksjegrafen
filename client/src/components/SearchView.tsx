@@ -31,8 +31,8 @@ export const SearchView = () => {
               style={{
                 backgroundColor: theme.background,
                 ...theme.elevation,
-                maxHeight: "15.5rem",
-                height: "15.5rem",
+                maxHeight: "14.5rem",
+                height: "14.5rem",
               }}
             >
               <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
@@ -49,8 +49,8 @@ export const SearchView = () => {
               style={{
                 backgroundColor: theme.background,
                 ...theme.elevation,
-                maxHeight: "15.5rem",
-                height: "15.5rem",
+                maxHeight: "14.5rem",
+                height: "14.5rem",
               }}
             >
               <StatCard label="aksjonærer" labelIcon={faUserTie} stat={shareholderCount} />
