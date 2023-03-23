@@ -14,12 +14,17 @@ const debouncedFetch = <T>(url: string, abortController: AbortController, setSta
     );
   }, 200);
 
-export const useSearch = <T>(apiPath: string, searchTerm?: string, query?: { [key: string]: string | number }) => {
+export const useSearch = <T>(
+  apiPath: string,
+  searchTerm?: string,
+  query?: { [key: string]: string | number },
+  minSearchTermLength = 3
+) => {
   const [state, setState] = useState<T>();
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (!searchTerm || searchTerm.length < 3) setState(undefined);
+    if (!searchTerm || searchTerm.length < minSearchTermLength) setState(undefined);
     else {
       let url = `${apiPath}/${searchTerm}`;
       if (query) url += buildQuery(query);
@@ -30,7 +35,7 @@ export const useSearch = <T>(apiPath: string, searchTerm?: string, query?: { [ke
       setState(undefined);
       abortController.abort();
     };
-  }, [apiPath, query, searchTerm]);
+  }, [apiPath, query, searchTerm, minSearchTermLength]);
 
   return state;
 };
