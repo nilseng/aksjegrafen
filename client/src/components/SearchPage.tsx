@@ -104,7 +104,7 @@ export const SearchPage = () => {
             onChange={handleInputChange}
           ></Form.Control>
         ))}
-        <div className="col-sm-8 px-1 m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
+        <div className="col-sm-8 px-0 m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
           <SearchComponent
             handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
             placeholder="Næring..."
