@@ -185,8 +185,11 @@ export const SearchPage = () => {
           ) : searchRes ? (
             searchRes._embedded ? (
               searchRes._embedded.enheter.map((enhet) => (
-                <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-4 p-2">
-                  <div className="d-flex justify-content-between align-items-center p-4" style={theme.borderPrimary}>
+                <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-3 m-sm-4 p-1 p-sm-2">
+                  <div
+                    className="d-flex justify-content-between align-items-center p-3 p-sm-4"
+                    style={theme.borderPrimary}
+                  >
                     <div>
                       <p className="mb-0">{enhet.navn}</p>
                       <p className="p-0 m-0" style={{ color: theme.muted }}>
