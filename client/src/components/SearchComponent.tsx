@@ -9,7 +9,7 @@ interface ListItem {
   key: string;
   name: string;
   tags: (string | number)[];
-  icon: IconProp;
+  icon?: IconProp;
 }
 
 interface IProps<Result extends unknown> {
@@ -19,6 +19,7 @@ interface IProps<Result extends unknown> {
   apiPath: string;
   searchTerm?: string;
   query?: { [key: string]: string | number };
+  minSearchTermLength?: number;
 }
 
 export const SearchComponent = <Result extends unknown>({
@@ -27,12 +28,13 @@ export const SearchComponent = <Result extends unknown>({
   placeholder,
   apiPath,
   query,
+  minSearchTermLength,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
 
-  const [searchTerm, setSearchTerm] = useState<string>();
+  const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const searchList = useSearch<Result[]>(apiPath, searchTerm, query);
+  const searchList = useSearch<Result[]>(apiPath, searchTerm, query, minSearchTermLength);
 
   const handleSearch = (e: any) => {
     setSearchTerm(e.target.value);
@@ -40,7 +42,7 @@ export const SearchComponent = <Result extends unknown>({
 
   return (
     <>
-      <Form.Group className="w-100 mt-5 mb-0 sm-px-3">
+      <Form.Group className="w-100 m-0">
         <Form.Control
           name="selskapsSøk"
           autoComplete="off"
@@ -52,18 +54,19 @@ export const SearchComponent = <Result extends unknown>({
             color: theme.text,
             ...theme.lowering,
           }}
+          value={searchTerm}
           onChange={handleSearch}
         ></Form.Control>
       </Form.Group>
       {searchList && (
-        <div className="w-100 mw-100 px-0" style={{ maxHeight: "20rem" }}>
+        <div className="w-100 mw-100 px-0">
           <div
             className="h-100 w-100 position-relative p-3"
             style={{ ...theme.elevation, backgroundColor: theme.background, zIndex: 100 }}
           >
             <ListGroup
               className="h-100 w-100 mw-100 overflow-auto position-relative px-3 py-2"
-              style={{ ...theme.lowering, zIndex: 102 }}
+              style={{ ...theme.lowering, zIndex: 102, maxHeight: "16rem" }}
             >
               {searchList.length ? (
                 searchList
@@ -78,7 +81,10 @@ export const SearchComponent = <Result extends unknown>({
                         cursor: "pointer",
                         ...theme.elevation,
                       }}
-                      onClick={() => handleClick(result)}
+                      onClick={() => {
+                        setSearchTerm("");
+                        handleClick(result);
+                      }}
                     >
                       <div>
                         <div className="mr-2">{item.name}</div>
@@ -88,12 +94,14 @@ export const SearchComponent = <Result extends unknown>({
                           </span>
                         ))}
                       </div>
-                      <FontAwesomeIcon
-                        icon={item.icon}
-                        color={theme.primary}
-                        style={{ cursor: "pointer" }}
-                        className="mr-3"
-                      />
+                      {item.icon && (
+                        <FontAwesomeIcon
+                          icon={item.icon}
+                          color={theme.primary}
+                          style={{ cursor: "pointer" }}
+                          className="mr-3"
+                        />
+                      )}
                     </ListGroup.Item>
                   ))
               ) : (
