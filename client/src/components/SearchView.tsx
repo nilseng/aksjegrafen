@@ -39,18 +39,20 @@ export const SearchView = () => {
               }}
             >
               <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
-              <SearchComponent
-                handleClick={(company: ICompany) => history.push(`/graph?_id=${company._id}`)}
-                mapResultToListItem={(company: ICompany) => ({
-                  key: company._id,
-                  name: company.name,
-                  tags: company.orgnr ? [company.orgnr] : [],
-                  icon: faSitemap,
-                })}
-                placeholder="Søk etter selskap..."
-                apiPath={companySearchPath}
-                query={searchQueryParams}
-              />
+              <div className="w-100 mt-5 mb-0 sm-px-3">
+                <SearchComponent
+                  handleClick={(company: ICompany) => history.push(`/graph?_id=${company._id}`)}
+                  mapResultToListItem={(company: ICompany) => ({
+                    key: company._id,
+                    name: company.name,
+                    tags: company.orgnr ? [company.orgnr] : [],
+                    icon: faSitemap,
+                  })}
+                  placeholder="Søk etter selskap..."
+                  apiPath={companySearchPath}
+                  query={searchQueryParams}
+                />
+              </div>
             </Col>
             <Col
               lg
@@ -63,20 +65,22 @@ export const SearchView = () => {
               }}
             >
               <StatCard label="aksjonærer" labelIcon={faUserTie} stat={shareholderCount} />
-              <SearchComponent
-                handleClick={(shareholder: IShareholder) => history.push(`/graph?shareholder_id=${shareholder._id}`)}
-                mapResultToListItem={(shareholder: IShareholder) => ({
-                  key: shareholder._id,
-                  name: shareholder.name,
-                  tags: [shareholder.orgnr, shareholder.yearOfBirth, shareholder.countryCode].filter(
-                    (tag) => !!tag
-                  ) as (number | string)[],
-                  icon: faSitemap,
-                })}
-                placeholder="...eller aksjonær..."
-                apiPath={shareholderSearchPath}
-                query={searchQueryParams}
-              />
+              <div className="w-100 mt-5 mb-0 sm-px-3">
+                <SearchComponent
+                  handleClick={(shareholder: IShareholder) => history.push(`/graph?shareholder_id=${shareholder._id}`)}
+                  mapResultToListItem={(shareholder: IShareholder) => ({
+                    key: shareholder._id,
+                    name: shareholder.name,
+                    tags: [shareholder.orgnr, shareholder.yearOfBirth, shareholder.countryCode].filter(
+                      (tag) => !!tag
+                    ) as (number | string)[],
+                    icon: faSitemap,
+                  })}
+                  placeholder="...eller aksjonær..."
+                  apiPath={shareholderSearchPath}
+                  query={searchQueryParams}
+                />
+              </div>
             </Col>
           </Row>
         </div>
