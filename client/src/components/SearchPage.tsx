@@ -1,3 +1,5 @@
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
@@ -8,13 +10,14 @@ import {
   isBrregUnitSearchError,
   searchBrregUnits,
 } from "../services/brregService";
+import { BusinessCode } from "../services/businessCodeService";
 import { GraphLogo } from "./GraphLogo";
 import Loading from "./Loading";
+import { SearchComponent } from "./SearchComponent";
 
-const unitSearchParameters = {
+const unitSearchInputConfig: { [key: string]: { name: string; value: string | number; placeholder: string } } = {
   navn: { name: "Navn", value: "", placeholder: "Navn..." },
   organisasjonsnummer: { name: "Org.nr.", value: "", placeholder: "Orgnr..." },
-  naeringskode: { name: "Næringskode", value: "", placeholder: "Næringskode..." },
   /* overordnetEnhet: { name: "string", value: null },
   fraAntallAnsatte: { type: "number", value: null },
   tilAntallAnsatte: { type: "number", value: null },
@@ -51,13 +54,19 @@ const mapInputToSearchParams = (input: ISearchParam): IBrregUnitSearchParams => 
 export const SearchPage = () => {
   const { theme } = useContext(AppContext);
 
-  const [searchParams, setSearchParams] = useState<ISearchParam>(unitSearchParameters);
+  const [searchParams, setSearchParams] = useState<IBrregUnitSearchParams>(
+    mapInputToSearchParams(unitSearchInputConfig)
+  );
   const [isLoading, setIsLoading] = useState<boolean>();
   const [searchRes, setSearchRes] = useState<IBrregUnitSuccessResult>();
   const [searchError, setSearchError] = useState<string>();
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchParams((p) => ({ ...p, [e.target.name]: { ...p[e.target.name], value: e.target.value } }));
+    setSearchParam({ name: e.target.name, value: e.target.value });
+  };
+
+  const setSearchParam = ({ name, value }: { name: string; value: number | string }) => {
+    setSearchParams((p) => ({ ...p, [name]: value }));
   };
 
   const handleSearch = async (searchParams?: IBrregUnitSearchParams) => {
@@ -79,7 +88,7 @@ export const SearchPage = () => {
     <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-3 sm-pb-5">
       <h3 className="text-center">Søk i enhetsregisteret</h3>
       <Form.Group className="d-flex justify-content-center row px-2 mt-3">
-        {Object.keys(searchParams).map((key) => (
+        {Object.keys(unitSearchInputConfig).map((key) => (
           <Form.Control
             key={key}
             className="col-sm-3 m-1"
@@ -90,17 +99,49 @@ export const SearchPage = () => {
               ...theme.lowering,
             }}
             name={key}
-            value={searchParams[key].value}
-            placeholder={`${searchParams[key].placeholder ?? ""}`}
+            value={searchParams[key] ?? ""}
+            placeholder={`${unitSearchInputConfig[key].placeholder ?? ""}`}
             onChange={handleInputChange}
           ></Form.Control>
         ))}
+        <div className="col-sm-8 px-1 m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
+          <SearchComponent
+            handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
+            placeholder="Næring..."
+            mapResultToListItem={(b: BusinessCode) => ({
+              key: b.code,
+              name: b.shortName,
+              tags: [
+                `næringskode: ${b.code}`,
+                `nivå: ${b.level}`,
+                ...(b.parentCode ? [`parent: ${b.parentCode}`] : []),
+              ],
+            })}
+            apiPath={"/business-codes"}
+            minSearchTermLength={1}
+          />
+          {searchParams.naeringskode && (
+            <span
+              className="small font-weight-bold rounded px-1 ml-2"
+              style={{ backgroundColor: theme.primary, color: "#f8f9fa" }}
+            >
+              {searchParams.naeringskode}
+              <FontAwesomeIcon
+                className="ml-2"
+                size="sm"
+                icon={faTimes}
+                style={{ color: "#f8f9fa", cursor: "pointer" }}
+                onClick={() => setSearchParam({ name: "naeringskode", value: "" })}
+              />
+            </span>
+          )}
+        </div>
       </Form.Group>
       <div className="d-flex justify-content-center">
         <button
           className="btn font-weight-bold mt-2 mx-4 mb-4"
           style={{ ...theme.button, color: theme.primary, minWidth: "8rem" }}
-          onClick={() => handleSearch(mapInputToSearchParams(searchParams))}
+          onClick={() => handleSearch(searchParams)}
         >
           Søk
         </button>
@@ -111,7 +152,7 @@ export const SearchPage = () => {
             className="btn font-weight-bold mr-4"
             disabled={searchRes.page.number < 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
-            onClick={() => handleSearch({ ...mapInputToSearchParams(searchParams), page: searchRes.page.number - 1 })}
+            onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number - 1 })}
           >
             Forrige
           </button>
@@ -129,7 +170,7 @@ export const SearchPage = () => {
             className="btn font-weight-bold ml-4"
             disabled={searchRes.page.number >= searchRes.page.totalElements - 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
-            onClick={() => handleSearch({ ...mapInputToSearchParams(searchParams), page: searchRes.page.number + 1 })}
+            onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number + 1 })}
           >
             Neste
           </button>
