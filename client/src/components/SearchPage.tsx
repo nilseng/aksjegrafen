@@ -86,8 +86,8 @@ export const SearchPage = () => {
 
   return (
     <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-3 sm-pb-5">
-      <h3 className="text-center">Søk i enhetsregisteret</h3>
-      <Form.Group className="d-flex justify-content-center row px-2 mt-3">
+      <h5 className="text-center">Søk i enhetsregisteret</h5>
+      <Form.Group className="d-flex justify-content-center row px-2 mt-3 mb-0">
         {Object.keys(unitSearchInputConfig).map((key) => (
           <Form.Control
             key={key}
@@ -139,7 +139,7 @@ export const SearchPage = () => {
       </Form.Group>
       <div className="d-flex justify-content-center">
         <button
-          className="btn font-weight-bold mt-2 mx-4 mb-4"
+          className="btn font-weight-bold mx-4 mb-4"
           style={{ ...theme.button, color: theme.primary, minWidth: "8rem" }}
           onClick={() => handleSearch(searchParams)}
         >
