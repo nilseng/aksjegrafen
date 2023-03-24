@@ -104,7 +104,9 @@ export const SearchPage = () => {
             onChange={handleInputChange}
           ></Form.Control>
         ))}
-        <div className="col-sm-8 px-0 m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
+      </Form.Group>
+      <div className="row d-flex justify-content-center px-2 px-sm-0">
+        <div className="col-sm-6 px-0 m-1 m-sm-0" style={{ height: "3rem", maxHeight: "3rem" }}>
           <SearchComponent
             handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
             placeholder="Næring..."
@@ -136,7 +138,7 @@ export const SearchPage = () => {
             </span>
           )}
         </div>
-      </Form.Group>
+      </div>
       <div className="d-flex justify-content-center">
         <button
           className="btn font-weight-bold mx-4 mb-4"
