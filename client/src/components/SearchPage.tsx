@@ -1,4 +1,4 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
@@ -57,6 +57,7 @@ export const SearchPage = () => {
   const [searchParams, setSearchParams] = useState<IBrregUnitSearchParams>(
     mapInputToSearchParams(unitSearchInputConfig)
   );
+  const [areSearchFieldsVisible, setAreSearchFieldsVisible] = useState(true);
   const [isLoading, setIsLoading] = useState<boolean>();
   const [searchRes, setSearchRes] = useState<IBrregUnitSuccessResult>();
   const [searchError, setSearchError] = useState<string>();
@@ -87,65 +88,76 @@ export const SearchPage = () => {
   return (
     <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-3 sm-pb-5">
       <h5 className="text-center">Søk i enhetsregisteret</h5>
-      <Form.Group className="d-flex justify-content-center row px-2 mt-3 mb-0">
-        {Object.keys(unitSearchInputConfig).map((key) => (
-          <Form.Control
-            key={key}
-            className="col-sm-3 m-1"
-            style={{
-              backgroundColor: "transparent",
-              borderColor: "transparent",
-              color: theme.text,
-              ...theme.lowering,
-            }}
-            name={key}
-            value={searchParams[key] ?? ""}
-            placeholder={`${unitSearchInputConfig[key].placeholder ?? ""}`}
-            onChange={handleInputChange}
-          ></Form.Control>
-        ))}
-      </Form.Group>
-      <div className="row d-flex justify-content-center px-2 px-sm-0">
-        <div className="col-sm-6 px-0 m-1 m-sm-0" style={{ height: "3rem", maxHeight: "3rem" }}>
-          <SearchComponent
-            handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
-            placeholder="Næring..."
-            mapResultToListItem={(b: BusinessCode) => ({
-              key: b.code,
-              name: b.shortName,
-              tags: [
-                `næringskode: ${b.code}`,
-                `nivå: ${b.level}`,
-                ...(b.parentCode ? [`parent: ${b.parentCode}`] : []),
-              ],
-            })}
-            apiPath={"/business-codes"}
-            minSearchTermLength={1}
-          />
-          {searchParams.naeringskode && (
-            <span
-              className="small font-weight-bold rounded px-1 ml-2"
-              style={{ backgroundColor: theme.primary, color: "#f8f9fa" }}
-            >
-              {searchParams.naeringskode}
-              <FontAwesomeIcon
-                className="ml-2"
-                size="sm"
-                icon={faTimes}
-                style={{ color: "#f8f9fa", cursor: "pointer" }}
-                onClick={() => setSearchParam({ name: "naeringskode", value: "" })}
+      {areSearchFieldsVisible && (
+        <>
+          <Form.Group className="d-flex justify-content-center row px-2 mt-3 mb-0">
+            {Object.keys(unitSearchInputConfig).map((key) => (
+              <Form.Control
+                key={key}
+                className="col-sm-3 m-1"
+                style={{
+                  backgroundColor: "transparent",
+                  borderColor: "transparent",
+                  color: theme.text,
+                  ...theme.lowering,
+                }}
+                name={key}
+                value={searchParams[key] ?? ""}
+                placeholder={`${unitSearchInputConfig[key].placeholder ?? ""}`}
+                onChange={handleInputChange}
+              ></Form.Control>
+            ))}
+          </Form.Group>
+          <div className="row d-flex justify-content-center px-2 px-sm-0">
+            <div className="col-sm-6 px-0 m-1 m-sm-0" style={{ height: "3rem", maxHeight: "3rem" }}>
+              <SearchComponent
+                handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
+                placeholder="Næring..."
+                mapResultToListItem={(b: BusinessCode) => ({
+                  key: b.code,
+                  name: b.shortName,
+                  tags: [
+                    `næringskode: ${b.code}`,
+                    `nivå: ${b.level}`,
+                    ...(b.parentCode ? [`parent: ${b.parentCode}`] : []),
+                  ],
+                })}
+                apiPath={"/business-codes"}
+                minSearchTermLength={1}
               />
-            </span>
-          )}
-        </div>
-      </div>
-      <div className="d-flex justify-content-center">
+              {searchParams.naeringskode && (
+                <span
+                  className="small font-weight-bold rounded px-1 ml-2"
+                  style={{ backgroundColor: theme.primary, color: "#f8f9fa" }}
+                >
+                  {searchParams.naeringskode}
+                  <FontAwesomeIcon
+                    className="ml-2"
+                    size="sm"
+                    icon={faTimes}
+                    style={{ color: "#f8f9fa", cursor: "pointer" }}
+                    onClick={() => setSearchParam({ name: "naeringskode", value: "" })}
+                  />
+                </span>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+      <div className="d-flex justify-content-center pb-4">
         <button
-          className="btn font-weight-bold mx-4 mb-4"
+          className="btn font-weight-bold"
           style={{ ...theme.button, color: theme.primary, minWidth: "8rem" }}
           onClick={() => handleSearch(searchParams)}
         >
           Søk
+        </button>
+        <button
+          className="btn"
+          style={{ ...theme.button, color: theme.primary }}
+          onClick={() => setAreSearchFieldsVisible(!areSearchFieldsVisible)}
+        >
+          {areSearchFieldsVisible ? <FontAwesomeIcon icon={faChevronUp} /> : <FontAwesomeIcon icon={faChevronDown} />}
         </button>
       </div>
       {searchRes && (
