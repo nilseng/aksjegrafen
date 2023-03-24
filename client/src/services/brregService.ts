@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ICompany, IShareholder } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
-const brregUrl = "https://data.brreg.no/enhetsregisteret/api/enheter";
+const brregUrl = "https://data.brreg.no/enhetsregisteret/api";
 
 export interface IFinancials {
   id: number;
@@ -142,7 +142,7 @@ interface IBrregUnit {
 }
 
 export const getBrregUnit = async (orgnr: string) => {
-  const res = await fetch(`${brregUrl}/${orgnr}`).catch(() =>
+  const res = await fetch(`${brregUrl}/enheter/${orgnr}`).catch(() =>
     console.warn(`Could not fetch info from brreg for company with orgnr=${orgnr}`)
   );
   return res ? res.json() : res;
@@ -155,7 +155,7 @@ export interface IBrregUnitSearchParams {
 }
 export const searchBrregUnits = async (searchParams?: IBrregUnitSearchParams): Promise<IBrregUnitResult> => {
   const queryString = buildQuery(searchParams as { [key: string]: number | string });
-  const res = await fetch(`${brregUrl}${queryString}`);
+  const res = await fetch(`${brregUrl}/enheter${queryString}`);
   return res ? res.json() : res;
 };
 
@@ -163,6 +163,11 @@ export const getFinancialsByUnit = async (orgnr: string) => {
   const res = await fetch(`brreg/financials?orgnr=${orgnr}`).catch(() =>
     console.warn(`Could not fetch financials from brreg for company with orgnr=${orgnr}`)
   );
+  return res ? res.json() : res;
+};
+
+export const getOrgForms = async () => {
+  const res = await fetch(`${brregUrl}/organisasjonsformer`);
   return res ? res.json() : res;
 };
 
