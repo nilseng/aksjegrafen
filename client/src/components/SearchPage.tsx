@@ -18,25 +18,7 @@ import { SearchComponent } from "./SearchComponent";
 const unitSearchInputConfig: { [key: string]: { name: string; value: string | number; placeholder: string } } = {
   navn: { name: "Navn", value: "", placeholder: "Navn..." },
   organisasjonsnummer: { name: "Org.nr.", value: "", placeholder: "Orgnr..." },
-  /* overordnetEnhet: { name: "string", value: null },
-  fraAntallAnsatte: { type: "number", value: null },
-  tilAntallAnsatte: { type: "number", value: null },
-  konkurs: { type: "boolean", value: null },
-  registrertIMvaregisteret: { type: "boolean", value: null },
-  registrertIForetaksregisteret: { type: "boolean", value: null },
-  registrertIStiftelsesregisteret: { type: "boolean", value: null },
-  registrertIFrivillighetsregisteret: { type: "boolean", value: null },
-  frivilligRegistrertIMvaregisteret: { type: "string", value: null },
-  underTvangsavviklingEllerTvangsopplosning: { type: "boolean", value: null },
-  underAvvikling: { type: "boolean", value: null }, */
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  //fraRegistreringsdatoEnhetsregisteret: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  //tilRegistreringsdatoEnhetsregisteret: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  //fraStiftelsesdato: { type: "string", value: null },
-  /** Dato (ISO-8601): yyyy-MM-dd */
-  //tilStiftelsesdato: { type: "string", value: null },
+  organisasjonsform: { name: "Organisasjonsform", value: "", placeholder: "Organisasjonsform..." },
 };
 
 interface ISearchParam {
