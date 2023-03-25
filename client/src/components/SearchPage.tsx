@@ -145,14 +145,14 @@ export const SearchPage = () => {
       {searchRes && (
         <div className="d-flex align-items-center justify-content-center pb-2">
           <button
-            className="btn font-weight-bold mr-4"
+            className="btn btn-sm font-weight-bold mr-4"
             disabled={searchRes.page.number < 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
             onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number - 1 })}
           >
             Forrige
           </button>
-          <p className="m-0">
+          <p className="small m-0">
             Side{" "}
             <span style={{ color: theme.primary }} className="font-weight-bold">
               {searchRes.page.number + 1}
@@ -163,7 +163,7 @@ export const SearchPage = () => {
             </span>
           </p>
           <button
-            className="btn font-weight-bold ml-4"
+            className="btn btn-sm font-weight-bold ml-4"
             disabled={searchRes.page.number >= searchRes.page.totalElements - 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
             onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number + 1 })}
