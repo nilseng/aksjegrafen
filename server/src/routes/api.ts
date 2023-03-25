@@ -97,10 +97,38 @@ export const api = (db: IDatabase, cache: Redis) => {
           .aggregate([
             {
               $search: {
-                index: "company search",
-                text: {
-                  query: params?.searchTerm,
-                  path: ["name", "orgnr"],
+                index: "company_search",
+                compound: {
+                  should: [
+                    {
+                      autocomplete: { query: params?.searchTerm, path: "name" },
+                    },
+                    {
+                      text: {
+                        query: params?.searchTerm,
+                        path: "name",
+                        score: {
+                          boost: {
+                            value: 3,
+                          },
+                        },
+                      },
+                    },
+                    {
+                      autocomplete: { query: params?.searchTerm, path: "orgnr" },
+                    },
+                    {
+                      text: {
+                        query: params?.searchTerm,
+                        path: "orgnr",
+                        score: {
+                          boost: {
+                            value: 3,
+                          },
+                        },
+                      },
+                    },
+                  ],
                 },
               },
             },
@@ -123,10 +151,38 @@ export const api = (db: IDatabase, cache: Redis) => {
         .aggregate([
           {
             $search: {
-              index: "shareholder search",
-              text: {
-                query: params?.searchTerm,
-                path: ["name", "orgnr"],
+              index: "shareholder_search",
+              compound: {
+                should: [
+                  {
+                    autocomplete: { query: params?.searchTerm, path: "name" },
+                  },
+                  {
+                    text: {
+                      query: params?.searchTerm,
+                      path: "name",
+                      score: {
+                        boost: {
+                          value: 3,
+                        },
+                      },
+                    },
+                  },
+                  {
+                    autocomplete: { query: params?.searchTerm, path: "orgnr" },
+                  },
+                  {
+                    text: {
+                      query: params?.searchTerm,
+                      path: "orgnr",
+                      score: {
+                        boost: {
+                          value: 3,
+                        },
+                      },
+                    },
+                  },
+                ],
               },
             },
           },
