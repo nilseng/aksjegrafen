@@ -1,47 +1,49 @@
-import React from "react";
-import Nav from "react-bootstrap/Nav";
-import Navbar from "react-bootstrap/Navbar";
-
 import "./NavBar.scss";
 
-import { ThemeButton } from "./ThemeButton";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { theming } from "../theming/theme";
 import { GraphLogo } from "./GraphLogo";
+import { ThemeButton } from "./ThemeButton";
 
 interface IProps {
-  theme: any;
-  setTheme: React.Dispatch<React.SetStateAction<any>>;
+  theme: typeof theming.light;
+  setTheme: React.Dispatch<React.SetStateAction<typeof theming.light>>;
 }
 
 const NavBar = ({ theme, setTheme }: IProps) => {
   return (
-    <Navbar variant="light" expand="md" collapseOnSelect style={{ zIndex: 10000 }}>
+    <div className="d-flex justify-content-between align-items-center p-3" style={{ zIndex: 10000 }}>
       <Link to="/">
-        <Navbar.Brand className="text-light">
-          <span
-            className="ml-2"
-            style={{
-              ...theme.button,
-              borderRadius: "100px",
-              display: "inline-block",
-              textAlign: "center",
-              verticalAlign: "middle",
-              width: "3.2rem",
-              height: "3.2rem",
-              paddingTop: "0.6rem",
-              paddingBottom: "0.6rem",
-            }}
-          >
-            <GraphLogo inputColor={theme.primary} />
-          </span>
-        </Navbar.Brand>
+        <span
+          style={{
+            ...theme.button,
+            borderRadius: "100px",
+            display: "inline-block",
+            textAlign: "center",
+            verticalAlign: "middle",
+            width: "3.2rem",
+            height: "3.2rem",
+            paddingTop: "0.6rem",
+            paddingBottom: "0.6rem",
+          }}
+        >
+          <GraphLogo inputColor={theme.primary} />
+        </span>
       </Link>
-      <div className="d-flex justify-content-end" style={{ flexGrow: 1 }}>
-        <Nav className="mr-2 " defaultActiveKey="/home">
+      <div className="d-flex justify-content-end">
+        <div className="d-flex align-items-center">
+          <Link to="/search" className="mr-4">
+            <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+              Enhetsregisteret
+              <FontAwesomeIcon icon={faSearch} className="ml-2" />
+            </button>
+          </Link>
           <ThemeButton theme={theme} setTheme={setTheme} />
-        </Nav>
+        </div>
       </div>
-    </Navbar>
+    </div>
   );
 };
 
