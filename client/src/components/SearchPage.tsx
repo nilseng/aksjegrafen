@@ -4,7 +4,9 @@ import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { AppContext } from "../App";
+import { availableYears } from "../config";
 import {
+  IBrregUnit,
   IBrregUnitSearchParams,
   IBrregUnitSuccessResult,
   isBrregUnitSearchError,
@@ -31,6 +33,17 @@ const mapInputToSearchParams = (input: ISearchParam): IBrregUnitSearchParams => 
     searchParams[key] = input[key].value;
   });
   return searchParams;
+};
+
+const isAksjeselskap = (unit: IBrregUnit) =>
+  unit.organisasjonsform.kode === "AS" || unit.organisasjonsform.kode === "ASA";
+const isTooRecent = (unit: IBrregUnit) =>
+  +unit.registreringsdatoEnhetsregisteret.substring(0, 4) > Math.max(...availableYears);
+
+const shouldShowGraphLink = (unit: IBrregUnit) => {
+  if (!isAksjeselskap(unit)) return false;
+  if (isTooRecent(unit)) return false;
+  return true;
 };
 
 export const SearchPage = () => {
@@ -195,9 +208,35 @@ export const SearchPage = () => {
                         {enhet.organisasjonsform.beskrivelse}
                       </p>
                     </div>
-                    {(enhet.organisasjonsform.kode === "AS" || enhet.organisasjonsform.kode === "ASA") && (
-                      <Link to={`/graph?orgnr=${enhet.organisasjonsnummer}`} style={{ textDecoration: "none" }}>
-                        <span
+                    {isAksjeselskap(enhet) &&
+                      (shouldShowGraphLink(enhet) ? (
+                        <Link
+                          to={`/graph?orgnr=${enhet.organisasjonsnummer}`}
+                          className="btn px-0"
+                          style={{ textDecoration: "none" }}
+                        >
+                          <span
+                            style={{
+                              ...theme.button,
+                              borderRadius: "100%",
+                              display: "inline-block",
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                              width: "3.2rem",
+                              height: "3.2rem",
+                              paddingTop: "0.6rem",
+                              paddingBottom: "0.6rem",
+                            }}
+                          >
+                            <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                          </span>
+                          <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
+                            se i graf
+                          </p>
+                        </Link>
+                      ) : (
+                        <button
+                          className="btn px-0"
                           style={{
                             ...theme.button,
                             borderRadius: "100%",
@@ -209,14 +248,11 @@ export const SearchPage = () => {
                             paddingTop: "0.6rem",
                             paddingBottom: "0.6rem",
                           }}
+                          disabled={true}
                         >
                           <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
-                        </span>
-                        <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
-                          se i graf
-                        </p>
-                      </Link>
-                    )}
+                        </button>
+                      ))}
                   </div>
                 </div>
               ))
