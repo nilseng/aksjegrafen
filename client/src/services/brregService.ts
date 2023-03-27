@@ -127,18 +127,59 @@ export type IBrregUnitResult = IBrregUnitSuccessResult | IBrregUnitErrorResult;
 export const isBrregUnitSearchError = (res: IBrregUnitResult): res is IBrregUnitErrorResult =>
   !!(res as unknown as IBrregUnitErrorResult).feilmelding;
 
-interface IBrregUnit {
+export interface IBrregUnit {
   organisasjonsnummer: string;
   navn: string;
-  organisasjonsform: {
-    kode: string;
-    beskrivelse: string;
-    _links: {
-      self: {
-        href: string;
-      };
-    };
-  };
+  organisasjonsform: Organisasjonsform;
+  registreringsdatoEnhetsregisteret: string;
+  registrertIMvaregisteret: boolean;
+  naeringskode1: Naeringskode1;
+  antallAnsatte: number;
+  forretningsadresse: Forretningsadresse;
+  stiftelsesdato: string;
+  institusjonellSektorkode: InstitusjonellSektorkode;
+  registrertIForetaksregisteret: boolean;
+  registrertIStiftelsesregisteret: boolean;
+  registrertIFrivillighetsregisteret: boolean;
+  konkurs: boolean;
+  underAvvikling: boolean;
+  underTvangsavviklingEllerTvangsopplosning: boolean;
+  maalform: string;
+  _links: Links;
+}
+
+export interface Organisasjonsform {
+  kode: string;
+  beskrivelse: string;
+  _links: Links;
+}
+
+export interface Links {
+  self: Self;
+}
+
+export interface Self {
+  href: string;
+}
+
+export interface Naeringskode1 {
+  beskrivelse: string;
+  kode: string;
+}
+
+export interface Forretningsadresse {
+  land: string;
+  landkode: string;
+  postnummer: string;
+  poststed: string;
+  adresse: string[];
+  kommune: string;
+  kommunenummer: string;
+}
+
+export interface InstitusjonellSektorkode {
+  kode: string;
+  beskrivelse: string;
 }
 
 export const getBrregUnit = async (orgnr: string) => {
