@@ -32,13 +32,19 @@ const dragged = (
   setNodes: Dispatch<SetStateAction<IGraphNode[] | undefined>>,
   setLinks: Dispatch<SetStateAction<IGraphLink[] | undefined>>
 ) => {
-  node.x = e.x;
-  node.y = e.y;
-  node.fx = e.x;
-  node.fy = e.y;
+  const pos = {
+    x: e.x,
+    y: e.y,
+    fx: e.x,
+    fy: e.y,
+  };
   setNodes((nodes) => {
-    setLinks((links) => updateLinks(node, links ?? []));
-    return replaceNode(node, nodes ?? []);
+    /* Note: The dragged node's properties, like investor count, may have been updated elsewhere and the dragged node
+    must be found from the nodes state to avoid race conditions. */
+    const draggedNode = nodes?.find((n) => n.id === node.id);
+    if (!draggedNode) return nodes;
+    setLinks((links) => updateLinks(draggedNode, links ?? []));
+    return replaceNode({ ...draggedNode, ...pos }, nodes ?? []);
   });
 };
 
