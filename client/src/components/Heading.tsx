@@ -14,8 +14,8 @@ export const Heading = () => {
         <span style={{ color: theme.primary }} className="font-weight-bold">
           Aksjegrafen
         </span>{" "}
-        kan du søke opp aksjonærer og aksjeselskaper i Norge. Disse presenteres i en <i>graf</i> - eller nettverk om du
-        vil. Denne typen visualisering gjør at man enkelt kan få oversikt over komplekse eierskapsstrukturer.
+        kan du søke opp alle aksjonærer og aksjeselskaper i Norge. Disse presenteres i en <i>graf</i> - eller nettverk
+        om du vil. Denne typen visualisering gjør at man enkelt kan få oversikt over komplekse eierskapsstrukturer.
       </p>
     </Container>
   );
