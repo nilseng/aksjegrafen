@@ -18,8 +18,8 @@ import Loading from "./Loading";
 import { SearchComponent } from "./SearchComponent";
 
 const unitSearchInputConfig: { [key: string]: { name: string; value: string | number; placeholder: string } } = {
-  navn: { name: "Navn", value: "", placeholder: "Navn..." },
-  organisasjonsnummer: { name: "Org.nr.", value: "", placeholder: "Orgnr..." },
+  navn: { name: "Navn", value: "", placeholder: "Navn på selskap, organisasjon etc..." },
+  organisasjonsnummer: { name: "Org.nr.", value: "", placeholder: "Organisasjonsnummer..." },
   organisasjonsform: { name: "Organisasjonsform", value: "", placeholder: "Organisasjonsform..." },
 };
 
@@ -89,7 +89,7 @@ export const SearchPage = () => {
             {Object.keys(unitSearchInputConfig).map((key) => (
               <Form.Control
                 key={key}
-                className="col-sm-3 m-1"
+                className="col-sm-6 m-1"
                 style={{
                   backgroundColor: "transparent",
                   borderColor: "transparent",
@@ -103,11 +103,11 @@ export const SearchPage = () => {
               ></Form.Control>
             ))}
           </Form.Group>
-          <div className="row d-flex justify-content-center px-2 px-sm-0">
+          <div className="row d-flex justify-content-center px-2 px-sm-2 my-1">
             <div className="col-sm-6 px-0 m-1 m-sm-0" style={{ height: "3rem", maxHeight: "3rem" }}>
               <SearchComponent
                 handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
-                placeholder="Næring..."
+                placeholder="Næring, bransje, etc..."
                 mapResultToListItem={(b: BusinessCode) => ({
                   key: b.code,
                   name: b.shortName,
