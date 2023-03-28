@@ -4,9 +4,9 @@ import { useZoom } from "../../hooks/useSvgZoom";
 import { GraphContext, Year } from "./GraphContainer";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
-import { HowToModal } from "./GraphModal/HowToModal";
 import { GraphNode } from "./GraphNode";
 import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
+import { HowToModal } from "./HowToModal";
 import { YearSelector } from "./YearSelector";
 
 interface IProps {

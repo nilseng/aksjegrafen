@@ -2,7 +2,7 @@ import { faHandLizard, faHandPointer, faHandRock } from "@fortawesome/free-regul
 import { faInfoCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../App";
 
 export const HowToModal = () => {
   const { theme } = useContext(AppContext);
