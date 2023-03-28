@@ -15,8 +15,8 @@ export const TableModal = () => {
     setInvestor(undefined);
   };
 
-  const { investors } = useInvestors(investment, undefined, 20);
-  const { investments } = useInvestments(investor, undefined, 20);
+  const { investors } = useInvestors(investment, 2021, 20);
+  const { investments } = useInvestments(investor, 2021, 20);
 
   return investment || investor ? (
     <div
