@@ -1,20 +1,22 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
+import { ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
 import { Form, ListGroup } from "react-bootstrap";
 import { AppContext } from "../App";
 import { useSearch } from "../hooks/useSearch";
 
-interface ListItem {
+interface ListItem<Result> {
   key: string;
   name: string;
   tags: (string | number)[];
   icon?: IconProp;
+  iconComponent?: ReactElement;
+  buttons?: { name: string; buttonContent: ReactElement; handleClick: (res: Result) => void }[];
 }
 
 interface IProps<Result extends unknown> {
-  handleClick: (res: Result) => void;
-  mapResultToListItem: (res: Result) => ListItem;
+  handleClick?: (res: Result) => void;
+  mapResultToListItem: (res: Result) => ListItem<Result>;
   placeholder: string;
   apiPath: string;
   searchTerm?: string;
@@ -36,8 +38,12 @@ export const SearchComponent = <Result extends unknown>({
 
   const searchList = useSearch<Result[]>(apiPath, searchTerm, query, minSearchTermLength);
 
-  const handleSearch = (e: any) => {
+  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === "Escape") setSearchTerm("");
   };
 
   return (
@@ -56,6 +62,7 @@ export const SearchComponent = <Result extends unknown>({
           }}
           value={searchTerm}
           onChange={handleSearch}
+          onKeyDown={handleKeyDown}
         ></Form.Control>
       </Form.Group>
       {searchList && (
@@ -74,16 +81,18 @@ export const SearchComponent = <Result extends unknown>({
                   .map(({ result, item }) => (
                     <ListGroup.Item
                       key={item.key}
-                      className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 my-2"
+                      className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 p-2 my-2"
                       style={{
                         zIndex: 101,
                         backgroundColor: "transparent",
-                        cursor: "pointer",
+                        ...(handleClick ? { cursor: "pointer" } : {}),
                         ...theme.elevation,
                       }}
                       onClick={() => {
-                        setSearchTerm("");
-                        handleClick(result);
+                        if (handleClick) {
+                          setSearchTerm("");
+                          handleClick(result);
+                        }
                       }}
                     >
                       <div>
@@ -101,6 +110,21 @@ export const SearchComponent = <Result extends unknown>({
                           style={{ cursor: "pointer" }}
                           className="mr-3"
                         />
+                      )}
+                      {item.buttons?.length && item.buttons?.length && (
+                        <div className="d-flex align-items-center">
+                          {item.buttons.map((b) => (
+                            <button
+                              key={b.name}
+                              className="btn px-0 ml-2 ml-sm-4"
+                              onClick={() => {
+                                b.handleClick(result);
+                              }}
+                            >
+                              {b.buttonContent}
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </ListGroup.Item>
                   ))
