@@ -1,6 +1,6 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext } from "react";
+import { Fragment, useContext, useEffect } from "react";
 import { AppContext } from "../App";
 import { useInvestments, useInvestors } from "../services/apiService";
 import { CopyButton } from "./CopyButton";
@@ -12,9 +12,18 @@ export const TableModal = () => {
     tableModalInput: { investment, setInvestment, investor, setInvestor },
   } = useContext(AppContext);
 
+  useEffect(() => {
+    if (investor || investment) {
+      const root = document.getElementById("root");
+      if (root) root.style.overflow = "hidden";
+    }
+  }, [investment, investor]);
+
   const closeModal = () => {
     setInvestment(undefined);
     setInvestor(undefined);
+    const root = document.getElementById("root");
+    if (root) root.style.overflow = "visible";
   };
 
   const { investors, loading: loadingInvestors } = useInvestors(investment, undefined, 20);
@@ -25,9 +34,9 @@ export const TableModal = () => {
       className="position-fixed w-100 h-100 d-flex justify-content-center rounded px-2"
       style={{ top: 0, zIndex: 10000 }}
     >
-      <div className="w-100 h-100 position-absolute" onClick={closeModal}></div>
+      <div className="w-100 h-100 position-absolute overflow-hidden" onClick={closeModal}></div>
       <div
-        className="w-100 h-75 position-relative mt-5 p-4"
+        className="w-100 h-75 position-relative d-flex flex-column small mt-5 p-4"
         style={{ backgroundColor: theme.backgroundSecondary, ...theme.elevation, zIndex: 10001, maxWidth: "720px" }}
       >
         <FontAwesomeIcon
@@ -56,20 +65,22 @@ export const TableModal = () => {
         {investments?.length && (
           <>
             <h5>Aksjebeholding for {investor?.name}</h5>
-            <div className="row py-2 py-sm-4">
-              <p className="col-6 font-weight-bold small">Selskap</p>
-              <p className="col-3 font-weight-bold small">Antall aksjer</p>
-              <p className="col-3 font-weight-bold small">År</p>
-              {investments.map((i) => (
-                <Fragment key={i._id}>
-                  <p className="col-6">{i.company?.name}</p>
-                  <p className="col-3">
-                    {i.shareholderStocks}
-                    <CopyButton text={`${i.shareholderStocks}`} className="text-muted ml-1" />
-                  </p>
-                  <p className="col-3">{i.year}</p>
-                </Fragment>
-              ))}
+            <div className="w-100 overflow-auto flex-fill">
+              <div className="row py-2 py-sm-4 m-0">
+                <p className="col-6 font-weight-bold small">Selskap</p>
+                <p className="col-3 font-weight-bold small">Antall aksjer</p>
+                <p className="col-3 font-weight-bold small">År</p>
+                {investments.map((i) => (
+                  <Fragment key={i._id}>
+                    <p className="col-6">{i.company?.name}</p>
+                    <p className="col-3">
+                      {(+i.shareholderStocks).toLocaleString()}
+                      <CopyButton text={`${i.shareholderStocks}`} className="text-muted ml-1" />
+                    </p>
+                    <p className="col-3">{i.year}</p>
+                  </Fragment>
+                ))}
+              </div>
             </div>
           </>
         )}
