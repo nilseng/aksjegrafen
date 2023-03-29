@@ -1,10 +1,10 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Fragment, useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "../App";
 import { useInvestments, useInvestors } from "../services/apiService";
-import { CopyButton } from "./CopyButton";
 import Loading from "./Loading";
+import { OwnershipTable } from "./OwnershipTable";
 
 export const TableModal = () => {
   const {
@@ -50,37 +50,19 @@ export const TableModal = () => {
         )}
         {investors?.length && (
           <>
-            <div className="row">
-              <p className="col">Navn</p>
-              <p className="col">Antall aksjer</p>
+            <h5>
+              Investeringer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
+            </h5>
+            <div className="w-100 overflow-auto flex-fill">
+              <OwnershipTable ownerships={investors} />
             </div>
-            {investors.map((i) => (
-              <div key={i._id} className="row">
-                <p className="col">{i.shareholder?.name}</p>
-                <p className="col">{i.shareholder?.stocks}</p>
-              </div>
-            ))}
           </>
         )}
         {investments?.length && (
           <>
             <h5>Aksjebeholding for {investor?.name}</h5>
             <div className="w-100 overflow-auto flex-fill">
-              <div className="row py-2 py-sm-4 m-0">
-                <p className="col-6 font-weight-bold small">Selskap</p>
-                <p className="col-3 font-weight-bold small">Antall aksjer</p>
-                <p className="col-3 font-weight-bold small">År</p>
-                {investments.map((i) => (
-                  <Fragment key={i._id}>
-                    <p className="col-6">{i.company?.name}</p>
-                    <p className="col-3">
-                      {(+i.shareholderStocks).toLocaleString()}
-                      <CopyButton text={`${i.shareholderStocks}`} className="text-muted ml-1" />
-                    </p>
-                    <p className="col-3">{i.year}</p>
-                  </Fragment>
-                ))}
-              </div>
+              <OwnershipTable ownerships={investments} />
             </div>
           </>
         )}
