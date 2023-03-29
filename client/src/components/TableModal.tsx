@@ -1,8 +1,10 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { Fragment, useContext } from "react";
 import { AppContext } from "../App";
 import { useInvestments, useInvestors } from "../services/apiService";
+import { CopyButton } from "./CopyButton";
+import Loading from "./Loading";
 
 export const TableModal = () => {
   const {
@@ -15,8 +17,8 @@ export const TableModal = () => {
     setInvestor(undefined);
   };
 
-  const { investors } = useInvestors(investment, 2021, 20);
-  const { investments } = useInvestments(investor, 2021, 20);
+  const { investors, loading: loadingInvestors } = useInvestors(investment, undefined, 20);
+  const { investments, loading: loadingInvestments } = useInvestments(investor, undefined, 20);
 
   return investment || investor ? (
     <div
@@ -34,6 +36,9 @@ export const TableModal = () => {
           style={{ cursor: "pointer", right: 0, zIndex: 10002 }}
           onClick={closeModal}
         />
+        {(loadingInvestments || loadingInvestors) && (
+          <Loading height="4rem" color={theme.primary} backgroundColor="transparent" />
+        )}
         {investors?.length && (
           <>
             <div className="row">
@@ -50,16 +55,22 @@ export const TableModal = () => {
         )}
         {investments?.length && (
           <>
-            <div className="row">
-              <p className="col">Navn</p>
-              <p className="col">Antall aksjer</p>
+            <h5>Aksjebeholding for {investor?.name}</h5>
+            <div className="row py-2 py-sm-4">
+              <p className="col-6 font-weight-bold small">Selskap</p>
+              <p className="col-3 font-weight-bold small">Antall aksjer</p>
+              <p className="col-3 font-weight-bold small">År</p>
+              {investments.map((i) => (
+                <Fragment key={i._id}>
+                  <p className="col-6">{i.company?.name}</p>
+                  <p className="col-3">
+                    {i.shareholderStocks}
+                    <CopyButton text={`${i.shareholderStocks}`} className="text-muted ml-1" />
+                  </p>
+                  <p className="col-3">{i.year}</p>
+                </Fragment>
+              ))}
             </div>
-            {investments.map((i) => (
-              <div key={i._id} className="row">
-                <p className="col">{i.company?.name}</p>
-                <p className="col">{i.shareholderStocks}</p>
-              </div>
-            ))}
           </>
         )}
       </div>
