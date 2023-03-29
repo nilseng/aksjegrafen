@@ -1,4 +1,4 @@
-import { faList, faSitemap, faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { faList, faUserTie } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -43,12 +43,40 @@ export const SearchView = () => {
               <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
               <div className="w-100 mt-5 mb-0 sm-px-3">
                 <SearchComponent
-                  handleClick={(company: ICompany) => history.push(`/graph?_id=${company._id}`)}
                   mapResultToListItem={(company: ICompany) => ({
                     key: company._id,
                     name: company.name,
                     tags: company.orgnr ? [company.orgnr] : [],
-                    icon: faSitemap,
+                    buttons: [
+                      {
+                        name: "table-button",
+                        buttonContent: <FontAwesomeIcon icon={faList} style={{ color: theme.primary }} size="lg" />,
+                        handleClick: (company: ICompany) => {
+                          tableModalInput.setInvestment(company);
+                        },
+                      },
+                      {
+                        name: "graph-button",
+                        buttonContent: (
+                          <span
+                            style={{
+                              ...theme.button,
+                              borderRadius: "100%",
+                              display: "inline-block",
+                              textAlign: "center",
+                              verticalAlign: "middle",
+                              width: "3.2rem",
+                              height: "3.2rem",
+                              paddingTop: "0.6rem",
+                              paddingBottom: "0.6rem",
+                            }}
+                          >
+                            <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                          </span>
+                        ),
+                        handleClick: (company: ICompany) => history.push(`/graph?_id=${company._id}`),
+                      },
+                    ],
                   })}
                   placeholder="Søk etter selskap..."
                   apiPath={companySearchPath}
