@@ -39,9 +39,9 @@ export const OwnershipTable = ({ ownerships, type }: { ownerships: IOwnership[];
             <p className="col-6">
               {type === "investment" ? mappedOwnerships[key].shareholder?.name : mappedOwnerships[key].company?.name}
             </p>
-            <p className="col-2">{mappedOwnerships[key][2021]?.toLocaleString()}</p>
-            <p className="col-2">{mappedOwnerships[key][2020]?.toLocaleString()}</p>
-            <p className="col-2">{mappedOwnerships[key][2019]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2021]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2020]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2019]?.toLocaleString()}</p>
           </Fragment>
         ))}
     </div>
