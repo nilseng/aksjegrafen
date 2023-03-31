@@ -24,18 +24,22 @@ interface IAppContext {
     setInvestment: Dispatch<SetStateAction<ICompany | undefined>>;
     investor?: IShareholder;
     setInvestor: Dispatch<SetStateAction<IShareholder | undefined>>;
+    limit: number;
+    skip: number;
+    setSkip: Dispatch<SetStateAction<number>>;
   };
 }
 
 export const AppContext = React.createContext<IAppContext>({
   theme: theming[Theme.light],
-  tableModalInput: { setInvestment: () => {}, setInvestor: () => {} },
+  tableModalInput: { setInvestment: () => {}, setInvestor: () => {}, limit: 10, skip: 0, setSkip: () => {} },
 });
 
 const App = () => {
   const [theme, setTheme] = useState(theming[Theme.light]);
   const [modalInvestment, setModalInvestment] = useState<ICompany>();
   const [modalInvestor, setModalInvestor] = useState<IShareholder>();
+  const [skip, setSkip] = useState<number>(0);
 
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
@@ -55,6 +59,9 @@ const App = () => {
           setInvestment: setModalInvestment,
           investor: modalInvestor,
           setInvestor: setModalInvestor,
+          limit: 10,
+          skip,
+          setSkip,
         },
       }}
     >
