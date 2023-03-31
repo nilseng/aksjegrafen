@@ -32,6 +32,7 @@ export const OwnershipTable = ({ ownerships, type }: { ownerships: IOwnership[];
       <p className="col-2 small font-weight-bold">2020</p>
       <p className="col-2 small font-weight-bold">2019</p>
       {Object.keys(mappedOwnerships)
+        .sort((a, b) => ((mappedOwnerships[a][2019] ?? 0) > (mappedOwnerships[b][2019] ?? 0) ? -1 : 1))
         .sort((a, b) => ((mappedOwnerships[a][2020] ?? 0) > (mappedOwnerships[b][2020] ?? 0) ? -1 : 1))
         .sort((a, b) => ((mappedOwnerships[a][2021] ?? 0) > (mappedOwnerships[b][2021] ?? 0) ? -1 : 1))
         .map((key) => (
