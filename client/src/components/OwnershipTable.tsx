@@ -36,12 +36,12 @@ export const OwnershipTable = ({ ownerships, type }: { ownerships: IOwnership[];
         .sort((a, b) => ((mappedOwnerships[a][2021] ?? 0) > (mappedOwnerships[b][2021] ?? 0) ? -1 : 1))
         .map((key) => (
           <Fragment key={key}>
-            <p className="col-6">
+            <p className="col-6 overflow-auto px-1">
               {type === "investment" ? mappedOwnerships[key].shareholder?.name : mappedOwnerships[key].company?.name}
             </p>
-            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2021]?.toLocaleString()}</p>
-            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2020]?.toLocaleString()}</p>
-            <p className="col-2 overflow-auto p-1">{mappedOwnerships[key][2019]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto px-1">{mappedOwnerships[key][2021]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto px-1">{mappedOwnerships[key][2020]?.toLocaleString()}</p>
+            <p className="col-2 overflow-auto px-1">{mappedOwnerships[key][2019]?.toLocaleString()}</p>
           </Fragment>
         ))}
     </div>
