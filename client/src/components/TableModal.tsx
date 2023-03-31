@@ -9,7 +9,7 @@ import { OwnershipTable } from "./OwnershipTable";
 export const TableModal = () => {
   const {
     theme,
-    tableModalInput: { investment, setInvestment, investor, setInvestor },
+    tableModalInput: { investment, setInvestment, investor, setInvestor, limit, skip, setSkip },
   } = useContext(AppContext);
 
   useEffect(() => {
@@ -22,12 +22,13 @@ export const TableModal = () => {
   const closeModal = () => {
     setInvestment(undefined);
     setInvestor(undefined);
+    setSkip(0);
     const root = document.getElementById("root");
     if (root) root.style.overflow = "visible";
   };
 
-  const { investors, loading: loadingInvestors } = useInvestors(investment, undefined, 20);
-  const { investments, loading: loadingInvestments } = useInvestments(investor, undefined, 20);
+  const { investors, loading: loadingInvestors } = useInvestors(investment, undefined, limit, skip);
+  const { investments, loading: loadingInvestments } = useInvestments(investor, undefined, limit, skip);
 
   return investment || investor ? (
     <div
@@ -36,7 +37,7 @@ export const TableModal = () => {
     >
       <div className="w-100 h-100 position-absolute overflow-hidden" onClick={closeModal}></div>
       <div
-        className="w-100 h-75 position-relative d-flex flex-column small mt-5 p-4"
+        className="w-100 h-75 position-relative d-flex flex-column justify-content-between small mt-5 p-4"
         style={{ backgroundColor: theme.backgroundSecondary, ...theme.elevation, zIndex: 10001, maxWidth: "720px" }}
       >
         <FontAwesomeIcon
@@ -50,22 +51,42 @@ export const TableModal = () => {
         )}
         {investors?.length && (
           <>
-            <h5>
+            <h5 className="pb-3">
               Investeringer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
             </h5>
-            <div className="w-100 overflow-auto flex-fill">
-              <OwnershipTable ownerships={investors} />
+            <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
+              <OwnershipTable ownerships={investors} type="investment" />
             </div>
           </>
         )}
         {investments?.length && (
           <>
             <h5>Aksjebeholding for {investor?.name}</h5>
-            <div className="w-100 overflow-auto flex-fill">
-              <OwnershipTable ownerships={investments} />
+            <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
+              <OwnershipTable ownerships={investments} type="investor" />
             </div>
           </>
         )}
+        <div className="w-100 d-flex justify-content-between pt-2">
+          <button
+            className="btn btn-sm btn-primary"
+            disabled={skip < limit}
+            onClick={() => {
+              if (skip >= limit) setSkip(skip - limit);
+            }}
+          >
+            Forrige {limit}
+          </button>
+          <button
+            className="btn btn-sm btn-primary"
+            disabled={!!(((investments?.length ?? 0) + (investors?.length ?? 0)) % limit)}
+            onClick={() => {
+              if (!(((investments?.length ?? 0) + (investors?.length ?? 0)) % limit)) setSkip(skip + limit);
+            }}
+          >
+            Neste {limit}
+          </button>
+        </div>
       </div>
     </div>
   ) : null;
