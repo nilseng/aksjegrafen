@@ -59,7 +59,7 @@ const App = () => {
           setInvestment: setModalInvestment,
           investor: modalInvestor,
           setInvestor: setModalInvestor,
-          limit: 10,
+          limit: 50,
           skip,
           setSkip,
         },
