@@ -123,12 +123,12 @@ export const useCompanyCount = (searchTerm?: string) => {
   return count;
 };
 
-export const useInvestors = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
+export const useInvestors = (entity?: ICompany | IShareholder, year?: number, limit?: number, skip: number = 0) => {
   const [investors, setInvestors] = useState<IOwnership[]>();
   const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
     setLoading(true);
-    getInvestors(entity, year, limit).then((o) => {
+    getInvestors(entity, year, limit, skip).then((o) => {
       setInvestors(o);
       setLoading(false);
     });
@@ -136,17 +136,17 @@ export const useInvestors = (entity?: ICompany | IShareholder, year?: number, li
       setInvestors(undefined);
       setLoading(undefined);
     };
-  }, [entity, limit, year]);
+  }, [entity, limit, year, skip]);
   return { investors, setInvestors, loading };
 };
 
-export const useInvestments = (entity?: ICompany | IShareholder, year?: number, limit?: number) => {
+export const useInvestments = (entity?: ICompany | IShareholder, year?: number, limit?: number, skip: number = 0) => {
   const [investments, setInvestments] = useState<IOwnership[]>();
   const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
     if (entity) {
       setLoading(true);
-      getInvestments(entity, year, limit).then((o) => {
+      getInvestments(entity, year, limit, skip).then((o) => {
         setInvestments(o);
         setLoading(false);
       });
@@ -155,7 +155,7 @@ export const useInvestments = (entity?: ICompany | IShareholder, year?: number, 
       setInvestments(undefined);
       setLoading(undefined);
     };
-  }, [entity, limit, year]);
+  }, [entity, limit, skip, year]);
   return { investments, setInvestments, loading };
 };
 
