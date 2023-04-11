@@ -17,11 +17,15 @@ export interface OwnershipRaw {
 export type Ownership = OwnershipRaw & {
   shareHolderId: string;
   shareholderOrgnr?: string | null;
-  // Legacy property
   stocks: number;
   year: number;
   company?: Company;
   shareholder?: Shareholder;
+  holdings?: {
+    [year in Year]?: {
+      [stockClass: string]: { stocks: number };
+    };
+  };
 };
 
 export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name: string };
