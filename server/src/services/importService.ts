@@ -17,7 +17,7 @@ import {
 
 export const importData = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
   //importShareholderRegistry(db, year, data);
-  importBusinessCodes(db);
+  //importBusinessCodes(db);
 };
 
 const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
