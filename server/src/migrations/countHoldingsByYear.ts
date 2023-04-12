@@ -2,22 +2,14 @@ import { IDatabase } from "../database/databaseSetup";
 import { Ownership } from "../models/models";
 
 export const countHoldingsByYear = async (db: IDatabase) => {
-  await db.ownerships.updateMany({ holdings: { $exists: true } }, { $unset: { holdings: "" } });
+  await db.ownerships.updateMany({}, { $unset: { holdings: "" } });
+  console.info("cleared all holdings");
   const ownerships = db.ownerships.find({});
   await ownerships.forEach((o: Ownership) => {
     db.ownerships.updateMany(
       {
         orgnr: o.orgnr,
-        $or: [
-          {
-            $and: [
-              { shareholderOrgnr: { $exists: true } },
-              { shareholderOrgnr: { $ne: null } },
-              { shareholderOrgnr: o.shareholderOrgnr },
-            ],
-          },
-          { shareHolderId: o.shareHolderId },
-        ],
+        shareHolderId: o.shareHolderId,
       },
       {
         $inc: {
