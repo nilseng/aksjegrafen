@@ -44,16 +44,9 @@ export interface Company {
   location?: string;
   countryCode?: string;
   stocks?: number;
-  investorCount?: {
-    2021?: number;
-    2020?: number;
-    2019?: number;
-  };
-  investmentCount?: {
-    2021?: number;
-    2020?: number;
-    2019?: number;
-  };
+  shares?: { [key in Year]?: { total: number } };
+  investorCount?: { [key in Year]?: number };
+  investmentCount?: { [key in Year]?: number };
 }
 
 export interface Person {
