@@ -1,5 +1,5 @@
 import { IDatabase } from "../database/databaseSetup";
-import { Ownership } from "../models/models";
+import { Ownership, Year } from "../models/models";
 
 export const countHoldingsByYear = async (db: IDatabase) => {
   await db.ownerships.updateMany({}, { $unset: { holdings: "" } });
@@ -13,7 +13,9 @@ export const countHoldingsByYear = async (db: IDatabase) => {
       },
       {
         $inc: {
-          [`holdings.${o.year}.${o.shareClass}`]: o.stocks,
+          [`holdings.${(o as Ownership & { year: Year }).year}.${
+            (o as Ownership & { shareClass: string }).shareClass
+          }`]: (o as Ownership & { stocks: number }).stocks,
         },
       }
     );

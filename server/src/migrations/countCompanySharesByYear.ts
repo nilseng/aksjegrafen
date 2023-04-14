@@ -1,7 +1,7 @@
 import { BulkWriteOperation } from "mongodb";
 import { availableYears } from "../config";
 import { IDatabase } from "../database/databaseSetup";
-import { Company } from "../models/models";
+import { Company, Ownership } from "../models/models";
 
 export const countCompanySharesByYear = async (db: IDatabase) => {
   const companyCount = await db.companies.countDocuments();
@@ -21,7 +21,9 @@ export const countCompanySharesByYear = async (db: IDatabase) => {
                 updateOne: {
                   filter: { _id: company._id },
                   update: {
-                    $set: { [`shares.${year}.total`]: +ownership.companyStocks },
+                    $set: {
+                      [`shares.${year}.total`]: +(ownership as Ownership & { companyStocks: number }).companyStocks,
+                    },
                   },
                 },
               });
