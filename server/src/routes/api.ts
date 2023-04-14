@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
-import { ObjectID } from "mongodb";
+import { FilterQuery, ObjectID } from "mongodb";
 import { asyncRouter } from "../asyncRouter";
 
 import { IDatabase } from "../database/databaseSetup";
@@ -193,11 +193,6 @@ export const api = (db: IDatabase, cache: Redis) => {
     })
   );
 
-  interface IInvestmentsFilter {
-    shareholderId?: string;
-    shareholderOrgnr?: string;
-    year?: number;
-  }
   router.get(
     "/investments",
     query("count").optional().toBoolean(),
@@ -208,26 +203,22 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
 
-      if (!(query.shareHolderId ? !query.shareholderOrgnr : query.shareholderOrgnr))
-        return res.json(404).send("Invalid query");
+      if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(404).send("Invalid query");
 
-      const options = { limit: query.limit };
-      const skip = query.skip;
-      const filterProps = ["shareHolderId", "shareholderOrgnr", "year"];
-      const filter: IInvestmentsFilter = {};
+      const filter: FilterQuery<Ownership> = {};
+      if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
+      if (query.shareHolderId) filter.shareHolderId = query.shareHolderId;
+      if (query.shareholderOrgnr) filter.shareholderOrgnr = query.shareholderOrgnr;
 
-      if (query) {
-        for (const prop of filterProps) {
-          if (query[prop])
-            (filter as any)[prop] = typeof query[prop] === "string" ? decodeURI(query[prop]) : query[prop];
-        }
-      }
-
-      if (query.count && filter.year) {
+      if (query.count && query.year) {
         const c = await db.ownerships.countDocuments(filter);
         return res.json(c);
       } else {
-        const ownerships = await db.ownerships.find(filter, options).sort({ stocks: -1, _id: 1 }).skip(skip).toArray();
+        const ownerships = await db.ownerships
+          .find(filter, { limit: query.limit })
+          .sort({ stocks: -1, _id: 1 })
+          .skip(query.skip)
+          .toArray();
         const companies = await db.companies
           .find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } })
           .toArray();
@@ -240,10 +231,6 @@ export const api = (db: IDatabase, cache: Redis) => {
     })
   );
 
-  interface IInvestorsFilter {
-    orgnr?: string;
-    year?: number;
-  }
   router.get(
     "/investors",
     query("count").optional().toBoolean(),
@@ -253,28 +240,21 @@ export const api = (db: IDatabase, cache: Redis) => {
     query("orgnr").optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const count: boolean = query.count;
       const options = { limit: query.limit };
-      const skip = query.skip;
 
-      const filterProps = ["orgnr", "year"];
-      const filter: IInvestorsFilter = {};
+      const filter: FilterQuery<Ownership> = {};
+      if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
+      if (query.orgnr) filter.orgnr = query.orgnr;
 
-      if (query) {
-        for (const prop of filterProps) {
-          if (query[prop]) (filter as any)[prop] = query[prop];
-        }
-      }
-
-      if (filter.orgnr) {
-        if (count && filter.year) {
-          const c = await db.ownerships.countDocuments(filter);
-          return res.json(c);
+      if (query.orgnr) {
+        if (query.count && query.year) {
+          const count = await db.ownerships.countDocuments(filter);
+          return res.json(count);
         } else {
           const ownerships = await db.ownerships
             .find(filter, options)
             .sort({ stocks: -1, _id: 1 })
-            .skip(skip)
+            .skip(query.skip)
             .toArray();
           const shareholders = await db.shareholders
             .find({
@@ -298,9 +278,6 @@ export const api = (db: IDatabase, cache: Redis) => {
     })
   );
 
-  interface IOwnershipsFilter {
-    year?: number;
-  }
   router.get(
     "/ownerships",
     query("count").optional().toBoolean(),
@@ -308,15 +285,13 @@ export const api = (db: IDatabase, cache: Redis) => {
     query(["year"]).optional().toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const count: boolean = query.count;
-      const options = { limit: query.limit };
-      const filter: IOwnershipsFilter = {};
-      if (query.year) filter.year = query.year;
-      if (count) {
-        const c = await db.ownerships.countDocuments(filter);
-        return res.json(c);
+      const filter: FilterQuery<Ownership> = {};
+      if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
+      if (query.count) {
+        const count = await db.ownerships.countDocuments(filter);
+        return res.json(count);
       } else {
-        const ownerships = await db.ownerships.find(filter, options).toArray();
+        const ownerships = await db.ownerships.find(filter, { limit: query.limit }).toArray();
         return res.json(ownerships);
       }
     })
@@ -345,7 +320,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const limit = req.query.limit ? +req.query.limit : undefined;
       // Getting `limit` number of ownerships from `year`
       const ownerships = await db.ownerships
-        .find({ shareholderOrgnr: { $exists: true, $ne: null }, year })
+        .find({ shareholderOrgnr: { $exists: true, $ne: null }, [`holdings.${year}`]: { $exists: true } })
         .limit(limit ?? 100)
         .toArray();
       if (ownerships && Array.isArray(ownerships))
