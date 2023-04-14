@@ -14,12 +14,11 @@ export interface OwnershipRaw {
   companyStocks: string | number;
 }
 
-export type Ownership = OwnershipRaw & {
+export interface Ownership {
   _id: ObjectID;
+  orgnr: string;
   shareHolderId: string;
   shareholderOrgnr?: string | null;
-  stocks: number;
-  year: number;
   company?: Company;
   shareholder?: Shareholder;
   holdings?: {
@@ -28,7 +27,7 @@ export type Ownership = OwnershipRaw & {
     };
   };
   deleted?: boolean;
-};
+}
 
 export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name: string };
 
@@ -45,7 +44,6 @@ export interface Company {
   zipCode?: string;
   location?: string;
   countryCode?: string;
-  stocks?: number;
   shares?: { [key in Year]?: { total: number } };
   investorCount?: { [key in Year]?: number };
   investmentCount?: { [key in Year]?: number };
