@@ -40,7 +40,9 @@ export const getNodeIdFromEntity = (entity: ICompany | IShareholder): string => 
 };
 
 export const getNodeIdFromOwnership = (o: IOwnership): string | undefined => {
-  return o.company?.orgnr ?? o.shareholder?.orgnr ?? o.shareholder?.id;
+  if (o.investment) return o.investment.orgnr;
+  if (o.investor) return o.investor.shareholder.orgnr ?? o.investor.shareholder.id;
+  throw Error(`Node identifier not found for ownership ${JSON.stringify(o)}`);
 };
 
 export const getGraphCenter = (dimensions: IGraphDimensions) => {
@@ -71,17 +73,8 @@ export const createNodeDatums = (
     if (currentNodes?.find((n) => n.id === identifier) || newDatums.find((d) => d.id === identifier)) {
       continue;
     }
-    newDatums.push(
-      o.company
-        ? { entity: o.company, id: identifier, ...dimensions, isNew: true, yForce: o.yForce }
-        : {
-            entity: o.shareholder as IShareholder,
-            id: identifier,
-            ...dimensions,
-            isNew: true,
-            yForce: o.yForce,
-          }
-    );
+    const entity = o.investment ?? o.investor?.company ?? o.investor?.shareholder;
+    if (entity) newDatums.push({ entity, id: identifier, ...dimensions, isNew: true, yForce: o.yForce });
   }
 
   const nodeDatums = currentNodes ? [...newDatums, ...currentNodes] : newDatums;
