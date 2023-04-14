@@ -223,7 +223,7 @@ export const api = (db: IDatabase, cache: Redis) => {
           .find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } })
           .toArray();
         const data = ownerships.map((o: Ownership) => {
-          o.company = companies.find((c: Company) => c.orgnr === o.orgnr);
+          o.investment = companies.find((c: Company) => c.orgnr === o.orgnr);
           return o;
         });
         return res.json(data);
@@ -253,7 +253,7 @@ export const api = (db: IDatabase, cache: Redis) => {
         } else {
           const ownerships = await db.ownerships
             .find(filter, options)
-            .sort({ stocks: -1, _id: 1 })
+            .sort({ year: -1, stocks: -1, _id: 1 })
             .skip(query.skip)
             .toArray();
           const shareholders = await db.shareholders
@@ -265,8 +265,10 @@ export const api = (db: IDatabase, cache: Redis) => {
             .find({ orgnr: { $in: shareholders.filter((s) => s.orgnr).map((s) => s.orgnr) as string[] } })
             .toArray();
           const data = ownerships.map((o: Ownership) => {
-            o.shareholder = shareholders.find((s: Shareholder) => s.id === o.shareHolderId);
-            o.company = companies.find((c: Company) => c.orgnr === o.shareholderOrgnr);
+            o.investor = {
+              shareholder: shareholders.find((s: Shareholder) => s.id === o.shareHolderId)!,
+              company: companies.find((c: Company) => c.orgnr === o.shareholderOrgnr),
+            };
             return o;
           });
           return res.json(data);
