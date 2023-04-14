@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../App";
+import { ICompany, Year } from "../../models/models";
 import { GraphContext } from "./GraphContainer";
 import { GraphLinkArrow } from "./GraphLinkArrow";
 import { IGraphLink, IGraphNode } from "./GraphUtils";
@@ -14,6 +15,19 @@ interface IProps {
 
 const isLinkHighlighted = (link: IGraphLink, node?: IGraphNode) => {
   return node?.id === link.source.id || node?.id === link.target.id;
+};
+
+const getOwnershipPercentage = (link: IGraphLink, year: Year) => {
+  const companyStocks = (link.target.entity as ICompany).shares?.[year]?.total;
+  if (!companyStocks) return;
+  return (
+    link.ownerships.reduce((ownershipPercentage: number, o) => {
+      return (
+        ownershipPercentage +
+        Object.values(o.holdings[year] ?? {}).reduce((sum, stocks) => sum + stocks, 0) / companyStocks
+      );
+    }, 0) * 100
+  );
 };
 
 export const GraphLink = ({ link, offset }: IProps) => {
@@ -88,11 +102,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
         <foreignObject x={link.source.x + 2 * offset.x + 40} y={link.source.y + offset.y} width={100} height={20}>
           <div data-xmlns="http://www.w3.org/1999/xhtml">
             <div className="font-weight-bold" style={{ color: theme.primary }}>
-              {(
-                link.ownerships.reduce((ownershipPercentage: number, o) => {
-                  return ownershipPercentage + +o.shareholderStocks / +o.companyStocks;
-                }, 0) * 100
-              ).toFixed(2) + "%"}
+              {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
             </div>
           </div>
         </foreignObject>
@@ -127,11 +137,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
       <foreignObject x={percentagePos.x} y={percentagePos.y} width={100} height={20}>
         <div data-xmlns="http://www.w3.org/1999/xhtml">
           <div className="font-weight-bold" style={{ color: theme.primary }}>
-            {(
-              link.ownerships.reduce((ownershipPercentage: number, o) => {
-                return ownershipPercentage + +o.shareholderStocks / +o.companyStocks;
-              }, 0) * 100
-            ).toFixed(2) + "%"}
+            {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
           </div>
         </div>
       </foreignObject>
