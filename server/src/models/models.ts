@@ -15,6 +15,7 @@ export interface OwnershipRaw {
 }
 
 export type Ownership = OwnershipRaw & {
+  _id: ObjectID;
   shareHolderId: string;
   shareholderOrgnr?: string | null;
   stocks: number;
@@ -26,6 +27,7 @@ export type Ownership = OwnershipRaw & {
       [stockClass: string]: { stocks: number };
     };
   };
+  deleted?: boolean;
 };
 
 export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name: string };
