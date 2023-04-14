@@ -162,6 +162,7 @@ const mapOwnership = (raw: OwnershipRaw, year: number): Omit<Ownership, "_id"> =
     holdings: {
       [year]: { [raw.shareClass]: +raw.shareholderStocks },
     },
+    stocks: +raw.shareholderStocks,
   };
 };
 
