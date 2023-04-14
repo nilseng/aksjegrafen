@@ -82,7 +82,7 @@ const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (num
         if (isOwnership(ownership)) ownerships.push(ownership);
         else console.log("Invalid ownership", ownership, raw);
 
-        const company = mapCompany(raw);
+        const company = mapCompany(raw, year);
         if (isCompany(company)) companies[company.orgnr] = company;
         else console.log("Invalid company", company, raw);
 
@@ -156,16 +156,17 @@ export const deleteData = async (db: IDatabase, year?: number, data?: (number | 
 
 const mapOwnership = (raw: OwnershipRaw, year: number): Omit<Ownership, "_id"> => {
   return {
-    ...raw,
+    orgnr: raw.orgnr,
     shareHolderId: raw.shareholderName + raw.yobOrOrgnr + raw.zipLocation + raw.countryCode,
     shareholderOrgnr: raw.yobOrOrgnr?.length === 9 ? raw.yobOrOrgnr : undefined,
-    stocks: +raw.shareholderStocks,
-    year,
+    holdings: {
+      [year]: { [raw.shareClass]: +raw.shareholderStocks },
+    },
   };
 };
 
-const mapCompany = (raw: OwnershipRaw) => {
-  return { orgnr: raw.orgnr, name: raw.companyName, stocks: +raw.companyStocks };
+const mapCompany = (raw: OwnershipRaw, year: Year): Omit<Company, "_id"> => {
+  return { orgnr: raw.orgnr, name: raw.companyName, shares: { [year]: { total: +raw.companyStocks } } };
 };
 
 const mapShareholder = (raw: OwnershipRaw, id: string): Partial<Shareholder> => {
