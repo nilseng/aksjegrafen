@@ -23,6 +23,7 @@ export interface Ownership {
   investment?: Company | null;
   holdings?: {
     [year in Year]?: {
+      total: number;
       [stockClass: string]: number;
     };
   };
