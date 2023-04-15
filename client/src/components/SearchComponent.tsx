@@ -96,7 +96,7 @@ export const SearchComponent = <Result extends unknown>({
                       }}
                     >
                       <div>
-                        <div className="mr-2">{item.name}</div>
+                        <div className="text-break mr-2">{item.name}</div>
                         {item.tags.map((tag) => (
                           <span key={tag} className="small text-muted mx-2">
                             {tag}
