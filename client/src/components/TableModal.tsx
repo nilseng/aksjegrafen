@@ -52,7 +52,7 @@ export const TableModal = () => {
         {investors?.length && (
           <>
             <h5 className="pb-3">
-              Investeringer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
+              Aksjonærer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
             </h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investors} type="investment" />
@@ -61,7 +61,7 @@ export const TableModal = () => {
         )}
         {investments?.length && (
           <>
-            <h5>Aksjebeholding for {investor?.name}</h5>
+            <h5>Investeringene til {investor?.name}</h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investments} type="investor" />
             </div>
