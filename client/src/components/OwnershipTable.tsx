@@ -1,10 +1,8 @@
-import { Fragment, useContext } from "react";
-import { AppContext } from "../App";
+import { Fragment } from "react";
 import { availableYears } from "../config";
 import { IOwnership } from "../models/models";
 
 export const OwnershipTable = ({ ownerships, type }: { ownerships: IOwnership[]; type: "investor" | "investment" }) => {
-  const { theme } = useContext(AppContext);
   return (
     <div className="row pt-3 m-0">
       <p className="col-6 font-weight-bold small">Navn</p>
@@ -22,14 +20,7 @@ export const OwnershipTable = ({ ownerships, type }: { ownerships: IOwnership[];
           </p>
           {availableYears.map((year) => (
             <div key={year} className="col-2 overflow-auto px-1">
-              {Object.keys(o.holdings[year] ?? {}).map((stockClass) => (
-                <Fragment key={stockClass}>
-                  <p className="small mb-1" style={{ color: theme.muted }}>
-                    {stockClass}
-                  </p>
-                  <p>{o.holdings[year]?.[stockClass]?.toLocaleString()}</p>
-                </Fragment>
-              ))}
+              <p>{o.holdings[year]?.total?.toLocaleString()}</p>
             </div>
           ))}
         </Fragment>
