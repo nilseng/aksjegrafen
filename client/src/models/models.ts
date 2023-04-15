@@ -80,7 +80,8 @@ export interface IOwnership {
   investor?: { company?: ICompany; shareholder: IShareholder };
   investment?: ICompany | null;
   holdings: {
-    [year in Year]?: {
+    [year in Year]: {
+      total: number;
       [stockClass: string]: number;
     };
   };
