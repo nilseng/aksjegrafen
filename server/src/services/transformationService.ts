@@ -11,7 +11,7 @@ export const transformData = async (db: IDatabase, year: Year) => {
 const writeInvestorCount = async (db: IDatabase, year: Year) => {
   console.log("writeInvestorCount started.");
   const investorCounts: { [orgnr: string]: number } = {};
-  const ownerships = await db.ownerships.find({ [`holdings.${year}`]: { $exists: true } }).toArray();
+  const ownerships = await db.ownerships.find({ [`holdings.${year}.total`]: { $gt: 0 } }).toArray();
   for (const ownership of ownerships) {
     if (!investorCounts[ownership.orgnr]) investorCounts[ownership.orgnr] = 1;
     else investorCounts[ownership.orgnr] += 1;
@@ -30,7 +30,7 @@ const writeInvestorCount = async (db: IDatabase, year: Year) => {
 
 const writeInvestmentCount = async (db: IDatabase, year: Year) => {
   console.log("writeInvestmentCount started.");
-  const ownerships = await db.ownerships.find({ [`holdings.${year}`]: { $exists: true } }).toArray();
+  const ownerships = await db.ownerships.find({ [`holdings.${year}.total`]: { $gt: 0 } }).toArray();
   const shareholderInvestments: { [id: string]: number } = {};
   const companyInvestments: { [orgnr: string]: number } = {};
 
