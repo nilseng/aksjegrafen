@@ -27,10 +27,6 @@ export interface Ownership {
       [stockClass: string]: number;
     };
   };
-  deleted?: boolean;
-  // TODO: Calculate tot number of shares by year by ownership
-  // keep this field temporarily for sorting results
-  stocks: number;
 }
 
 export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name: string };
