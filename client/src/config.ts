@@ -1,3 +1,3 @@
 import { Year } from "./models/models";
 
-export const availableYears: Year[] = [2021, 2020, 2019];
+export const availableYears: Year[] = [2019, 2020, 2021];
