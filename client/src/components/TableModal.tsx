@@ -33,7 +33,7 @@ export const TableModal = () => {
   return investment || investor ? (
     <div
       className="position-fixed w-100 h-100 d-flex justify-content-center rounded px-2"
-      style={{ top: 0, zIndex: 10000 }}
+      style={{ top: 0, zIndex: 10000, color: theme.text }}
     >
       <div className="w-100 h-100 position-absolute overflow-hidden" onClick={closeModal}></div>
       <div
@@ -55,7 +55,7 @@ export const TableModal = () => {
               Aksjonærer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
             </h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
-              <OwnershipTable ownerships={investors} type="investment" closeModal={closeModal} />
+              <OwnershipTable ownerships={investors} investment={investment} closeModal={closeModal} />
             </div>
           </>
         )}
@@ -63,7 +63,7 @@ export const TableModal = () => {
           <>
             <h5>Investeringene til {investor?.name}</h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
-              <OwnershipTable ownerships={investments} type="investor" closeModal={closeModal} />
+              <OwnershipTable ownerships={investments} investor={investor} closeModal={closeModal} />
             </div>
           </>
         )}
