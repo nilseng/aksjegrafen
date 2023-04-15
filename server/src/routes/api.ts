@@ -206,7 +206,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(404).send("Invalid query");
 
       const filter: FilterQuery<Ownership> = {};
-      if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
+      if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
       if (query.shareHolderId) filter.shareHolderId = query.shareHolderId;
       if (query.shareholderOrgnr) filter.shareholderOrgnr = query.shareholderOrgnr;
 
@@ -216,7 +216,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       } else {
         const ownerships = await db.ownerships
           .find(filter, { limit: query.limit })
-          .sort({ stocks: -1, _id: 1 })
+          .sort({ [`holdings.2021.total`]: -1, _id: 1 })
           .skip(query.skip)
           .toArray();
         const companies = await db.companies
@@ -243,7 +243,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const options = { limit: query.limit };
 
       const filter: FilterQuery<Ownership> = {};
-      if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
+      if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
       if (query.orgnr) filter.orgnr = query.orgnr;
 
       if (query.orgnr) {
@@ -253,7 +253,7 @@ export const api = (db: IDatabase, cache: Redis) => {
         } else {
           const ownerships = await db.ownerships
             .find(filter, options)
-            .sort({ year: -1, stocks: -1, _id: 1 })
+            .sort({ [`holdings.2021.total`]: -1, _id: 1 })
             .skip(query.skip)
             .toArray();
           const shareholders = await db.shareholders
