@@ -22,10 +22,7 @@ const getOwnershipPercentage = (link: IGraphLink, year: Year) => {
   if (!companyStocks) return;
   return (
     link.ownerships.reduce((ownershipPercentage: number, o) => {
-      return (
-        ownershipPercentage +
-        Object.values(o.holdings[year] ?? {}).reduce((sum, stocks) => sum + stocks, 0) / companyStocks
-      );
+      return ownershipPercentage + o.holdings[year].total / companyStocks;
     }, 0) * 100
   );
 };
