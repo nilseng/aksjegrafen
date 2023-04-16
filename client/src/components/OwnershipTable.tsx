@@ -206,6 +206,7 @@ export const OwnershipTable = ({
               {getOwnershipShareChangeText(o, year, investor, investment)}
             </div>
           ))}
+          <div className="col-12" style={{ height: "1rem", ...theme.lowering }}></div>
         </Fragment>
       ))}
     </div>
