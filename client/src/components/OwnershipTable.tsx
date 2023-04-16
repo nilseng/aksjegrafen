@@ -12,18 +12,132 @@ const getGraphLink = (o: IOwnership): string => {
   throw Error(`Graph link not found for ownership w id=${o._id}`);
 };
 
-const getOwnershipShare = (o: IOwnership, year: Year, investor?: IShareholder, investment?: ICompany): string => {
-  if (investor) {
-    const companyStocks = o.investment?.shares?.[year]?.total;
-    if (!companyStocks) return "N/A";
-    return `${((o.holdings[year].total / companyStocks) * 100).toFixed(1)}%`;
-  }
-  if (investment) {
-    const companyStocks = investment?.shares?.[year]?.total;
-    if (!companyStocks) return "N/A";
-    return `${((o.holdings[year].total / companyStocks) * 100).toFixed(1)}%`;
-  }
-  throw Error("Investor or investment must be defined to calculate ownership share.");
+const getCompanyStocks = (
+  o: IOwnership,
+  year: Year,
+  investor?: IShareholder,
+  investment?: ICompany
+): number | undefined => {
+  if (investor) return o.investment?.shares?.[year]?.total;
+  if (investment) return investment?.shares?.[year]?.total;
+};
+
+const getOwnershipShare = (
+  o: IOwnership,
+  year: Year,
+  investor?: IShareholder,
+  investment?: ICompany
+): number | null => {
+  const companyStocks = getCompanyStocks(o, year, investor, investment);
+  if (!companyStocks) return null;
+  return o.holdings[year].total / companyStocks;
+};
+
+const getOwnershipShareText = (o: IOwnership, year: Year, investor?: IShareholder, investment?: ICompany): string => {
+  const share = getOwnershipShare(o, year, investor, investment);
+  if (!share) return "";
+  return `${(share * 100).toFixed(1)}%`;
+};
+
+const getOwnershipChange = (o: IOwnership, year: Year) => {
+  if (year === Math.min(...availableYears)) return null;
+  const cy = o.holdings[year].total;
+  const ly = o.holdings[(year - 1) as Year].total;
+  if (!cy && !ly) return null;
+  return cy - ly;
+};
+
+const getOwnershipChangeText = (o: IOwnership, year: Year) => {
+  const change = getOwnershipChange(o, year);
+  if (!change && change !== 0) return <p className="small m-0" style={{ height: "1rem" }}></p>;
+  if (change === 0)
+    return (
+      <p className="small text-warning m-0" style={{ height: "1rem" }}>
+        {change}
+      </p>
+    );
+  if (change > 0)
+    return (
+      <p className="small text-success m-0" style={{ height: "1rem" }}>
+        +{change.toLocaleString()}
+      </p>
+    );
+  return (
+    <p className="small text-danger m-0" style={{ height: "1rem" }}>
+      {change.toLocaleString()}
+    </p>
+  );
+};
+
+const getOwnershipShareChange = (
+  o: IOwnership,
+  year: Year,
+  investor?: IShareholder,
+  investment?: ICompany
+): number | null => {
+  const ly = getOwnershipShare(o, (year - 1) as Year, investor, investment);
+  const cy = getOwnershipShare(o, year, investor, investment) ?? 0;
+  if (!ly) return null;
+  return cy / ly - 1;
+};
+
+const getOwnershipShareChangeText = (o: IOwnership, year: Year, investor?: IShareholder, investment?: ICompany) => {
+  const shareChange = getOwnershipShareChange(o, year, investor, investment);
+  if (!shareChange && shareChange !== 0) return <p className="small m-0" style={{ height: "1rem" }}></p>;
+  const txt = `${(shareChange * 100).toFixed(1)}%`;
+  if (shareChange === 0)
+    return (
+      <p className="small text-warning m-0" style={{ height: "1rem" }}>
+        {txt}
+      </p>
+    );
+  if (shareChange > 0)
+    return (
+      <p className="small text-success m-0" style={{ height: "1rem" }}>
+        +{txt}
+      </p>
+    );
+  return (
+    <p className="small text-danger m-0" style={{ height: "1rem" }}>
+      {txt}
+    </p>
+  );
+};
+
+const getOwnershipShareChangePp = (
+  o: IOwnership,
+  year: Year,
+  investor?: IShareholder,
+  investment?: ICompany
+): number | null => {
+  if (year === Math.min(...availableYears)) return null;
+  const ly = getOwnershipShare(o, (year - 1) as Year, investor, investment) ?? 0;
+  const cy = getOwnershipShare(o, year, investor, investment) ?? 0;
+  if (!ly && !cy) return null;
+  return cy - ly;
+};
+
+const getOwnershipShareChangePpText = (o: IOwnership, year: Year, investor?: IShareholder, investment?: ICompany) => {
+  const shareChange = getOwnershipShareChangePp(o, year, investor, investment);
+  if (!shareChange && shareChange !== 0) return <p className="small m-0" style={{ height: "1rem" }}></p>;
+  const txt = `${(shareChange * 100).toFixed(1)}pp`;
+  if (shareChange === 0)
+    return (
+      <p className="small text-warning m-0" style={{ height: "1rem" }}>
+        {txt}
+      </p>
+    );
+  if (shareChange > 0)
+    return (
+      <p className="small text-success m-0" style={{ height: "1rem" }}>
+        +{txt}
+      </p>
+    );
+  return (
+    <p className="small text-danger m-0" style={{ height: "1rem" }}>
+      {txt}
+    </p>
+  );
 };
 
 export const OwnershipTable = ({
@@ -81,8 +195,15 @@ export const OwnershipTable = ({
           </span>
           {availableYears.map((year) => (
             <div key={year} className="col-2 overflow-auto px-1 py-2">
-              <p className="font-weight-bold small m-0">{getOwnershipShare(o, year, investor, investment)}</p>
-              <p className="small m-0">{o.holdings[year]?.total?.toLocaleString()}</p>
+              <p className="font-weight-bold small m-0" style={{ height: "1rem" }}>
+                {getOwnershipShareText(o, year, investor, investment)}
+              </p>
+              <p className="small m-0" style={{ height: "1rem" }}>
+                {o.holdings[year]?.total ? o.holdings[year].total.toLocaleString() : ""}
+              </p>
+              {getOwnershipChangeText(o, year)}
+              {getOwnershipShareChangePpText(o, year, investor, investment)}
+              {getOwnershipShareChangeText(o, year, investor, investment)}
             </div>
           ))}
         </Fragment>
