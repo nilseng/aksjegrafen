@@ -58,6 +58,7 @@ export const TableModal = () => {
             <h5 className="pb-3">
               Aksjonærer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
               <span
+                className="ml-2"
                 style={{
                   ...theme.button,
                   cursor: "pointer",
@@ -88,6 +89,7 @@ export const TableModal = () => {
             <h5>
               Investeringene til {investor?.name}
               <span
+                className="ml-2"
                 style={{
                   ...theme.button,
                   cursor: "pointer",
