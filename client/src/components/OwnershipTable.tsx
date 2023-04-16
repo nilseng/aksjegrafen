@@ -155,16 +155,19 @@ export const OwnershipTable = ({
   const history = useHistory();
   return (
     <div className="row pt-3 m-0">
-      <p className="col-6 font-weight-bold small px-1 pl-sm-3 mb-1">Navn</p>
+      <p className="col-6"></p>
       <p className="col-6 text-center font-weight-bold small px-1 mb-1">
         Eierandel / <span className="font-weight-normal">Antall aksjer</span>
       </p>
-      <p className="col-6"></p>
+      <p className="col-6 text-center font-weight-bold small px-1 pl-sm-3 mb-1">Navn</p>
       {availableYears.map((year) => (
         <p key={year} className="col-2 small font-weight-bold px-1 mb-1 mb-sm-2">
           {year}
         </p>
       ))}
+      <div className="col-12 px-1 px-sm-3 pb-1 pb-sm-3">
+        <div className="w-100" style={{ borderBottom: `0.5px solid ${theme.secondary}` }}></div>
+      </div>
       {ownerships.map((o) => (
         <Fragment key={o._id}>
           <span className="col-6 justify-content-between overflow-auto d-flex align-items-center px-1 pl-sm-3">
@@ -206,11 +209,8 @@ export const OwnershipTable = ({
               {getOwnershipShareChangeText(o, year, investor, investment)}
             </div>
           ))}
-          <div className="col-12 px-4">
-            <div
-              className="w-100"
-              style={{ height: "1rem", ...theme.lowering, backgroundColor: theme.background }}
-            ></div>
+          <div className="col-12 px-1 px-sm-3 pb-1 pb-sm-3">
+            <div className="w-100" style={{ borderBottom: `0.5px solid ${theme.primary}` }}></div>
           </div>
         </Fragment>
       ))}
