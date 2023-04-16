@@ -154,7 +154,10 @@ export const deleteData = async (db: IDatabase, year?: number, data?: (number | 
   console.log("------------- Data deletion complete -------------");
 };
 
-const mapOwnership = (raw: OwnershipRaw, year: number): Omit<Ownership, "_id"> => {
+const mapOwnership = (
+  raw: OwnershipRaw,
+  year: number
+): Omit<Ownership, "_id" | "holdings"> & { holdings: { [key: number]: { [stockClass: string]: number } } } => {
   return {
     orgnr: raw.orgnr,
     shareHolderId: raw.shareholderName + raw.yobOrOrgnr + raw.zipLocation + raw.countryCode,
