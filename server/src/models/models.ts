@@ -21,8 +21,8 @@ export interface Ownership {
   shareholderOrgnr?: string | null;
   investor?: { company?: Company; shareholder: Shareholder };
   investment?: Company | null;
-  holdings?: {
-    [year in Year]?: {
+  holdings: {
+    [year in Year]: {
       total: number;
       [stockClass: string]: number;
     };
