@@ -1,8 +1,10 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../App";
 import { useInvestments, useInvestors } from "../services/apiService";
+import { GraphLogo } from "./GraphLogo";
 import Loading from "./Loading";
 import { OwnershipTable } from "./OwnershipTable";
 
@@ -11,6 +13,8 @@ export const TableModal = () => {
     theme,
     tableModalInput: { investment, setInvestment, investor, setInvestor, limit, skip, setSkip },
   } = useContext(AppContext);
+
+  const history = useHistory();
 
   useEffect(() => {
     if (investor || investment) {
@@ -53,6 +57,26 @@ export const TableModal = () => {
           <>
             <h5 className="pb-3">
               Aksjonærer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
+              <span
+                style={{
+                  ...theme.button,
+                  cursor: "pointer",
+                  borderRadius: "100%",
+                  display: "inline-block",
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  width: "3.2rem",
+                  height: "3.2rem",
+                  paddingTop: "0.6rem",
+                  paddingBottom: "0.6rem",
+                }}
+                onClick={() => {
+                  closeModal();
+                  history.push(`/graph?_id=${investment?._id}`);
+                }}
+              >
+                <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+              </span>
             </h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investors} investment={investment} closeModal={closeModal} />
@@ -61,7 +85,29 @@ export const TableModal = () => {
         )}
         {investments?.length && (
           <>
-            <h5>Investeringene til {investor?.name}</h5>
+            <h5>
+              Investeringene til {investor?.name}
+              <span
+                style={{
+                  ...theme.button,
+                  cursor: "pointer",
+                  borderRadius: "100%",
+                  display: "inline-block",
+                  textAlign: "center",
+                  verticalAlign: "middle",
+                  width: "3.2rem",
+                  height: "3.2rem",
+                  paddingTop: "0.6rem",
+                  paddingBottom: "0.6rem",
+                }}
+                onClick={() => {
+                  closeModal();
+                  history.push(`/graph?shareholder_id=${investor?._id}`);
+                }}
+              >
+                <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+              </span>
+            </h5>
             <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investments} investor={investor} closeModal={closeModal} />
             </div>
