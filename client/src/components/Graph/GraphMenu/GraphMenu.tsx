@@ -1,7 +1,9 @@
+import { faListAlt } from "@fortawesome/free-regular-svg-icons";
 import {
   faBuilding,
   faHome,
   faInfo,
+  faList,
   faUsers,
   faWindowRestore,
   IconDefinition,
@@ -54,6 +56,18 @@ const nodeItems: IMenuItem[] = [
       !!(node.entity.investmentCount && (node.entity.investmentCount[year] || 0) > (node.loadedInvestments || 0)),
     icon: faBuilding,
   },
+  {
+    nodeActionId: "showInvestmentTable",
+    name: "Investeringstabell",
+    condition: (node: IGraphNode) => !!node.entity.investmentCount,
+    icon: faListAlt,
+  },
+  {
+    nodeActionId: "showInvestorTable",
+    name: "Investortabell",
+    condition: (node: IGraphNode) => !!node.entity.investorCount,
+    icon: faList,
+  },
 ];
 
 const defaultItems: IMenuItem[] = [{ actionId: "resetGraph", name: "Tilbakestill graf", icon: faHome }];
@@ -78,7 +92,7 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
   // adjust the position with the height/width of the ctx menu.
   useEffect(() => {
     if ((x || x === 0) && (y || y === 0) && node) {
-      setPos({ x: Math.min(x, width - 310), y: Math.min(y, height - 305) });
+      setPos({ x: Math.min(x, width - 200), y: Math.min(y, height - 395) });
     }
     return () => setPos(undefined);
   }, [height, width, x, y, node]);

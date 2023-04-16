@@ -54,6 +54,8 @@ export interface IGraphNodeActions {
   openInNewWindow: (node: IGraphNode) => void;
   openInNewGraph: (node: IGraphNode) => void;
   showDetails: (node: IGraphNode) => void;
+  showInvestorTable: (node: IGraphNode) => Promise<void>;
+  showInvestmentTable: (node: IGraphNode) => Promise<void>;
 }
 
 export interface IGraphDefaultActions {
@@ -63,7 +65,10 @@ export interface IGraphDefaultActions {
 export const GraphContext = createContext<IGraphContext | undefined>(undefined);
 
 export const GraphContainer = () => {
-  const { theme } = useContext(AppContext);
+  const {
+    theme,
+    tableModalInput: { setInvestor, setInvestment },
+  } = useContext(AppContext);
 
   const history = useHistory();
   const query = useQuery();
@@ -238,8 +243,14 @@ export const GraphContainer = () => {
           `/graph?${isShareholder(node.entity) ? "shareholder_id=" + node.entity._id : "_id=" + node.entity._id}`
         );
       },
+      showInvestmentTable: async (node: IGraphNode) => {
+        setInvestor(node.entity as IShareholder);
+      },
+      showInvestorTable: async (node: IGraphNode) => {
+        setInvestment(node.entity);
+      },
     });
-  }, [entity, history, limit, links, nodes, setInvestments, setInvestors, year]);
+  }, [entity, history, limit, links, nodes, setInvestment, setInvestments, setInvestor, setInvestors, year]);
 
   if (loadingInvestments || loadingInvestors || !nodes || !links || !actions || !nodeActions)
     return <Loading color={theme.primary} backgroundColor={theme.background} />;
