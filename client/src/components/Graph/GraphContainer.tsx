@@ -116,6 +116,10 @@ export const GraphContainer = () => {
     return () => setEntity(undefined);
   }, [company, shareholder]);
 
+  useEffect(() => {
+    setResetZoom(true);
+  }, [entity]);
+
   useDocumentTitle("Aksjegrafen", entity?.name);
 
   const { investors, loading: loadingInvestors, setInvestors } = useInvestors(entity, year, 5);
