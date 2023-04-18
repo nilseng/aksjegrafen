@@ -1,6 +1,6 @@
 import { Fragment, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 import { availableYears } from "../config";
 import { ICompany, IOwnership, IShareholder, Year } from "../models/models";
 import { GraphLogo } from "./GraphLogo";

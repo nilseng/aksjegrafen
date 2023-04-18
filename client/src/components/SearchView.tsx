@@ -3,13 +3,13 @@ import { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import { AppContext } from "../App";
 import { useCompanyCount, useShareholderCount } from "../services/apiService";
 import { StatCard } from "./StatCard";
 
 import { faBuilding } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useHistory } from "react-router-dom";
+import { AppContext } from "../AppContext";
 import { ICompany, IShareholder } from "../models/models";
 import { GraphLogo } from "./GraphLogo";
 import { SearchComponent } from "./SearchComponent";

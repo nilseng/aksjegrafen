@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Slide, ToastContainer } from "react-toastify";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 import { TableModal } from "./TableModal";
 
 export const Overlays = () => {

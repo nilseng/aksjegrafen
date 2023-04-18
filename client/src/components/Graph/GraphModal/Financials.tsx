@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Col, Row } from "react-bootstrap";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 import { ICompany, IShareholder } from "../../../models/models";
 import { useFinancialsByUnit } from "../../../services/brregService";
 import { BalanceSheet } from "./BalanceSheet";

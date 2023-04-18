@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 
 interface IProps {
   inputColor?: string;

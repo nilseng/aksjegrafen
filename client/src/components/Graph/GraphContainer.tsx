@@ -1,7 +1,7 @@
 import { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { AppContext } from "../../App";
+import { AppContext } from "../../AppContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { useQuery } from "../../hooks/useQuery";
 import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";

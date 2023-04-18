@@ -2,7 +2,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
 import { Form, ListGroup } from "react-bootstrap";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 import { useSearch } from "../hooks/useSearch";
 
 interface ListItem<Result> {

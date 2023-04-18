@@ -2,7 +2,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 import { useInvestments, useInvestors } from "../services/apiService";
 import { GraphLogo } from "./GraphLogo";
 import Loading from "./Loading";

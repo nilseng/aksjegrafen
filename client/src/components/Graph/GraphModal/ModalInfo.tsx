@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 
 interface IProps {
   title: string;
@@ -13,18 +13,11 @@ export const ModalInfo = ({ title, value, link }: IProps) => {
   if (link)
     return (
       <>
-        <p
-          className="small font-weight-bold m-0"
-          style={{ color: theme.muted }}
-        >
+        <p className="small font-weight-bold m-0" style={{ color: theme.muted }}>
           {title}
         </p>
         <div style={{ marginBottom: "1rem" }}>
-          <a
-            href={"https://" + value}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          <a href={"https://" + value} target="_blank" rel="noreferrer noopener">
             {value}
           </a>
         </div>

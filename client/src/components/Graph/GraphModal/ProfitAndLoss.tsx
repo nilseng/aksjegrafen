@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 import { IFinancials } from "../../../services/brregService";
 
 export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapResultat"] }) => {

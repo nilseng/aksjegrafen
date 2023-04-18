@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { GraphLogo } from "../../GraphLogo";
 import { GraphContext, IGraphDefaultActions, IGraphNodeActions, Year } from "../GraphContainer";

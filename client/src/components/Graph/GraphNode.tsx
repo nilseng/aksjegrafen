@@ -1,6 +1,6 @@
 import { D3DragEvent, drag, select } from "d3";
 import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
-import { AppContext } from "../../App";
+import { AppContext } from "../../AppContext";
 import { GraphContext, Year } from "./GraphContainer";
 import { IMenu } from "./GraphMenu/GraphMenu";
 import { IGraphLink, IGraphNode } from "./GraphUtils";

@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Container } from "react-bootstrap";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 
 import "./About.scss";
 

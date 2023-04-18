@@ -1,5 +1,6 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { AppContext } from "./AppContext";
 import { CytoGraph } from "./components/CytoGraph";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
@@ -9,30 +10,7 @@ import { SearchPage } from "./components/SearchPage";
 import { Stats } from "./components/Stats";
 import { ICompany, IShareholder } from "./models/models";
 
-import { theming } from "./theming/theme";
-
-export enum Theme {
-  light = "light",
-  dark = "dark",
-}
-
-interface IAppContext {
-  theme: typeof theming.light;
-  tableModalInput: {
-    investment?: ICompany;
-    setInvestment: Dispatch<SetStateAction<ICompany | undefined>>;
-    investor?: IShareholder;
-    setInvestor: Dispatch<SetStateAction<IShareholder | undefined>>;
-    limit: number;
-    skip: number;
-    setSkip: Dispatch<SetStateAction<number>>;
-  };
-}
-
-export const AppContext = React.createContext<IAppContext>({
-  theme: theming[Theme.light],
-  tableModalInput: { setInvestment: () => {}, setInvestor: () => {}, limit: 10, skip: 0, setSkip: () => {} },
-});
+import { Theme, theming } from "./theming/theme";
 
 const getStoredTheme = () => {
   const t = localStorage.getItem("theme");

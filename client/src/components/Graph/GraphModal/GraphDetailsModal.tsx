@@ -1,7 +1,7 @@
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext } from "react";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 import { ICompany, IShareholder } from "../../../models/models";
 import { useBrregEntityInfo } from "../../../services/brregService";
 import { EntityRelationships } from "./EntityRelationships";

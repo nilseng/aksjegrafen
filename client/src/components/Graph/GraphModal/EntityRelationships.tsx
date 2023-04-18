@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AppContext } from "../../../App";
+import { AppContext } from "../../../AppContext";
 import { ICompany, IShareholder } from "../../../models/models";
 
 interface IProps {

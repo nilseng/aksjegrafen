@@ -1,3 +1,8 @@
+export enum Theme {
+  light = "light",
+  dark = "dark",
+}
+
 export const theming = {
   light: {
     id: "light",

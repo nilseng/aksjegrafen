@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../App";
+import { AppContext } from "../../AppContext";
 import { ICompany, Year } from "../../models/models";
 import { GraphContext } from "./GraphContainer";
 import { GraphLinkArrow } from "./GraphLinkArrow";

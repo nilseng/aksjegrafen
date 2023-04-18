@@ -1,9 +1,7 @@
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
-import { useContext } from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
-import { AppContext } from "../App";
+import { useContext, useEffect, useRef } from "react";
+import { AppContext } from "../AppContext";
 import { useCompanyGraph } from "../services/apiService";
 
 cytoscape.use(fcose);
@@ -38,20 +36,14 @@ export const CytoGraph = () => {
             style: {
               "background-color": (node: cytoscape.NodeSingular) =>
                 `rgb(${Math.max(255 - node.degree(true), 0)},255,255)`,
-              opacity: (node: cytoscape.NodeSingular) =>
-                node.degree(false) > 1 ? 1 : 0.2,
+              opacity: (node: cytoscape.NodeSingular) => (node.degree(false) > 1 ? 1 : 0.2),
               color: theme.primary,
               "font-weight": "bold",
-              "z-index": (node: cytoscape.NodeSingular) =>
-                node.data("name") ? 1 : 0,
+              "z-index": (node: cytoscape.NodeSingular) => (node.data("name") ? 1 : 0),
               height: (node) =>
-                node.data("type") === "company"
-                  ? Math.pow(node.degree(true), 0.8)
-                  : Math.pow(node.degree(true), 0.8),
+                node.data("type") === "company" ? Math.pow(node.degree(true), 0.8) : Math.pow(node.degree(true), 0.8),
               width: (node: cytoscape.NodeSingular) =>
-                node.data("type") === "company"
-                  ? Math.pow(node.degree(true), 0.8)
-                  : Math.pow(node.degree(true), 0.8),
+                node.data("type") === "company" ? Math.pow(node.degree(true), 0.8) : Math.pow(node.degree(true), 0.8),
             },
           },
           {

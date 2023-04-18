@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { AppContext } from "../App";
+import { AppContext } from "../AppContext";
 import { useCompanyCount } from "../services/apiService";
 
 export const Stats = () => {
