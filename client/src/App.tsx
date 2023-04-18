@@ -34,8 +34,13 @@ export const AppContext = React.createContext<IAppContext>({
   tableModalInput: { setInvestment: () => {}, setInvestor: () => {}, limit: 10, skip: 0, setSkip: () => {} },
 });
 
+const getStoredTheme = () => {
+  const t = localStorage.getItem("theme");
+  if (t) return theming[t as Theme];
+};
+
 const App = () => {
-  const [theme, setTheme] = useState(theming[Theme.light]);
+  const [theme, setTheme] = useState(getStoredTheme() ?? theming[Theme.light]);
   const [modalInvestment, setModalInvestment] = useState<ICompany>();
   const [modalInvestor, setModalInvestor] = useState<IShareholder>();
   const [skip, setSkip] = useState<number>(0);
@@ -43,11 +48,6 @@ const App = () => {
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
   }, [theme]);
-
-  useEffect(() => {
-    const t = localStorage.getItem("theme");
-    if (t) setTheme(theming[t as Theme]);
-  }, []);
 
   return (
     <AppContext.Provider
