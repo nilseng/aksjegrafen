@@ -26,7 +26,7 @@ export const YearSelector = () => {
             backgroundColor: theme.background,
             borderRadius: "8px",
             ...(graphContext.year === year
-              ? { color: theme.primary }
+              ? { color: theme.primary, backgroundColor: theme.backgroundSecondary }
               : {
                   ...theme.button,
                   color: theme.text,
