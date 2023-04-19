@@ -27,9 +27,9 @@ export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
   return (
     <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
       <YearSelector />
+      <HowToModal />
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
         <GraphMenu {...menu} setMenu={setMenu} />
-        <HowToModal />
         <svg ref={svgRef} height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox={"0 0 1000 1000"}>
           <rect
             fill="transparent"
