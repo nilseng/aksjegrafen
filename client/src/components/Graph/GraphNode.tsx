@@ -97,8 +97,48 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
 
   return (
     <g ref={nodeRef}>
+      {hasUnloadedInvestors(node, year) && (
+        <>
+          <line
+            x1={node.x + node.width / 2}
+            y1={node.y + node.height / 2}
+            x2={node.x + node.width / 2}
+            y2={node.y - 16}
+            stroke={theme.secondary}
+          />
+          <circle
+            style={{ cursor: "pointer" }}
+            cx={node.x + node.width / 2}
+            cy={node.y - 16}
+            r={15}
+            fill={theme.backgroundSecondary}
+            stroke={theme.secondary}
+            onClick={() => graphContext?.nodeActions.loadInvestors(node)}
+          />
+        </>
+      )}
+      {hasUnloadedInvestments(node, year) && (
+        <>
+          <line
+            x1={node.x + node.width / 2}
+            y1={node.y + node.height / 2}
+            x2={node.x + node.width / 2}
+            y2={node.y + node.height + 16}
+            stroke={theme.primary}
+          />
+          <circle
+            style={{ cursor: "pointer" }}
+            cx={node.x + node.width / 2}
+            cy={node.y + node.height + 16}
+            r={15}
+            fill={theme.backgroundSecondary}
+            stroke={theme.primary}
+            onClick={() => graphContext?.nodeActions.loadInvestments(node)}
+          />
+        </>
+      )}
       <foreignObject x={node.x} y={node.y} width={node.width} height={node.height}>
-        <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4">
+        <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4" style={{ userSelect: "none" }}>
           <div
             className="h-100 w-100 p-1"
             onClick={(e) => {
@@ -125,7 +165,7 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
             onTouchCancelCapture={handleFocusEnd}
             style={{
               ...theme.elevation,
-              backgroundColor: theme.background,
+              backgroundColor: theme.backgroundSecondary,
               cursor: "pointer",
             }}
           >
@@ -152,22 +192,6 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
           </div>
         </div>
       </foreignObject>
-      {hasUnloadedInvestors(node, year) && (
-        <path
-          style={{ cursor: "pointer" }}
-          d={`M${node.x + node.width / 2 - 10},${node.y + 24} a10,10 0 0,1 20,0`}
-          fill={theme.secondary}
-          onClick={() => graphContext?.nodeActions.loadInvestors(node)}
-        />
-      )}
-      {hasUnloadedInvestments(node, year) && (
-        <path
-          style={{ cursor: "pointer" }}
-          d={`M${node.x + node.width / 2 - 10},${node.y + node.height - 24} a10,10 0 0,0 20,0`}
-          fill={theme.primary}
-          onClick={() => graphContext?.nodeActions.loadInvestments(node)}
-        />
-      )}
     </g>
   );
 };
