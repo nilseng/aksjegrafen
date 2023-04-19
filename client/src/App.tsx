@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
-import { CytoGraph } from "./components/CytoGraph";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
@@ -57,7 +56,6 @@ const App = () => {
             <Route path="/graph" component={GraphContainer} />
             <Route path="/search" component={SearchPage} />
             <Route path="/stats" component={Stats} />
-            <Route path="/cyto-graph" component={CytoGraph} />
           </Switch>
         </div>
         <Overlays />
