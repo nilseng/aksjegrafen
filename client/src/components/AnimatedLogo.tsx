@@ -1,11 +1,4 @@
-import React from "react";
-
-const AnimatedLogo = ({
-  color = "#1c2e3f",
-  height = "5rem",
-  width = "5rem",
-  style = {},
-}) => {
+const AnimatedLogo = ({ color = "#1c2e3f", height = "5rem", width = "5rem", style = {} }) => {
   return (
     <svg
       style={{
@@ -28,32 +21,12 @@ const AnimatedLogo = ({
       <line x1="45" x2="35" y1="30" y2="50" stroke={color} />
       <circle cx="35" cy="50" r="3" fill={color} />
       <line x1="45" x2="55" y1="30" y2="50" stroke={color}>
-        <animate
-          attributeName="x2"
-          values="45;55;45"
-          dur="2s"
-          repeatCount="indefinite"
-        />
-        <animate
-          attributeName="y2"
-          values="30;50;30"
-          dur="2s"
-          repeatCount="indefinite"
-        />
+        <animate attributeName="x2" values="45;55;45" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="y2" values="30;50;30" dur="2s" repeatCount="indefinite" />
       </line>
       <circle cx="75" cy="50" r="3" fill={color}>
-        <animate
-          attributeName="cx"
-          values="45;55;45"
-          dur="2s"
-          repeatCount="indefinite"
-        />
-        <animate
-          attributeName="cy"
-          values="30;50;30"
-          dur="2s"
-          repeatCount="indefinite"
-        />
+        <animate attributeName="cx" values="45;55;45" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="cy" values="30;50;30" dur="2s" repeatCount="indefinite" />
       </circle>
     </svg>
   );

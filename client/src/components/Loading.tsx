@@ -1,4 +1,4 @@
-import React from "react";
+import { CSSProperties } from "react";
 import AnimatedLogo from "./AnimatedLogo";
 
 interface IProps {
@@ -7,19 +7,14 @@ interface IProps {
   margin?: string;
   color?: string;
   backgroundColor?: string;
+  style?: CSSProperties;
 }
 
-const Loading = ({
-  text,
-  height,
-  margin,
-  color = "#faf8f9",
-  backgroundColor = "#343a40",
-}: IProps) => {
+const Loading = ({ text, height, margin, color = "#faf8f9", backgroundColor = "#343a40", style }: IProps) => {
   return (
     <div
       className="d-flex flex-column justify-content-center align-items-center w-100"
-      style={{ height, margin, backgroundColor }}
+      style={{ height, margin, backgroundColor, ...(style ? style : {}) }}
     >
       <AnimatedLogo color={color} />
       <p className="small text-light">{text}</p>
