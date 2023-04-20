@@ -257,7 +257,16 @@ export const GraphContainer = () => {
   }, [entity, history, limit, links, nodes, setInvestment, setInvestments, setInvestor, setInvestors, year]);
 
   if (loadingInvestments || loadingInvestors || !nodes || !links || !actions || !nodeActions)
-    return <Loading color={theme.primary} backgroundColor={theme.background} />;
+    return (
+      <div className="w-100 h-100 d-flex justify-content-center align-items-center px-4 pb-4">
+        <Loading
+          color={theme.primary}
+          backgroundColor={theme.background}
+          height="100%"
+          style={{ borderRadius: "8px" }}
+        />
+      </div>
+    );
 
   return (
     <GraphContext.Provider
