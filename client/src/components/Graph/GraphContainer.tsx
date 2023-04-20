@@ -177,55 +177,57 @@ export const GraphContainer = () => {
       loadInvestors: async (node: IGraphNode) => {
         const ownerships = await getInvestors(node.entity, year, limit, node.skipInvestors);
         if (ownerships) {
-          const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            graphConfig,
-            ownerships,
-            node,
-            nodes,
-            links,
-            node.y - graphConfig.nodeDimensions.height
-          );
-          setNodes(
-            simulationNodes.map((n) => {
+          setNodes((nodes) => {
+            const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
+              graphConfig,
+              ownerships,
+              node,
+              nodes,
+              links,
+              node.y - graphConfig.nodeDimensions.height
+            );
+            setLinks(simulationLinks);
+            toast(`Lastet ${ownerships.length} av investorene i ${node.entity.name}`, { type: toast.TYPE.SUCCESS });
+            const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
+            if (duplicates > 0) {
+              toast(`${duplicates} av investorene var allerede i grafen`, { type: toast.TYPE.INFO });
+            }
+            return simulationNodes.map((n) => {
               if (n.id === node.id) {
                 n.skipInvestors = n.skipInvestors ? n.skipInvestors + ownerships.length : ownerships.length;
               }
               return n;
-            })
-          );
-          setLinks(simulationLinks);
-          toast(`Lastet ${ownerships.length} av investorene i ${node.entity.name}`, { type: toast.TYPE.SUCCESS });
-          const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
-          if (duplicates > 0) {
-            toast(`${duplicates} av investorene var allerede i grafen`, { type: toast.TYPE.INFO });
-          }
+            });
+          });
         }
       },
       loadInvestments: async (node: IGraphNode) => {
         const ownerships = await getInvestments(node.entity, year, limit, node.skipInvestments);
         if (ownerships) {
-          const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
-            graphConfig,
-            ownerships,
-            node,
-            nodes,
-            links,
-            node.y + graphConfig.nodeDimensions.height
-          );
-          setNodes(
-            simulationNodes.map((n) => {
+          setNodes((nodes) => {
+            const { nodes: simulationNodes, links: simulationLinks } = graphSimulation(
+              graphConfig,
+              ownerships,
+              node,
+              nodes,
+              links,
+              node.y + graphConfig.nodeDimensions.height
+            );
+            setLinks(simulationLinks);
+            toast(`Lastet ${ownerships.length} av investeringene til ${node.entity.name}`, {
+              type: toast.TYPE.SUCCESS,
+            });
+            const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
+            if (duplicates > 0) {
+              toast(`${duplicates} av investeringene var allerede i grafen`, { type: toast.TYPE.INFO });
+            }
+            return simulationNodes.map((n) => {
               if (n.id === node.id) {
                 n.skipInvestments = n.skipInvestments ? n.skipInvestments + ownerships.length : ownerships.length;
               }
               return n;
-            })
-          );
-          setLinks(simulationLinks);
-          toast(`Lastet ${ownerships.length} av investeringene til ${node.entity.name}`, { type: toast.TYPE.SUCCESS });
-          const duplicates = getDuplicateCount(ownerships.length, nodes?.length ?? 0, simulationNodes.length);
-          if (duplicates > 0) {
-            toast(`${duplicates} av investeringene var allerede i grafen`, { type: toast.TYPE.INFO });
-          }
+            });
+          });
         }
       },
       openInNewWindow: (node: IGraphNode) => {
