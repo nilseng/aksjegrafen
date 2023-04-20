@@ -1,5 +1,5 @@
 import { D3DragEvent, drag, select } from "d3";
-import { Dispatch, SetStateAction, useContext, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../AppContext";
 import { GraphContext, Year } from "./GraphContainer";
 import { IMenu } from "./GraphMenu/GraphMenu";
@@ -77,6 +77,9 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
   const nodeRef = useRef<SVGGElement>(null);
   const hasDrag = useRef<boolean>(false);
 
+  const [isLoadingInvestors, setIsLoadingInvestors] = useState<boolean>();
+  const [isLoadingInvestments, setIsLoadingInvestments] = useState<boolean>();
+
   useEffect(() => {
     if (graphContext?.setNodes && graphContext.setLinks && nodeRef.current) {
       const nodeEl = select<SVGGElement, IGraphNode>(nodeRef.current).datum<IGraphNode>(node);
@@ -113,8 +116,16 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
             r={15}
             fill={theme.backgroundSecondary}
             stroke={theme.secondary}
-            onClick={() => graphContext?.nodeActions.loadInvestors(node)}
-          />
+            onClick={async () => {
+              setIsLoadingInvestors(true);
+              await graphContext?.nodeActions.loadInvestors(node);
+              setIsLoadingInvestors(false);
+            }}
+          >
+            {isLoadingInvestors && (
+              <animate attributeName="r" values="15;5;15" dur="2s" repeatCount="indefinite" restart="always" />
+            )}
+          </circle>
         </>
       )}
       {hasUnloadedInvestments(node, year) && (
@@ -133,8 +144,16 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
             r={15}
             fill={theme.backgroundSecondary}
             stroke={theme.primary}
-            onClick={() => graphContext?.nodeActions.loadInvestments(node)}
-          />
+            onClick={async () => {
+              setIsLoadingInvestments(true);
+              await graphContext?.nodeActions.loadInvestments(node);
+              setIsLoadingInvestments(false);
+            }}
+          >
+            {isLoadingInvestments && (
+              <animate attributeName="r" values="15;5;15" dur="2s" repeatCount="indefinite" restart="always" />
+            )}
+          </circle>
         </>
       )}
       <foreignObject x={node.x} y={node.y} width={node.width} height={node.height}>
