@@ -23,10 +23,10 @@ export const YearSelector = () => {
           key={year}
           className={`p-2 mr-2 ${graphContext.year === year ? "font-weight-bold" : ""}`}
           style={{
-            backgroundColor: theme.background,
+            backgroundColor: theme.backgroundSecondary,
             borderRadius: "8px",
             ...(graphContext.year === year
-              ? { color: theme.primary, backgroundColor: theme.backgroundSecondary }
+              ? { color: theme.primary }
               : {
                   ...theme.button,
                   color: theme.text,
