@@ -3,16 +3,9 @@ import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AppContext } from "../../AppContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
-import { useQuery } from "../../hooks/useQuery";
+import { useEntity } from "../../hooks/useEntity";
 import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";
-import {
-  getInvestments,
-  getInvestors,
-  useGetCompany,
-  useGetShareholder,
-  useInvestments,
-  useInvestors,
-} from "../../services/apiService";
+import { getInvestments, getInvestors, useInvestments, useInvestors } from "../../services/apiService";
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
 import { graphSimulation, initializeGraphSimulation } from "./GraphService";
@@ -71,50 +64,14 @@ export const GraphContainer = () => {
   } = useContext(AppContext);
 
   const history = useHistory();
-  const query = useQuery();
 
   const [year, setYear] = useState<Year>(2021);
   const [limit] = useState<number>(5);
-  const [companyId, setCompanyId] = useState<string>();
-  const [shareholder_id, setShareholder_id] = useState<string>();
-  const [orgnr, setOrgnr] = useState<string>();
 
   const [svgTransform, setSvgTransform] = useState(defaultSvgTransform);
   const [resetZoom, setResetZoom] = useState<boolean>(true);
 
-  // #1: Query parameters are read
-  useEffect(() => {
-    const c_id = query.get("_id");
-    const orgnr = query.get("orgnr");
-    const s_id = query.get("shareholder_id");
-    setCompanyId(c_id ?? undefined);
-    setOrgnr(orgnr ?? undefined);
-    setShareholder_id(s_id ?? undefined);
-    return () => {
-      setCompanyId(undefined);
-      setOrgnr(undefined);
-      setShareholder_id(undefined);
-    };
-  }, [query]);
-
-  // #2.1.1: If there is a shareholder_id, a shareholder is retrieved
-  const shareholder = useGetShareholder(shareholder_id);
-
-  // #2.1.2: If there is a shareholder and the shareholder has an orgnr, set orgnr
-  useEffect(() => {
-    if (shareholder?.orgnr) setOrgnr(shareholder.orgnr);
-    return () => setOrgnr(undefined);
-  }, [shareholder]);
-
-  // #2.2.1 || #2.1.3: If there is an orgnr, a company is retrieved if it exists
-  const company = useGetCompany(companyId, orgnr);
-
-  const [entity, setEntity] = useState<ICompany | IShareholder>();
-
-  useEffect(() => {
-    setEntity(company ?? shareholder);
-    return () => setEntity(undefined);
-  }, [company, shareholder]);
+  const { entity, setEntity, setCompanyId, setOrgnr, setShareholder_id } = useEntity();
 
   useEffect(() => {
     setResetZoom(true);
@@ -256,7 +213,22 @@ export const GraphContainer = () => {
         setInvestment(node.entity);
       },
     });
-  }, [entity, history, limit, links, nodes, setInvestment, setInvestments, setInvestor, setInvestors, year]);
+  }, [
+    entity,
+    history,
+    limit,
+    links,
+    nodes,
+    setCompanyId,
+    setEntity,
+    setInvestment,
+    setInvestments,
+    setInvestor,
+    setInvestors,
+    setOrgnr,
+    setShareholder_id,
+    year,
+  ]);
 
   if (loadingInvestments || loadingInvestors || !nodes || !links || !actions || !nodeActions)
     return (
