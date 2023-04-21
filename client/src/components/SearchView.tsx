@@ -1,4 +1,4 @@
-import { faList, faUserTie } from "@fortawesome/free-solid-svg-icons";
+import { faList, faRoute, faUserTie } from "@fortawesome/free-solid-svg-icons";
 import { useContext } from "react";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -51,9 +51,7 @@ export const SearchView = () => {
                       {
                         name: "table-button",
                         buttonContent: <FontAwesomeIcon icon={faList} style={{ color: theme.primary }} size="lg" />,
-                        handleClick: (company: ICompany) => {
-                          tableModalInput.setInvestment(company);
-                        },
+                        handleClick: (company: ICompany) => tableModalInput.setInvestment(company),
                       },
                       {
                         name: "graph-button",
@@ -65,16 +63,21 @@ export const SearchView = () => {
                               display: "inline-block",
                               textAlign: "center",
                               verticalAlign: "middle",
-                              width: "3.2rem",
-                              height: "3.2rem",
-                              paddingTop: "0.6rem",
-                              paddingBottom: "0.6rem",
+                              width: "2.4rem",
+                              height: "2.4rem",
+                              paddingTop: "0.3rem",
+                              paddingBottom: "0.3rem",
                             }}
                           >
-                            <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                            <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
                           </span>
                         ),
                         handleClick: (company: ICompany) => history.push(`/graph?_id=${company._id}`),
+                      },
+                      {
+                        name: "relation-finder-button",
+                        buttonContent: <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />,
+                        handleClick: (company: ICompany) => history.push(`/relation-finder?_id=${company._id}`),
                       },
                     ],
                   })}
@@ -121,13 +124,13 @@ export const SearchView = () => {
                               display: "inline-block",
                               textAlign: "center",
                               verticalAlign: "middle",
-                              width: "3.2rem",
-                              height: "3.2rem",
-                              paddingTop: "0.6rem",
-                              paddingBottom: "0.6rem",
+                              width: "2.4rem",
+                              height: "2.4rem",
+                              paddingTop: "0.3rem",
+                              paddingBottom: "0.3rem",
                             }}
                           >
-                            <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
+                            <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
                           </span>
                         ),
                         handleClick: (shareholder: IShareholder) =>

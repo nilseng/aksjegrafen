@@ -81,7 +81,7 @@ export const SearchComponent = <Result extends unknown>({
                   .map(({ result, item }) => (
                     <ListGroup.Item
                       key={item.key}
-                      className="w-100 mw-100 d-flex align-items-center justify-content-between border-0 p-2 my-2"
+                      className="w-100 mw-100 d-flex flex-column align-items-center justify-content-between border-0 p-2 my-2"
                       style={{
                         zIndex: 101,
                         backgroundColor: "transparent",
@@ -97,11 +97,13 @@ export const SearchComponent = <Result extends unknown>({
                     >
                       <div>
                         <div className="text-break mr-2">{item.name}</div>
-                        {item.tags.map((tag) => (
-                          <span key={tag} className="small text-muted mx-2">
-                            {tag}
-                          </span>
-                        ))}
+                        <div className="w-100 d-flex justify-content-center">
+                          {item.tags.map((tag) => (
+                            <span key={tag} className="small text-muted text-center mx-2">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                       {item.icon && (
                         <FontAwesomeIcon
@@ -112,7 +114,7 @@ export const SearchComponent = <Result extends unknown>({
                         />
                       )}
                       {item.buttons?.length && item.buttons?.length && (
-                        <div className="d-flex align-items-center">
+                        <div className="w-100 d-flex justify-content-around px-2">
                           {item.buttons.map((b) => (
                             <button
                               key={b.name}
