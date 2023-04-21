@@ -11,7 +11,7 @@ export const HowToModal = () => {
 
   if (!isOpen)
     return (
-      <div className="btn position-absolute p-0 mr-4" style={{ right: 0 }} onClick={() => setIsOpen(true)}>
+      <div className="btn position-absolute p-0 mr-2 mr-sm-4" style={{ right: 0 }} onClick={() => setIsOpen(true)}>
         <FontAwesomeIcon className="m-2" style={{ color: theme.primary }} icon={faInfoCircle} />
       </div>
     );
