@@ -25,7 +25,7 @@ export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   useZoom(svgRef);
   return (
-    <div className="d-flex w-100 h-100 px-4 pb-4 pt-0">
+    <div className="d-flex w-100 h-100 px-2 px-sm-4 pb-2 pb-sm-4 pt-0">
       <YearSelector />
       <HowToModal />
       <div className="d-flex w-100 h-100" style={{ ...theme.lowering }}>
