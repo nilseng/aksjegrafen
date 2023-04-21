@@ -5,6 +5,7 @@ import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
+import { RelationFinder } from "./components/RelationFinder";
 import { SearchPage } from "./components/SearchPage";
 import { Stats } from "./components/Stats";
 import { ICompany, IShareholder } from "./models/models";
@@ -56,6 +57,7 @@ const App = () => {
             <Route path="/graph" component={GraphContainer} />
             <Route path="/search" component={SearchPage} />
             <Route path="/stats" component={Stats} />
+            <Route path="/relation-finder" component={RelationFinder} />
           </Switch>
         </div>
         <Overlays />
