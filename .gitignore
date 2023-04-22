@@ -15,6 +15,7 @@
 /build
 /client/build
 /server/dist
+/import/dist
 
 #data
 /data
