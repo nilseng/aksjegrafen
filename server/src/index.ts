@@ -12,7 +12,7 @@ import { Year } from "./models/models";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
-import { deleteData, importData } from "./services/importService";
+import { importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
 
 dotenv.config();
@@ -20,7 +20,6 @@ dotenv.config();
 const argv = yargs(hideBin(process.argv))
   .options({
     import: { type: "boolean", default: false, description: "Run an import when starting the server" },
-    deletion: { type: "boolean", default: false, description: "Run data deletion when starting the server" },
     transform: { type: "boolean", default: false, description: "Run data transformation when starting the server." },
     year: { type: "number", description: "Specify from which year data should be imported - 2019 or 2020 or 2021" },
     data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
@@ -65,7 +64,6 @@ const initializeApp = async () => {
   });
 
   if (argv.import) importData(db, argv.year as Year, argv.data);
-  if (argv.deletion) deleteData(db, argv.year, argv.data);
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
   if (argv.clearCache) cache.flushdb();
 };
