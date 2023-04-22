@@ -14,7 +14,6 @@ import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
 import { deleteData, importData } from "./services/importService";
 import { transformData } from "./services/transformationService";
-import { scheduleTasks } from "./tasks/taskScheduler";
 
 dotenv.config();
 
@@ -26,7 +25,6 @@ const argv = yargs(hideBin(process.argv))
     year: { type: "number", description: "Specify from which year data should be imported - 2019 or 2020 or 2021" },
     data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
     clearCache: { type: "boolean", description: "Clear current db in Redis cache" },
-    tasks: { type: "array", description: "Specify a list of tasks to be run." },
   })
   .parseSync();
 
@@ -70,7 +68,6 @@ const initializeApp = async () => {
   if (argv.deletion) deleteData(db, argv.year, argv.data);
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
   if (argv.clearCache) cache.flushdb();
-  if (argv.tasks) scheduleTasks(argv.tasks);
 };
 
 initializeApp();
