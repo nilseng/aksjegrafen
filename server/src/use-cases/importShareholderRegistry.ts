@@ -14,7 +14,7 @@ import {
   Year,
 } from "../models/models";
 
-const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
+export const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
   console.log("Importing", data);
   let fileName: string;
   const headers = [
