@@ -1,7 +1,5 @@
 {
   "compilerOptions": {
-    "rootDirs": [".", "../common"],
-    "paths": { "@common": ["../common/src"] },
     "downlevelIteration": true,
     "sourceMap": false,
     "outDir": "dist",
@@ -10,8 +8,5 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "ES5"
-  },
-  "ts-node": {
-    "maxOldSpaceSize": 8196
   }
 }
