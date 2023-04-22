@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "downlevelIteration": true,
+    "sourceMap": false,
+    "outDir": "dist",
+    "strict": true,
+    "lib": ["esnext", "DOM"],
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "target": "ES5"
+  }
+}
