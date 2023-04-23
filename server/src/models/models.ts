@@ -69,10 +69,10 @@ export interface BusinessCode {
 export interface Role {
   type: string;
   orgnr: string;
-  roleHolder: {
+  holder: {
     person?: {
-      fornavn: string;
-      etternavn: string;
+      fornavn?: string;
+      etternavn?: string;
     };
     unit?: {
       orgnr: string;
