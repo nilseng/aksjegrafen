@@ -1,10 +1,11 @@
 import db, { Collection } from "mongodb";
-import { BusinessCode, Company, Ownership, Shareholder } from "../models/models";
+import { BusinessCode, Company, Ownership, Role, Shareholder } from "../models/models";
 
 export interface IDatabase {
   ownerships: Collection<Ownership>;
   shareholders: Collection<Shareholder>;
   companies: Collection<Company>;
+  roles: Collection<Role>;
   businessCodes: Collection<BusinessCode>;
 }
 
@@ -49,6 +50,7 @@ const connectToMongoDb = async (): Promise<IDatabase> => {
     ownerships: client.db().collection<Ownership>("ownerships"),
     shareholders: client.db().collection<Shareholder>("shareholders"),
     companies: client.db().collection<Company>("companies"),
+    roles: client.db().collection<Role>("roles"),
     businessCodes: client.db().collection<BusinessCode>("businessCodes"),
   };
 
