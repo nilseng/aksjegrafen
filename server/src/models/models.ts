@@ -66,6 +66,22 @@ export interface BusinessCode {
   notes: string;
 }
 
+export interface Role {
+  type: string;
+  orgnr: string;
+  roleHolder: {
+    person?: {
+      fornavn: string;
+      etternavn: string;
+    };
+    unit?: {
+      orgnr: string;
+      organisasjonsform: string;
+      navn: string;
+    };
+  };
+}
+
 export const isOwnership = (o: any): o is Ownership => {
   return (
     o.orgnr &&
