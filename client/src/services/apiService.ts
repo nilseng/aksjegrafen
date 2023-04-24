@@ -88,17 +88,6 @@ export const getInvestorCount = async (company: ICompany, year: number) => {
   return res.json();
 };
 
-export const getCompanyGraph = async (
-  year: number,
-  limit?: number
-): Promise<{
-  ownerships: IOwnership[];
-  nodes: { [key: string]: Partial<ICompany & IShareholder> };
-}> => {
-  const res = await fetch(`/api/company-graph?year=${year}&limit=${limit}`);
-  return res.json();
-};
-
 export const useShareholderCount = () => {
   const [count, setCount] = useState<number>();
 
@@ -256,25 +245,4 @@ export const useInvestorCount = (
   }, [company, year]);
 
   return { count, loading };
-};
-
-export const useCompanyGraph = (year?: number, limit?: number) => {
-  const [ownerships, setOwnerships] = useState<IOwnership[]>();
-  const [nodes, setNodes] = useState<{ [key: string]: Partial<ICompany & IShareholder> }>();
-
-  useEffect(() => {
-    if (year) {
-      getCompanyGraph(year, limit).then((res) => {
-        if ((res as any).error) return;
-        setOwnerships(res.ownerships);
-        setNodes(res.nodes);
-      });
-    }
-    return () => {
-      setOwnerships(undefined);
-      setNodes(undefined);
-    };
-  }, [year, limit]);
-
-  return { ownerships, nodes };
 };
