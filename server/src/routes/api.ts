@@ -6,6 +6,7 @@ import { asyncRouter } from "../asyncRouter";
 
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { findShortestPath } from "../use-cases/findShortestPath";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
@@ -297,6 +298,17 @@ export const api = (db: IDatabase, cache: Redis) => {
         const ownerships = await db.ownerships.find(filter, { limit: query.limit }).toArray();
         return res.json(ownerships);
       }
+    })
+  );
+
+  router.get(
+    "/find-relations",
+    query(["fromOrgnr", "toOrgnr"]),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.fromOrgnr || !query.toOrgnr) return res.status(400).send();
+      const data = await findShortestPath({ db, fromOrgnr: query.fromOrgnr, toOrgnr: query.toOrgnr });
+      return res.json(data);
     })
   );
 
