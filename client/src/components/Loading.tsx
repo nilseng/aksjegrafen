@@ -17,7 +17,9 @@ const Loading = ({ text, height, margin, color = "#faf8f9", backgroundColor = "#
       style={{ height, margin, backgroundColor, ...(style ? style : {}) }}
     >
       <AnimatedLogo color={color} />
-      <p className="small text-light">{text}</p>
+      <p className="small" style={{ color }}>
+        {text}
+      </p>
     </div>
   );
 };
