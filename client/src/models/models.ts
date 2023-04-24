@@ -102,3 +102,23 @@ export const isOwnership = (o: any): o is IOwnership => {
     (!o.shareholder || isShareholder(o.shareholder))
   );
 };
+
+export interface Role {
+  type: string;
+  orgnr: string;
+  holder: {
+    person?: {
+      fornavn?: string;
+      etternavn?: string;
+    };
+    unit?: {
+      orgnr: string;
+      organisasjonsform: string;
+      navn: string;
+    } & ICompany;
+  };
+  company?: ICompany;
+  shareholder?: IShareholder;
+}
+
+export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: IOwnership };

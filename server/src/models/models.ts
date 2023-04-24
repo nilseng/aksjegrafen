@@ -19,7 +19,7 @@ export interface Ownership {
   orgnr: string;
   shareHolderId: string;
   shareholderOrgnr?: string | null;
-  investor?: { company?: Company; shareholder: Shareholder };
+  investor?: { company?: Company; shareholder?: Shareholder };
   investment?: Company | null;
   holdings: {
     [year in Year]: {
@@ -78,9 +78,13 @@ export interface Role {
       orgnr: string;
       organisasjonsform: string;
       navn: string;
-    };
+    } & Company;
   };
+  company?: Company;
+  shareholder?: Shareholder;
 }
+
+export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
 
 export const isOwnership = (o: any): o is Ownership => {
   return (
