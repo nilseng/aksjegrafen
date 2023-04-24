@@ -19,7 +19,7 @@ export const RelationFinder = () => {
   return (
     <div
       className="d-flex flex-column align-items-center justify-content-between h-100 w-100 p-4"
-      style={{ maxWidth: "750px" }}
+      style={{ maxWidth: "750px", color: theme.text }}
     >
       <h5 className="px-sm-5">
         <FontAwesomeIcon icon={faRoute} className="mr-2" style={{ color: theme.primary }} />
