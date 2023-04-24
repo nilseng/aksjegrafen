@@ -26,7 +26,7 @@ export const RelationFinder = () => {
         Finn korteste vei fra <span style={{ color: theme.primary }}>{source?.name}</span> til{" "}
         <span style={{ color: theme.secondary }}>{target?.name ?? "?"}</span>
       </h5>
-      <div className="w-100 p-sm-5">
+      <div className="flex-fill w-100 p-sm-5">
         <SearchComponent
           mapResultToListItem={(company: ICompany) => ({
             key: company._id,
