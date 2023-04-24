@@ -75,6 +75,11 @@ export const RelationFinder = () => {
             ))}
           </div>
         )}
+        {!path && !isLoading && (
+          <p className="w-100 text-center p-5 m-0" style={{ color: theme.primary }}>
+            Ingen relasjon funnet 🔍
+          </p>
+        )}
       </div>
       <div className="d-flex flex-column align-items-center justify-content-center p-2 p-sm-5" style={theme.lowering}>
         <p>
