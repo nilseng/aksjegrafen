@@ -40,11 +40,7 @@ export const RelationFinder = () => {
         />
         {isLoading && (
           <div className="p-sm-5">
-            <Loading
-              color={theme.primary}
-              backgroundColor={"transparent"}
-              text={"Dette kan ta flere minutter... Aksjegrafen er stor!🐘🐋"}
-            />
+            <Loading color={theme.primary} backgroundColor={"transparent"} text={"Dette kan ta litt tid...🧘🏻‍♂️"} />
           </div>
         )}
         {path && (
@@ -75,7 +71,7 @@ export const RelationFinder = () => {
             ))}
           </div>
         )}
-        {!path && !isLoading && (
+        {!path && !isLoading && target && (
           <p className="w-100 text-center p-5 m-0" style={{ color: theme.primary }}>
             Ingen relasjon funnet 🔍
           </p>
