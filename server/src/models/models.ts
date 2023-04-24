@@ -78,7 +78,7 @@ export interface Role {
       orgnr: string;
       organisasjonsform: string;
       navn: string;
-    } & Company;
+    } & Partial<Company>;
   };
   company?: Company;
   shareholder?: Shareholder;
