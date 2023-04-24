@@ -90,8 +90,9 @@ export const getInvestorCount = async (company: ICompany, year: number) => {
 
 export const getShortestPath = async (source: ICompany, target: ICompany): Promise<Relation[] | null | undefined> => {
   const res = await fetch(`/api/find-relations?fromOrgnr=${source?.orgnr}&toOrgnr=${target.orgnr}`);
-  if (res.status === 204) return null;
-  return res.json();
+  if (!res.ok) throw Error("Failed to fetch shortest path");
+  if (res?.status === 204) return null;
+  return res?.json();
 };
 
 export const useShareholderCount = () => {
@@ -256,21 +257,30 @@ export const useInvestorCount = (
 export const useShortestPath = (source?: ICompany, target?: ICompany) => {
   const [path, setPath] = useState<Relation[] | null>();
   const [isLoading, setIsLoading] = useState<boolean>();
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     if (source?.orgnr && target?.orgnr) {
       setIsLoading(true);
-      getShortestPath(source, target).then((p) => {
-        setPath(p);
-        setIsLoading(false);
-      });
+      getShortestPath(source, target)
+        .then((p) => {
+          setPath(p);
+          setIsLoading(false);
+        })
+        .catch(() => {
+          setError(
+            "Fant ikke korteste vei. Noen søk er for store til at Aksjegrafens nåværende infrastruktur håndterer det😞"
+          );
+          setIsLoading(false);
+        });
     }
 
     return () => {
       setIsLoading(false);
       setPath(undefined);
+      setError(undefined);
     };
   }, [source, target]);
 
-  return { path, isLoading };
+  return { path, isLoading, error };
 };
