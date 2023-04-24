@@ -6,6 +6,7 @@ import { asyncRouter } from "../asyncRouter";
 
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
 
@@ -115,11 +116,11 @@ export const api = (db: IDatabase, cache: Redis) => {
                       },
                     },
                     {
-                      autocomplete: { query: params?.searchTerm, path: "orgnr" },
+                      autocomplete: { query: removeOrgnrWhitespace(params?.searchTerm), path: "orgnr" },
                     },
                     {
                       text: {
-                        query: params?.searchTerm,
+                        query: removeOrgnrWhitespace(params?.searchTerm),
                         path: "orgnr",
                         score: {
                           boost: {
@@ -169,11 +170,11 @@ export const api = (db: IDatabase, cache: Redis) => {
                     },
                   },
                   {
-                    autocomplete: { query: params?.searchTerm, path: "orgnr" },
+                    autocomplete: { query: removeOrgnrWhitespace(params?.searchTerm), path: "orgnr" },
                   },
                   {
                     text: {
-                      query: params?.searchTerm,
+                      query: removeOrgnrWhitespace(params?.searchTerm),
                       path: "orgnr",
                       score: {
                         boost: {
