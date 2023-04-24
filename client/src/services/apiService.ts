@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ICompany, IOwnership, IShareholder } from "../models/models";
+import { ICompany, IOwnership, IShareholder, Relation } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export const getCompany = async (id: string) => {
@@ -85,6 +85,11 @@ export const getInvestments = async (
 
 export const getInvestorCount = async (company: ICompany, year: number) => {
   const res = await fetch(`/api/investors?orgnr=${company.orgnr}&year=${year}&count=true`);
+  return res.json();
+};
+
+export const getShortestPath = async (source: ICompany, target: ICompany): Promise<Relation[] | null | undefined> => {
+  const res = await fetch(`/api/find-relations?fromOrgnr=${source?.orgnr}&toOrgnr=${target.orgnr}`);
   return res.json();
 };
 
@@ -245,4 +250,26 @@ export const useInvestorCount = (
   }, [company, year]);
 
   return { count, loading };
+};
+
+export const useShortestPath = (source?: ICompany, target?: ICompany) => {
+  const [path, setPath] = useState<Relation[] | null>();
+  const [isLoading, setIsLoading] = useState<boolean>();
+
+  useEffect(() => {
+    if (source?.orgnr && target?.orgnr) {
+      setIsLoading(true);
+      getShortestPath(source, target).then((p) => {
+        setPath(p);
+        setIsLoading(false);
+      });
+    }
+
+    return () => {
+      setIsLoading(false);
+      setPath(undefined);
+    };
+  }, [source, target]);
+
+  return { path, isLoading };
 };
