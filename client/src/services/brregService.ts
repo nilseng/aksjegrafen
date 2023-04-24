@@ -212,6 +212,29 @@ export const getOrgForms = async () => {
   return res ? res.json() : res;
 };
 
+interface RoleTypeResponse {
+  _embedded: {
+    rolletyper: {
+      kode: string;
+      beskrivelse: string;
+      _links: {
+        self: {
+          href: string;
+        };
+      };
+    }[];
+  };
+  _links: {
+    self: {
+      href: string;
+    };
+  };
+}
+export const getRoleTypes = async (): Promise<RoleTypeResponse> => {
+  const res = await fetch("https://data.brreg.no/enhetsregisteret/api/roller/rolletyper");
+  return res ? res.json() : res;
+};
+
 export const useBrregEntityInfo = (entity?: ICompany | IShareholder) => {
   const [info, setInfo] = useState<any>();
 
@@ -236,4 +259,14 @@ export const useFinancialsByUnit = (entity?: ICompany | IShareholder) => {
   }, [entity]);
 
   return financials;
+};
+
+export const useRoleTypes = (): RoleTypeResponse["_embedded"]["rolletyper"] | undefined => {
+  const [roleTypes, setRoleTypes] = useState<RoleTypeResponse["_embedded"]["rolletyper"]>();
+
+  useEffect(() => {
+    getRoleTypes().then((res) => setRoleTypes(res._embedded.rolletyper));
+  }, []);
+
+  return roleTypes;
 };
