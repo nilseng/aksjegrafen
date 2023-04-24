@@ -149,7 +149,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       const params = req.params;
-      const shareholders = await db.shareholders
+      const shareholders: Shareholder[] = await db.shareholders
         .aggregate([
           {
             $search: {
@@ -308,7 +308,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const query = matchedData(req);
       if (!query.fromOrgnr || !query.toOrgnr) return res.status(400).send();
       const data = await findShortestPath({ db, fromOrgnr: query.fromOrgnr, toOrgnr: query.toOrgnr });
-      return res.json(data);
+      return data ? res.status(200).json(data) : res.status(204).json();
     })
   );
 

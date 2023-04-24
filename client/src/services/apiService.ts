@@ -90,6 +90,7 @@ export const getInvestorCount = async (company: ICompany, year: number) => {
 
 export const getShortestPath = async (source: ICompany, target: ICompany): Promise<Relation[] | null | undefined> => {
   const res = await fetch(`/api/find-relations?fromOrgnr=${source?.orgnr}&toOrgnr=${target.orgnr}`);
+  if (res.status === 204) return null;
   return res.json();
 };
 
