@@ -5,16 +5,18 @@ import { AppContext } from "../AppContext";
 import { useEntity } from "../hooks/useEntity";
 import { ICompany } from "../models/models";
 import { useShortestPath } from "../services/apiService";
+import { useRoleTypes } from "../services/brregService";
 import Loading from "./Loading";
 import { SearchComponent } from "./SearchComponent";
 
 export const RelationFinder = () => {
   const { theme } = useContext(AppContext);
   const { entity: source } = useEntity();
-
   const [target, setTarget] = useState<ICompany>();
 
-  const { path, isLoading } = useShortestPath(source, target);
+  const { path, isLoading, error } = useShortestPath(source, target);
+
+  const roleTypes = useRoleTypes();
 
   return (
     <div
@@ -52,7 +54,11 @@ export const RelationFinder = () => {
                     <span style={{ color: theme.primary }}>
                       {relation.role.holder.unit?.name ?? relation.role.holder.unit?.navn}
                     </span>{" "}
-                    er <span className="font-weight-bold">{relation.role.type}</span> for{" "}
+                    er{" "}
+                    <span className="font-weight-bold">
+                      {roleTypes?.find((r) => r.kode === relation.role.type)?.beskrivelse ?? relation.role.type}
+                    </span>{" "}
+                    for{" "}
                     <span style={{ color: theme.secondary }}>
                       {relation.role.company?.name ?? relation.role.company?.name ?? relation.role.shareholder?.name}
                     </span>
@@ -71,9 +77,14 @@ export const RelationFinder = () => {
             ))}
           </div>
         )}
-        {!path && !isLoading && target && (
+        {!path && !isLoading && !error && target && (
           <p className="w-100 text-center p-5 m-0" style={{ color: theme.primary }}>
             Ingen relasjon funnet 🔍
+          </p>
+        )}
+        {error && (
+          <p className="w-100 text-center p-5 m-0" style={{ color: theme.danger }}>
+            {error}
           </p>
         )}
       </div>
