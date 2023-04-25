@@ -21,7 +21,13 @@ export const findShortestPath = async ({
     if (ownership.orgnr === toOrgnr) return resolveCompanies(db, [{ ownership }]);
     else paths.push([{ ownership }]);
   }
-  return findPaths(db, paths, toOrgnr, 1);
+  try {
+    return findPaths(db, paths, toOrgnr, 1).catch((e) => {
+      throw e;
+    });
+  } catch (e) {
+    throw e;
+  }
 };
 
 const findPaths = async (
@@ -31,27 +37,37 @@ const findPaths = async (
   iteration: number
 ): Promise<Relation[] | null | undefined> => {
   const relation: Relation[] = [];
-  if (iteration >= 10) {
+  if (iteration >= 100) {
     return undefined;
   }
-  const orgnrs = paths.map((p) => getLastEdgeOrgnr(p));
+  const orgnrs = new Set(paths.map((p) => getLastEdgeOrgnr(p)));
   const ownerships = await db.ownerships
-    .find({ shareholderOrgnr: { $in: orgnrs }, "holdings.2021.total": { $gt: 0 } })
+    .find({ shareholderOrgnr: { $in: Array.from(orgnrs) }, "holdings.2021.total": { $gt: 0 } })
     .toArray();
   const newPaths: Relation[][] = [];
   for (const o of ownerships) {
     const filteredPaths = paths.filter((p) => getLastEdgeOrgnr(p) === o.shareholderOrgnr);
     for (const path of filteredPaths) {
       if (hasLoop(path, o)) continue;
+      else if (canBeRelaxed(o, newPaths)) continue;
       else if (o.orgnr === toOrgnr) {
         relation.push(...path, { ownership: o });
         break;
-      } else newPaths.push([...path, { ownership: o }]);
+      } else {
+        newPaths.push([...path, { ownership: o }]);
+      }
     }
     if (relation.length > 0) break;
   }
   if (relation.length > 0) return resolveCompanies(db, relation);
-  return newPaths.length > 0 ? findPaths(db, newPaths, toOrgnr, iteration + 1) : null;
+  if (newPaths.length === 0) return null;
+  try {
+    return findPaths(db, newPaths, toOrgnr, iteration + 1).catch((e) => {
+      throw e;
+    });
+  } catch (e) {
+    throw e;
+  }
 };
 
 const getLastEdgeOrgnr = (path: Relation[]): string | undefined => {
@@ -63,6 +79,12 @@ const hasLoop = (path: Relation[], o: Ownership): boolean => {
   if (o.shareholderOrgnr === o.orgnr) return true;
   const edge = path.find((e) => e.ownership?.shareholderOrgnr === o.orgnr);
   return !!edge;
+};
+
+const canBeRelaxed = (o: Ownership, newPaths: Relation[][]) => {
+  return !!newPaths
+    .map((p) => p[p.length - 1])
+    .find((r) => r.ownership?.orgnr === o.orgnr || r.role?.orgnr === o.orgnr);
 };
 
 const resolveCompanies = async (db: IDatabase, path: Relation[]): Promise<Relation[]> => {
