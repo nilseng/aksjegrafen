@@ -54,9 +54,10 @@ const initializeApp = async () => {
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));
 
-  app.listen({ port: process.env.PORT || 4000 }, () =>
+  const server = app.listen({ port: process.env.PORT || 4000 }, () =>
     console.log(`The server is now running on port ${process.env.PORT || 4000}`)
   );
+  server.timeout = 15_000;
 
   app.use((err: Error, _: Request, res: Response, __: () => void) => {
     console.error(err.stack);
