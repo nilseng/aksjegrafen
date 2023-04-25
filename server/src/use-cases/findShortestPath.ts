@@ -45,7 +45,6 @@ const findPaths = async (
   iteration: number,
   visitedOrgnrs: Set<string>
 ): Promise<Relation[] | null | undefined> => {
-  if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
   const relation: Relation[] = [];
   if (iteration >= 100) {
     return undefined;
@@ -56,10 +55,12 @@ const findPaths = async (
     .find({ shareholderOrgnr: { $in: orgnrs }, "holdings.2021.total": { $gt: 0 } })
     .project({ shareholderOrgnr: 1, orgnr: 1, "holdings.2021.total": 1 })
     .toArray();
+  if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
   const roles = await db.roles
     .find({ "holder.unit.orgnr": { $in: orgnrs } })
     .project({ orgnr: 1, type: 1, "holder.unit": 1 })
     .toArray();
+  if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
   const newPaths: Relation[][] = [];
   const relationMap: { [targetOrgnr: string]: Relation } = {};
   ownerships.forEach((ownership) => {
