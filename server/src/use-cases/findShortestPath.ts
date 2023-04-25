@@ -1,3 +1,5 @@
+import { performance } from "perf_hooks";
+import { requestTimeout } from "../config";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Relation } from "../models/models";
 import { isMaxMemoryExceeded } from "../utils/isMaxMemoryExceeded";
@@ -11,6 +13,7 @@ export const findShortestPath = async ({
   fromOrgnr: string;
   toOrgnr: string;
 }): Promise<Relation[] | null | undefined> => {
+  const startedAt = performance.now();
   const paths: Relation[][] = [];
   const roles = await db.roles
     .find({ "holder.unit.orgnr": fromOrgnr })
@@ -29,22 +32,19 @@ export const findShortestPath = async ({
     else paths.push([{ ownership }]);
   }
   const visitedOrgnrs = new Set(fromOrgnr);
-  try {
-    return findPaths(db, paths, toOrgnr, 1, visitedOrgnrs).catch((e) => {
-      throw e;
-    });
-  } catch (e) {
-    throw e;
-  }
+  const relation = await findPath(db, paths, toOrgnr, 1, visitedOrgnrs, startedAt);
+  return relation;
 };
 
-const findPaths = async (
+const findPath = async (
   db: IDatabase,
   paths: Relation[][],
   toOrgnr: string,
   iteration: number,
-  visitedOrgnrs: Set<string>
+  visitedOrgnrs: Set<string>,
+  startedAt: number
 ): Promise<Relation[] | null | undefined> => {
+  checkTimeout(startedAt);
   const relation: Relation[] = [];
   if (iteration >= 100) {
     return undefined;
@@ -56,11 +56,13 @@ const findPaths = async (
     .project({ shareholderOrgnr: 1, orgnr: 1, "holdings.2021.total": 1 })
     .toArray();
   if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
+  checkTimeout(startedAt);
   const roles = await db.roles
     .find({ "holder.unit.orgnr": { $in: orgnrs } })
     .project({ orgnr: 1, type: 1, "holder.unit": 1 })
     .toArray();
   if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
+  checkTimeout(startedAt);
   const newPaths: Relation[][] = [];
   const relationMap: { [targetOrgnr: string]: Relation } = {};
   ownerships.forEach((ownership) => {
@@ -70,6 +72,7 @@ const findPaths = async (
     relationMap[role.orgnr] = { role };
   });
   for (const r of Object.values(relationMap)) {
+    checkTimeout(startedAt);
     const path = paths.find((p) => getLastEdgeOrgnr(p) === getSourceOrgnr(r));
     if (!path) {
       console.error(`Path ending with orgnr=${getSourceOrgnr(r)} not found`);
@@ -87,13 +90,11 @@ const findPaths = async (
   }
   if (relation.length > 0) return resolveCompanies(db, relation);
   if (newPaths.length === 0) return null;
-  try {
-    return findPaths(db, newPaths, toOrgnr, iteration + 1, visitedOrgnrs).catch((e) => {
-      throw e;
-    });
-  } catch (e) {
-    throw e;
-  }
+  return findPath(db, newPaths, toOrgnr, iteration + 1, visitedOrgnrs, startedAt);
+};
+
+const checkTimeout = (startedAt: number) => {
+  if (performance.now() - startedAt > requestTimeout) throw Error("Timeout!");
 };
 
 const getLastEdgeOrgnr = (path: Relation[]): string | undefined => {
