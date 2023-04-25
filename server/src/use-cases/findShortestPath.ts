@@ -1,5 +1,5 @@
 import { IDatabase } from "../database/databaseSetup";
-import { Company, Ownership, Relation } from "../models/models";
+import { Company, Relation } from "../models/models";
 import { isMaxMemoryExceeded } from "../utils/isMaxMemoryExceeded";
 
 export const findShortestPath = async ({
@@ -50,26 +50,39 @@ const findPaths = async (
   if (iteration >= 100) {
     return undefined;
   }
-  const orgnrs = new Set(paths.map((p) => getLastEdgeOrgnr(p)));
+  const orgnrSet = new Set(paths.map((p) => getLastEdgeOrgnr(p)));
+  const orgnrs = Array.from(orgnrSet);
   const ownerships = await db.ownerships
-    .find({ shareholderOrgnr: { $in: Array.from(orgnrs) }, "holdings.2021.total": { $gt: 0 } })
+    .find({ shareholderOrgnr: { $in: orgnrs }, "holdings.2021.total": { $gt: 0 } })
     .project({ shareholderOrgnr: 1, orgnr: 1, "holdings.2021.total": 1 })
     .toArray();
+  const roles = await db.roles
+    .find({ "holder.unit.orgnr": { $in: orgnrs } })
+    .project({ orgnr: 1, type: 1, "holder.unit": 1 })
+    .toArray();
   const newPaths: Relation[][] = [];
-  for (const o of ownerships) {
-    const filteredPaths = paths.filter((p) => getLastEdgeOrgnr(p) === o.shareholderOrgnr);
-    for (const path of filteredPaths) {
-      if (hasLoop(path, o)) continue;
-      else if (canBeRelaxed(o, newPaths, visitedOrgnrs)) continue;
-      else if (o.orgnr === toOrgnr) {
-        relation.push(...path, { ownership: o });
-        break;
-      } else {
-        newPaths.push([...path, { ownership: o }]);
-        visitedOrgnrs.add(o.shareholderOrgnr!);
-      }
+  const relationMap: { [targetOrgnr: string]: Relation } = {};
+  ownerships.forEach((ownership) => {
+    relationMap[ownership.orgnr] = { ownership };
+  });
+  roles.forEach((role) => {
+    relationMap[role.orgnr] = { role };
+  });
+  for (const r of Object.values(relationMap)) {
+    const path = paths.find((p) => getLastEdgeOrgnr(p) === getSourceOrgnr(r));
+    if (!path) {
+      console.error(`Path ending with orgnr=${getSourceOrgnr(r)} not found`);
+      continue;
     }
-    if (relation.length > 0) break;
+    if (hasLoop(path, r)) continue;
+    else if (canBeRelaxed(r, newPaths, visitedOrgnrs)) continue;
+    else if (getTargetOrgnr(r) === toOrgnr) {
+      relation.push(...path, r);
+      break;
+    } else {
+      newPaths.push([...path, r]);
+      visitedOrgnrs.add(getSourceOrgnr(r)!);
+    }
   }
   if (relation.length > 0) return resolveCompanies(db, relation);
   if (newPaths.length === 0) return null;
@@ -84,25 +97,34 @@ const findPaths = async (
 
 const getLastEdgeOrgnr = (path: Relation[]): string | undefined => {
   const edgeCount = path.length;
-  return path[edgeCount - 1].role?.orgnr ?? path[edgeCount - 1].ownership?.orgnr;
+  return getTargetOrgnr(path[edgeCount - 1]);
 };
 
-const hasLoop = (path: Relation[], o: Ownership): boolean => {
-  if (o.shareholderOrgnr === o.orgnr) return true;
-  const edge = path.find((e) => e.ownership?.shareholderOrgnr === o.orgnr);
+const getTargetOrgnr = (relation: Relation) => {
+  return relation.role?.orgnr ?? relation.ownership?.orgnr;
+};
+
+const getSourceOrgnr = (relation: Relation) =>
+  relation.role?.holder.unit?.orgnr ?? relation.ownership?.shareholderOrgnr;
+
+const hasLoop = (path: Relation[], r: Relation): boolean => {
+  if (r.ownership && r.ownership.shareholderOrgnr === r.ownership.orgnr) return true;
+  if (r.role && r.role.holder.unit?.orgnr === r.role.orgnr) return true;
+  const edge = path.find((e) => getSourceOrgnr(e) === getTargetOrgnr(r));
   return !!edge;
 };
 
-const canBeRelaxed = (o: Ownership, newPaths: Relation[][], visitedOrgnrs: Set<string>) => {
-  return isVisited(o, visitedOrgnrs) || isInAnotherPath(o, newPaths);
+const canBeRelaxed = (r: Relation, newPaths: Relation[][], visitedOrgnrs: Set<string>) => {
+  return isVisited(r, visitedOrgnrs) || isInAnotherPath(r, newPaths);
 };
 
-const isVisited = (o: Ownership, visitedOrgnrs: Set<string>) => visitedOrgnrs.has(o.orgnr);
+const isVisited = (r: Relation, visitedOrgnrs: Set<string>) => {
+  const orgnr = getTargetOrgnr(r);
+  return orgnr ? visitedOrgnrs.has(orgnr) : false;
+};
 
-const isInAnotherPath = (o: Ownership, newPaths: Relation[][]) => {
-  return !!newPaths
-    .map((p) => p[p.length - 1])
-    .find((r) => r.ownership?.orgnr === o.orgnr || r.role?.orgnr === o.orgnr);
+const isInAnotherPath = (r: Relation, newPaths: Relation[][]) => {
+  return !!newPaths.map((p) => p[p.length - 1]).find((leaf) => getTargetOrgnr(leaf) === getTargetOrgnr(r));
 };
 
 const resolveCompanies = async (db: IDatabase, path: Relation[]): Promise<Relation[]> => {
