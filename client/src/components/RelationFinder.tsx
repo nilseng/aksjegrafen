@@ -88,16 +88,6 @@ export const RelationFinder = () => {
           </p>
         )}
       </div>
-      <div className="d-flex flex-column align-items-center justify-content-center p-2 p-sm-5" style={theme.lowering}>
-        <p>
-          Her kommer funksjonalitet for å finne roller og relasjoner som selskaper har direkte eller indirekte i andre
-          selskaper.
-        </p>
-        <p>
-          Jobber du for eksempel i et revisjons- og rådgivningsselskap og vurderer å tilby rådgivning, men må vite om
-          dere allerede leverer revisjonstjenester til et av selskapene i et konsern?
-        </p>
-      </div>
     </div>
   );
 };
