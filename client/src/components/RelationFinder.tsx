@@ -2,6 +2,7 @@ import { faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { AppContext } from "../AppContext";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { useEntity } from "../hooks/useEntity";
 import { ICompany } from "../models/models";
 import { useShortestPath } from "../services/apiService";
@@ -11,7 +12,11 @@ import { SearchComponent } from "./SearchComponent";
 
 export const RelationFinder = () => {
   const { theme } = useContext(AppContext);
+
   const { entity: source } = useEntity();
+
+  useDocumentTitle("Finn relasjoner", source?.name);
+
   const [target, setTarget] = useState<ICompany>();
 
   const { path, isLoading, error } = useShortestPath(source, target);
