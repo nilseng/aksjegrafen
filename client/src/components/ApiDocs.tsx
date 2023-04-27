@@ -54,10 +54,13 @@ export const ApiDocs = () => {
         (OPTIONAL)
       </p>
       <p className="m-0">
-        <code>skip</code> - hopp over et antall aksjonærer. (OPTIONAL)
+        <code>skip</code> - hopp over et antall investeringer. (OPTIONAL)
+      </p>
+      <p className="m-0">
+        <code>limit</code> - maks antall søkeresultater. Default er 100.
       </p>
       <p>
-        <code>limit</code> - maks antall søkeresultater. Default er 100.
+        <code>skip</code> - hopp over et antall investeringer. (OPTIONAL)
       </p>
       <p className="small font-weight-bold m-0">Hent aksjonærene i et selskap</p>
       <code>
@@ -67,10 +70,10 @@ export const ApiDocs = () => {
         <code>orgnr</code> - organisasjonsnummeret til selskapet.
       </p>
       <p className="m-0">
-        <code>skip</code> - hopp over et antall aksjonærer. (OPTIONAL)
+        <code>limit</code> - maks antall søkeresultater. Default er 100.
       </p>
       <p>
-        <code>limit</code> - maks antall søkeresultater. Default er 100.
+        <code>skip</code> - hopp over et antall aksjonærer. (OPTIONAL)
       </p>
       <p>
         Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
