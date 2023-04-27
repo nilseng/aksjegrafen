@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { Container } from "react-bootstrap";
 import { AppContext } from "../AppContext";
+import { useDocumentTitle } from "../hooks/useDocumentTitle";
 
 export const ApiDocs = () => {
   const { theme } = useContext(AppContext);
+  useDocumentTitle("API-dokumentasjon");
   return (
     <Container
       className="h-100 overflow-auto rounded p-4"
