@@ -1,6 +1,6 @@
 import "./NavBar.scss";
 
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { theming } from "../theming/theme";
@@ -34,10 +34,16 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       </Link>
       <div className="d-flex justify-content-end">
         <div className="d-flex align-items-center">
-          <Link to="/search" className="mr-4">
+          <Link to="/search" className="mr-2">
             <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
               Avansert søk
               <FontAwesomeIcon icon={faSearch} className="ml-2" />
+            </button>
+          </Link>
+          <Link to="/api-docs" className="mr-4">
+            <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+              API
+              <FontAwesomeIcon icon={faCode} className="ml-2" />
             </button>
           </Link>
           <ThemeButton theme={theme} setTheme={setTheme} />
