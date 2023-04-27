@@ -2,6 +2,9 @@ import { useContext } from "react";
 import { Container } from "react-bootstrap";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { EndpointDescription } from "./EndpointDescription";
+
+const baseUrl = "https://www.aksjegrafen.com/api";
 
 export const ApiDocs = () => {
   const { theme } = useContext(AppContext);
@@ -23,60 +26,51 @@ export const ApiDocs = () => {
         investorer og utviklere som ønsker å lage applikasjoner for å analysere og visualisere aksje- og eierskapsdata.
       </p>
       <h5>Endepunkter</h5>
-      <p className="small font-weight-bold m-0">Søk etter selskap</p>
-      <code>
-        https://www.aksjegrafen.com/api/company/{"{searchTerm}"}?limit={"{limit}"}
-      </code>
-      <p className="m-0">
-        <code>searchTerm</code> - organisasjonsnummer og/eller navn på selskapet
-      </p>
-      <p>
-        <code>limit</code> - maks antall søkeresultater. Default er 10.
-      </p>
-      <p className="small font-weight-bold m-0">Søk etter aksjonær</p>
-      <code>
-        https://www.aksjegrafen.com/api/shareholder/{"{searchTerm}"}?limit={"{limit}"}
-      </code>
-      <p className="m-0">
-        <code>searchTerm</code> - organisasjonsnummer og/eller navn på aksjonæren
-      </p>
-      <p>
-        <code>limit</code> - maks antall søkeresultater. Default er 10.
-      </p>
-      <p className="small font-weight-bold m-0">Hent investeringene til en aksjonær</p>
-      <code>
-        https://www.aksjegrafen.com/api/investments?shareholderOrgnr={"{shareholderOrgnr}"}&shareholderId=
-        {"{shareholderId}"}&limit={"{limit}"}&skip={"{skip}"}
-      </code>
-      <p className="m-0">
-        <code>shareholderOrgnr</code> - organisasjonsnummeret i tilfelle aksjonæren er et selskap. (OPTIONAL)
-      </p>
-      <p className="m-0">
-        <code>shareholderId</code> - id for aksjonæren i tilfelle aksjonæren er en privatperson, utenlandsk selskap e.l.
-        (OPTIONAL)
-      </p>
-      <p className="m-0">
-        <code>skip</code> - hopp over et antall investeringer. (OPTIONAL)
-      </p>
-      <p className="m-0">
-        <code>limit</code> - maks antall søkeresultater. Default er 100.
-      </p>
-      <p>
-        <code>skip</code> - hopp over et antall investeringer. (OPTIONAL)
-      </p>
-      <p className="small font-weight-bold m-0">Hent aksjonærene i et selskap</p>
-      <code>
-        https://www.aksjegrafen.com/api/investors?orgnr={"{orgnr}"}&limit={"{limit}"}&skip={"{skip}"}
-      </code>
-      <p className="m-0">
-        <code>orgnr</code> - organisasjonsnummeret til selskapet.
-      </p>
-      <p className="m-0">
-        <code>limit</code> - maks antall søkeresultater. Default er 100.
-      </p>
-      <p>
-        <code>skip</code> - hopp over et antall aksjonærer. (OPTIONAL)
-      </p>
+      <EndpointDescription
+        title={"Søk etter selskap"}
+        baseUrl={baseUrl}
+        path={"/company"}
+        params={[{ name: "searchTerm", description: "organisasjonsnummer og/eller navn på selskapet" }]}
+        query={[{ name: "limit", description: "maks antall søkeresultater. Default er 10." }]}
+      />
+      <EndpointDescription
+        title={"Søk etter aksjonær"}
+        baseUrl={baseUrl}
+        path={"/shareholder"}
+        params={[{ name: "searchTerm", description: "organisasjonsnummer og/eller navn på aksjonæren" }]}
+        query={[{ name: "limit", description: "maks antall søkeresultater. Default er 10." }]}
+      />
+      <EndpointDescription
+        title={"Hent investeringene til en aksjonær"}
+        baseUrl={baseUrl}
+        path={"/investments"}
+        query={[
+          {
+            name: "shareholderOrgnr",
+            description: "organisasjonsnummeret i tilfelle aksjonæren er et selskap. (OPTIONAL)",
+          },
+          {
+            name: "shareholderId",
+            description:
+              "id for aksjonæren i tilfelle aksjonæren er en privatperson, utenlandsk selskap e.l. (OPTIONAL)",
+          },
+          { name: "limit", description: "maks antall søkeresultater. Default er 10." },
+          { name: "skip", description: "hopp over et antall investeringer. (OPTIONAL)" },
+        ]}
+      />
+      <EndpointDescription
+        title={"Hent aksjonærene i et selskap"}
+        baseUrl={baseUrl}
+        path={"/investors"}
+        query={[
+          {
+            name: "orgnr",
+            description: "organisasjonsnummeret til selskapet.",
+          },
+          { name: "limit", description: "maks antall søkeresultater. Default er 10." },
+          { name: "skip", description: "hopp over et antall aksjonærer. (OPTIONAL)" },
+        ]}
+      />
       <p>
         Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
         <code>teodor.nilseng@gmail.com</code>.
