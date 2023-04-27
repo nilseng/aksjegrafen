@@ -5,7 +5,10 @@ import { AppContext } from "../AppContext";
 export const ApiDocs = () => {
   const { theme } = useContext(AppContext);
   return (
-    <Container className="h-100 overflow-auto p-4" style={{ maxWidth: "750px" }}>
+    <Container
+      className="h-100 overflow-auto rounded p-4"
+      style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, ...theme.lowering }}
+    >
       <h5>API for aksjonærregisteret</h5>
       <p>
         Det åpne API-et til{" "}
