@@ -36,7 +36,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
         <div className="d-flex align-items-center">
           <Link to="/search" className="mr-4">
             <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
-              Enhetsregisteret
+              Avansert søk
               <FontAwesomeIcon icon={faSearch} className="ml-2" />
             </button>
           </Link>
