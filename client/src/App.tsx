@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
+import { ApiDocs } from "./components/ApiDocs";
 import { GraphContainer } from "./components/Graph/GraphContainer";
 import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
@@ -58,6 +59,7 @@ const App = () => {
             <Route path="/search" component={SearchPage} />
             <Route path="/stats" component={Stats} />
             <Route path="/relation-finder" component={RelationFinder} />
+            <Route path="/api-docs" component={ApiDocs} />
           </Switch>
         </div>
         <Overlays />
