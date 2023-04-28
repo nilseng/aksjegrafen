@@ -40,7 +40,7 @@ export const RelationFinder = () => {
             name: company.name,
             tags: company.orgnr ? [company.orgnr] : [],
           })}
-          placeholder="Søk etter selskap..."
+          placeholder="Søk og velg selskap..."
           apiPath={"/api/company"}
           query={{ limit: 10 }}
           handleClick={(company: ICompany) => setTarget(company)}
@@ -92,6 +92,10 @@ export const RelationFinder = () => {
             {error}
           </p>
         )}
+      </div>
+      <div className="p-4" style={theme.lowering}>
+        Har du analyser eller større søk som du ønsker gjennomført? Ta kontakt på{" "}
+        <span style={{ color: theme.primary }}>contact@pureokrs.com</span>.
       </div>
     </div>
   );
