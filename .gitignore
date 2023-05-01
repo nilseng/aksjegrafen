@@ -37,3 +37,8 @@ yarn-error.log*
 .eslintcache
 /client/.eslintcache
 /server/.eslintcache
+
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.lock.hcl
+.terraform
