@@ -10,15 +10,15 @@ terraform {
 }
 
 provider "aws" {
-  region  = "us-west-2"
+  region  = "eu-north-1"
   profile = "admin"
 }
 
-resource "aws_instance" "app_server" {
-  ami           = "ami-830c94e3"
-  instance_type = "t2.micro"
+resource "aws_instance" "db_server" {
+  ami           = "ami-0577c11149d377ab7"
+  instance_type = "t3.small"
 
   tags = {
-    Name = "ExampleAppServerInstance"
+    Name = "DBServerInstance"
   }
 }
