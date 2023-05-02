@@ -11,7 +11,7 @@ terraform {
 
 provider "aws" {
   region  = "us-west-2"
-  profile = "PowerUserAccess-662218712409"
+  profile = "admin"
 }
 
 resource "aws_instance" "app_server" {
