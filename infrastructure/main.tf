@@ -18,9 +18,47 @@ resource "aws_instance" "db_server" {
   ami           = "ami-0577c11149d377ab7"
   instance_type = "t3.small"
 
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 1
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo yum update -y",
+      "sudo yum install -y docker",
+      "sudo systemctl start docker",
+      "sudo systemctl enable docker",
+      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v ${var.mount_path}:/data neo4j"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = file("/Users/nilseng/.ssh/default.pem")
+      host        = self.public_ip
+    }
+  }
+
   tags = {
     Name = "DBServerInstance"
   }
+}
+
+locals {
+  device_name = "/dev/sdf"
+  mount_path  = "/mnt/neo4j"
+}
+
+variable "device_name" {
+  description = "The device name to use for the EBS volume"
+  default     = "/dev/sdf"
+}
+
+variable "mount_path" {
+  description = "The directory to mount the EBS volume to"
+  default     = "/mnt/neo4j"
 }
 
 resource "aws_ebs_volume" "db_volume" {
