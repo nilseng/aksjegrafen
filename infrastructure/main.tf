@@ -22,3 +22,9 @@ resource "aws_instance" "db_server" {
     Name = "DBServerInstance"
   }
 }
+
+resource "aws_ebs_volume" "db_volume" {
+  availability_zone = "eu-north-1a"
+  size              = "8"
+  type              = "gp2"
+}
