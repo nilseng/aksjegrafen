@@ -24,7 +24,13 @@ resource "aws_instance" "db_server" {
 }
 
 resource "aws_ebs_volume" "db_volume" {
-  availability_zone = "eu-north-1a"
+  availability_zone = "eu-north-1c"
   size              = "8"
   type              = "gp2"
+}
+
+resource "aws_volume_attachment" "db_volume_attachment" {
+  device_name = "/dev/sdf"
+  volume_id   = aws_ebs_volume.db_volume.id
+  instance_id = aws_instance.db_server.id
 }
