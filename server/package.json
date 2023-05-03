@@ -34,6 +34,7 @@
     "lodash": "^4.17.21",
     "mongodb": "^3.6.3",
     "morgan": "^1.10.0",
+    "neo4j-driver": "^5.8.0",
     "node-cron": "^3.0.2",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3",
