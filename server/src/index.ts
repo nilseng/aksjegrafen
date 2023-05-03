@@ -43,7 +43,12 @@ app.use(bodyParser.raw());
 app.use(morgan("tiny"));
 
 const initializeApp = async () => {
-  const db = await Database.initialize();
+  const { db, graphDB } = await Database.initialize();
+
+  const session = graphDB.session();
+  await session.run("CREATE (a:Person {name: $name}) RETURN a", { name: "Teodor!" });
+  await session.close();
+  await graphDB.close();
 
   const cache = await initializeCache();
 
@@ -54,10 +59,9 @@ const initializeApp = async () => {
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));
 
-  const server = app.listen({ port: process.env.PORT || 4000 }, () =>
+  app.listen({ port: process.env.PORT || 4000 }, () =>
     console.log(`The server is now running on port ${process.env.PORT || 4000}`)
   );
-  server.timeout = 15_000;
 
   app.use((err: Error, _: Request, res: Response, __: () => void) => {
     console.error(err.stack);

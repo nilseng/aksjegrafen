@@ -1,4 +1,4 @@
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Year } from "../models/models";
 
 export const transformData = async (db: IDatabase, year: Year) => {
