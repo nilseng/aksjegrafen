@@ -1,13 +1,6 @@
-import { Collection, MongoClient } from "mongodb";
+import { MongoClient } from "mongodb";
 import { BusinessCode, Company, Ownership, Role, Shareholder } from "../models/models";
-
-export interface IDatabase {
-  ownerships: Collection<Ownership>;
-  shareholders: Collection<Shareholder>;
-  companies: Collection<Company>;
-  roles: Collection<Role>;
-  businessCodes: Collection<BusinessCode>;
-}
+import { IDatabase } from "./databaseSetup";
 
 export const connectToMongoDb = async (): Promise<IDatabase> => {
   const db_uri = process.env.DB_URI || process.env.MONGODB_URI;

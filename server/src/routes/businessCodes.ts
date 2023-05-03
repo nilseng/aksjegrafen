@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { matchedData, query } from "express-validator";
 import { asyncRouter } from "../asyncRouter";
-import { IDatabase } from "../database/mongoDB";
+import { IDatabase } from "../database/databaseSetup";
 
 const router = Router();
 

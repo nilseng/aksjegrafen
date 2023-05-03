@@ -1,6 +1,6 @@
 import { performance } from "perf_hooks";
 import { requestTimeout } from "../config";
-import { IDatabase } from "../database/mongoDB";
+import { IDatabase } from "../database/databaseSetup";
 import { Company, Relation } from "../models/models";
 import { isMaxMemoryExceeded } from "../utils/isMaxMemoryExceeded";
 

@@ -3,7 +3,7 @@ import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
 import { FilterQuery, ObjectID } from "mongodb";
 import { asyncRouter } from "../asyncRouter";
-import { IDatabase } from "../database/mongoDB";
+import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
