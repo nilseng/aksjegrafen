@@ -14,14 +14,51 @@ provider "aws" {
   profile = "admin"
 }
 
+
+data "aws_security_group" "default" {
+  name = "default"
+}
+
+locals {
+  security_group_id = data.aws_security_group.default.id
+}
+
+resource "aws_security_group_rule" "neo4j_browser" {
+  type              = "ingress"
+  from_port         = 7474
+  to_port           = 7474
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.security_group_id
+}
+
+resource "aws_security_group_rule" "neo4j_bolt" {
+  type              = "ingress"
+  from_port         = 7687
+  to_port           = 7687
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.security_group_id
+}
+
+resource "aws_security_group_rule" "ssh" {
+  type              = "ingress"
+  from_port         = 22
+  to_port           = 22
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.security_group_id
+}
+
 resource "aws_instance" "db_server" {
   ami           = "ami-0577c11149d377ab7"
   instance_type = "t3.small"
+  key_name      = "default_pair"
 
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
-    http_put_response_hop_limit = 1
+    http_put_response_hop_limit = 2
   }
 
   provisioner "remote-exec" {
@@ -36,8 +73,9 @@ resource "aws_instance" "db_server" {
     connection {
       type        = "ssh"
       user        = "ec2-user"
-      private_key = file("/Users/nilseng/.ssh/default.pem")
+      private_key = file("/Users/nilseng/.ssh/default_pair.pem")
       host        = self.public_ip
+      timeout     = "5m"
     }
   }
 
