@@ -5,7 +5,7 @@ export const mergeDuplicateOwnerships = async (db: IDatabase) => {
   console.log(`skipping ${count} items`);
   const ownerships = db.ownerships.find({}).sort({ _id: -1 }).skip(count);
   console.log("ownerships sorted and fetched");
-  ownerships.forEach(async (ownership) => {
+  for await (const ownership of ownerships) {
     count = count + 1;
     console.log(count);
     const dups = await db.ownerships
@@ -18,5 +18,5 @@ export const mergeDuplicateOwnerships = async (db: IDatabase) => {
     const firstId = dups[0]._id;
     const ids = dups.map((o) => o._id).filter((_id) => _id !== firstId);
     await db.ownerships.updateMany({ _id: { $in: ids } }, { $set: { deleted: true } });
-  });
+  }
 };

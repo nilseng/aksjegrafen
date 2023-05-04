@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
-import { FilterQuery, ObjectID } from "mongodb";
+import { Document, ObjectId } from "mongodb";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
@@ -21,7 +21,7 @@ export const api = (db: IDatabase, cache: Redis) => {
         cache.set("company_count", count);
         return res.json(count);
       } else if (req.query._id) {
-        const company = await db.companies.findOne({ _id: new ObjectID(req.query._id as string) });
+        const company = await db.companies.findOne({ _id: new ObjectId(req.query._id as string) });
         return res.json(company);
       } else if (req.query.orgnr && typeof req.query.orgnr === "string") {
         const company = await db.companies.findOne({ orgnr: req.query.orgnr });
@@ -42,7 +42,7 @@ export const api = (db: IDatabase, cache: Redis) => {
         cache.set("shareholder_count", count);
         return res.json(count);
       } else if (req.query._id) {
-        const shareholder = await db.shareholders.findOne({ _id: new ObjectID(req.query._id as string) });
+        const shareholder = await db.shareholders.findOne({ _id: new ObjectId(req.query._id as string) });
         return res.json(shareholder);
       } else {
         return res.status(400).json({ error: "Invalid query." });
@@ -149,7 +149,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const query = matchedData(req);
       const params = req.params;
       const shareholders: Shareholder[] = await db.shareholders
-        .aggregate([
+        .aggregate<Shareholder>([
           {
             $search: {
               index: "shareholder_search",
@@ -206,7 +206,7 @@ export const api = (db: IDatabase, cache: Redis) => {
 
       if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(404).send("Invalid query");
 
-      const filter: FilterQuery<Ownership> = {};
+      const filter: Document = {};
       if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
       if (query.shareHolderId) filter.shareHolderId = query.shareHolderId;
       if (query.shareholderOrgnr) filter.shareholderOrgnr = query.shareholderOrgnr;
@@ -243,7 +243,7 @@ export const api = (db: IDatabase, cache: Redis) => {
       const query = matchedData(req);
       const options = { limit: query.limit };
 
-      const filter: FilterQuery<Ownership> = {};
+      const filter: Document = {};
       if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
       if (query.orgnr) filter.orgnr = query.orgnr;
 
@@ -288,7 +288,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     query(["year"]).optional().toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const filter: FilterQuery<Ownership> = {};
+      const filter: Document = {};
       if (query.year) filter[`holdings.${query.year}`] = { $exists: true };
       if (query.count) {
         const count = await db.ownerships.countDocuments(filter);

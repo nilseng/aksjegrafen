@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from "mongodb";
+import { AnyBulkWriteOperation } from "mongodb";
 import { IDatabase } from "../database/databaseSetup";
 import { Ownership } from "../models/models";
 
@@ -7,7 +7,7 @@ export const mergeDuplicateOwnershipsByShareholderOrgnr = async (db: IDatabase) 
     .find({ shareholderOrgnr: { $exists: true, $ne: null }, old: { $exists: true } })
     .toArray();
   console.log(`Found ${ownerships.length} dups`);
-  const ops: BulkWriteOperation<Ownership>[] = [];
+  const ops: AnyBulkWriteOperation<Ownership>[] = [];
   ownerships.forEach(async (ownership) => {
     const dups = ownerships.filter(
       (o) => o.orgnr === ownership.orgnr && o.shareholderOrgnr === ownership.shareholderOrgnr

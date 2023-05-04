@@ -1,10 +1,10 @@
-import { BulkWriteOperation } from "mongodb";
+import { AnyBulkWriteOperation } from "mongodb";
 import { IDatabase } from "../database/databaseSetup";
 import { Ownership } from "../models/models";
 
 export const countTotalStocksByYearByOwnership = async (db: IDatabase) => {
   const ownerships = await db.ownerships.find({}).toArray();
-  const ops: BulkWriteOperation<Ownership>[] = [];
+  const ops: AnyBulkWriteOperation<Ownership>[] = [];
   ownerships.forEach((o, i) => {
     ops.push({
       updateOne: {

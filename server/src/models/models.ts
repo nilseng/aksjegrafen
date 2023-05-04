@@ -1,4 +1,4 @@
-import { ObjectID } from "mongodb";
+import { ObjectId } from "mongodb";
 
 export type Year = 2021 | 2020 | 2019;
 
@@ -15,7 +15,7 @@ export interface OwnershipRaw {
 }
 
 export interface Ownership {
-  _id: ObjectID;
+  _id: ObjectId;
   orgnr: string;
   shareHolderId: string;
   shareholderOrgnr?: string | null;
@@ -38,7 +38,7 @@ export enum ShareholderType {
 }
 
 export interface Company {
-  _id: ObjectID;
+  _id: ObjectId;
   orgnr: string;
   name: string;
   zipCode?: string;
@@ -84,7 +84,9 @@ export interface Role {
   shareholder?: Shareholder;
 }
 
-export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
+export type Relation =
+  | { role: Role; ownership?: never }
+  | { role?: never; ownership: Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings" | "investor" | "investment"> };
 
 export const isOwnership = (o: any): o is Ownership => {
   return (

@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from "mongodb";
+import { AnyBulkWriteOperation } from "mongodb";
 import { availableYears } from "../config";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership } from "../models/models";
@@ -10,7 +10,7 @@ export const countCompanySharesByYear = async (db: IDatabase) => {
     console.info(`skips ${skip} companies`);
     const companies = await db.companies.find({}).skip(skip).limit(limit).toArray();
     console.info(`Found ${companies.length} companies`);
-    const bulkWriteOps: BulkWriteOperation<Company>[] = [];
+    const bulkWriteOps: AnyBulkWriteOperation<Company>[] = [];
     await Promise.all(
       companies.map(async (company, i) => {
         await Promise.all(

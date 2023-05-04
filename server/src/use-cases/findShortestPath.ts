@@ -1,7 +1,7 @@
 import { performance } from "perf_hooks";
 import { requestTimeout } from "../config";
 import { IDatabase } from "../database/databaseSetup";
-import { Company, Relation } from "../models/models";
+import { Company, Ownership, Relation, Role, Shareholder } from "../models/models";
 import { isMaxMemoryExceeded } from "../utils/isMaxMemoryExceeded";
 
 export const findShortestPath = async ({
@@ -17,7 +17,7 @@ export const findShortestPath = async ({
   const paths: Relation[][] = [];
   const roles = await db.roles
     .find({ "holder.unit.orgnr": fromOrgnr })
-    .project({ orgnr: 1, type: 1, "holder.unit": 1 })
+    .project<Pick<Role, "orgnr" | "type" | "holder">>({ orgnr: 1, type: 1, "holder.unit": 1 })
     .toArray();
   for (const role of roles) {
     if (role.orgnr === toOrgnr) return resolveCompanies(db, [{ role }]);
@@ -25,7 +25,11 @@ export const findShortestPath = async ({
   }
   const ownerships = await db.ownerships
     .find({ shareholderOrgnr: fromOrgnr, "holdings.2021.total": { $gt: 0 } })
-    .project({ shareholderOrgnr: 1, orgnr: 1, "holdings.2021.total": 1 })
+    .project<Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings">>({
+      shareholderOrgnr: 1,
+      orgnr: 1,
+      "holdings.2021.total": 1,
+    })
     .toArray();
   for (const ownership of ownerships) {
     if (ownership.orgnr === toOrgnr) return resolveCompanies(db, [{ ownership }]);
@@ -53,22 +57,26 @@ const findPath = async (
   const orgnrs = Array.from(orgnrSet);
   const ownerships = await db.ownerships
     .find({ shareholderOrgnr: { $in: orgnrs }, "holdings.2021.total": { $gt: 0 } })
-    .project({ shareholderOrgnr: 1, orgnr: 1, "holdings.2021.total": 1 })
+    .project<Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings">>({
+      shareholderOrgnr: 1,
+      orgnr: 1,
+      "holdings.2021.total": 1,
+    })
     .toArray();
   if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
   checkTimeout(startedAt);
   const roles = await db.roles
     .find({ "holder.unit.orgnr": { $in: orgnrs } })
-    .project({ orgnr: 1, type: 1, "holder.unit": 1 })
+    .project<Pick<Role, "orgnr" | "type" | "holder">>({ orgnr: 1, type: 1, "holder.unit": 1 })
     .toArray();
   if (isMaxMemoryExceeded()) throw Error("Memory limit exceeded. Could not find shortest path");
   checkTimeout(startedAt);
   const newPaths: Relation[][] = [];
   const relationMap: { [targetOrgnr: string]: Relation } = {};
-  ownerships.forEach((ownership) => {
+  ownerships.forEach((ownership: Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings">) => {
     relationMap[ownership.orgnr] = { ownership };
   });
-  roles.forEach((role) => {
+  roles.forEach((role: Role) => {
     relationMap[role.orgnr] = { role };
   });
   for (const r of Object.values(relationMap)) {
@@ -147,17 +155,17 @@ const resolveCompanies = async (db: IDatabase, path: Relation[]): Promise<Relati
       };
     }
     if (relation.role?.orgnr) {
-      relation.role.company = companies.find((c) => c.orgnr === relation.role.orgnr);
-      relation.role.shareholder = shareholders.find((s) => s.orgnr === relation.role.orgnr);
+      relation.role.company = companies.find((c: Company) => c.orgnr === relation.role.orgnr);
+      relation.role.shareholder = shareholders.find((s: Shareholder) => s.orgnr === relation.role.orgnr);
     }
     if (relation.ownership?.shareholderOrgnr) {
       relation.ownership.investor = {
-        company: companies.find((c) => c.orgnr === relation.ownership.shareholderOrgnr),
-        shareholder: shareholders.find((s) => s.orgnr === relation.ownership.shareholderOrgnr),
+        company: companies.find((c: Company) => c.orgnr === relation.ownership.shareholderOrgnr),
+        shareholder: shareholders.find((s: Shareholder) => s.orgnr === relation.ownership.shareholderOrgnr),
       };
     }
     if (relation.ownership?.orgnr) {
-      relation.ownership.investment = companies.find((c) => c.orgnr === relation.ownership.orgnr);
+      relation.ownership.investment = companies.find((c: Company) => c.orgnr === relation.ownership.orgnr);
     }
   });
   return path;

@@ -8,15 +8,9 @@ export const connectToMongoDb = async (): Promise<IDatabase> => {
     throw Error("Could not find a database URI");
   }
 
-  const client = await MongoClient.connect(db_uri, {
-    useUnifiedTopology: true,
-  });
+  const client = await MongoClient.connect(db_uri);
 
-  if (client.isConnected()) {
-    console.log(`Mongoclient connected to database server`);
-  } else {
-    console.error("Mongoclient could not connect to database server");
-  }
+  console.log(`Mongoclient connected to database server`);
 
   // Retrieving mongodb collections
   const collections = {
@@ -49,11 +43,10 @@ export const connectToMongoDb = async (): Promise<IDatabase> => {
 
   //Capture app termination/restart events
   //To be called when process is restarted or terminated
-  const gracefulShutdown = (msg: string, callback: any) => {
-    client.close(() => {
-      console.log("Mongo client disconnected through " + msg);
-      callback();
-    });
+  const gracefulShutdown = async (msg: string, callback: any) => {
+    await client.close();
+    console.log("Mongo client disconnected through " + msg);
+    callback();
   };
 
   //For app termination

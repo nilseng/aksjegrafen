@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from "mongodb";
+import { AnyBulkWriteOperation } from "mongodb";
 import { IDatabase } from "../database/databaseSetup";
 import { Shareholder } from "../models/models";
 
@@ -9,7 +9,7 @@ export const deleteOldShareholders = async (db: IDatabase) => {
   ownerships.forEach((o) => {
     ownershipMap[o.shareHolderId] = true;
   });
-  const ops: BulkWriteOperation<Shareholder>[] = [];
+  const ops: AnyBulkWriteOperation<Shareholder>[] = [];
   for (const s of shareholders) {
     if (!ownershipMap[s.id]) ops.push({ updateOne: { filter: { _id: s._id }, update: { $set: { deleted: true } } } });
   }

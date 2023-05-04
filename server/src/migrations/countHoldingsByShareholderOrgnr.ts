@@ -1,4 +1,4 @@
-import { BulkWriteOperation } from "mongodb";
+import { AnyBulkWriteOperation } from "mongodb";
 import { IDatabase } from "../database/databaseSetup";
 import { Ownership, Year } from "../models/models";
 
@@ -42,7 +42,7 @@ export const countHoldingsByShareholderOrgnr = async (db: IDatabase) => {
       holdings,
     };
   });
-  const ops: BulkWriteOperation<Ownership>[] = [];
+  const ops: AnyBulkWriteOperation<Ownership>[] = [];
   Object.keys(dups).map((key) => {
     dups[key].forEach((dup) => {
       ops.push({ updateOne: { filter: { _id: dup._id }, update: { $set: { ...merged[key], old: dup } } } });
