@@ -12,7 +12,7 @@ export const ApiDocs = () => {
   return (
     <Container
       className="h-100 overflow-auto rounded p-4"
-      style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, ...theme.lowering }}
+      style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, color: theme.text, ...theme.lowering }}
     >
       <h5>API for aksjonærregisteret</h5>
       <p>
