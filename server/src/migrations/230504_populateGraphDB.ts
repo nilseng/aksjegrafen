@@ -5,7 +5,7 @@ import { Company, Ownership, Shareholder } from "../models/models";
 export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase; graphDB: Driver }) => {
   const ownerships = await mongoDB.ownerships
     .find({ "holdings.2021.total": { $gt: 0 } })
-    .limit(10000)
+    .limit(100_000)
     .toArray();
 
   const companies = await mongoDB.companies.find({ orgnr: { $in: ownerships.map((o) => o.orgnr) } }).toArray();
@@ -41,13 +41,17 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     }
   });
 
-  const params = {
-    ownerships,
-  };
-
   const session = graphDB.session();
 
-  const createCompaniesQuery = `
+  const chunkSize = 10_000;
+  for (let i = 0; i < ownerships.length; i += chunkSize) {
+    const ownershipChunk = ownerships.slice(i, i + chunkSize);
+
+    const params = {
+      ownerships: ownershipChunk,
+    };
+
+    const createCompaniesQuery = `
     UNWIND $ownerships as ownership
 
     MERGE (c:Company {orgnr: ownership.orgnr})
@@ -55,9 +59,9 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON MATCH SET c.total_stocks_2021 = ownership.total_stocks_2021, c.name = ownership.investment.name
   `;
 
-  await session.executeWrite((t) => t.run(createCompaniesQuery, params));
+    await session.executeWrite((t) => t.run(createCompaniesQuery, params));
 
-  const createShareholderCompaniesQuery = `
+    const createShareholderCompaniesQuery = `
     UNWIND $ownerships as ownership
 
     WITH ownership
@@ -67,9 +71,9 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON MATCH SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
   `;
 
-  await session.executeWrite((t) => t.run(createShareholderCompaniesQuery, params));
+    await session.executeWrite((t) => t.run(createShareholderCompaniesQuery, params));
 
-  const createShareholdersQuery = `
+    const createShareholdersQuery = `
     UNWIND $ownerships as ownership
 
     WITH ownership
@@ -79,9 +83,9 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON MATCH SET s.name = ownership.investor.shareholder.name
   `;
 
-  await session.executeWrite((t) => t.run(createShareholdersQuery, params));
+    await session.executeWrite((t) => t.run(createShareholdersQuery, params));
 
-  const createCompanyToCompanyRelationshipsQuery = `
+    const createCompanyToCompanyRelationshipsQuery = `
     UNWIND $ownerships as ownership
 
     WITH ownership
@@ -91,9 +95,9 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON CREATE SET csc.year = 2021, csc.stocks = ownership.stocks_2021, csc.share = ownership.share_2021
     ON MATCH SET csc.year = 2021, csc.stocks = ownership.stocks_2021, csc.share = ownership.share_2021
   `;
-  await session.executeWrite((t) => t.run(createCompanyToCompanyRelationshipsQuery, params));
+    await session.executeWrite((t) => t.run(createCompanyToCompanyRelationshipsQuery, params));
 
-  const createShareholderToCompanyRelationshipQuery = `
+    const createShareholderToCompanyRelationshipQuery = `
     UNWIND $ownerships as ownership
 
     WITH ownership
@@ -102,7 +106,8 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON CREATE SET sc.year = 2021, sc.stocks = ownership.stocks_2021, sc.share = ownership.share_2021
     ON MATCH SET sc.year = 2021, sc.stocks = ownership.stocks_2021, sc.share = ownership.share_2021
     `;
-  await session.executeWrite((t) => t.run(createShareholderToCompanyRelationshipQuery, params));
+    await session.executeWrite((t) => t.run(createShareholderToCompanyRelationshipQuery, params));
+  }
 
   await session.close();
 };
