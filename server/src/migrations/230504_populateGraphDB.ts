@@ -41,8 +41,6 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     }
   });
 
-  console.log(ownerships.find((o) => o.orgnr === "895397342"));
-
   const params = {
     ownerships,
   };
