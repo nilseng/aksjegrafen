@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import sslRedirect from "heroku-ssl-redirect";
 import morgan from "morgan";
+import { Driver } from "neo4j-driver";
 import path from "path";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
@@ -45,11 +46,6 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
-  const session = graphDB.session();
-  await session.run("CREATE (a:Person {name: $name}) RETURN a", { name: "Teodor!" });
-  await session.close();
-  await graphDB.close();
-
   const cache = await initializeCache();
 
   app.use("/api", api(db, cache));
@@ -71,6 +67,25 @@ const initializeApp = async () => {
   if (argv.import) importData(db, argv.year as Year, argv.data);
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
   if (argv.clearCache) cache.flushdb();
+
+  gracefulShutdown({ graphDB });
 };
 
 initializeApp();
+
+// TODO: Move MongoDB shutdown here also
+const gracefulShutdown = ({ graphDB }: { graphDB: Driver }) => {
+  process.on("SIGINT", async () => {
+    await graphDB.close();
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", async () => {
+    await handleShutDown({ graphDB });
+  });
+};
+
+const handleShutDown = async ({ graphDB }: { graphDB: Driver }) => {
+  await graphDB.close();
+  process.exit(0);
+};
