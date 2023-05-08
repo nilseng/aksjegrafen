@@ -4,5 +4,6 @@ dotenv.config();
 
 export const graphDB = neo4j.driver(
   process.env.NEO4J_URL!,
-  auth.basic(process.env.NEO4J_USERNAME!, process.env.NEO4J_PWD!)
+  auth.basic(process.env.NEO4J_USERNAME!, process.env.NEO4J_PWD!),
+  { connectionTimeout: 1200_000 }
 );
