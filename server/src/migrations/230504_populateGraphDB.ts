@@ -45,6 +45,8 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
 
   const chunkSize = 10_000;
   for (let i = 0; i < ownerships.length; i += chunkSize) {
+    console.info(`Adding ownerships ${i} to ${i + chunkSize} to graph.`);
+
     const ownershipChunk = ownerships.slice(i, i + chunkSize);
 
     const params = {
@@ -60,6 +62,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
   `;
 
     await session.executeWrite((t) => t.run(createCompaniesQuery, params));
+    console.info("Created company nodes.");
 
     const createShareholderCompaniesQuery = `
     UNWIND $ownerships as ownership
@@ -72,6 +75,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
   `;
 
     await session.executeWrite((t) => t.run(createShareholderCompaniesQuery, params));
+    console.info("Created company shareholder nodes.");
 
     const createShareholdersQuery = `
     UNWIND $ownerships as ownership
@@ -84,6 +88,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
   `;
 
     await session.executeWrite((t) => t.run(createShareholdersQuery, params));
+    console.info("Created shareholder nodes.");
 
     const createCompanyToCompanyRelationshipsQuery = `
     UNWIND $ownerships as ownership
@@ -96,6 +101,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON MATCH SET csc.year = 2021, csc.stocks = ownership.stocks_2021, csc.share = ownership.share_2021
   `;
     await session.executeWrite((t) => t.run(createCompanyToCompanyRelationshipsQuery, params));
+    console.info("Created company to company relationships");
 
     const createShareholderToCompanyRelationshipQuery = `
     UNWIND $ownerships as ownership
@@ -107,6 +113,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     ON MATCH SET sc.year = 2021, sc.stocks = ownership.stocks_2021, sc.share = ownership.share_2021
     `;
     await session.executeWrite((t) => t.run(createShareholderToCompanyRelationshipQuery, params));
+    console.info("Created shareholder to company relationships.");
   }
 
   await session.close();
