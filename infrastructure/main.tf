@@ -52,7 +52,7 @@ resource "aws_security_group_rule" "ssh" {
 
 resource "aws_instance" "db_server" {
   ami           = "ami-0577c11149d377ab7"
-  instance_type = "t3.small"
+  instance_type = "t3.large"
   key_name      = "default_pair"
 
   metadata_options {
