@@ -3,17 +3,12 @@ import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
 
 export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase; graphDB: Driver }) => {
-  const ownerships = await mongoDB.ownerships
-    .find({ "holdings.2021.total": { $gt: 0 } })
-    .limit(100_000)
-    .toArray();
+  const ownerships = await mongoDB.ownerships.find({ "holdings.2021.total": { $gt: 0 } }).toArray();
 
-  const companies = await mongoDB.companies.find({ orgnr: { $in: ownerships.map((o) => o.orgnr) } }).toArray();
+  const companies = await mongoDB.companies.find({}).toArray();
   console.info(`Fetched ${companies.length} companies.`);
 
-  const shareholders = await mongoDB.shareholders
-    .find({ id: { $in: ownerships.map((o) => o.shareHolderId) } })
-    .toArray();
+  const shareholders = await mongoDB.shareholders.find({}).toArray();
   console.info(`Fetched ${shareholders.length} shareholders.`);
 
   const companyMap: { [orgnr: string]: Company } = {};
@@ -95,7 +90,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
 
     WITH ownership
     WHERE ownership.shareholderOrgnr IS NOT NULL
-    MATCH (p1:Shareholder {orgnr: ownership.shareholderOrgnr}), (c1: Company {orgnr: ownership.orgnr})
+    MATCH (p1:Company {orgnr: ownership.shareholderOrgnr}), (c1: Company {orgnr: ownership.orgnr})
     MERGE (p1)-[csc:OWNS {year: 2021}]->(c1)
     ON CREATE SET csc.year = 2021, csc.stocks = ownership.stocks_2021, csc.share = ownership.share_2021
     ON MATCH SET csc.year = 2021, csc.stocks = ownership.stocks_2021, csc.share = ownership.share_2021
@@ -107,6 +102,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
     UNWIND $ownerships as ownership
 
     WITH ownership
+    WHERE ownership.shareholderOrgnr IS NULL
     MATCH (p2:Shareholder {id: ownership.investor.shareholder.id}), (c2: Company {orgnr: ownership.orgnr})
     MERGE (p2)-[sc:OWNS {year: 2021}]->(c2)
     ON CREATE SET sc.year = 2021, sc.stocks = ownership.stocks_2021, sc.share = ownership.share_2021
