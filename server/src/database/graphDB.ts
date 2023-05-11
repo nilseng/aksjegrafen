@@ -16,4 +16,16 @@ const createIndexes = async () => {
   session.close();
 };
 
-// createIndexes();
+const createConstraints = async () => {
+  const session = graphDB.session();
+  console.info("Creating constraints");
+  await session.run(`CREATE CONSTRAINT unique_unit_orgnrs IF NOT EXISTS FOR (u:Unit) REQUIRE u.orgnr IS UNIQUE`);
+  await session.run(
+    `CREATE CONSTRAINT unique_people IF NOT EXISTS FOR (p:Person) REQUIRE (p.birthDate, p.firstName, p.lastName) IS UNIQUE`
+  );
+  console.info("Created constraints");
+  session.close();
+};
+
+createIndexes();
+createConstraints();
