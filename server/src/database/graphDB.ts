@@ -7,3 +7,13 @@ export const graphDB = neo4j.driver(
   auth.basic(process.env.NEO4J_USERNAME!, process.env.NEO4J_PWD!),
   { connectionTimeout: 600_000, maxConnectionLifetime: 600_000, connectionAcquisitionTimeout: 600_000 }
 );
+
+/* const createIndexes = async () => {
+  const session = graphDB.session();
+  console.info("Creating indexes");
+  await session.run(`CREATE INDEX shareholderOrgnr IF NOT EXISTS FOR (s:Shareholder) ON (s.shareholderOrgnr)`);
+  console.info("Indexes created");
+  session.close();
+};
+
+createIndexes(); */
