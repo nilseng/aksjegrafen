@@ -71,6 +71,7 @@ export interface Role {
   orgnr: string;
   holder: {
     person?: {
+      birthDate?: string;
       fornavn?: string;
       etternavn?: string;
     };
