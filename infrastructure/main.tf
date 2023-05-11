@@ -67,7 +67,11 @@ resource "aws_instance" "db_server" {
       "sudo yum install -y docker",
       "sudo systemctl start docker",
       "sudo systemctl enable docker",
-      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v ${var.mount_path}:/data neo4j"
+      "sudo mkdir plugins",
+      "sudo pushd plugins",
+      "wget https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/5.7.0/apoc-5.7.0-extended.jar",
+      "sudo popd",
+      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v ${var.mount_path}:/data -v /plugins:/var/lib/neo4j/plugins --env NEO4J_dbms_security_procedures_unrestricted=apoc.* --env NEO4J_dbms_memory_pagecache_size=5g --env NEO4J_db_transaction_timeout=300s --env NEO4J_PLUGINS=[apoc] neo4j"
     ]
 
     connection {
