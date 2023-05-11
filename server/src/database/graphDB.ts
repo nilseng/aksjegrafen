@@ -8,7 +8,7 @@ export const graphDB = neo4j.driver(
   { connectionTimeout: 600_000, maxConnectionLifetime: 600_000, connectionAcquisitionTimeout: 600_000 }
 );
 
-/* const createIndexes = async () => {
+const createIndexes = async () => {
   const session = graphDB.session();
   console.info("Creating indexes");
   await session.run(`CREATE INDEX shareholderOrgnr IF NOT EXISTS FOR (s:Shareholder) ON (s.shareholderOrgnr)`);
@@ -16,4 +16,4 @@ export const graphDB = neo4j.driver(
   session.close();
 };
 
-createIndexes(); */
+// createIndexes();
