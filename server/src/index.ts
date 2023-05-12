@@ -48,7 +48,7 @@ const initializeApp = async () => {
 
   const cache = await initializeCache();
 
-  app.use("/api", api(db, cache));
+  app.use("/api", api({ graphDB, mongoDB: db, cache }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
 
