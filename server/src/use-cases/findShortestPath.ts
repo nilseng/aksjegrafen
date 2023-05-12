@@ -24,8 +24,6 @@ export const findShortestPath = async ({
   const res = await session.run(findShortestPathQuery);
   session.close();
 
-  console.log(res.records);
-
   return res.records.length === 0 ? [] : mapPathToRelations(res.records[0].get("path"));
 };
 
