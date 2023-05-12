@@ -45,8 +45,8 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
     UNWIND $roles as role
 
     WITH role
-    WHERE role.holder.person IS NOT NULL
-    MERGE (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.firstName, ''), lastName: coalesce(role.holder.person.lastName, '')})
+    WHERE role.holder.person.birthDate IS NOT NULL OR role.holder.person.fornavn IS NOT NULL OR role.holder.person.etternavn
+    MERGE (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')})
 `;
     await session.executeWrite((t) => t.run(createPersonsQuery, params));
     console.info("Created person nodes.");
@@ -68,8 +68,8 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
     UNWIND $roles as role
 
     WITH role
-    WHERE role.holder.person IS NOT NULL
-    MATCH (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.firstName, ''), lastName: coalesce(role.holder.person.lastName, '')}), (c:Company {orgnr: role.orgnr})
+    WHERE role.holder.person.birthDate IS NOT NULL OR role.holder.person.fornavn IS NOT NULL OR role.holder.person.etternavn
+    MATCH (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')}), (c:Company {orgnr: role.orgnr})
     CALL apoc.create.relationship(p, role.type, {}, c) YIELD rel
     WITH rel, role
     RETURN null
