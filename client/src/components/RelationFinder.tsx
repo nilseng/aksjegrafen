@@ -34,17 +34,19 @@ export const RelationFinder = () => {
         <span style={{ color: theme.secondary }}>{target?.name ?? "?"}</span>
       </h5>
       <div className="flex-fill w-100 p-sm-5">
-        <SearchComponent
-          mapResultToListItem={(company: ICompany) => ({
-            key: company._id,
-            name: company.name,
-            tags: company.orgnr ? [company.orgnr] : [],
-          })}
-          placeholder="Søk og velg selskap..."
-          apiPath={"/api/company"}
-          query={{ limit: 10 }}
-          handleClick={(company: ICompany) => setTarget(company)}
-        />
+        <div style={{ height: "38px" }}>
+          <SearchComponent
+            mapResultToListItem={(company: ICompany) => ({
+              key: company._id,
+              name: company.name,
+              tags: company.orgnr ? [company.orgnr] : [],
+            })}
+            placeholder="Søk og velg selskap..."
+            apiPath={"/api/company"}
+            query={{ limit: 10 }}
+            handleClick={(company: ICompany) => setTarget(company)}
+          />
+        </div>
         {isLoading && (
           <div className="p-sm-5">
             <Loading color={theme.primary} backgroundColor={"transparent"} text={"Dette kan ta litt tid...🧘🏻‍♂️"} />
