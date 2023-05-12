@@ -2,6 +2,7 @@ import { Router } from "express";
 import { matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
 import { Document, ObjectId } from "mongodb";
+import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
@@ -10,7 +11,7 @@ import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
 
-export const api = (db: IDatabase, cache: Redis) => {
+export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB: IDatabase; cache: Redis }) => {
   router.get(
     "/company",
     asyncRouter(async (req, res) => {
@@ -306,7 +307,7 @@ export const api = (db: IDatabase, cache: Redis) => {
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       if (!query.fromOrgnr || !query.toOrgnr) return res.status(400).send();
-      const data = await findShortestPath({ db, fromOrgnr: query.fromOrgnr, toOrgnr: query.toOrgnr });
+      const data = await findShortestPath({ graphDB, fromOrgnr: query.fromOrgnr, toOrgnr: query.toOrgnr });
       return data ? res.status(200).json(data) : res.status(204).json();
     })
   );
