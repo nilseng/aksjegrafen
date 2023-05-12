@@ -29,8 +29,8 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
       shareholder: o.shareholderOrgnr ? shareholderMap[o.shareholderOrgnr] : shareholderMap[o.shareHolderId],
     };
     (o as Ownership & { total_stocks_2021?: number }).total_stocks_2021 = o.investment.shares?.[2021]?.total;
-    if (o.holdings[2021].total) (o as Ownership & { stocks_2021: number }).stocks_2021 = o.holdings[2021].total;
-    if (o.holdings[2021].total) {
+    if (o.holdings[2021]?.total) (o as Ownership & { stocks_2021: number }).stocks_2021 = o.holdings[2021].total;
+    if (o.holdings[2021]?.total) {
       (o as Ownership & { share_2021: number }).share_2021 =
         o.holdings[2021].total / o.investment.shares?.[2021]?.total!;
     }
@@ -38,7 +38,7 @@ export const populateGraphDB = async ({ mongoDB, graphDB }: { mongoDB: IDatabase
 
   const session = graphDB.session();
 
-  const chunkSize = 10_000;
+  const chunkSize = 50_000;
   for (let i = 0; i < ownerships.length; i += chunkSize) {
     console.info(`Adding ownerships ${i} to ${i + chunkSize} to graph.`);
 

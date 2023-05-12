@@ -30,7 +30,7 @@ const getOwnershipShare = (
 ): number | null => {
   const companyStocks = getCompanyStocks(o, year, investor, investment);
   if (!companyStocks) return null;
-  return o.holdings[year].total / companyStocks;
+  return (o.holdings[year]?.total ?? 0) / companyStocks;
 };
 
 const getOwnershipShareText = (o: IOwnership, year: Year, investor?: IShareholder, investment?: ICompany): string => {
@@ -41,8 +41,8 @@ const getOwnershipShareText = (o: IOwnership, year: Year, investor?: IShareholde
 
 const getOwnershipChange = (o: IOwnership, year: Year) => {
   if (year === Math.min(...availableYears)) return null;
-  const cy = o.holdings[year].total;
-  const ly = o.holdings[(year - 1) as Year].total;
+  const cy = o.holdings[year]?.total ?? 0;
+  const ly = o.holdings[(year - 1) as Year]?.total ?? 0;
   if (!cy && !ly) return null;
   return cy - ly;
 };
@@ -202,7 +202,7 @@ export const OwnershipTable = ({
                 {getOwnershipShareText(o, year, investor, investment)}
               </p>
               <p className="small m-0" style={{ height: "1rem" }}>
-                {o.holdings[year]?.total ? o.holdings[year].total.toLocaleString() : ""}
+                {o.holdings[year]?.total ? o.holdings[year]?.total.toLocaleString() : ""}
               </p>
               {getOwnershipChangeText(o, year)}
               {getOwnershipShareChangePpText(o, year, investor, investment)}

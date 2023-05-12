@@ -4,14 +4,14 @@ import { Ownership, Year } from "../models/models";
 
 const getHoldingsByYear = (ownerships: Ownership[], year: Year) => {
   const holdings: Ownership["holdings"][Year] = {
-    total: ownerships.reduce((tot, h) => tot + h.holdings[year].total, 0),
+    total: ownerships.reduce((tot, h) => tot + (h.holdings[year]?.total ?? 0), 0),
   };
   ownerships.forEach((o) => {
-    Object.keys(o.holdings[year])
+    Object.keys(o.holdings[year] ?? {})
       .filter((key) => key !== "total")
       .forEach((key) => {
-        if (holdings[key] && o.holdings[year][key]) holdings[key] += o.holdings[year][key];
-        holdings[key] = o.holdings[year][key];
+        if (holdings[key] && o.holdings[year]?.[key]) holdings[key] += o.holdings[year]?.[key] ?? 0;
+        holdings[key] = o.holdings[year]?.[key] ?? 0;
       });
   });
   return holdings;

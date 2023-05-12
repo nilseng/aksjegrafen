@@ -15,14 +15,14 @@ export interface OwnershipRaw {
 }
 
 export interface Ownership {
-  _id: ObjectId;
+  _id?: ObjectId;
   orgnr: string;
   shareHolderId: string;
   shareholderOrgnr?: string | null;
   investor?: { company?: Company; shareholder?: Shareholder };
   investment?: Company | null;
   holdings: {
-    [year in Year]: {
+    [year in Year]?: {
       total: number;
       [stockClass: string]: number;
     };
@@ -38,7 +38,7 @@ export enum ShareholderType {
 }
 
 export interface Company {
-  _id: ObjectId;
+  _id?: ObjectId;
   orgnr: string;
   name: string;
   zipCode?: string;
