@@ -65,7 +65,7 @@ export const RelationFinder = () => {
                     </span>{" "}
                     for{" "}
                     <span style={{ color: theme.secondary }}>
-                      {relation.role.company?.name ?? relation.role.company?.name ?? relation.role.shareholder?.name}
+                      {relation.role.company?.name ?? relation.role.shareholder?.name}
                     </span>
                   </p>
                 )}
@@ -74,7 +74,7 @@ export const RelationFinder = () => {
                     <span style={{ color: theme.primary }}>
                       {relation.ownership.investor?.company?.name ?? relation.ownership.investor?.shareholder.name}
                     </span>{" "}
-                    eier <span className="font-weight-bold">{relation.ownership.holdings[2021].total}</span> aksjer i{" "}
+                    eier <span className="font-weight-bold">{relation.ownership.holdings[2021]?.total}</span> aksjer i{" "}
                     <span style={{ color: theme.secondary }}>{relation.ownership.investment?.name}</span>
                   </p>
                 )}
