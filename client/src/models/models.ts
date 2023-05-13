@@ -31,6 +31,7 @@ export type IShareholder = ICompany & IPerson & { _id: string; id: string; kind:
 
 export const isShareholder = (o: any): o is IShareholder => {
   return (
+    o &&
     o._id &&
     typeof o._id === "string" &&
     o.id &&
