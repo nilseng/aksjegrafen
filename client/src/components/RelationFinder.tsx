@@ -55,7 +55,14 @@ export const RelationFinder = () => {
         {path && (
           <div className="p-2 p-sm-4" style={{ backgroundColor: theme.backgroundSecondary, borderRadius: "8px" }}>
             {path?.map((relation) => (
-              <div key={relation.role?.holder.unit?.orgnr ?? relation.ownership?.shareholderOrgnr} className="w-100">
+              <div
+                key={
+                  relation.role?.holder.unit?.orgnr ??
+                  relation.ownership?.shareholderOrgnr ??
+                  relation.ownership?.shareHolderId
+                }
+                className="w-100"
+              >
                 {relation.role && (
                   <p>
                     <span style={{ color: theme.primary }}>
