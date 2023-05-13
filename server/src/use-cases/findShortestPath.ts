@@ -8,16 +8,22 @@ interface PathResult {
 export const findShortestPath = async ({
   graphDB,
   fromOrgnr,
+  fromShareholderId,
   toOrgnr,
 }: {
   graphDB: GraphDB;
-  fromOrgnr: string;
+  fromOrgnr?: string;
+  fromShareholderId?: string;
   toOrgnr: string;
 }): Promise<Relation[] | null | undefined> => {
+  if (!(fromOrgnr || fromShareholderId)) throw Error("Source orgnr or shareholder id must be defined.");
+
   const session = graphDB.session();
 
   const findShortestPathQuery = `
-  MATCH (start:Company {orgnr: "${fromOrgnr}"}), (end:Company {orgnr: "${toOrgnr}"})
+  MATCH ${
+    fromOrgnr ? `(start:Company {orgnr: "${fromOrgnr}"})` : `(start:Shareholder {id: "${fromShareholderId}"})`
+  }, (end:Company {orgnr: "${toOrgnr}"})
   OPTIONAL MATCH path = shortestPath((start)-[*]->(end))
   RETURN path
   `;

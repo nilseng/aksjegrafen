@@ -303,11 +303,17 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
 
   router.get(
     "/find-relations",
-    query(["fromOrgnr", "toOrgnr"]),
+    query(["fromOrgnr", "fromShareholderId"]).optional(),
+    query(["toOrgnr"]),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      if (!query.fromOrgnr || !query.toOrgnr) return res.status(400).send();
-      const data = await findShortestPath({ graphDB, fromOrgnr: query.fromOrgnr, toOrgnr: query.toOrgnr });
+      if (!(query.fromOrgnr || query.fromShareholderId) || !query.toOrgnr) return res.status(400).send();
+      const data = await findShortestPath({
+        graphDB,
+        fromOrgnr: query.fromOrgnr,
+        fromShareholderId: query.fromShareholderId,
+        toOrgnr: query.toOrgnr,
+      });
       return data ? res.status(200).json(data) : res.status(204).json();
     })
   );
