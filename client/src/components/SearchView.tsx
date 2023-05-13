@@ -136,6 +136,12 @@ export const SearchView = () => {
                         handleClick: (shareholder: IShareholder) =>
                           history.push(`/graph?shareholder_id=${shareholder._id}`),
                       },
+                      {
+                        name: "relation-finder-button",
+                        buttonContent: <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />,
+                        handleClick: (shareholder: IShareholder) =>
+                          history.push(`/relation-finder?shareholder_id=${shareholder._id}`),
+                      },
                     ],
                   })}
                   placeholder="...eller aksjonær..."
