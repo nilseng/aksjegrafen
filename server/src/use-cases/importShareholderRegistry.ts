@@ -41,15 +41,19 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
       fileName = "aksjeeiebok__2021.csv";
       break;
     }
+    case 2022: {
+      fileName = "aksjeeiebok__2022.csv";
+      break;
+    }
     default: {
       console.log("-------------");
-      console.log("Specify for which year you want to import data (2019, 2020 or 2021)");
+      console.log("Specify for which year you want to import data (2019, 2020, 2021 or 2022)");
       console.log("-------------");
       return;
     }
   }
   console.log("------------- Data import started -------------");
-  const ownerships: Ownership[] = [];
+  const ownerships: { [key: string]: Ownership } = {};
   const companies: { [key: string]: Company } = {};
   const shareholders: { [key: string]: Shareholder } = {};
   let counter = 0;
@@ -73,8 +77,15 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
         if (counter % 100000 === 0) console.log(`-------------${counter} rows read -------------`);
 
         const ownership = mapOwnership(raw, year);
-        if (isOwnership(ownership)) ownerships.push(ownership);
-        else console.log("Invalid ownership", ownership, raw);
+        const key = `${ownership.shareholderOrgnr ?? ownership.shareHolderId}-${ownership.orgnr}`;
+        if (isOwnership(ownership)) {
+          if (ownerships[key]) {
+            ownerships[key].holdings[year] = {
+              ...ownership.holdings[year],
+              total: ownerships[key].holdings[year]?.total! + ownership.holdings[year]?.total!,
+            };
+          } else ownerships[key] = ownership;
+        } else console.log("Invalid ownership", ownership, raw);
 
         const company = mapCompany(raw, year);
         if (isCompany(company)) companies[company.orgnr] = company;
@@ -91,7 +102,19 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
       console.log("OWNERSHIP:", ownerships[0]);
       console.log("COMPANY:", Object.values(companies)[0]);
       console.log("SHAREHOLDER", Object.values(shareholders)[0]);
-      if (data?.includes("ownerships")) await db.ownerships.insertMany(ownerships);
+      if (data?.includes("ownerships")) {
+        await db.ownerships.bulkWrite(
+          Object.values(ownerships).map((o) => ({
+            updateOne: {
+              filter: {
+                orgnr: o.orgnr,
+                ...(o.shareholderOrgnr ? { shareholderOrgnr: o.shareholderOrgnr } : { shareHolderId: o.shareHolderId }),
+              },
+              update: { $set: { [`holdings.${year}`]: o.holdings[year] } },
+            },
+          }))
+        );
+      }
       if (data?.includes("companies")) {
         await db.companies.bulkWrite(
           Object.values(companies).map((c) => ({
@@ -110,16 +133,13 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
     });
 };
 
-const mapOwnership = (
-  raw: OwnershipRaw,
-  year: number
-): Omit<Ownership, "_id" | "holdings"> & { holdings: { [key: number]: { [stockClass: string]: number } } } => {
+const mapOwnership = (raw: OwnershipRaw, year: Year): Omit<Ownership, "_id"> => {
   return {
     orgnr: raw.orgnr,
     shareHolderId: raw.shareholderName + raw.yobOrOrgnr + raw.zipLocation + raw.countryCode,
     shareholderOrgnr: raw.yobOrOrgnr?.length === 9 ? raw.yobOrOrgnr : undefined,
     holdings: {
-      [year]: { [raw.shareClass]: +raw.shareholderStocks },
+      [year]: { total: +raw.shareholderStocks, [raw.shareClass]: +raw.shareholderStocks },
     },
   };
 };
