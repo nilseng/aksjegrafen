@@ -11,17 +11,22 @@ export const HowToModal = () => {
 
   if (!isOpen)
     return (
-      <div className="btn position-absolute p-0 mr-2 mr-sm-4" style={{ right: 0 }} onClick={() => setIsOpen(true)}>
+      <div
+        className="btn position-absolute p-0 mr-2 mr-sm-4 mb-2 mb-sm-4"
+        style={{ right: 0, bottom: 0 }}
+        onClick={() => setIsOpen(true)}
+      >
         <FontAwesomeIcon className="m-2" style={{ color: theme.primary }} icon={faInfoCircle} />
       </div>
     );
 
   return (
     <div
-      className="position-absolute h-75 w-75 mr-2 mr-sm-4"
+      className="position-absolute h-75 w-75 mr-2 mr-sm-4 mb-2 mb-sm-4"
       style={{
         color: theme.text,
         right: 0,
+        bottom: 0,
         ...theme.elevation,
         backgroundColor: theme.backgroundSecondary,
         overflow: "scroll",
