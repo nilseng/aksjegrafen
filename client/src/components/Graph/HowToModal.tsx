@@ -18,7 +18,7 @@ export const HowToModal = () => {
 
   return (
     <div
-      className="position-absolute h-75 w-50 mr-4"
+      className="position-absolute h-75 w-75 mr-2 mr-sm-4"
       style={{
         color: theme.text,
         right: 0,
