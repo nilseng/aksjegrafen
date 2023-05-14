@@ -15,6 +15,7 @@ type GraphOwnership = Ownership & {
   share_2020?: number;
   share_2021?: number;
   share_2022?: number;
+  [key: string]: number | undefined;
 };
 
 export const importShareholderRegistryToGraph = async ({
