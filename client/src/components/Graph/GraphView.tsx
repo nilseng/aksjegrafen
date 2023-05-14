@@ -1,7 +1,8 @@
 import { useContext, useRef, useState } from "react";
 import { AppContext } from "../../AppContext";
 import { useZoom } from "../../hooks/useSvgZoom";
-import { GraphContext, Year } from "./GraphContainer";
+import { Year } from "../../models/models";
+import { GraphContext } from "./GraphContainer";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";

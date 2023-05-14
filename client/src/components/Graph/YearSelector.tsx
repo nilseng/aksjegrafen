@@ -1,7 +1,8 @@
 import { useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { availableYears } from "../../config";
-import { GraphContext, Year } from "./GraphContainer";
+import { Year } from "../../models/models";
+import { GraphContext } from "./GraphContainer";
 
 export const YearSelector = () => {
   const { theme } = useContext(AppContext);

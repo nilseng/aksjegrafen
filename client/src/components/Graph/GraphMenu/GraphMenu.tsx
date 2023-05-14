@@ -12,8 +12,9 @@ import { useContext, useEffect, useState } from "react";
 import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../AppContext";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
+import { Year } from "../../../models/models";
 import { GraphLogo } from "../../GraphLogo";
-import { GraphContext, IGraphDefaultActions, IGraphNodeActions, Year } from "../GraphContainer";
+import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../GraphContainer";
 import { IGraphNode } from "../GraphUtils";
 import { GraphMenuItem } from "./GraphMenuItem";
 

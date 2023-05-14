@@ -4,15 +4,13 @@ import { toast } from "react-toastify";
 import { AppContext } from "../../AppContext";
 import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { useEntity } from "../../hooks/useEntity";
-import { ICompany, isCompany, IShareholder, isShareholder } from "../../models/models";
+import { ICompany, isCompany, IShareholder, isShareholder, Year } from "../../models/models";
 import { getInvestments, getInvestors, useInvestments, useInvestors } from "../../services/apiService";
 import Loading from "../Loading";
 import { GraphDetailsModal } from "./GraphModal/GraphDetailsModal";
 import { graphSimulation, initializeGraphSimulation } from "./GraphService";
 import { getDuplicateCount, IGraphDimensions, IGraphLink, IGraphNode } from "./GraphUtils";
 import { GraphView } from "./GraphView";
-
-export type Year = 2021 | 2020 | 2019;
 
 const graphConfig: IGraphDimensions = {
   width: 1000,
