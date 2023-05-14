@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
 import { GraphContainer } from "./components/Graph/GraphContainer";
