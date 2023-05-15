@@ -105,13 +105,13 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
       console.log("SHAREHOLDER", Object.values(shareholders)[0]);
       if (data?.includes("ownerships")) {
         await db.ownerships.bulkWrite(
-          Object.values(ownerships).map((o) => ({
+          Object.values(ownerships).map(({ holdings, ...o }) => ({
             updateOne: {
               filter: {
                 orgnr: o.orgnr,
                 ...(o.shareholderOrgnr ? { shareholderOrgnr: o.shareholderOrgnr } : { shareHolderId: o.shareHolderId }),
               },
-              update: { $set: { [`holdings.${year}`]: o.holdings[year] } },
+              update: { $set: { ...o, [`holdings.${year}`]: holdings[year] } },
               upsert: true,
             },
           }))
