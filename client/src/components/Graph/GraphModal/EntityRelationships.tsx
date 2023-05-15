@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { AppContext } from "../../../AppContext";
+import { availableYears } from "../../../config";
 import { ICompany, IShareholder } from "../../../models/models";
 
 interface IProps {
@@ -16,9 +17,14 @@ export const EntityRelationships = ({ entity }: IProps) => {
           <p className="font-weight-bold" style={{ color: theme.primary }}>
             Investeringer
           </p>
-          {entity.investmentCount[2021] && <p className="small pl-2">2021: {entity.investmentCount[2021]}</p>}
-          {entity.investmentCount[2020] && <p className="small pl-2">2020: {entity.investmentCount[2020]}</p>}
-          {entity.investmentCount[2019] && <p className="small pl-2">2019: {entity.investmentCount[2019]}</p>}
+          {availableYears.map(
+            (year) =>
+              entity.investmentCount?.[year] && (
+                <p key={year} className="small pl-2">
+                  {year}: {entity.investmentCount[year]?.toLocaleString("NO")}
+                </p>
+              )
+          )}
         </div>
       )}
       {entity.investorCount && (
@@ -26,9 +32,14 @@ export const EntityRelationships = ({ entity }: IProps) => {
           <p className="font-weight-bold" style={{ color: theme.secondary }}>
             Investorer
           </p>
-          {entity.investorCount[2021] && <p className="small pl-2">2021: {entity.investorCount[2021]}</p>}
-          {entity.investorCount[2020] && <p className="small pl-2">2020: {entity.investorCount[2020]}</p>}
-          {entity.investorCount[2019] && <p className="small pl-2">2019: {entity.investorCount[2019]}</p>}
+          {availableYears.map(
+            (year) =>
+              entity.investorCount?.[year] && (
+                <p key={year} className="small pl-2">
+                  {year}: {entity.investorCount[year]?.toLocaleString("NO")}
+                </p>
+              )
+          )}
         </div>
       )}
     </div>
