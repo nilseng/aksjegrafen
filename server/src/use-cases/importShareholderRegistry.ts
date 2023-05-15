@@ -81,6 +81,7 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
         if (isOwnership(ownership)) {
           if (ownerships[key]) {
             ownerships[key].holdings[year] = {
+              ...ownerships[key].holdings[year],
               ...ownership.holdings[year],
               total: ownerships[key].holdings[year]?.total! + ownership.holdings[year]?.total!,
             };
@@ -99,7 +100,7 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
     .on("end", async () => {
       console.log("------------- Data transform complete -------------");
       console.log("------------- Sample data -------------");
-      console.log("OWNERSHIP:", ownerships[0]);
+      console.log("OWNERSHIP:", Object.values(ownerships)[0]);
       console.log("COMPANY:", Object.values(companies)[0]);
       console.log("SHAREHOLDER", Object.values(shareholders)[0]);
       if (data?.includes("ownerships")) {
@@ -111,14 +112,19 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
                 ...(o.shareholderOrgnr ? { shareholderOrgnr: o.shareholderOrgnr } : { shareHolderId: o.shareHolderId }),
               },
               update: { $set: { [`holdings.${year}`]: o.holdings[year] } },
+              upsert: true,
             },
           }))
         );
       }
       if (data?.includes("companies")) {
         await db.companies.bulkWrite(
-          Object.values(companies).map((c) => ({
-            updateOne: { filter: { orgnr: c.orgnr }, update: { $set: c }, upsert: true },
+          Object.values(companies).map(({ shares, ...c }) => ({
+            updateOne: {
+              filter: { orgnr: c.orgnr },
+              update: { $set: { ...c, [`shares.${year}`]: shares?.[year] } },
+              upsert: true,
+            },
           }))
         );
       }
