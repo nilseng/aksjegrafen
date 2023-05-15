@@ -218,7 +218,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
       } else {
         const ownerships = await db.ownerships
           .find(filter, { limit: query.limit })
-          .sort({ [`holdings.${query.year ?? 2021}.total`]: -1, _id: 1 })
+          .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
           .skip(query.skip)
           .toArray();
         const companies = await db.companies
@@ -255,7 +255,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         } else {
           const ownerships = await db.ownerships
             .find(filter, options)
-            .sort({ [`holdings.${query.year ?? 2021}.total`]: -1, _id: 1 })
+            .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
             .skip(query.skip)
             .toArray();
           const shareholders = await db.shareholders
