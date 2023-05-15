@@ -155,11 +155,11 @@ export const OwnershipTable = ({
   const history = useHistory();
   return (
     <div className="row pt-3 m-0">
-      <p className="col-6"></p>
-      <p className="col-6 text-center font-weight-bold small px-1 mb-1">
+      <p className="col-4"></p>
+      <p className="col-8 text-center font-weight-bold small px-1 mb-1">
         Eierandel / <span className="font-weight-normal">Antall aksjer</span>
       </p>
-      <p className="col-6 text-center font-weight-bold small px-1 pl-sm-3 mb-1">Navn</p>
+      <p className="col-4 text-center font-weight-bold small px-1 pl-sm-3 mb-1">Navn</p>
       {availableYears.map((year) => (
         <p key={year} className="col-2 small font-weight-bold px-1 mb-1 mb-sm-2">
           {year}
@@ -170,7 +170,7 @@ export const OwnershipTable = ({
       </div>
       {ownerships.map((o) => (
         <Fragment key={o._id}>
-          <span className="col-6 justify-content-between overflow-auto d-flex align-items-center px-1 pl-sm-3">
+          <span className="col-4 justify-content-between overflow-auto d-flex align-items-center px-1 pl-sm-3">
             <p className="m-0">{investment ? o.investor?.shareholder?.name : o.investment?.name}</p>
             <span
               className="ml-2 mr-sm-4"
