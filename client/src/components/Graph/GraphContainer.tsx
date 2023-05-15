@@ -63,7 +63,7 @@ export const GraphContainer = () => {
 
   const history = useHistory();
 
-  const [year, setYear] = useState<Year>(2021);
+  const [year, setYear] = useState<Year>(2022);
   const [limit] = useState<number>(5);
 
   const [svgTransform, setSvgTransform] = useState(defaultSvgTransform);
