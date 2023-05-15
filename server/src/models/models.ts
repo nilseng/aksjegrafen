@@ -29,7 +29,7 @@ export interface Ownership {
   };
 }
 
-export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name: string };
+export type Shareholder = Partial<Company> & Partial<Person> & { id: string; kind: ShareholderType; name?: string };
 
 export enum ShareholderType {
   COMPANY,
@@ -90,22 +90,11 @@ export type Relation =
   | { role?: never; ownership: Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings" | "investor" | "investment"> };
 
 export const isOwnership = (o: any): o is Ownership => {
-  return (
-    o.orgnr &&
-    typeof o.orgnr === "string" &&
-    o.shareHolderId &&
-    typeof o.shareHolderId === "string" &&
-    o.shareClass &&
-    typeof o.shareClass === "string" &&
-    o.stocks &&
-    typeof +o.stocks === "number" &&
-    o.year &&
-    typeof +o.year === "number"
-  );
+  return o.orgnr && typeof o.orgnr === "string" && o.shareHolderId && typeof o.shareHolderId === "string" && o.holdings;
 };
 
 export const isShareholder = (o: any): o is Shareholder => {
-  return o.id && typeof o.id === "string" && (o.kind || o.kind === 0) && (o.name || o.orgnr);
+  return o.id && typeof o.id === "string" && (o.kind || o.kind === 0);
 };
 
 export const isCompany = (o: any): o is Company => {
