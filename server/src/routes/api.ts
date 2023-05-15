@@ -258,14 +258,18 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
             .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
             .skip(query.skip)
             .toArray();
-          const shareholders = await db.shareholders
-            .find({
-              id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) },
-            })
-            .toArray();
-          const companies = await db.companies
-            .find({ orgnr: { $in: shareholders.filter((s) => s.orgnr).map((s) => s.orgnr) as string[] } })
-            .toArray();
+          const [shareholders, companies] = await Promise.all([
+            db.shareholders
+              .find({
+                id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) },
+              })
+              .toArray(),
+            db.companies
+              .find({
+                orgnr: { $in: ownerships.filter((o) => o.shareholderOrgnr).map((o) => o.shareholderOrgnr) as string[] },
+              })
+              .toArray(),
+          ]);
           const data = ownerships.map((o: Ownership) => {
             o.investor = {
               shareholder: shareholders.find((s: Shareholder) => s.id === o.shareHolderId)!,
