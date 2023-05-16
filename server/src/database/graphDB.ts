@@ -11,7 +11,7 @@ export const graphDB = neo4j.driver(
 const createIndexes = async () => {
   const session = graphDB.session();
   console.info("Creating indexes");
-  await session.run(`CREATE INDEX shareholderOrgnr IF NOT EXISTS FOR (s:Shareholder) ON (s.shareholderOrgnr)`);
+  // await session.run(`CREATE INDEX shareholderOrgnr IF NOT EXISTS FOR (s:Shareholder) ON (s.shareholderOrgnr)`);
   console.info("Indexes created");
   session.close();
 };
@@ -19,6 +19,10 @@ const createIndexes = async () => {
 const createConstraints = async () => {
   const session = graphDB.session();
   console.info("Creating constraints");
+  await session.run(`CREATE CONSTRAINT unique_company_orgnrs IF NOT EXISTS FOR (c:Company) REQUIRE c.orgnr IS UNIQUE`);
+  await session.run(
+    `CREATE CONSTRAINT unique_shareholder_ids IF NOT EXISTS FOR (s:Shareholder) REQUIRE s.id IS UNIQUE`
+  );
   await session.run(`CREATE CONSTRAINT unique_unit_orgnrs IF NOT EXISTS FOR (u:Unit) REQUIRE u.orgnr IS UNIQUE`);
   await session.run(
     `CREATE CONSTRAINT unique_people IF NOT EXISTS FOR (p:Person) REQUIRE (p.birthDate, p.firstName, p.lastName) IS UNIQUE`
