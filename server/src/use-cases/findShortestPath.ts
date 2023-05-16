@@ -24,7 +24,8 @@ export const findShortestPath = async ({
   MATCH ${
     fromOrgnr ? `(start:Company {orgnr: "${fromOrgnr}"})` : `(start:Shareholder {id: "${fromShareholderId}"})`
   }, (end:Company {orgnr: "${toOrgnr}"})
-  OPTIONAL MATCH path = shortestPath((start)-[*]->(end))
+  OPTIONAL MATCH path = shortestPath((start)-[r*]->(end))
+  WHERE all(rel in r WHERE rel.year = 2022 OR rel.year IS NULL)
   RETURN path
   `;
   const res = await session.run(findShortestPathQuery);
