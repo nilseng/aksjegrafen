@@ -105,7 +105,7 @@ variable "mount_path" {
 
 resource "aws_ebs_volume" "db_volume" {
   availability_zone = "eu-north-1c"
-  size              = "8"
+  size              = "16"
   type              = "gp2"
 }
 
