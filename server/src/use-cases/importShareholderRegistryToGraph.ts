@@ -29,7 +29,10 @@ export const importShareholderRegistryToGraph = async ({
 }) => {
   if (!year) throw Error("Invalid year.");
 
+  console.info(`Starting import to Graph DB for year ${year}`);
+
   const ownerships = await mongoDB.ownerships.find({ [`holdings.${year}.total`]: { $gt: 0 } }).toArray();
+  console.info(`Fetched ${ownerships.length} ownerships.`);
 
   const companies = await mongoDB.companies.find({}).toArray();
   console.info(`Fetched ${companies.length} companies.`);
