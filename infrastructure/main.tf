@@ -63,6 +63,10 @@ resource "aws_instance" "db_server" {
 
   provisioner "remote-exec" {
     inline = [
+      # Formats the file system of the EBS volume
+      "sudo mkfs -t ext4 nvme1n1",
+      # Mounts the EBS volume to the mount path (may need to create /mnt/neo4j first)
+      "sudo mount /dev/nvme1n1 /mnt/neo4j",
       "sudo yum update -y",
       "sudo yum install -y docker",
       "sudo systemctl start docker",
