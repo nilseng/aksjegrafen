@@ -52,7 +52,7 @@ export const RelationFinder = () => {
             <Loading color={theme.primary} backgroundColor={"transparent"} text={"Dette kan ta litt tid...🧘🏻‍♂️"} />
           </div>
         )}
-        {path && (
+        {path && path.length > 0 && (
           <div className="p-2 p-sm-4" style={{ backgroundColor: theme.backgroundSecondary, borderRadius: "8px" }}>
             {path?.map((relation) => (
               <div
@@ -94,7 +94,7 @@ export const RelationFinder = () => {
             ))}
           </div>
         )}
-        {!path && !isLoading && !error && target && (
+        {(!path || path.length === 0) && !isLoading && !error && target && (
           <p className="w-100 text-center p-5 m-0" style={{ color: theme.primary }}>
             Ingen relasjon funnet 🔍
           </p>
