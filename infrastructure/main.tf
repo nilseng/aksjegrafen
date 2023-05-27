@@ -4,6 +4,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.16"
     }
+
+    null = {
+      source  = "hashicorp/null"
+      version = "3.2.1"
+    }
   }
 
   required_version = ">= 1.2.0"
@@ -61,46 +66,9 @@ resource "aws_instance" "db_server" {
     http_put_response_hop_limit = 2
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      # Formats the file system of the EBS volume
-      "sudo mkfs -t ext4 nvme1n1",
-      # Mounts the EBS volume to the mount path (may need to create /mnt/neo4j first)
-      "sudo mount /dev/nvme1n1 /mnt/neo4j",
-      "sudo yum update -y",
-      "sudo yum install -y docker",
-      "sudo systemctl start docker",
-      "sudo systemctl enable docker",
-      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v ${var.mount_path}:/data -v /plugins:/var/lib/neo4j/plugins --env NEO4J_dbms_security_procedures_unrestricted=apoc.* --env NEO4J_dbms_memory_pagecache_size=5g --env NEO4J_db_transaction_timeout=300s neo4j"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = file("/Users/nilseng/.ssh/default_pair.pem")
-      host        = self.public_ip
-      timeout     = "5m"
-    }
-  }
-
   tags = {
     Name = "DBServerInstance"
   }
-}
-
-locals {
-  device_name = "/dev/sdf"
-  mount_path  = "/mnt/neo4j"
-}
-
-variable "device_name" {
-  description = "The device name to use for the EBS volume"
-  default     = "/dev/sdf"
-}
-
-variable "mount_path" {
-  description = "The directory to mount the EBS volume to"
-  default     = "/mnt/neo4j"
 }
 
 resource "aws_ebs_volume" "db_volume" {
@@ -113,4 +81,37 @@ resource "aws_volume_attachment" "db_volume_attachment" {
   device_name = "/dev/sdf"
   volume_id   = aws_ebs_volume.db_volume.id
   instance_id = aws_instance.db_server.id
+}
+
+resource "null_resource" "setup_script" {
+
+  # The script is rerun whenever a value in the triggers map changes, so increase the version number to rerun the script.
+  triggers = {
+    version = 0
+  }
+
+  depends_on = [aws_volume_attachment.db_volume_attachment]
+
+  connection {
+    type        = "ssh"
+    user        = "ec2-user"
+    private_key = file("/Users/nilseng/.ssh/default_pair.pem")
+    host        = aws_instance.db_server.public_ip
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      # Formats the file system of the EBS volume, assuming it's called nvme1n1
+      "sudo mkfs -t ext4 /dev/nvme1n1",
+      # Creates /mnt/neo4j if it doesn't exist
+      "sudo mkdir -p /mnt/neo4j",
+      # Mounts the EBS volume to the mount path
+      "sudo mount /dev/nvme1n1 /mnt/neo4j",
+      "sudo yum update -y",
+      "sudo yum install -y docker",
+      "sudo systemctl start docker",
+      "sudo systemctl enable docker",
+      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v /mnt/neo4j:/data -v /plugins:/var/lib/neo4j/plugins --env NEO4J_dbms_security_procedures_unrestricted=apoc.* --env NEO4J_dbms_memory_pagecache_size=5g --env NEO4J_db_transaction_timeout=300s neo4j"
+    ]
+  }
 }
