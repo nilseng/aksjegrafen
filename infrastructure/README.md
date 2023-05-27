@@ -22,7 +22,7 @@ Run `terraform destroy`.
 
 If the Docker run command does not work, move the apoc plugin manually from /labs to /plugins
 
-To enter a docker conatiner run:
+To enter a docker container run:
 
 - `docker exec -it <container_id> /bin/bash`
 
