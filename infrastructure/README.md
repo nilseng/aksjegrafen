@@ -25,3 +25,9 @@ If the Docker run command does not work, move the apoc plugin manually from /lab
 To enter a docker conatiner run:
 
 - `docker exec -it <container_id> /bin/bash`
+
+In order to mount attached EBS volume automatically to /data, add the following to /etc/fstab:
+
+`/dev/nvme1n1 /mnt/neo4j ext4 defaults 0 0`
+
+<EBS volume device name> <mount path> <file system type> <mount options> <dump frequency> <fsck order>
