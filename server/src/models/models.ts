@@ -85,9 +85,7 @@ export interface Role {
   shareholder?: Shareholder;
 }
 
-export type Relation =
-  | { role: Role; ownership?: never }
-  | { role?: never; ownership: Pick<Ownership, "shareholderOrgnr" | "orgnr" | "holdings" | "investor" | "investment"> };
+export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
 
 export const isOwnership = (o: any): o is Ownership => {
   return o.orgnr && typeof o.orgnr === "string" && o.shareHolderId && typeof o.shareHolderId === "string" && o.holdings;
