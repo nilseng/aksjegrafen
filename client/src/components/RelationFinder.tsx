@@ -85,7 +85,7 @@ export const RelationFinder = () => {
                     </span>{" "}
                     eier{" "}
                     <span className="font-weight-bold">
-                      {relation.ownership.holdings[2021]?.total.toLocaleString("NO")}
+                      {relation.ownership.holdings[2022]?.total.toLocaleString("NO")}
                     </span>{" "}
                     aksjer i <span style={{ color: theme.secondary }}>{relation.ownership.investment?.name}</span>
                   </p>

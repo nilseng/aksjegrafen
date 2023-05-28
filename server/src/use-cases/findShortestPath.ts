@@ -46,7 +46,7 @@ const mapSegmentToOwnership = (segment: PathSegment): Ownership => ({
   shareholderOrgnr: segment.start.properties.orgnr,
   shareHolderId: segment.start.properties.id,
   orgnr: segment.end.properties.orgnr,
-  holdings: { 2021: { total: segment.relationship.properties.stocks } },
+  holdings: { 2022: { total: segment.relationship.properties.stocks } },
   investor: {
     shareholder: mapNodeToShareholder(segment.start),
     company: mapNodeToCompany(segment.start),
