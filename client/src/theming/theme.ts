@@ -32,9 +32,6 @@ export const theming = {
       borderColor: "#17a2b8",
       borderRadius: "8px",
     },
-    mapbox: {
-      style: "mapbox://styles/mapbox/streets-v12",
-    },
   },
   dark: {
     id: "dark",
@@ -63,9 +60,6 @@ export const theming = {
       borderStyle: "solid",
       borderColor: "#17a2b8",
       borderRadius: "8px",
-    },
-    mapbox: {
-      style: "mapbox://styles/mapbox/dark-v11",
     },
   },
 };
