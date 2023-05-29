@@ -1,8 +1,9 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
+import { CSSProperties, ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
 import { AppContext } from "../AppContext";
 import { useSearch } from "../hooks/useSearch";
+import Loading from "./Loading";
 
 interface ListItem<Result> {
   key: string;
@@ -21,6 +22,9 @@ interface IProps<Result extends unknown> {
   searchTerm?: string;
   query?: { [key: string]: string | number };
   minSearchTermLength?: number;
+  inputContainerClassName?: string;
+  inputClassName?: string;
+  inputStyle?: CSSProperties;
 }
 
 export const SearchComponent = <Result extends unknown>({
@@ -30,12 +34,15 @@ export const SearchComponent = <Result extends unknown>({
   apiPath,
   query,
   minSearchTermLength,
+  inputContainerClassName,
+  inputClassName,
+  inputStyle,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const searchList = useSearch<Result[]>(apiPath, searchTerm, query, minSearchTermLength);
+  const { result: searchList, isLoading } = useSearch<Result[]>(apiPath, searchTerm, query, minSearchTermLength);
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -46,24 +53,25 @@ export const SearchComponent = <Result extends unknown>({
   };
 
   return (
-    <div className="w-full">
-      <input
-        className="block w-full focus:outline-none p-2"
-        name="selskapsSøk"
-        autoComplete="off"
-        type="text"
-        placeholder={placeholder}
-        style={{
-          backgroundColor: "transparent",
-          backgroundClip: "padding-box",
-          borderColor: "transparent",
-          color: theme.text,
-          ...theme.lowering,
-        }}
-        value={searchTerm}
-        onChange={handleSearch}
-        onKeyDown={handleKeyDown}
-      />
+    <div className="relative w-full flex flex-col justify-center items-center">
+      <div className={`relative ${inputContainerClassName}`}>
+        <input
+          className={`w-full ${inputClassName}`}
+          name="selskapsSøk"
+          autoComplete="off"
+          type="text"
+          placeholder={placeholder}
+          style={inputStyle}
+          value={searchTerm}
+          onChange={handleSearch}
+          onKeyDown={handleKeyDown}
+        />
+        {isLoading && (
+          <div className="absolute right-0 top-0 w-12 h-full flex items-center p-2">
+            {<Loading backgroundColor="transparent" height={"2rem"} color={theme.primary} />}
+          </div>
+        )}
+      </div>
       {searchList && (
         <div className="w-full max-w-full px-0">
           <div
