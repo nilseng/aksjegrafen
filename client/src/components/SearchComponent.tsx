@@ -1,7 +1,6 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
-import { Form, ListGroup } from "react-bootstrap";
 import { AppContext } from "../AppContext";
 import { useSearch } from "../hooks/useSearch";
 
@@ -47,41 +46,40 @@ export const SearchComponent = <Result extends unknown>({
   };
 
   return (
-    <>
-      <Form.Group className="w-100 m-0">
-        <Form.Control
-          name="selskapsSøk"
-          autoComplete="off"
-          type="text"
-          placeholder={placeholder}
-          style={{
-            backgroundColor: "transparent",
-            borderColor: "transparent",
-            color: theme.text,
-            ...theme.lowering,
-          }}
-          value={searchTerm}
-          onChange={handleSearch}
-          onKeyDown={handleKeyDown}
-        ></Form.Control>
-      </Form.Group>
+    <div className="w-full">
+      <input
+        className="w-full focus:outline-none p-2"
+        name="selskapsSøk"
+        autoComplete="off"
+        type="text"
+        placeholder={placeholder}
+        style={{
+          backgroundColor: "transparent",
+          borderColor: "transparent",
+          color: theme.text,
+          ...theme.lowering,
+        }}
+        value={searchTerm}
+        onChange={handleSearch}
+        onKeyDown={handleKeyDown}
+      />
       {searchList && (
-        <div className="w-100 mw-100 px-0">
+        <div className="w-full max-w-full px-0">
           <div
-            className="h-100 w-100 position-relative p-3"
+            className="w-full relative p-3"
             style={{ ...theme.elevation, backgroundColor: theme.background, zIndex: 100 }}
           >
-            <ListGroup
-              className="h-100 w-100 mw-100 overflow-auto position-relative px-3 py-2"
-              style={{ ...theme.lowering, zIndex: 102, maxHeight: "16rem" }}
+            <div
+              className="flex flex-col h-full max-h-64 w-full max-w-full overflow-auto relative px-4 py-2"
+              style={{ ...theme.lowering, zIndex: 102 }}
             >
               {searchList.length ? (
                 searchList
                   .map((result) => ({ result, item: mapResultToListItem(result) }))
                   .map(({ result, item }) => (
-                    <ListGroup.Item
+                    <div
                       key={item.key}
-                      className="w-100 mw-100 d-flex flex-column align-items-center justify-content-between border-0 p-2 my-2"
+                      className="w-full max-w-full flex flex-col items-center justify-between border-0 p-2 my-2"
                       style={{
                         zIndex: 101,
                         backgroundColor: "transparent",
@@ -96,10 +94,10 @@ export const SearchComponent = <Result extends unknown>({
                       }}
                     >
                       <div>
-                        <div className="text-break mr-2">{item.name}</div>
-                        <div className="w-100 d-flex justify-content-center">
+                        <div className="break-words mr-2">{item.name}</div>
+                        <div className="w-full flex justify-center pb-2">
                           {item.tags.map((tag) => (
-                            <span key={tag} className="small text-muted text-center mx-2">
+                            <span key={tag} className="text-xs text-muted mx-2">
                               {tag}
                             </span>
                           ))}
@@ -114,11 +112,11 @@ export const SearchComponent = <Result extends unknown>({
                         />
                       )}
                       {item.buttons?.length && item.buttons?.length && (
-                        <div className="w-100 d-flex justify-content-around px-2">
+                        <div className="w-full flex justify-around px-2">
                           {item.buttons.map((b) => (
                             <button
                               key={b.name}
-                              className="btn px-0 ml-2 ml-sm-4"
+                              className="px-0"
                               onClick={() => {
                                 b.handleClick(result);
                               }}
@@ -128,17 +126,17 @@ export const SearchComponent = <Result extends unknown>({
                           ))}
                         </div>
                       )}
-                    </ListGroup.Item>
+                    </div>
                   ))
               ) : (
                 <p className="m-0" style={{ color: theme.primary }}>
                   Ingen resultater 🔍
                 </p>
               )}
-            </ListGroup>
+            </div>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
