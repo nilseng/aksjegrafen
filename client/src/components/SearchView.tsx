@@ -123,16 +123,10 @@ export const SearchView = () => {
                   name: "graph-button",
                   buttonContent: (
                     <span
+                      className="flex justify-center items-center p-2"
                       style={{
                         ...theme.button,
                         borderRadius: "100%",
-                        display: "inline-block",
-                        textAlign: "center",
-                        verticalAlign: "middle",
-                        width: "2.4rem",
-                        height: "2.4rem",
-                        paddingTop: "0.3rem",
-                        paddingBottom: "0.3rem",
                       }}
                     >
                       <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
