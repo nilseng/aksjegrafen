@@ -49,22 +49,22 @@ const getOwnershipChange = (o: IOwnership, year: Year) => {
 
 const getOwnershipChangeText = (o: IOwnership, year: Year) => {
   const change = getOwnershipChange(o, year);
-  if (!change && change !== 0) return <p className="small m-0" style={{ height: "1rem" }}></p>;
+  if (!change && change !== 0) return <p className="text-xs m-0" style={{ height: "1rem" }}></p>;
   if (change === 0)
     return (
-      <p className="small text-warning m-0" style={{ height: "1rem" }}>
+      <p className="text-xs text-warning m-0" style={{ height: "1rem" }}>
         {change}
       </p>
     );
   if (change > 0)
     return (
-      <p className="small text-success m-0" style={{ height: "1rem" }}>
-        +{change.toLocaleString()}
+      <p className="text-xs text-success m-0" style={{ height: "1rem" }}>
+        +{change.toLocaleString(navigator.language)}
       </p>
     );
   return (
-    <p className="small text-danger m-0" style={{ height: "1rem" }}>
-      {change.toLocaleString()}
+    <p className="text-xs text-danger m-0" style={{ height: "1rem" }}>
+      {change.toLocaleString(navigator.language)}
     </p>
   );
 };
@@ -83,39 +83,34 @@ export const OwnershipTable = ({
   const { theme } = useContext(AppContext);
   const history = useHistory();
   return (
-    <div className="row pt-3 m-0">
-      <p className="col-4"></p>
-      <p className="col-8 text-center font-weight-bold small px-1 mb-1">
-        Eierandel / <span className="font-weight-normal">Antall aksjer</span>
+    <div className="w-full flex flex-wrap pt-3 m-0">
+      <p className="w-1/3"></p>
+      <p className="w-2/3 text-center font-bold text-xs px-1 pb-2">
+        Eierandel / <span className="font-normal">Antall aksjer</span>
       </p>
-      <p className="col-4 text-center font-weight-bold small px-1 pl-sm-3 mb-1">Navn</p>
+      <p className="w-1/3 text-center font-bold text-xs px-1 sm:pl-3 mb-1">Navn</p>
       {availableYears.map((year) => (
-        <p key={year} className="col-2 small font-weight-bold px-1 mb-1 mb-sm-2">
+        <p key={year} className="w-1/6 text-xs font-bold px-1 mb-1 sm:mb-2">
           {year}
         </p>
       ))}
-      <div className="col-12 px-1 px-sm-3 pb-1 pb-sm-3">
-        <div className="w-100" style={{ borderBottom: `0.5px solid ${theme.secondary}` }}></div>
+      <div className="w-full px-1 px-sm-3 pb-1 pb-sm-3">
+        <div className="w-full" style={{ borderBottom: `0.5px solid ${theme.secondary}` }}></div>
       </div>
       {ownerships.map((o) => (
         <Fragment key={o._id}>
-          <span className="col-4 justify-content-between overflow-auto d-flex align-items-center px-1 pl-sm-3">
-            <p className="m-0">{investment ? o.investor?.shareholder?.name : o.investment?.name}</p>
+          <span className="flex justify-between items-center w-1/3 overflow-auto px-1 sm:pl-4">
+            <p className="text-xs m-0">{investment ? o.investor?.shareholder?.name : o.investment?.name}</p>
             <span
-              className="ml-2 mr-sm-4"
+              className="flex justify-center items-center ml-2 mr-sm-4"
               style={{
                 ...theme.button,
                 cursor: "pointer",
                 borderRadius: "100%",
-                display: "inline-block",
-                textAlign: "center",
-                verticalAlign: "middle",
                 width: "1.6rem",
                 minWidth: "1.6rem",
                 height: "1.6rem",
                 minHeight: "1.6rem",
-                paddingTop: "0.1rem",
-                paddingBottom: "0.1rem",
               }}
               onClick={() => {
                 closeModal();
@@ -126,18 +121,18 @@ export const OwnershipTable = ({
             </span>
           </span>
           {availableYears.map((year) => (
-            <div key={year} className="col-2 overflow-auto px-1 py-2">
-              <p className="font-weight-bold small m-0" style={{ height: "1rem" }}>
+            <div key={year} className="w-1/6 overflow-auto px-1 py-2">
+              <p className="font-bold text-xs m-0" style={{ height: "1rem" }}>
                 {getOwnershipShareText(o, year, investor, investment)}
               </p>
-              <p className="small m-0" style={{ height: "1rem" }}>
-                {o.holdings[year]?.total ? o.holdings[year]?.total.toLocaleString() : ""}
+              <p className="text-xs m-0" style={{ height: "1rem" }}>
+                {o.holdings[year]?.total ? o.holdings[year]?.total.toLocaleString(navigator.language) : ""}
               </p>
               {getOwnershipChangeText(o, year)}
             </div>
           ))}
-          <div className="col-12 px-1 px-sm-3 pb-1 pb-sm-3">
-            <div className="w-100" style={{ borderBottom: `0.5px solid ${theme.primary}` }}></div>
+          <div className="w-full px-1 sm:px-3 pb-1 sm:pb-3">
+            <div className="w-full" style={{ borderBottom: `0.5px solid ${theme.primary}` }}></div>
           </div>
         </Fragment>
       ))}
