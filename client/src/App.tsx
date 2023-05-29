@@ -11,6 +11,7 @@ import { SearchPage } from "./components/SearchPage";
 import { Stats } from "./components/Stats";
 import { ICompany, IShareholder } from "./models/models";
 
+import { Graph } from "./components/Graph2/Graph";
 import { Theme, theming } from "./theming/theme";
 
 const getStoredTheme = () => {
@@ -66,6 +67,7 @@ const App = () => {
             <Route path="/stats" component={Stats} />
             <Route path="/relation-finder" component={RelationFinder} />
             <Route path="/api-docs" component={ApiDocs} />
+            <Route path="/graph2" component={Graph} />
           </Switch>
         </div>
         <Overlays />
