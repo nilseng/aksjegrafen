@@ -18,11 +18,11 @@ export const YearSelector = () => {
   if (!graphContext) return null;
 
   return (
-    <div className="position-absolute d-flex m-2" style={{ userSelect: "none" }}>
+    <div className="absolute flex m-2" style={{ userSelect: "none" }}>
       {availableYears.map((year) => (
         <div
           key={year}
-          className={`p-2 mr-2 ${graphContext.year === year ? "font-weight-bold" : ""}`}
+          className={`p-2 mr-2 ${graphContext.year === year ? "font-bold" : ""}`}
           style={{
             backgroundColor: theme.backgroundSecondary,
             borderRadius: "8px",
