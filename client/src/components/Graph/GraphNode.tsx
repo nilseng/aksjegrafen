@@ -158,9 +158,9 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
         </>
       )}
       <foreignObject x={node.x} y={node.y} width={node.width} height={node.height}>
-        <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-100 h-100 p-4" style={{ userSelect: "none" }}>
+        <div data-xmlns="http://www.w3.org/1999/xhtml" className="w-full h-full p-4" style={{ userSelect: "none" }}>
           <div
-            className="h-100 w-100 p-1"
+            className="h-full w-full p-1"
             onClick={(e) => {
               setMenu({
                 open: true,
@@ -189,18 +189,18 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
               cursor: "pointer",
             }}
           >
-            <div className="w-100 h-100 d-flex flex-column align-items-middle justify-content-between p-1">
+            <div className="w-full h-full flex flex-col items-middle justify-between p-1">
               {node.entity.investorCount && node.entity.investorCount[year] && (
                 <p className="text-center small m-0" style={{ color: theme.text }}>
                   <strong style={{ color: theme.secondary }}>{node.loadedInvestors ?? 0}</strong> av{" "}
                   <strong style={{ color: theme.secondary }}>{node.entity.investorCount[year]}</strong> investorer
                 </p>
               )}
-              <div className="text-center font-weight-bold" style={{ color: theme.text }}>
+              <div className="text-center font-bold" style={{ color: theme.text }}>
                 {node.entity?.name}
               </div>
               {node.entity.investmentCount && node.entity.investmentCount[year] && (
-                <p className="text-center small m-0" style={{ color: theme.text }}>
+                <p className="text-center text-sm m-0" style={{ color: theme.text }}>
                   <strong style={{ color: theme.primary }}>{node.loadedInvestments ?? 0}</strong> av{" "}
                   <strong style={{ color: theme.primary }}>{node.entity.investmentCount[year]}</strong> investeringer
                 </p>
