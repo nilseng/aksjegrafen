@@ -98,7 +98,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
         />
         <foreignObject x={link.source.x + 2 * offset.x + 40} y={link.source.y + offset.y} width={100} height={20}>
           <div data-xmlns="http://www.w3.org/1999/xhtml">
-            <div className="font-weight-bold" style={{ color: theme.primary }}>
+            <div className="font-bold" style={{ color: theme.primary }}>
               {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
             </div>
           </div>
@@ -125,7 +125,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
       {link.ownerships.length > 1 && (
         <foreignObject x={countPos.x} y={countPos.y} width={50} height={50}>
           <div data-xmlns="http://www.w3.org/1999/xhtml">
-            <div className="font-weight-bold" style={{ color: theme.primary }}>
+            <div className="font-bold" style={{ color: theme.primary }}>
               {link.ownerships.length}
             </div>
           </div>
@@ -133,7 +133,7 @@ export const GraphLink = ({ link, offset }: IProps) => {
       )}
       <foreignObject x={percentagePos.x} y={percentagePos.y} width={100} height={20}>
         <div data-xmlns="http://www.w3.org/1999/xhtml">
-          <div className="font-weight-bold" style={{ color: theme.primary }}>
+          <div className="font-bold" style={{ color: theme.primary }}>
             {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
           </div>
         </div>
