@@ -11,9 +11,9 @@ export const EntityRelationships = ({ entity }: IProps) => {
   const { theme } = useContext(AppContext);
 
   return (
-    <div className="flex w-full p-2 m-0">
+    <div className="flex flex-wrap w-full rounded p-2 m-0" style={{ border: `${theme.primary} solid 1px` }}>
       {entity.investmentCount && (
-        <div className="w-full md:w-1/2 rounded p-4 m-2" style={{ border: `${theme.primary} solid 1px` }}>
+        <div className="w-full md:w-1/2 p-4">
           <p className="text-sm font-bold" style={{ color: theme.primary }}>
             Investeringer
           </p>
@@ -28,7 +28,7 @@ export const EntityRelationships = ({ entity }: IProps) => {
         </div>
       )}
       {entity.investorCount && (
-        <div className="w-full md:w-1/2 rounded p-4 m-2" style={{ border: `${theme.primary} solid 1px` }}>
+        <div className="w-full md:w-1/2 p-4">
           <p className="font-bold" style={{ color: theme.secondary }}>
             Investorer
           </p>
