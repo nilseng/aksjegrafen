@@ -55,6 +55,7 @@ export const SearchComponent = <Result extends unknown>({
         placeholder={placeholder}
         style={{
           backgroundColor: "transparent",
+          backgroundClip: "padding-box",
           borderColor: "transparent",
           color: theme.text,
           ...theme.lowering,
