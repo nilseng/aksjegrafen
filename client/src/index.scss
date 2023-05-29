@@ -22,3 +22,7 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+input.ag-input::placeholder {
+  @apply text-primary font-bold opacity-60;
+}
