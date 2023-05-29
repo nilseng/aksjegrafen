@@ -14,7 +14,7 @@ export const StatCard = ({ label, stat, labelIcon }: IProps) => {
   const { theme } = useContext(AppContext);
   return (
     <div
-      className="d-flex flex-column align-items-center p-2 mx-4"
+      className="flex flex-col items-center p-2 mx-4"
       style={{
         backgroundColor: theme.background,
         ...theme.lowering,
@@ -22,7 +22,7 @@ export const StatCard = ({ label, stat, labelIcon }: IProps) => {
         minHeight: "5rem",
       }}
     >
-      {stat && <p className="h4">{(+stat)?.toLocaleString(navigator?.language)}</p>}
+      {stat && <p className="text-2xl pb-2">{(+stat)?.toLocaleString(navigator?.language)}</p>}
       {!stat && <Loading backgroundColor="transparent" height="2.25rem" color={theme.primary} />}
       <span className="m-0" style={{ color: theme.primary }}>
         {labelIcon && <FontAwesomeIcon icon={labelIcon} className="mr-2" />}
