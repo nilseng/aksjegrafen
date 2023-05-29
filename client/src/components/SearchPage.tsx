@@ -105,6 +105,15 @@ export const SearchPage = () => {
           <div className="flex justify-center w-full sm:w-1/2">
             <div className="w-full m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
               <SearchComponent
+                inputContainerClassName="w-full"
+                inputStyle={{
+                  backgroundColor: "transparent",
+                  backgroundClip: "padding-box",
+                  borderColor: "transparent",
+                  color: theme.text,
+                  ...theme.lowering,
+                }}
+                inputClassName="focus:outline-none p-2"
                 handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
                 placeholder="Næring, bransje, etc..."
                 mapResultToListItem={(b: BusinessCode) => ({
