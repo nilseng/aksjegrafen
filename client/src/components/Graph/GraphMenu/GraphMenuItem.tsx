@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
-import { ListGroup } from "react-bootstrap";
 import { AppContext } from "../../../AppContext";
 import { Year } from "../../../models/models";
 import { GraphContext } from "../GraphContainer";
@@ -13,9 +12,9 @@ export const GraphMenuItem = (item: IMenuItem) => {
   const [hovered, setHovered] = useState<boolean>(false);
 
   return (
-    <ListGroup.Item
+    <div
       key={item.name}
-      className="small font-weight-bold"
+      className="flex items-center text-xs font-bold p-3"
       style={{
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
         color: isDisabled(item, graphContext?.year) ? theme.muted : theme.text,
@@ -24,6 +23,7 @@ export const GraphMenuItem = (item: IMenuItem) => {
         borderTop: 0,
         borderRight: 0,
         borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
+        borderRadius: "8px",
       }}
       onClick={() => {
         if (isDisabled(item, graphContext?.year)) return;
@@ -39,11 +39,13 @@ export const GraphMenuItem = (item: IMenuItem) => {
       onMouseLeave={() => setHovered(false)}
     >
       {item.icon && (
-        <FontAwesomeIcon icon={item.icon} color={theme.primary} style={{ cursor: "pointer" }} className="mr-3" />
+        <div className="w-3 text-center mr-3">
+          <FontAwesomeIcon icon={item.icon} color={theme.primary} style={{ cursor: "pointer" }} />
+        </div>
       )}
-      {item.svgIcon && <span className="mr-3">{item.svgIcon}</span>}
+      {item.svgIcon && <span className="w-3 mr-3">{item.svgIcon}</span>}
       {item.name}
-    </ListGroup.Item>
+    </div>
   );
 };
 
