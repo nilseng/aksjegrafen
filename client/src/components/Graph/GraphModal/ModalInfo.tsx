@@ -13,10 +13,10 @@ export const ModalInfo = ({ title, value, link }: IProps) => {
   if (link)
     return (
       <>
-        <p className="small font-weight-bold m-0" style={{ color: theme.muted }}>
+        <p className="text-xs font-bold m-0" style={{ color: theme.muted }}>
           {title}
         </p>
-        <div style={{ marginBottom: "1rem" }}>
+        <div className="text-xs font-bold pb-2">
           <a href={"https://" + value} target="_blank" rel="noreferrer noopener">
             {value}
           </a>
@@ -26,10 +26,10 @@ export const ModalInfo = ({ title, value, link }: IProps) => {
 
   return (
     <>
-      <p className="small font-weight-bold m-0" style={{ color: theme.muted }}>
+      <p className="text-xs font-bold m-0" style={{ color: theme.muted }}>
         {title}
       </p>
-      <p>{value}</p>
+      <p className="text-xs pb-2">{value}</p>
     </>
   );
 };

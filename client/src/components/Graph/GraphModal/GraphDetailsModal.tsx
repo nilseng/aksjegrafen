@@ -19,9 +19,9 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const brregInfo = useBrregEntityInfo(entity);
 
   return (
-    <div className="row d-flex justify-content-center position-absolute w-100 h-75 mt-5">
+    <div className="flex justify-center absolute w-2/3 h-3/4 mt-12">
       <div
-        className="col col-lg-8 col-11 h-100 w-100 p-4"
+        className="h-full w-full p-4"
         style={{
           overflow: "scroll",
           backgroundColor: theme.backgroundSecondary,
@@ -29,15 +29,15 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
           ...theme.elevation,
         }}
       >
-        <div className="d-flex justify-content-between align-items-center w-100 pb-4">
-          <div className="d-flex flex-fill flex-wrap align-items-center justify-content-center">
-            <p className="h4 mb-0 mr-3">{entity.name}</p>
-            <p className="small align-middle h-100 mb-0" style={{ color: theme.muted }}>
+        <div className="flex justify-between items-center w-full pb-4">
+          <div className="flex grow flex-wrap items-center justify-center">
+            <p className="text-lg font-semibold mb-0 mr-3">{entity.name}</p>
+            <p className="text-sm" style={{ color: theme.muted }}>
               {entity.orgnr}
             </p>
           </div>
           <button
-            className="btn px-2 pt-0"
+            className="px-2 pt-0"
             style={{
               textAlign: "center",
               verticalAlign: "middle",
@@ -56,7 +56,7 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
           <EntityRelationships entity={entity} />
           <div className="p-4">
             {brregInfo && (
-              <p style={{ color: theme.primary }} className="font-weight-bold">
+              <p style={{ color: theme.primary }} className="font-bold pb-2">
                 Annen informasjon om selskapet
               </p>
             )}
