@@ -6,26 +6,26 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
   const { theme } = useContext(AppContext);
 
   return (
-    <>
-      <p className="font-weight-bold my-1">Resultat</p>
-      <p className="small font-weight-bold m-0">Driftsinntekter</p>
-      <code style={{ color: theme.primary }} className="m-0">
+    <div className="w-full sm:w-1/2">
+      <p className="font-bold my-1">Resultat</p>
+      <p className="text-xs font-bold m-0">Driftsinntekter</p>
+      <code style={{ color: theme.primary }} className="text-xs m-0">
         {pAndL?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(navigator?.language)}
       </code>
-      <p className="small font-weight-bold m-0">Driftsresultat</p>
+      <p className="text-xs font-bold m-0">Driftsresultat</p>
       <code
         style={{
           color: pAndL?.driftsresultat?.driftsresultat > 0 ? theme.primary : theme.danger,
         }}
-        className="m-0"
+        className="text-xs m-0"
       >
         {pAndL?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
       </code>
       {pAndL?.totalresultat && (
         <>
-          <p className="small font-weight-bold m-0">Totalresultat</p>
+          <p className="text-xs font-bold m-0">Totalresultat</p>
           <code
-            className="mb-0"
+            className="text-xs mb-0"
             style={{
               color: pAndL?.totalresultat > 0 ? theme.primary : theme.danger,
             }}
@@ -36,9 +36,9 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
       )}
       {pAndL?.aarsresultat && (
         <>
-          <p className="small font-weight-bold m-0">Årsresultat</p>
+          <p className="text-xs font-bold m-0">Årsresultat</p>
           <code
-            className="mb-0"
+            className="text-xs mb-0"
             style={{
               color: pAndL?.aarsresultat > 0 ? theme.primary : theme.danger,
             }}
@@ -47,6 +47,6 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
           </code>
         </>
       )}
-    </>
+    </div>
   );
 };
