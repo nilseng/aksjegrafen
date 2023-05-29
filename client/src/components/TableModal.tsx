@@ -85,18 +85,13 @@ export const TableModal = () => {
             <h5 className="flex items-center text-xl pb-3">
               <span className="font-semibold mr-2">Investeringene til {investor?.name}</span>
               <span
-                className="ml-2"
+                className="flex justify-center items-center ml-2"
                 style={{
                   ...theme.button,
                   cursor: "pointer",
                   borderRadius: "100%",
-                  display: "inline-block",
-                  textAlign: "center",
-                  verticalAlign: "middle",
                   width: "3.2rem",
                   height: "3.2rem",
-                  paddingTop: "0.6rem",
-                  paddingBottom: "0.6rem",
                 }}
                 onClick={() => {
                   closeModal();
