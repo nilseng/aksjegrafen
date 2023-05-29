@@ -1,5 +1,4 @@
 import { useContext } from "react";
-import { Container } from "react-bootstrap";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { EndpointDescription } from "./EndpointDescription";
@@ -10,14 +9,14 @@ export const ApiDocs = () => {
   const { theme } = useContext(AppContext);
   useDocumentTitle("API-dokumentasjon");
   return (
-    <Container
-      className="h-100 overflow-auto rounded p-4"
+    <div
+      className="w-full max-w-2xl h-full overflow-y-auto rounded p-4"
       style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, color: theme.text, ...theme.lowering }}
     >
-      <h5>API for aksjonærregisteret</h5>
-      <p>
+      <h5 className="text-xl font-bold pb-4">API for aksjonærregisteret</h5>
+      <p className="text-sm pb-4">
         Det åpne API-et til{" "}
-        <span className="font-weight-bold" style={{ color: theme.primary }}>
+        <span className="font-bold" style={{ color: theme.primary }}>
           aksjegrafen.com
         </span>{" "}
         gir utviklere tilgang til all data om aksjonærer og selskaper i aksjonærregisteret. APIet gjør det mulig for
@@ -25,7 +24,7 @@ export const ApiDocs = () => {
         om aksjonærer i ulike selskaper, aksjonærstruktur og endringer i eierskap over tid. API-et kan brukes av både
         investorer og utviklere som ønsker å lage applikasjoner for å analysere og visualisere aksje- og eierskapsdata.
       </p>
-      <h5>Endepunkter</h5>
+      <h5 className="text-lg font-bold">Endepunkter</h5>
       <EndpointDescription
         title={"Søk etter selskap"}
         baseUrl={baseUrl}
@@ -169,6 +168,6 @@ export const ApiDocs = () => {
         Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
         <code>teodor.nilseng@gmail.com</code>.
       </p>
-    </Container>
+    </div>
   );
 };
