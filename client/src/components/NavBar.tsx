@@ -14,7 +14,7 @@ interface IProps {
 
 const NavBar = ({ theme, setTheme }: IProps) => {
   return (
-    <div className="d-flex justify-content-between align-items-center p-3" style={{ zIndex: 10000 }}>
+    <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
       <Link to="/">
         <span
           style={{
@@ -32,16 +32,16 @@ const NavBar = ({ theme, setTheme }: IProps) => {
           <GraphLogo inputColor={theme.primary} />
         </span>
       </Link>
-      <div className="d-flex justify-content-end">
-        <div className="d-flex align-items-center">
+      <div className="flex justify-end">
+        <div className="flex items-center">
           <Link to="/search" className="mr-2">
-            <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+            <button className="text-sm p-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
               Avansert søk
               <FontAwesomeIcon icon={faSearch} className="ml-2" />
             </button>
           </Link>
           <Link to="/api-docs" className="mr-4">
-            <button className="btn btn-sm py-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+            <button className="text-sm p-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
               API
               <FontAwesomeIcon icon={faCode} className="ml-2" />
             </button>
