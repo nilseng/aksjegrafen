@@ -230,7 +230,7 @@ export const GraphContainer = () => {
 
   if (loadingInvestments || loadingInvestors || !nodes || !links || !actions || !nodeActions)
     return (
-      <div className="w-100 h-100 d-flex justify-content-center align-items-center px-4 pb-4">
+      <div className="w-full h-full flex justify-center items-center px-4 pb-4">
         <Loading
           color={theme.primary}
           backgroundColor={theme.background}
