@@ -1,13 +1,12 @@
 import { useContext } from "react";
-import { Container } from "react-bootstrap";
 import { AppContext } from "../AppContext";
 
 export const Heading = () => {
   const { theme } = useContext(AppContext);
   return (
-    <Container className="rounded p-sm-5 p-4">
+    <div className="p-4">
       <p
-        className="small rounded p-4 m-0"
+        className="max-w-3xl text-sm rounded p-6 m-0 sm:mt-12"
         style={{ color: theme.text, borderColor: theme.primary, borderWidth: "1px", borderStyle: "solid" }}
       >
         I{" "}
@@ -18,6 +17,6 @@ export const Heading = () => {
         investeringer, se hvem som eier hvilke selskap, hvordan eierskapet har endret seg over tid, finansielle
         nøkkeltall og informasjon fra enhetsregisteret.
       </p>
-    </Container>
+    </div>
   );
 };
