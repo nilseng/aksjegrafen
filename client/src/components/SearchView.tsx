@@ -36,6 +36,15 @@ export const SearchView = () => {
         <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
         <div className="w-full mt-12">
           <SearchComponent
+            inputContainerClassName="w-full"
+            inputStyle={{
+              backgroundColor: "transparent",
+              backgroundClip: "padding-box",
+              borderColor: "transparent",
+              color: theme.text,
+              ...theme.lowering,
+            }}
+            inputClassName="focus:outline-none p-2"
             mapResultToListItem={(company: ICompany) => ({
               key: company._id,
               name: company.name,
@@ -86,6 +95,15 @@ export const SearchView = () => {
         <StatCard label="aksjonærer" labelIcon={faUserTie} stat={shareholderCount} />
         <div className="w-full mt-12">
           <SearchComponent
+            inputContainerClassName="w-full"
+            inputStyle={{
+              backgroundColor: "transparent",
+              backgroundClip: "padding-box",
+              borderColor: "transparent",
+              color: theme.text,
+              ...theme.lowering,
+            }}
+            inputClassName="focus:outline-none p-2"
             mapResultToListItem={(shareholder: IShareholder) => ({
               key: shareholder._id,
               name: shareholder.name,
