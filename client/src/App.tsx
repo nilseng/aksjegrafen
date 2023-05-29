@@ -18,14 +18,20 @@ const getStoredTheme = () => {
   if (t) return theming[t as Theme];
 };
 
+const getSystemTheme = () => {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? theming["dark"] : theming["light"];
+};
+
 const App = () => {
-  const [theme, setTheme] = useState(getStoredTheme() ?? theming[Theme.light]);
+  const [theme, setTheme] = useState(getStoredTheme() ?? getSystemTheme() ?? theming[Theme.light]);
   const [modalInvestment, setModalInvestment] = useState<ICompany>();
   const [modalInvestor, setModalInvestor] = useState<IShareholder>();
   const [skip, setSkip] = useState<number>(0);
 
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
+    if (theme.id === "dark") document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, [theme]);
 
   return (
@@ -47,7 +53,7 @@ const App = () => {
         <NavBar theme={theme} setTheme={setTheme} />
         <div
           id="ag-main"
-          className="d-flex w-100 justify-content-center align-items-middle"
+          className="flex w-full justify-center"
           style={{
             minHeight: "calc(100% - 83.2px)",
             height: "calc(100% - 83.2px)",
