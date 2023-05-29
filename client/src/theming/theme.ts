@@ -15,7 +15,7 @@ export const theming = {
       borderRadius: 8,
     },
     lowering: {
-      boxShadow: "inset 3px 3px 8px 0px rgba(209, 205, 199, 0.5)",
+      boxShadow: "inset -3px -3px 8px 0px rgba(255,255,255, 0.5), inset 3px 3px 8px 0px rgba(209, 205, 199, 0.5)",
       borderRadius: 8,
     },
     button: {
