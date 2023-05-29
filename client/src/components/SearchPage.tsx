@@ -90,6 +90,7 @@ export const SearchPage = () => {
                 className="w-full outline-none p-2"
                 style={{
                   backgroundColor: "transparent",
+                  backgroundClip: "padding-box",
                   borderColor: "transparent",
                   color: theme.text,
                   ...theme.lowering,
