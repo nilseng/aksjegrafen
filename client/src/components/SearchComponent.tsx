@@ -48,7 +48,7 @@ export const SearchComponent = <Result extends unknown>({
   return (
     <div className="w-full">
       <input
-        className="w-full p-2"
+        className="w-full focus:outline-none p-2"
         name="selskapsSøk"
         autoComplete="off"
         type="text"
