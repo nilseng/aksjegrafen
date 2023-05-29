@@ -1,7 +1,6 @@
 import { faChevronDown, faChevronUp, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useContext, useEffect, useState } from "react";
-import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { AppContext } from "../AppContext";
 import { availableYears } from "../config";
@@ -81,15 +80,14 @@ export const SearchPage = () => {
   }, []);
 
   return (
-    <div style={{ color: theme.text }} className="container d-flex flex-column h-100 pb-3 sm-pb-5">
-      <h5 className="text-center">Søk i enhetsregisteret</h5>
+    <div style={{ color: theme.text }} className="w-full max-w-2xl flex flex-col h-full pb-3 sm-pb-5">
+      <h5 className="text-lg font-semibold text-center">Søk i enhetsregisteret</h5>
       {areSearchFieldsVisible && (
-        <>
-          <Form.Group className="d-flex justify-content-center row px-2 mt-3 mb-0">
-            {Object.keys(unitSearchInputConfig).map((key) => (
-              <Form.Control
-                key={key}
-                className="col-sm-6 m-1"
+        <div className="flex justify-center flex-wrap px-2 mt-3 m-0">
+          {Object.keys(unitSearchInputConfig).map((key) => (
+            <div key={key} className="w-full sm:w-1/2 p-1">
+              <input
+                className="w-full outline-none p-2"
                 style={{
                   backgroundColor: "transparent",
                   borderColor: "transparent",
@@ -100,11 +98,11 @@ export const SearchPage = () => {
                 value={searchParams[key] ?? ""}
                 placeholder={`${unitSearchInputConfig[key].placeholder ?? ""}`}
                 onChange={handleInputChange}
-              ></Form.Control>
-            ))}
-          </Form.Group>
-          <div className="row d-flex justify-content-center px-2 px-sm-2 my-1">
-            <div className="col-sm-6 px-0 m-1 m-sm-0" style={{ height: "3rem", maxHeight: "3rem" }}>
+              />
+            </div>
+          ))}
+          <div className="flex justify-center w-full sm:w-1/2">
+            <div className="w-full m-1" style={{ height: "3rem", maxHeight: "3rem" }}>
               <SearchComponent
                 handleClick={(b: BusinessCode) => setSearchParam({ name: "naeringskode", value: b.code })}
                 placeholder="Næring, bransje, etc..."
@@ -137,18 +135,18 @@ export const SearchPage = () => {
               )}
             </div>
           </div>
-        </>
+        </div>
       )}
-      <div className="d-flex justify-content-center pb-4">
+      <div className="flex justify-center py-5">
         <button
-          className="btn font-weight-bold"
+          className="font-bold p-2"
           style={{ ...theme.button, color: theme.primary, minWidth: "8rem" }}
           onClick={() => handleSearch(searchParams)}
         >
           Søk
         </button>
         <button
-          className="btn"
+          className="p-2"
           style={{ ...theme.button, color: theme.primary }}
           onClick={() => setAreSearchFieldsVisible(!areSearchFieldsVisible)}
         >
@@ -156,27 +154,27 @@ export const SearchPage = () => {
         </button>
       </div>
       {searchRes && (
-        <div className="d-flex align-items-center justify-content-center pb-2">
+        <div className="flex items-center justify-center pb-2">
           <button
-            className="btn btn-sm font-weight-bold mr-4"
+            className="text-sm font-bold mr-4 p-2"
             disabled={searchRes.page.number < 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
             onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number - 1 })}
           >
             Forrige
           </button>
-          <p className="small m-0">
+          <p className="text-sm m-0">
             Side{" "}
-            <span style={{ color: theme.primary }} className="font-weight-bold">
+            <span style={{ color: theme.primary }} className="font-bold">
               {searchRes.page.number + 1}
             </span>{" "}
             av{" "}
-            <span style={{ color: theme.primary }} className="font-weight-bold">
+            <span style={{ color: theme.primary }} className="font-bold">
               {searchRes.page.totalPages}
             </span>
           </p>
           <button
-            className="btn btn-sm font-weight-bold ml-4"
+            className="text-sm font-bold ml-4 p-2"
             disabled={searchRes.page.number >= searchRes.page.totalElements - 1}
             style={{ ...theme.button, color: theme.primary, minWidth: "4rem" }}
             onClick={() => handleSearch({ ...searchParams, page: searchRes.page.number + 1 })}
@@ -185,7 +183,7 @@ export const SearchPage = () => {
           </button>
         </div>
       )}
-      <div className="flex-fill overflow-auto" style={{ ...theme.lowering }}>
+      <div className="grow overflow-auto" style={{ ...theme.lowering }}>
         <>
           {isLoading ? (
             <div className="p-4">
@@ -194,11 +192,8 @@ export const SearchPage = () => {
           ) : searchRes ? (
             searchRes._embedded ? (
               searchRes._embedded.enheter.map((enhet) => (
-                <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-3 m-sm-4 p-1 p-sm-2">
-                  <div
-                    className="d-flex justify-content-between align-items-center p-3 p-sm-4"
-                    style={theme.borderPrimary}
-                  >
+                <div key={enhet.organisasjonsnummer} style={{ ...theme.elevation }} className="m-3 sm:m-4 p-1 sm:p-2">
+                  <div className="flex justify-between items-center p-3 sm:p-4" style={theme.borderPrimary}>
                     <div>
                       <p className="mb-0">{enhet.navn}</p>
                       <p className="p-0 m-0" style={{ color: theme.muted }}>
@@ -212,41 +207,28 @@ export const SearchPage = () => {
                       (shouldShowGraphLink(enhet) ? (
                         <Link
                           to={`/graph?orgnr=${enhet.organisasjonsnummer}`}
-                          className="btn px-0"
+                          className="px-0"
                           style={{ textDecoration: "none" }}
                         >
-                          <span
+                          <button
+                            className="flex justify-center items-center p-2"
                             style={{
                               ...theme.button,
                               borderRadius: "100%",
-                              display: "inline-block",
-                              textAlign: "center",
-                              verticalAlign: "middle",
-                              width: "3.2rem",
-                              height: "3.2rem",
-                              paddingTop: "0.6rem",
-                              paddingBottom: "0.6rem",
                             }}
                           >
                             <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
-                          </span>
-                          <p className="small font-weight-bold m-0" style={{ color: theme.secondary }}>
+                          </button>
+                          <p className="text-sm font-bold m-0" style={{ color: theme.secondary }}>
                             se i graf
                           </p>
                         </Link>
                       ) : (
                         <button
-                          className="btn px-0"
+                          className="flex justify-center items-center p-2"
                           style={{
                             ...theme.button,
                             borderRadius: "100%",
-                            display: "inline-block",
-                            textAlign: "center",
-                            verticalAlign: "middle",
-                            width: "3.2rem",
-                            height: "3.2rem",
-                            paddingTop: "0.6rem",
-                            paddingBottom: "0.6rem",
                           }}
                           disabled={true}
                         >
