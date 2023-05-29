@@ -36,17 +36,17 @@ export const TableModal = () => {
 
   return investment || investor ? (
     <div
-      className="position-fixed w-100 h-100 d-flex justify-content-center rounded px-2"
+      className="fixed w-full h-full flex justify-center rounded px-2"
       style={{ top: 0, zIndex: 10000, color: theme.text }}
     >
-      <div className="w-100 h-100 position-absolute overflow-hidden" onClick={closeModal}></div>
+      <div className="w-full h-full absolute overflow-hidden" onClick={closeModal}></div>
       <div
-        className="w-100 h-75 position-relative d-flex flex-column justify-content-between small mt-5 p-4"
+        className="w-full h-3/4 relative flex flex-col justify-between text-sm mt-5 p-4"
         style={{ backgroundColor: theme.backgroundSecondary, ...theme.elevation, zIndex: 10001, maxWidth: "720px" }}
       >
         <FontAwesomeIcon
           icon={faTimes}
-          className="position-absolute mr-4"
+          className="absolute mr-4"
           style={{ cursor: "pointer", right: 0, zIndex: 10002 }}
           onClick={closeModal}
         />
@@ -55,21 +55,17 @@ export const TableModal = () => {
         )}
         {investors?.length && (
           <>
-            <h5 className="pb-3">
-              Aksjonærer i {investment?.name} <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
+            <h5 className="flex items-center text-xl pb-3">
+              <span className="font-semibold mr-2">Aksjonærer i {investment?.name}</span>{" "}
+              <span style={{ color: theme.muted }}>({investment?.orgnr})</span>
               <span
-                className="ml-2"
+                className="flex justify-center items-center ml-2"
                 style={{
                   ...theme.button,
                   cursor: "pointer",
                   borderRadius: "100%",
-                  display: "inline-block",
-                  textAlign: "center",
-                  verticalAlign: "middle",
                   width: "3.2rem",
                   height: "3.2rem",
-                  paddingTop: "0.6rem",
-                  paddingBottom: "0.6rem",
                 }}
                 onClick={() => {
                   closeModal();
@@ -79,15 +75,15 @@ export const TableModal = () => {
                 <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
               </span>
             </h5>
-            <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
+            <div className="w-full overflow-auto grow rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investors} investment={investment} closeModal={closeModal} />
             </div>
           </>
         )}
         {investments?.length && (
           <>
-            <h5>
-              Investeringene til {investor?.name}
+            <h5 className="flex items-center text-xl pb-3">
+              <span className="font-semibold mr-2">Investeringene til {investor?.name}</span>
               <span
                 className="ml-2"
                 style={{
@@ -110,14 +106,15 @@ export const TableModal = () => {
                 <GraphLogo inputColor={theme.secondary} width={"2rem"} height={"2rem"} />
               </span>
             </h5>
-            <div className="w-100 overflow-auto flex-fill rounded" style={theme.borderPrimary}>
+            <div className="w-full overflow-auto grow rounded" style={theme.borderPrimary}>
               <OwnershipTable ownerships={investments} investor={investor} closeModal={closeModal} />
             </div>
           </>
         )}
-        <div className="w-100 d-flex justify-content-between pt-2">
+        <div className="w-full flex justify-between pt-2">
           <button
-            className="btn btn-sm btn-primary"
+            className="rounded text-white p-2"
+            style={{ backgroundColor: theme.primary }}
             disabled={skip < limit}
             onClick={() => {
               if (skip >= limit) setSkip(skip - limit);
@@ -126,7 +123,8 @@ export const TableModal = () => {
             Forrige {limit}
           </button>
           <button
-            className="btn btn-sm btn-primary"
+            className="rounded text-white p-2"
+            style={{ backgroundColor: theme.primary }}
             disabled={!!(((investments?.length ?? 0) + (investors?.length ?? 0)) % limit)}
             onClick={() => {
               if (!(((investments?.length ?? 0) + (investors?.length ?? 0)) % limit)) setSkip(skip + limit);
