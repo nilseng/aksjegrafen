@@ -18,11 +18,11 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
   const { theme } = useContext(AppContext);
   const [activeTab, setActiveTab] = useState<"description" | "example">("description");
   return (
-    <div className="pb-4">
-      <p className="small font-weight-bold m-0">{title}</p>
+    <div className="w-full pb-4">
+      <p className="text-sm font-bold m-0">{title}</p>
       <div className="py-2">
         <button
-          className="btn btn-sm"
+          className="text-sm rounded p-2"
           style={
             activeTab === "description"
               ? { backgroundColor: theme.primary, color: theme.backgroundSecondary }
@@ -34,7 +34,7 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
         </button>
         {exampleResponse && (
           <button
-            className="btn btn-sm"
+            className="text-sm rounded p-2"
             style={
               activeTab === "example"
                 ? { backgroundColor: theme.primary, color: theme.backgroundSecondary }
@@ -48,7 +48,7 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
       </div>
       {activeTab === "description" && (
         <>
-          <code>
+          <code className="text-sm">
             {baseUrl}
             {path}
             {params ? `${params.map(({ name }) => `/{${name}}`)}` : ""}
@@ -61,12 +61,12 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
             )}
           </code>
           {params?.map(({ name, description }) => (
-            <p className="m-0" key={name}>
+            <p className="text-sm m-0" key={name}>
               <code>{name}</code> - {description}
             </p>
           ))}
           {query?.map(({ name, description }) => (
-            <p className="m-0" key={name}>
+            <p className="text-sm m-0" key={name}>
               <code>{name}</code> - {description}
             </p>
           ))}
@@ -74,7 +74,7 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
       )}
       {exampleResponse && activeTab === "example" && (
         <>
-          <p className="m-0">
+          <p className="w-full text-sm m-0">
             <code>
               {baseUrl}
               {path}
@@ -90,8 +90,8 @@ export const EndpointDescription = ({ title, baseUrl, path, params, query, examp
               )}
             </code>
           </p>
-          <code>
-            <pre>{exampleResponse}</pre>
+          <code className="inline-block w-full text-xs overflow-auto">
+            <pre className="w-full">{exampleResponse}</pre>
           </code>
         </>
       )}
