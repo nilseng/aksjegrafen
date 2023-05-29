@@ -13,11 +13,11 @@ interface IProps {
 const Loading = ({ text, height, margin, color = "#faf8f9", backgroundColor = "#343a40", style }: IProps) => {
   return (
     <div
-      className="d-flex flex-column justify-content-center align-items-center w-100"
+      className="flex flex-col justify-center items-center w-full"
       style={{ height, margin, backgroundColor, ...(style ? style : {}) }}
     >
       <AnimatedLogo color={color} />
-      <p className="small" style={{ color }}>
+      <p className="text-sm" style={{ color }}>
         {text}
       </p>
     </div>
