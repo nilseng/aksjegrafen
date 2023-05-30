@@ -7,6 +7,7 @@ import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
 import { findShortestPath } from "../use-cases/findShortestPath";
+import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
@@ -319,6 +320,16 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         toOrgnr: query.toOrgnr,
       });
       return data ? res.status(200).json(data) : res.status(204).json();
+    })
+  );
+
+  router.get(
+    "/node/:searchTerm",
+    query(["limit"]).default(10).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      const data = await searchNode({ searchTerm: req.params.searchTerm, graphDB, limit: query.limit });
+      return res.status(200).json(data);
     })
   );
 
