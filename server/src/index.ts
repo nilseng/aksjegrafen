@@ -1,7 +1,22 @@
-import express from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import express, { Request, Response } from "express";
+import sslRedirect from "heroku-ssl-redirect";
+import morgan from "morgan";
 import { Driver } from "neo4j-driver";
+import path from "path";
+import { hideBin } from "yargs/helpers";
+import yargs from "yargs/yargs";
+import { initializeCache } from "./cache/cache";
+import { Database } from "./database/databaseSetup";
+import { Year } from "./models/models";
+import { api } from "./routes/api";
+import brregRouter from "./routes/brreg";
+import { businessCodeRoutes } from "./routes/businessCodes";
+import { importData } from "./services/importService";
+import { transformData } from "./services/transformationService";
 
-/* dotenv.config();
+dotenv.config();
 
 const argv = yargs(hideBin(process.argv))
   .options({
@@ -11,13 +26,11 @@ const argv = yargs(hideBin(process.argv))
     data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
     clearCache: { type: "boolean", description: "Clear current db in Redis cache" },
   })
-  .parseSync(); */
+  .parseSync();
 
 const app = express();
 
-app.use("/", (req, res) => res.send("Worky"));
-
-/* app.use(sslRedirect());
+app.use(sslRedirect());
 
 app.use(
   bodyParser.urlencoded({
@@ -28,10 +41,10 @@ app.use(
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.raw());
 
-app.use(morgan("tiny")); */
+app.use(morgan("tiny"));
 
 const initializeApp = async () => {
-  /* const { db, graphDB } = await Database.initialize();
+  const { db, graphDB } = await Database.initialize();
 
   const cache = await initializeCache();
 
@@ -40,13 +53,13 @@ const initializeApp = async () => {
   app.use("/brreg", brregRouter);
 
   app.use(express.static(path.join(__dirname, "../../client/build")));
-  app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html"))); */
+  app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));
 
   app.listen({ port: process.env.PORT || 4000 }, () =>
     console.log(`The server is now running on port ${process.env.PORT || 4000}`)
   );
 
-  /* app.use((err: Error, _: Request, res: Response, __: () => void) => {
+  app.use((err: Error, _: Request, res: Response, __: () => void) => {
     console.error(err.stack);
     return res.status(500).json({ error: "An unexpected error occured." });
   });
@@ -55,7 +68,7 @@ const initializeApp = async () => {
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
   if (argv.clearCache) cache.flushdb();
 
-  gracefulShutdown({ graphDB }); */
+  gracefulShutdown({ graphDB });
 };
 
 initializeApp();
