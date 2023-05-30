@@ -68,7 +68,7 @@ const initializeApp = async () => {
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
   if (argv.clearCache) cache.flushdb();
 
-  gracefulShutdown({ graphDB });
+  // gracefulShutdown({ graphDB });
 };
 
 initializeApp();
