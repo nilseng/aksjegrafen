@@ -1,6 +1,7 @@
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
+import sslRedirect from "heroku-ssl-redirect";
 import morgan from "morgan";
 import { Driver } from "neo4j-driver";
 import path from "path";
@@ -29,7 +30,7 @@ const argv = yargs(hideBin(process.argv))
 
 const app = express();
 
-// app.use(sslRedirect());
+app.use(sslRedirect());
 
 app.use(
   bodyParser.urlencoded({
