@@ -85,6 +85,28 @@ export interface Role {
   shareholder?: Shareholder;
 }
 
+export enum GraphNodeLabel {
+  Shareholder = "Shareholder",
+  Company = "Company",
+  Person = "Person",
+  Unit = "Unit",
+}
+
+export interface GraphNode {
+  elementId: string;
+  labels: GraphNodeLabel[];
+  properties: {
+    name: string;
+    orgnr?: string;
+    shareholderId?: string;
+    stocks?: {
+      [year in Year]?: {
+        total: number;
+      };
+    };
+  };
+}
+
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
 
 export const isOwnership = (o: any): o is Ownership => {

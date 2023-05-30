@@ -122,4 +122,26 @@ export interface Role {
   shareholder?: IShareholder;
 }
 
+export enum GraphNodeLabel {
+  Shareholder = "Shareholder",
+  Company = "Company",
+  Person = "Person",
+  Unit = "Unit",
+}
+
+export interface GraphNode {
+  elementId: string;
+  labels: GraphNodeLabel[];
+  properties: {
+    name: string;
+    orgnr?: string;
+    shareholderId?: string;
+    stocks?: {
+      [year in Year]?: {
+        total: number;
+      };
+    };
+  };
+}
+
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: IOwnership };
