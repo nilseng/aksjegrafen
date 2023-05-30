@@ -43,10 +43,6 @@ app.use(bodyParser.raw());
 
 app.use(morgan("tiny"));
 
-app.use((_, res) => {
-  return res.status(200).send("Debugging...");
-});
-
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
