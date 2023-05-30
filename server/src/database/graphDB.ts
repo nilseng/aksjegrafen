@@ -35,5 +35,10 @@ const createConstraints = async () => {
   session.close();
 };
 
-createIndexes();
-createConstraints();
+createIndexes().catch((e) => {
+  console.error("Failed to create indexes", e);
+});
+
+createConstraints().catch((e) => {
+  console.error("Feiled to create constraints", e);
+});
