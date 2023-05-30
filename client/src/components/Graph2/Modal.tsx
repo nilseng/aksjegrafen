@@ -15,7 +15,7 @@ export const Modal = () => {
           <FontAwesomeIcon icon={faTimes} onClick={() => dispatch(close())} />
         </button>
         <SearchComponent
-          inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
+          inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50/70 dark:bg-gray-700/70"
           inputClassName="ag-input focus:outline-none text-primary bg-transparent font-bold p-4"
           placeholder="Selskap, aksjonær eller rolleinnehaver..."
           apiPath="/api/node"
