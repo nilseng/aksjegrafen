@@ -1,6 +1,15 @@
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CSSProperties, ChangeEvent, KeyboardEvent, ReactElement, useContext, useState } from "react";
+import {
+  CSSProperties,
+  ChangeEvent,
+  KeyboardEvent,
+  ReactElement,
+  useContext,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { AppContext } from "../AppContext";
 import { useSearch } from "../hooks/useSearch";
 import Loading from "./Loading";
@@ -25,6 +34,7 @@ interface IProps<Result extends unknown> {
   inputContainerClassName?: string;
   inputClassName?: string;
   inputStyle?: CSSProperties;
+  focus?: boolean;
 }
 
 export const SearchComponent = <Result extends unknown>({
@@ -37,8 +47,15 @@ export const SearchComponent = <Result extends unknown>({
   inputContainerClassName,
   inputClassName,
   inputStyle,
+  focus,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useLayoutEffect(() => {
+    if (focus) inputRef.current?.focus();
+  }, [focus]);
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
@@ -56,6 +73,7 @@ export const SearchComponent = <Result extends unknown>({
     <div className="relative w-full flex flex-col justify-center items-center">
       <div className={`relative ${inputContainerClassName}`}>
         <input
+          ref={inputRef}
           className={`w-full ${inputClassName}`}
           name="selskapsSøk"
           autoComplete="off"
