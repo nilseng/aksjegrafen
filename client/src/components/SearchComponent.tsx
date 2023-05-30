@@ -34,6 +34,7 @@ interface IProps<Result extends unknown> {
   inputContainerClassName?: string;
   inputClassName?: string;
   inputStyle?: CSSProperties;
+  searchListClassName?: string;
   focus?: boolean;
 }
 
@@ -47,6 +48,7 @@ export const SearchComponent = <Result extends unknown>({
   inputContainerClassName,
   inputClassName,
   inputStyle,
+  searchListClassName,
   focus,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
@@ -91,7 +93,7 @@ export const SearchComponent = <Result extends unknown>({
         )}
       </div>
       {searchList && (
-        <div className="w-full max-w-full px-0">
+        <div className={searchListClassName ?? `w-full max-w-full px-0`}>
           <div
             className="w-full relative p-3"
             style={{ ...theme.elevation, backgroundColor: theme.background, zIndex: 100 }}
