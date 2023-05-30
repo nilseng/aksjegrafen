@@ -35,13 +35,21 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       <div className="flex justify-end">
         <div className="flex items-center">
           <Link to="/search" className="mr-2">
-            <button className="text-sm p-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+            <button
+              className="text-xs font-bold p-2"
+              aria-label="test"
+              style={{ ...theme.button, color: theme.primary }}
+            >
               Avansert søk
               <FontAwesomeIcon icon={faSearch} className="ml-2" />
             </button>
           </Link>
           <Link to="/api-docs" className="mr-4">
-            <button className="text-sm p-2" aria-label="test" style={{ ...theme.button, color: theme.primary }}>
+            <button
+              className="text-xs font-bold p-2"
+              aria-label="test"
+              style={{ ...theme.button, color: theme.primary }}
+            >
               API
               <FontAwesomeIcon icon={faCode} className="ml-2" />
             </button>
