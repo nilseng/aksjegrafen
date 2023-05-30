@@ -11,11 +11,11 @@ export const graphDB = neo4j.driver(
 const createIndexes = async () => {
   const session = graphDB.session();
   console.info("Creating indexes");
-  await session.run(`
+  /* await session.run(`
     CREATE FULLTEXT INDEX namesAndOrgnrs IF NOT EXISTS 
     FOR (n:Company|Shareholder|Person|Unit) 
     ON EACH [n.name, n.orgnr]
-  `);
+  `); */
   console.info("Indexes created");
   session.close();
 };
