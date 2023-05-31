@@ -6,6 +6,7 @@ import { AppContext } from "../../AppContext";
 import { GraphNode } from "../../models/models";
 import { close } from "../../slices/modalSlice";
 import { GraphLogo } from "../GraphLogo";
+import { NeuButton } from "../NeuButton";
 import { SearchComponent } from "../SearchComponent";
 
 export const Modal = () => {
@@ -17,9 +18,13 @@ export const Modal = () => {
     <div className="absolute w-full h-full z-50 flex justify-center items-center">
       <div className="absolute w-full h-full" onClick={() => dispatch(close())}></div>
       <div className="relative w-full sm:w-3/4 max-w-2xl h-1/2 flex justify-center items-center bg-gray-50 rounded-lg bg-clip-padding backdrop-filter backdrop-blur-sm bg-opacity-50 dark:bg-opacity-10 border border-white dark:border-gray-500 p-2 sm:p-4 m-2 sm:m-0">
-        <button className="absolute top-0 right-0 text-white m-2 sm:m-4">
-          <FontAwesomeIcon icon={faTimes} onClick={() => dispatch(close())} />
-        </button>
+        <NeuButton
+          className="absolute top-0 right-0 h-12 w-12 p-2 m-2 sm:m-4"
+          style={{ borderRadius: "100%" }}
+          textClassName="text-primary/60 text-xl"
+          icon={faTimes}
+          action={() => dispatch(close())}
+        />
         <div className="w-full h-14">
           <SearchComponent
             focus={true}
