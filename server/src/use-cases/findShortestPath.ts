@@ -22,13 +22,13 @@ export const findShortestPath = async ({
 
   const findShortestPathQuery = `
   MATCH ${
-    fromOrgnr ? `(start:Company {orgnr: "${fromOrgnr}"})` : `(start:Shareholder {id: "${fromShareholderId}"})`
-  }, (end:Company {orgnr: "${toOrgnr}"})
+    fromOrgnr ? `(start:Company {orgnr: $fromOrgnr})` : `(start:Shareholder {id: $fromShareholderId})`
+  }, (end:Company {orgnr: $toOrgnr})
   OPTIONAL MATCH path = shortestPath((start)-[r*]->(end))
   WHERE all(rel in r WHERE rel.year = 2022 OR rel.year IS NULL)
   RETURN path
   `;
-  const res = await session.run(findShortestPathQuery);
+  const res = await session.run(findShortestPathQuery, { fromOrgnr, fromShareholderId, toOrgnr });
   session.close();
 
   return res.records.length === 0 ? [] : mapPathToRelations(res.records[0].get("path"));
