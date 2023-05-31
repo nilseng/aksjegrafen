@@ -20,7 +20,7 @@ interface ListItem<Result> {
   tags: (string | number)[];
   icon?: IconProp;
   iconComponent?: ReactElement;
-  buttons?: { name: string; buttonContent: ReactElement; handleClick: (res: Result) => void }[];
+  buttons?: { name: string; condition: boolean; buttonContent: ReactElement; handleClick: (res: Result) => void }[];
 }
 
 interface IProps<Result extends unknown> {
@@ -141,18 +141,20 @@ export const SearchComponent = <Result extends unknown>({
                         />
                       )}
                       {item.buttons?.length && item.buttons?.length && (
-                        <div className="w-full flex justify-around px-2">
-                          {item.buttons.map((b) => (
-                            <button
-                              key={b.name}
-                              className="px-0"
-                              onClick={() => {
-                                b.handleClick(result);
-                              }}
-                            >
-                              {b.buttonContent}
-                            </button>
-                          ))}
+                        <div className="w-full flex justify-around items-end px-2">
+                          {item.buttons
+                            .filter((b) => b.condition)
+                            .map((b) => (
+                              <button
+                                key={b.name}
+                                className="px-0"
+                                onClick={() => {
+                                  b.handleClick(result);
+                                }}
+                              >
+                                {b.buttonContent}
+                              </button>
+                            ))}
                         </div>
                       )}
                     </div>

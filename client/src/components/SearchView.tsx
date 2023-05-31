@@ -53,11 +53,13 @@ export const SearchView = () => {
               buttons: [
                 {
                   name: "table-button",
+                  condition: true,
                   buttonContent: <FontAwesomeIcon icon={faList} style={{ color: theme.primary }} size="lg" />,
                   handleClick: (company: ICompany) => tableModalInput.setInvestment(company),
                 },
                 {
                   name: "graph-button",
+                  condition: true,
                   buttonContent: (
                     <span
                       className="flex justify-center items-center p-2"
@@ -73,6 +75,7 @@ export const SearchView = () => {
                 },
                 {
                   name: "relation-finder-button",
+                  condition: true,
                   buttonContent: <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />,
                   handleClick: (company: ICompany) => history.push(`/relation-finder?_id=${company._id}`),
                 },
@@ -115,6 +118,7 @@ export const SearchView = () => {
               buttons: [
                 {
                   name: "table-button",
+                  condition: true,
                   buttonContent: <FontAwesomeIcon icon={faList} style={{ color: theme.primary }} size="lg" />,
                   handleClick: (shareholder: IShareholder) => {
                     tableModalInput.setInvestor(shareholder);
@@ -122,6 +126,7 @@ export const SearchView = () => {
                 },
                 {
                   name: "graph-button",
+                  condition: true,
                   buttonContent: (
                     <span
                       className="flex justify-center items-center p-2"
@@ -137,6 +142,7 @@ export const SearchView = () => {
                 },
                 {
                   name: "relation-finder-button",
+                  condition: true,
                   buttonContent: <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />,
                   handleClick: (shareholder: IShareholder) =>
                     history.push(`/relation-finder?shareholder_id=${shareholder._id}`),
