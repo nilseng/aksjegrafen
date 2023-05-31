@@ -23,6 +23,10 @@ const createIndexes = async () => {
 const createConstraints = async () => {
   const session = graphDB.session();
   console.info("Creating constraints");
+  await session.run(`CREATE CONSTRAINT company_uuids IF NOT EXISTS FOR (n:Company) REQUIRE n.uuid is UNIQUE`);
+  await session.run(`CREATE CONSTRAINT shareholder_uuids IF NOT EXISTS FOR (n:Shareholder) REQUIRE n.uuid is UNIQUE`);
+  await session.run(`CREATE CONSTRAINT unit_uuids IF NOT EXISTS FOR (n:Unit) REQUIRE n.uuid is UNIQUE`);
+  await session.run(`CREATE CONSTRAINT person_uuids IF NOT EXISTS FOR (n:Person) REQUIRE n.uuid is UNIQUE`);
   await session.run(`CREATE CONSTRAINT unique_company_orgnrs IF NOT EXISTS FOR (c:Company) REQUIRE c.orgnr IS UNIQUE`);
   await session.run(
     `CREATE CONSTRAINT unique_shareholder_ids IF NOT EXISTS FOR (s:Shareholder) REQUIRE s.id IS UNIQUE`

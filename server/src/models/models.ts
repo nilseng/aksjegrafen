@@ -93,9 +93,9 @@ export enum GraphNodeLabel {
 }
 
 export interface GraphNode {
-  elementId: string;
   labels: GraphNodeLabel[];
   properties: {
+    uuid: string;
     name: string;
     orgnr?: string;
     shareholderId?: string;

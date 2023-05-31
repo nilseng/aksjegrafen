@@ -5,6 +5,7 @@ interface NodeRecord {
   elementId: string;
   labels: GraphNodeLabel[];
   properties: {
+    uuid: string;
     name: string;
     orgnr?: string;
     id?: string;
@@ -32,9 +33,9 @@ export const searchNode = async ({
 };
 
 const mapRecordToGraphNode = (record: NodeRecord): GraphNode => ({
-  elementId: record.elementId,
   labels: record.labels,
   properties: {
+    uuid: record.properties.uuid,
     name: record.properties.name,
     orgnr: record.properties.orgnr,
     shareholderId: record.properties.id,
