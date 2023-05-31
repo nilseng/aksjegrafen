@@ -1,11 +1,10 @@
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CSSProperties, ReactElement, useState } from "react";
-import "./NeuButton.scss";
+import { CSSProperties, ReactElement, useContext, useEffect, useState } from "react";
+import { AppContext } from "../AppContext";
 
 interface IProps {
-  type: "light" | "colored";
   className?: string;
   textClassName?: string;
   text?: string;
@@ -18,10 +17,9 @@ interface IProps {
   ariaLabel?: string;
 }
 
-const defaultButtonClasses = "flex justify-center items-center text-gray-500 select-none ";
+const defaultButtonClasses = "flex justify-center items-center select-none ";
 
 export const NeuButton = ({
-  type,
   className,
   textClassName,
   text,
@@ -33,18 +31,22 @@ export const NeuButton = ({
   disabled = false,
   ariaLabel,
 }: IProps) => {
+  const { theme } = useContext(AppContext);
+
   const [isLoading, setIsLoading] = useState(false);
-  const [buttonClasses, setButtonClasses] = useState<string>(
-    defaultButtonClasses + className + ` ${type}-button-shadow`
-  );
+  const [buttonStyle, setButtonStyle] = useState<CSSProperties>({ ...theme.button, ...style });
+
+  useEffect(() => {
+    setButtonStyle({ ...theme.button, ...style });
+  }, [style, theme]);
 
   const handleButtonDown = () => {
     if (disabled) return;
-    setButtonClasses(defaultButtonClasses + className + ` ${type}-pressed-button-shadow`);
+    setButtonStyle({ ...theme.lowering, ...style });
   };
 
   const handleButtonUp = () => {
-    setButtonClasses(defaultButtonClasses + className + ` ${type}-button-shadow`);
+    setButtonStyle({ ...theme.button, ...style });
   };
 
   const handleClick = async () => {
@@ -60,8 +62,8 @@ export const NeuButton = ({
 
   return (
     <button
-      className={buttonClasses}
-      style={style}
+      className={`${defaultButtonClasses} ${className}`}
+      style={buttonStyle}
       aria-label={ariaLabel ?? text}
       disabled={disabled}
       onMouseDown={handleButtonDown}
