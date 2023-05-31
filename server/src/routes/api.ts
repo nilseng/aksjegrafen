@@ -333,5 +333,9 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     })
   );
 
+  router.get("/*", (_, res) => {
+    return res.status(404).send();
+  });
+
   return router;
 };
