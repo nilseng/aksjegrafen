@@ -1,12 +1,15 @@
 import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
-import { GraphNode } from "../../models/models";
+import { GraphNode, GraphNodeLabel } from "../../models/models";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
 
 export const NodeSearch = () => {
+  const history = useHistory();
+
   const { theme } = useContext(AppContext);
 
   return (
@@ -19,34 +22,55 @@ export const NodeSearch = () => {
         placeholder="Selskap, aksjonær eller rolleinnehaver..."
         apiPath="/api/node"
         mapResultToListItem={(node: GraphNode) => ({
-          key: node.elementId,
+          key: node.properties.uuid,
           name: node.properties.name,
           tags: [],
           buttons: [
             {
-              name: "table-button",
-              buttonContent: <FontAwesomeIcon icon={faList} className="text-primary" size="lg" />,
-              handleClick: (node: GraphNode) => {},
-            },
-            {
-              name: "graph-button",
+              name: "investors-button",
+              condition: node.labels.includes(GraphNodeLabel.Company),
               buttonContent: (
-                <span
-                  className="flex justify-center items-center p-2"
-                  style={{
-                    ...theme.button,
-                    borderRadius: "100%",
-                  }}
-                >
-                  <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
-                </span>
+                <div>
+                  <FontAwesomeIcon icon={faList} className="text-primary" size="lg" />
+                  <p className="text-xs text-muted">investorer</p>
+                </div>
               ),
               handleClick: (node: GraphNode) => {},
             },
             {
+              name: "investments-button",
+              condition: node.labels.includes(GraphNodeLabel.Shareholder),
+              buttonContent: (
+                <div>
+                  <FontAwesomeIcon icon={faList} className="text-primary" size="lg" />
+                  <p className="text-xs text-muted">investeringer</p>
+                </div>
+              ),
+              handleClick: (node: GraphNode) => {},
+            },
+            {
+              name: "graph-button",
+              condition: true,
+              buttonContent: (
+                <div>
+                  <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
+                  <p className="text-xs text-muted">graf</p>
+                </div>
+              ),
+              handleClick: (node: GraphNode) => {
+                history.push({ pathname: `/graph2`, search: `?sourceId=${node.properties.uuid}` });
+              },
+            },
+            {
               name: "relation-finder-button",
-              buttonContent: <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />,
-              handleClick: (ndoe: GraphNode) => {},
+              condition: true,
+              buttonContent: (
+                <div>
+                  <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />
+                  <p className="text-xs text-muted">relasjoner</p>
+                </div>
+              ),
+              handleClick: (node: GraphNode) => {},
             },
           ],
         })}
