@@ -6,6 +6,7 @@ import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { findNode } from "../use-cases/findNode";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
@@ -320,6 +321,17 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         toOrgnr: query.toOrgnr,
       });
       return data ? res.status(200).json(data) : res.status(204).json();
+    })
+  );
+
+  router.get(
+    "/node",
+    query(["id"]),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.id) return res.status(400).json("Id not specified.");
+      const node = await findNode({ id: query.id, graphDB });
+      return res.json(node);
     })
   );
 
