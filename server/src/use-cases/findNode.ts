@@ -1,4 +1,5 @@
 import { Driver } from "neo4j-driver";
+import { mapRecordToGraphNode } from "../mappers/mapRecordToGraphNode";
 
 export const findNode = async ({ id, graphDB }: { id: string; graphDB: Driver }) => {
   const session = graphDB.session();
@@ -12,5 +13,5 @@ export const findNode = async ({ id, graphDB }: { id: string; graphDB: Driver })
     { id }
   );
   session.close();
-  return res.records[0];
+  return mapRecordToGraphNode(res.records[0].get("n"));
 };
