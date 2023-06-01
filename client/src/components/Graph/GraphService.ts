@@ -53,7 +53,10 @@ export const graphSimulation = (
   const nodeDatums = createNodeDatums(newOwnerships, dimensions, inputNodes);
   const simulation = forceSimulation<ISimulationNodeDatum, IGraphLink>()
     .nodes(nodeDatums)
-    .force("collide", forceCollide(200)) as Simulation<IGraphNode, IGraphLink>;
+    .force(
+      "collide",
+      forceCollide(Math.max(dimensions.nodeDimensions.width, dimensions.nodeDimensions.height) / 1.8)
+    ) as Simulation<IGraphNode, IGraphLink>;
 
   const nodes = simulation.nodes();
   const links = updateLinks(newOwnerships, nodes, currentLinks);
@@ -81,7 +84,7 @@ export const graphSimulation = (
           }
           return d.x;
         })
-        .strength(10)
+        .strength(4)
     )
     .tick(1000);
 
