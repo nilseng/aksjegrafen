@@ -145,3 +145,16 @@ export interface GraphNode {
 }
 
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: IOwnership };
+
+export enum FetchState {
+  Idle = "Idle",
+  Loading = "Loading",
+  Success = "Success",
+  Error = "Error",
+}
+
+export enum GraphType {
+  Default = "Default",
+  ShortestPath = "ShortestPath",
+  AllPaths = "AllPaths",
+}

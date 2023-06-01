@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { GraphType } from "./useGraph";
+import { GraphType } from "../models/models";
 import { useQuery } from "./useQuery";
 
 export const useGraphQueryParams = () => {
