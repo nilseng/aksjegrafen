@@ -40,15 +40,15 @@ export const theming = {
     text: "#f8f9fa",
     muted: "#868e96",
     elevation: {
-      boxShadow: "-4px -4px 8px 0px rgba(0, 0, 0, 0.2), 4px 4px 8px 0px rgba(60, 60, 60, 0.2)",
+      boxShadow: "-4px -4px 8px 0px rgba(0, 0, 0, 0.2), 4px 4px 8px 0px rgba(100, 100, 100, 0.2)",
       borderRadius: 8,
     },
     lowering: {
-      boxShadow: "inset -2px -2px 4px 0px rgba(0, 0, 0, 0.2), inset 2px 2px 4px 0px rgba(60, 60, 60, 0.2)",
+      boxShadow: "inset -2px -2px 4px 0px rgba(0, 0, 0, 0.2), inset 2px 2px 4px 0px rgba(100, 100, 100, 0.2)",
       borderRadius: 8,
     },
     button: {
-      boxShadow: "inset -2px -2px 4px 0px rgba(60, 60, 60, 0.2), inset 2px 2px 4px 0px rgba(0, 0, 0, 0.2)",
+      boxShadow: "inset -2px -2px 4px 0px rgba(100, 100, 100, 0.2), inset 2px 2px 4px 0px rgba(0, 0, 0, 0.2)",
       borderRadius: 8,
     },
     primary: "#17a2b8",
