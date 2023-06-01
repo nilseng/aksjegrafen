@@ -19,7 +19,7 @@ export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const brregInfo = useBrregEntityInfo(entity);
 
   return (
-    <div className="flex justify-center absolute w-2/3 h-3/4 mt-12">
+    <div className="flex justify-center absolute w-full md:w-2/3 h-3/4 mt-12 p-2">
       <div
         className="h-full w-full p-4"
         style={{
