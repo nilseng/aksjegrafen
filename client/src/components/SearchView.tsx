@@ -60,17 +60,7 @@ export const SearchView = () => {
                 {
                   name: "graph-button",
                   condition: true,
-                  buttonContent: (
-                    <span
-                      className="flex justify-center items-center p-2"
-                      style={{
-                        ...theme.button,
-                        borderRadius: "100%",
-                      }}
-                    >
-                      <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
-                    </span>
-                  ),
+                  buttonContent: <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />,
                   handleClick: (company: ICompany) => history.push(`/graph?_id=${company._id}`),
                 },
                 {
@@ -127,17 +117,7 @@ export const SearchView = () => {
                 {
                   name: "graph-button",
                   condition: true,
-                  buttonContent: (
-                    <span
-                      className="flex justify-center items-center p-2"
-                      style={{
-                        ...theme.button,
-                        borderRadius: "100%",
-                      }}
-                    >
-                      <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
-                    </span>
-                  ),
+                  buttonContent: <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />,
                   handleClick: (shareholder: IShareholder) => history.push(`/graph?shareholder_id=${shareholder._id}`),
                 },
                 {
