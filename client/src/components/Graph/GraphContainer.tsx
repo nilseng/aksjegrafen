@@ -16,7 +16,7 @@ const graphConfig: IGraphDimensions = {
   width: 1000,
   height: 1000,
   nodeDimensions: {
-    width: 360,
+    width: 240,
     height: 150,
   },
 };
