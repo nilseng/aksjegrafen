@@ -6,6 +6,7 @@ import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { searchNode } from "../use-cases/searchNode";
@@ -352,8 +353,8 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     query(["skip"]).default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      console.log(query);
-      return res.status(200).json({ nodes: [], links: [] });
+      const data = await findNeighbours({ uuid: query.uuid, limit: query.limit });
+      return res.status(200).json(data);
     })
   );
 
