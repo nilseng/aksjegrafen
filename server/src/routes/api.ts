@@ -345,6 +345,18 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     })
   );
 
+  router.get(
+    "/graph/neighbours",
+    query(["uuid"]),
+    query(["limit"]).default(10).toInt(),
+    query(["skip"]).default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      console.log(query);
+      return res.status(200).json({ nodes: [], links: [] });
+    })
+  );
+
   router.get("/*", (_, res) => {
     return res.status(404).send();
   });
