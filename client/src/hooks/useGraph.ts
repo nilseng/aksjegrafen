@@ -8,10 +8,10 @@ import { useNode } from "./useNode";
 export const useGraph = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { graphType, sourceId, targetId } = useGraphQueryParams();
+  const { graphType, sourceUuid, targetUuid } = useGraphQueryParams();
 
-  const { node: source } = useNode(sourceId);
-  const { node: target } = useNode(targetId);
+  const { node: source } = useNode(sourceUuid);
+  const { node: target } = useNode(targetUuid);
 
   useEffect(() => {
     if (source) {
