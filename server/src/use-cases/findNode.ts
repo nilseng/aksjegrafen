@@ -1,17 +1,3 @@
-import { Driver } from "neo4j-driver";
-import { mapRecordToGraphNode } from "../mappers/mapRecordToGraphNode";
+import { findNode as nodeFinder } from "../gateways/neo4j/neo4j.gateway";
 
-export const findNode = async ({ id, graphDB }: { id: string; graphDB: Driver }) => {
-  const session = graphDB.session();
-  const res = await session.run(
-    `
-        MATCH (n) 
-        WHERE n.uuid = $id
-        RETURN n
-        LIMIT 1
-    `,
-    { id }
-  );
-  session.close();
-  return mapRecordToGraphNode(res.records[0].get("n"));
-};
+export const findNode = async ({ uuid }: { uuid: string }) => nodeFinder({ uuid });

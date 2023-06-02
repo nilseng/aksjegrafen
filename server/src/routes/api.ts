@@ -327,11 +327,11 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
 
   router.get(
     "/node",
-    query(["id"]),
+    query(["uuid"]),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      if (!query.id) return res.status(400).json("Id not specified.");
-      const node = await findNode({ id: query.id, graphDB });
+      if (!query.uuid) return res.status(400).json("Uuid not specified.");
+      const node = await findNode({ uuid: query.uuid });
       return res.json(node);
     })
   );
@@ -341,7 +341,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     query(["limit"]).default(10).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await searchNode({ searchTerm: req.params.searchTerm, graphDB, limit: query.limit });
+      const data = await searchNode({ searchTerm: req.params.searchTerm, limit: query.limit });
       return res.status(200).json(data);
     })
   );

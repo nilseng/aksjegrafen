@@ -1,4 +1,4 @@
-import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j.gateway";
+import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j/neo4j.gateway";
 
 export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: number }) => {
   const [investors, investments, holders, units] = await Promise.all([

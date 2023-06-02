@@ -1,21 +1,4 @@
-import { Driver } from "neo4j-driver";
-import { mapRecordToGraphNode } from "../mappers/mapRecordToGraphNode";
+import { searchNode as nodeSearcher } from "../gateways/neo4j/neo4j.gateway";
 
-export const searchNode = async ({
-  searchTerm,
-  graphDB,
-  limit,
-}: {
-  searchTerm: string;
-  graphDB: Driver;
-  limit: 10;
-}) => {
-  const session = graphDB.session();
-  const res = await session.run(`
-    CALL db.index.fulltext.queryNodes("namesAndOrgnrs", "${searchTerm}") YIELD node
-    RETURN node
-    LIMIT ${limit}
-    `);
-  session.close();
-  return res.records.map((record) => mapRecordToGraphNode(record.get("node")));
-};
+export const searchNode = ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) =>
+  nodeSearcher({ searchTerm, limit });
