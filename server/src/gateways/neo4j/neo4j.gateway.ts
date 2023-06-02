@@ -1,5 +1,5 @@
 import { graphDB } from "../../database/graphDB";
-import { NodeRecord, mapRecordToGraphNode } from "./neo4j.mapper";
+import { NodeEntry, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
 
 const runQuery = async <T extends { [key: string]: unknown } = never>({
   query,
@@ -15,7 +15,7 @@ const runQuery = async <T extends { [key: string]: unknown } = never>({
 };
 
 export const findNode = async ({ uuid }: { uuid: string }) => {
-  const records = await runQuery<{ n: NodeRecord }>({
+  const records = await runQuery<{ n: NodeEntry }>({
     query: `
         MATCH (n) 
         WHERE n.uuid = $uuid
@@ -24,33 +24,38 @@ export const findNode = async ({ uuid }: { uuid: string }) => {
     `,
     params: { uuid },
   });
-  return mapRecordToGraphNode<{ n: NodeRecord }>(records[0], "n");
+  if (!records || records.length === 0) return null;
+  return mapRecordToGraphNode(records[0], "n");
 };
 
 export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) => {
-  const records = await runQuery<{ node: NodeRecord }>({
+  const records = await runQuery<{ node: NodeEntry }>({
     query: `
     CALL db.index.fulltext.queryNodes("namesAndOrgnrs", "${searchTerm}") YIELD node
     RETURN node
     LIMIT ${limit}
     `,
   });
-  return records.map((record) => mapRecordToGraphNode<{ node: NodeRecord }>(record, "node"));
+  if (!records || records.length === 0) return [];
+  return records.map((record) => mapRecordToGraphNode(record, "node"));
 };
 
 export const findInvestors = async ({ uuid, limit }: { uuid: string; limit: number }) => {
-  const records = await runQuery<{ source: NodeRecord }>({
+  const records = await runQuery<{ investor: NodeEntry; investment: NodeEntry }>({
     query: `
-        MATCH (investor:Shareholder)-[r:OWNS]->(source:Company)
-        WHERE source.uuid = $uuid
-        RETURN investor, source, r
+        MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
+        WHERE investment.uuid = $uuid
+        RETURN investor, investment, r
         LIMIT ${limit}
     `,
     params: { uuid },
   });
+  if (!records || records.length === 0) return { nodes: [], links: [] };
   return {
-    nodes: [mapRecordToGraphNode<{ source: NodeRecord }>(records[0], "source")],
-    links: [],
+    nodes: [mapRecordToGraphNode(records[0], "investment"), ...records.map((r) => mapRecordToGraphNode(r, "investor"))],
+    links: records.map((record) =>
+      mapRecordToGraphLink({ record, sourceKey: "investor", targetKey: "investment", relationshipKey: "r" })
+    ),
   };
 };
 

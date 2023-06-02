@@ -1,7 +1,7 @@
 import { Record } from "neo4j-driver";
-import { GraphNode, GraphNodeLabel } from "../../models/models";
+import { GraphLink, GraphNode, GraphNodeLabel, Year } from "../../models/models";
 
-export interface NodeRecord {
+export interface NodeEntry {
   elementId: string;
   labels: GraphNodeLabel[];
   properties: {
@@ -13,16 +13,20 @@ export interface NodeRecord {
   };
 }
 
-interface RelationshipRecord {
-  source: NodeRecord;
-  target: NodeRecord;
+export interface RelationshipEntry {
+  properties: {
+    year?: Year;
+    share?: number;
+    stocks?: number;
+  };
+  type: string;
 }
 
-export const mapRecordToGraphNode = <T extends { [key: string]: NodeRecord } = never>(
+export const mapRecordToGraphNode = <T extends { [key: string]: NodeEntry } = never>(
   record: Record<T>,
   key: keyof T
 ): GraphNode => {
-  const node = record.get(key);
+  const node: NodeEntry = record.get(key);
   return {
     labels: node.labels,
     properties: {
@@ -39,4 +43,21 @@ export const mapRecordToGraphNode = <T extends { [key: string]: NodeRecord } = n
   };
 };
 
-export const mapRecordToGraphLink = () => {};
+export const mapRecordToGraphLink = ({
+  record,
+  sourceKey,
+  targetKey,
+  relationshipKey,
+}: {
+  record: Record;
+  sourceKey: string;
+  targetKey: string;
+  relationshipKey: string;
+}): GraphLink => {
+  return {
+    source: mapRecordToGraphNode(record, sourceKey),
+    target: mapRecordToGraphNode(record, targetKey),
+    properties: record.get(relationshipKey).properties,
+    type: record.get(relationshipKey).type,
+  };
+};

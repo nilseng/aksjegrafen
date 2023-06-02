@@ -107,6 +107,17 @@ export interface GraphNode {
   };
 }
 
+export interface GraphLink {
+  source: GraphNode;
+  target: GraphNode;
+  properties: {
+    year?: Year;
+    share?: number;
+    stocks?: number;
+  };
+  type: string;
+}
+
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
 
 export const isOwnership = (o: any): o is Ownership => {
