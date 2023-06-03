@@ -92,13 +92,12 @@ export const importShareholderRegistryToGraph = async ({
 
     WITH ownership
     WHERE ownership.shareholderOrgnr IS NOT NULL
-    MERGE (cs:Company {orgnr: ownership.shareholderOrgnr})
-    ON CREATE SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
-    ON MATCH SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
+    MATCH (cs:Company {orgnr: ownership.shareholderOrgnr})
+    SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
   `;
 
     await session.executeWrite((t) => t.run(createShareholderCompaniesQuery, params));
-    console.info("Created company shareholder nodes.");
+    console.info("Updated company shareholder nodes.");
 
     const createShareholdersQuery = `
     UNWIND $ownerships as ownership
