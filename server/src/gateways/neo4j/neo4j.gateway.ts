@@ -59,35 +59,59 @@ export const findInvestors = async ({ uuid, limit }: { uuid: string; limit: numb
   };
 };
 
-export const findInvestments = ({ uuid, limit }: { uuid: string; limit: number }) =>
-  runQuery({
+export const findInvestments = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+  const records = await runQuery({
     query: `
-        MATCH (source:Shareholder)-[r:OWNS]->(investment:Company)
-        WHERE source.uuid = $uuid
-        RETURN source, investment, r
+        MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
+        WHERE investor.uuid = $uuid
+        RETURN investor, investment, r
         LIMIT ${limit}
     `,
     params: { uuid },
   });
+  if (!records || records.length === 0) return { nodes: [], links: [] };
+  return {
+    nodes: [mapRecordToGraphNode(records[0], "investor"), ...records.map((r) => mapRecordToGraphNode(r, "investment"))],
+    links: records.map((record) =>
+      mapRecordToGraphLink({ record, sourceKey: "investor", targetKey: "investment", relationshipKey: "r" })
+    ),
+  };
+};
 
-export const findRoleHolders = ({ uuid, limit }: { uuid: string; limit: number }) =>
-  runQuery({
+export const findRoleHolders = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+  const records = await runQuery({
     query: `
-        MATCH (holder:Person|Unit)-[r]->(source:Unit)
-        WHERE source.uuid = $uuid AND type(r) <> "OWNS"
-        RETURN holder, r, source
+        MATCH (holder:Person|Unit)-[r]->(unit:Unit)
+        WHERE unit.uuid = $uuid AND type(r) <> "OWNS"
+        RETURN holder, r, unit
         LIMIT ${limit}
     `,
     params: { uuid },
   });
+  if (!records || records.length === 0) return { nodes: [], links: [] };
+  return {
+    nodes: [mapRecordToGraphNode(records[0], "unit"), ...records.map((r) => mapRecordToGraphNode(r, "holder"))],
+    links: records.map((record) =>
+      mapRecordToGraphLink({ record, sourceKey: "holder", targetKey: "unit", relationshipKey: "r" })
+    ),
+  };
+};
 
-export const findRoleUnits = ({ uuid, limit }: { uuid: string; limit: number }) =>
-  runQuery({
+export const findRoleUnits = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+  const records = await runQuery({
     query: `
-        MATCH (source:Unit|Person)-[r]->(unit:Unit|Company)
-        WHERE source.uuid = $uuid AND type(r) <> "OWNS"
-        RETURN source, unit, r
+        MATCH (holder:Unit|Person)-[r]->(unit:Unit|Company)
+        WHERE holder.uuid = $uuid AND type(r) <> "OWNS"
+        RETURN holder, unit, r
         LIMIT ${limit}
     `,
     params: { uuid },
   });
+  if (!records || records.length === 0) return { nodes: [], links: [] };
+  return {
+    nodes: [mapRecordToGraphNode(records[0], "holder"), ...records.map((r) => mapRecordToGraphNode(r, "unit"))],
+    links: records.map((record) =>
+      mapRecordToGraphLink({ record, sourceKey: "holder", targetKey: "unit", relationshipKey: "r" })
+    ),
+  };
+};
