@@ -18,22 +18,37 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
       roles: roles.slice(i, i + chunkSize),
     };
 
-    const updateCompaniesQuery = `
+    const updateRoleHoldersQuery = `
     UNWIND $roles as role
 
     WITH role
     WHERE role.holder.unit.orgnr IS NOT NULL
-    MATCH (c:Company {orgnr: role.holder.unit.orgnr})
+    MATCH (c:Company|Shareholder {orgnr: role.holder.unit.orgnr})
     SET c:Unit
     `;
-    await session.executeWrite((t) => t.run(updateCompaniesQuery, params));
-    console.info("Update company nodes");
+    await session.executeWrite((t) => t.run(updateRoleHoldersQuery, params));
+    console.info("Updated company role holder nodes");
+
+    const updateRoleUnitsQuery = `
+    UNWIND $roles as role
+
+    WITH role
+    MATCH (c:Company|Shareholder {orgnr: role.orgnr})
+    SET c:Unit
+    `;
+    await session.executeWrite((t) => t.run(updateRoleUnitsQuery, params));
+    console.info("Updated role unit company nodes");
 
     const createUnitsQuery = `
     UNWIND $roles as role
 
     WITH role
     WHERE role.holder.unit.orgnr IS NOT NULL
+
+    MATCH (n:Unit)
+    WITH *, n
+    WHERE n.orgnr = role.orgnr
+
     MERGE (u:Unit {orgnr: role.holder.unit.orgnr})
     ON CREATE SET u.type = role.holder.unit.organisasjonsform, u.name = role.holder.unit.navn
     ON MATCH SET u.type = role.holder.unit.organisasjonsform, u.name = role.holder.unit.navn
@@ -46,6 +61,11 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
 
     WITH role
     WHERE role.holder.person.birthDate IS NOT NULL OR role.holder.person.fornavn IS NOT NULL OR role.holder.person.etternavn
+
+    MATCH (n:Unit)
+    WITH *, n
+    WHERE n.orgnr = role.orgnr
+
     MERGE (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')})
 `;
     await session.executeWrite((t) => t.run(createPersonsQuery, params));
@@ -56,8 +76,9 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
 
     WITH role
     WHERE role.holder.unit IS NOT NULL
-    MATCH (u:Unit {orgnr: role.holder.unit.orgnr}), (c:Company {orgnr: role.orgnr})
-    CALL apoc.create.relationship(u, role.type, {}, c) YIELD rel
+    MATCH (u:Unit {orgnr: role.holder.unit.orgnr})
+    MATCH (c:Company {orgnr: role.orgnr})
+    CALL apoc.merge.relationship(u, role.type, {}, {}, c, {}) YIELD rel
     WITH rel, role
     RETURN null
 `;
@@ -69,8 +90,9 @@ export const addRolesToGraphDB = async (graphDB: Driver) => {
 
     WITH role
     WHERE role.holder.person.birthDate IS NOT NULL OR role.holder.person.fornavn IS NOT NULL OR role.holder.person.etternavn
-    MATCH (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')}), (c:Company {orgnr: role.orgnr})
-    CALL apoc.create.relationship(p, role.type, {}, c) YIELD rel
+    MATCH (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')})
+    MATCH (c:Company {orgnr: role.orgnr})
+    CALL apoc.merge.relationship(p, role.type, {}, {}, c, {}) YIELD rel
     WITH rel, role
     RETURN null
 `;
