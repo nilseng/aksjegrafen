@@ -1,3 +1,4 @@
+import { uniqWith } from "lodash";
 import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j/neo4j.gateway";
 
 export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: number }) => {
@@ -8,9 +9,17 @@ export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: num
     findRoleUnits({ uuid, limit }),
   ]);
   return {
-    investors,
-    investments,
-    holders,
-    units,
+    nodes: uniqWith(
+      [...investors.nodes, ...investments.nodes, ...holders.nodes, ...units.nodes],
+      (a, b) => a.properties.uuid === b.properties.uuid
+    ),
+    links: uniqWith(
+      [...investors.links, ...investments.links, ...holders.links, ...units.links],
+      (a, b) =>
+        a.source.properties.uuid === b.source.properties.uuid &&
+        a.target.properties.uuid === b.target.properties.uuid &&
+        a.type === b.type &&
+        a.properties.year === b.properties.year
+    ),
   };
 };
