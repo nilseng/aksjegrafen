@@ -28,10 +28,13 @@ const createConstraints = async () => {
   await session.run(`CREATE CONSTRAINT unit_uuids IF NOT EXISTS FOR (n:Unit) REQUIRE n.uuid is UNIQUE`);
   await session.run(`CREATE CONSTRAINT person_uuids IF NOT EXISTS FOR (n:Person) REQUIRE n.uuid is UNIQUE`);
   await session.run(`CREATE CONSTRAINT unique_company_orgnrs IF NOT EXISTS FOR (c:Company) REQUIRE c.orgnr IS UNIQUE`);
+  await session.run(`CREATE CONSTRAINT unique_unit_orgnrs IF NOT EXISTS FOR (u:Unit) REQUIRE u.orgnr IS UNIQUE`);
+  await session.run(
+    `CREATE CONSTRAINT unique_shareholder_orgnrs IF NOT EXISTS FOR (s:Shareholder) REQUIRE s.orgnr IS UNIQUE`
+  );
   await session.run(
     `CREATE CONSTRAINT unique_shareholder_ids IF NOT EXISTS FOR (s:Shareholder) REQUIRE s.id IS UNIQUE`
   );
-  await session.run(`CREATE CONSTRAINT unique_unit_orgnrs IF NOT EXISTS FOR (u:Unit) REQUIRE u.orgnr IS UNIQUE`);
   await session.run(
     `CREATE CONSTRAINT unique_people IF NOT EXISTS FOR (p:Person) REQUIRE (p.birthDate, p.firstName, p.lastName) IS UNIQUE`
   );
