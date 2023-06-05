@@ -20,7 +20,7 @@ export const useGraph = () => {
           graphType,
           sourceUuid: source?.properties.uuid,
           targetUuid: target?.properties.uuid,
-          limit: 10,
+          limit: 5,
           skip: 0,
         })
       );
