@@ -1,14 +1,18 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { FetchState, GraphNode, GraphType } from "../models/models";
+import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
+import { FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
 
 export interface GraphState {
   data: {
-    nodes: GraphNode[];
-    links: { sourceUuid: string; targetUuid: string }[];
+    nodes: GraphNodeDatum[];
+    links: GraphLinkDatum[];
   };
   status: FetchState;
   error?: string | null;
 }
+
+export type GraphNodeDatum = GraphNode & SimulationNodeDatum;
+export type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
 export const graphSlice = createSlice<GraphState, {}, "graph">({
   name: "graph",
@@ -50,9 +54,20 @@ function fetchGraph({
   skip: number;
 }) {
   if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip });
+  if (graphType === GraphType.ShortestPath) throw Error("Not implemented yet.");
+  if (graphType === GraphType.AllPaths) throw Error("Not implemented yet.");
+  throw Error("Unknown graph type");
 }
 
-async function fetchNeighbours({ uuid, limit, skip }: { uuid: string; limit: number; skip: number }) {
+async function fetchNeighbours({
+  uuid,
+  limit,
+  skip,
+}: {
+  uuid: string;
+  limit: number;
+  skip: number;
+}): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const res = await fetch(`/api/graph/neighbours?uuid=${uuid}&limit=${limit}&skip=${skip}`);
   return res.json();
 }
