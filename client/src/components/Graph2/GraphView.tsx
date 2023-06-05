@@ -1,16 +1,54 @@
-import { forceCenter, forceCollide, forceLink, forceManyBody, forceSimulation, select } from "d3";
+import {
+  D3DragEvent,
+  Simulation,
+  drag,
+  forceCenter,
+  forceCollide,
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  select,
+} from "d3";
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../AppContext";
 import { useZoom } from "../../hooks/useSvgZoom2";
 import { GraphLinkDatum, GraphNodeDatum } from "../../slices/graphSlice";
 import { IGraphDimensions, graphConfig } from "./GraphConfig";
+import { GraphNode } from "./GraphNode";
+
+const nodeOffset = {
+  x: graphConfig.nodeDimensions.width / 2,
+  y: graphConfig.nodeDimensions.height / 2,
+};
 
 export const getGraphCenter = (dimensions: IGraphDimensions) => {
   return {
     x: dimensions.width / 2 - dimensions.nodeDimensions.width / 2,
     y: dimensions.height / 2 - dimensions.nodeDimensions.height / 2,
   };
+};
+
+const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
+  function dragstarted(event: D3DragEvent<HTMLElement, any, any>) {
+    if (!event.active) simulation.alphaTarget(0.1).restart();
+    event.subject.fx = event.subject.x;
+    event.subject.fy = event.subject.y;
+  }
+
+  function dragged(event: D3DragEvent<HTMLElement, any, any>) {
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
+  }
+
+  function dragended(event: D3DragEvent<HTMLElement, any, any>) {
+    if (!event.active) simulation.alphaTarget(0);
+  }
+
+  return drag<SVGForeignObjectElement, GraphNodeDatum>()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended);
 };
 
 export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: GraphLinkDatum[] }) => {
@@ -32,9 +70,9 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
       }));
 
       const link = svg.selectAll("line").data(mutableLinks).join("line");
-      const node = svg.selectAll("foreignObject").data(mutableNodes).join("foreignObject");
 
       const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(mutableNodes)
+        .alpha(0.4)
         .force(
           "link",
           forceLink(mutableLinks).id(({ index }) => mutableNodes.find((node) => node.index === index) as any)
@@ -44,18 +82,18 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
         .force(
           "collide",
           forceCollide(Math.max(graphConfig.nodeDimensions.width / 2, graphConfig.nodeDimensions.height / 2))
-        )
-        .tick(1000);
+        );
+
+      const node = svg
+        .selectAll<SVGForeignObjectElement, GraphNodeDatum>("foreignObject")
+        .data(mutableNodes)
+        .join("foreignObject")
+        .call(handleDrag(simulation));
 
       simulation.on("tick", () => {
-        node
-          .attr("x", (d) => d.x! - graphConfig.nodeDimensions.width / 2)
-          .attr("y", (d) => d.y! - graphConfig.nodeDimensions.height / 2);
+        node.attr("x", (d) => d.x! - nodeOffset.x).attr("y", (d) => d.y! - nodeOffset.y);
         link
-          .attr("x1", (d) => {
-            console.log(d);
-            return d.source.x!;
-          })
+          .attr("x1", (d) => d.source.x!)
           .attr("y1", (d) => d.source.y!)
           .attr("x2", (d) => d.target.x!)
           .attr("y2", (d) => d.target.y!);
@@ -73,22 +111,6 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
     >
       <g transform={transform}>
         <>
-          {nodes?.length &&
-            nodes.map((node) => (
-              <foreignObject
-                key={node.properties.uuid}
-                width={graphConfig.nodeDimensions.width}
-                height={graphConfig.nodeDimensions.height}
-              >
-                <div
-                  data-xmlns="http://www.w3.org/1999/xhtml"
-                  className="w-full h-full flex justify-center items-center p-4"
-                  style={{ userSelect: "none" }}
-                >
-                  <div className="text-center break-words font-bold text-xs">{node.properties.name}</div>
-                </div>
-              </foreignObject>
-            ))}
           {links?.length &&
             links.map((link) => (
               <line
@@ -98,6 +120,16 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
                 stroke={theme.primary}
                 strokeWidth={1}
               />
+            ))}
+          {nodes?.length &&
+            nodes.map((node) => (
+              <foreignObject
+                key={node.properties.uuid}
+                width={graphConfig.nodeDimensions.width}
+                height={graphConfig.nodeDimensions.height}
+              >
+                <GraphNode node={node} />
+              </foreignObject>
             ))}
         </>
       </g>
