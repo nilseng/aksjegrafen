@@ -144,6 +144,17 @@ export interface GraphNode {
   };
 }
 
+export interface GraphLink {
+  source: GraphNode;
+  target: GraphNode;
+  properties: {
+    year?: Year;
+    share?: number;
+    stocks?: number;
+  };
+  type: string;
+}
+
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: IOwnership };
 
 export enum FetchState {
