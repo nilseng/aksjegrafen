@@ -20,8 +20,6 @@ export const ThemeButton = ({ theme, setTheme }: IProps) => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        ...theme.button,
-        borderRadius: "4rem",
       }}
       onClick={() => {
         localStorage.setItem("theme", theme.id === "light" ? "dark" : "light");
