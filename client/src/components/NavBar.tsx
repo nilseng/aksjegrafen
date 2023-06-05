@@ -19,6 +19,7 @@ const NavBar = ({ theme, setTheme }: IProps) => {
     <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
       <NeuButton
         className="h-12 w-12 p-2"
+        ariaLabel="Home"
         style={{ borderRadius: "100%" }}
         componentIcon={<GraphLogo inputColor={theme.primary} />}
         action={() => history.push("/")}
