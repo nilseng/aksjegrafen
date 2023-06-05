@@ -199,7 +199,6 @@ export const GraphNode = ({ node, year, setMenu }: IProps) => {
                   </>
                 )}
               </p>
-
               <div className="text-center break-words font-bold text-xs" style={{ color: theme.text }}>
                 {node.entity?.name}
               </div>
