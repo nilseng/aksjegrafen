@@ -16,7 +16,7 @@ export const NodeSearch = () => {
     <div className="w-full h-14">
       <SearchComponent
         focus={true}
-        inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50/70 dark:bg-gray-700/70"
+        inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
         inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
         searchListClassName="w-full md:w-3/4 dark:text-white"
         placeholder="Selskap, aksjonær eller rolleinnehaver..."
