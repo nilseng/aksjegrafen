@@ -2,9 +2,10 @@ import "./NavBar.scss";
 
 import { faCode, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { theming } from "../theming/theme";
 import { GraphLogo } from "./GraphLogo";
+import { NeuButton } from "./NeuButton";
 import { ThemeButton } from "./ThemeButton";
 
 interface IProps {
@@ -13,48 +14,43 @@ interface IProps {
 }
 
 const NavBar = ({ theme, setTheme }: IProps) => {
+  const history = useHistory();
   return (
     <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
-      <Link to="/">
-        <span
-          style={{
-            ...theme.button,
-            borderRadius: "100px",
-            display: "inline-block",
-            textAlign: "center",
-            verticalAlign: "middle",
-            width: "3.2rem",
-            height: "3.2rem",
-            paddingTop: "0.6rem",
-            paddingBottom: "0.6rem",
-          }}
-        >
-          <GraphLogo inputColor={theme.primary} />
-        </span>
-      </Link>
+      <NeuButton
+        className="h-12 w-12 p-2"
+        style={{ borderRadius: "100%" }}
+        componentIcon={<GraphLogo inputColor={theme.primary} />}
+        action={() => history.push("/")}
+      />
       <div className="flex justify-end">
         <div className="flex items-center">
-          <Link to="/search" className="mr-2">
-            <button
-              className="text-xs font-bold p-2"
-              aria-label="test"
-              style={{ ...theme.button, color: theme.primary }}
-            >
-              Avansert søk
-              <FontAwesomeIcon icon={faSearch} className="ml-2" />
-            </button>
-          </Link>
-          <Link to="/api-docs" className="mr-4">
-            <button
-              className="text-xs font-bold p-2"
-              aria-label="test"
-              style={{ ...theme.button, color: theme.primary }}
-            >
-              API
-              <FontAwesomeIcon icon={faCode} className="ml-2" />
-            </button>
-          </Link>
-          <ThemeButton theme={theme} setTheme={setTheme} />
+          <NeuButton
+            className="p-2 mr-2"
+            ariaLabel="Avansert søk"
+            componentIcon={
+              <div className="text-xs text-primary font-bold">
+                Avansert søk
+                <FontAwesomeIcon icon={faSearch} className="ml-2" />
+              </div>
+            }
+            action={() => history.push("/search")}
+          />
+          <NeuButton
+            className="p-2 mr-2"
+            ariaLabel="API"
+            componentIcon={
+              <div className="text-xs text-primary font-bold">
+                API
+                <FontAwesomeIcon icon={faCode} className="ml-2" />
+              </div>
+            }
+            action={() => history.push("/api-docs")}
+          />
+          <NeuButton
+            style={{ borderRadius: "4rem" }}
+            componentIcon={<ThemeButton theme={theme} setTheme={setTheme} />}
+          />
         </div>
       </div>
     </div>
