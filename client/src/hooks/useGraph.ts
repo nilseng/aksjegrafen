@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { FetchState } from "../models/models";
 import { GraphState, fetchGraphThunk } from "../slices/graphSlice";
 import { AppDispatch, RootState } from "../store";
 import { useGraphQueryParams } from "./useGraphQueryParams";
@@ -10,8 +11,8 @@ export const useGraph = () => {
 
   const { graphType, sourceUuid, targetUuid } = useGraphQueryParams();
 
-  const { node: source } = useNode(sourceUuid);
-  const { node: target } = useNode(targetUuid);
+  const { node: source, isLoading: isLoadingSource } = useNode(sourceUuid);
+  const { node: target, isLoading: isLoadingTarget } = useNode(targetUuid);
 
   useEffect(() => {
     if (source) {
@@ -27,5 +28,10 @@ export const useGraph = () => {
     }
   }, [dispatch, graphType, source, target?.properties.uuid]);
 
-  return useSelector<RootState, GraphState>((state) => state.graph);
+  const { data, status } = useSelector<RootState, GraphState>((state) => state.graph);
+
+  return {
+    data,
+    status: status === FetchState.Idle && (isLoadingSource || isLoadingTarget) ? FetchState.Loading : status,
+  };
 };
