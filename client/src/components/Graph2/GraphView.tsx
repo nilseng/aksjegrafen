@@ -98,6 +98,10 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
           .attr("x2", (d) => d.target.x!)
           .attr("y2", (d) => d.target.y!);
       });
+
+      simulation.on("end", () => {
+        simulation.force("center", null);
+      });
     }
   }, [nodes, links]);
 
