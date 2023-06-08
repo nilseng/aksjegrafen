@@ -1,4 +1,4 @@
-import { D3DragEvent, Simulation, drag, forceCenter, forceCollide, forceLink, forceSimulation, select } from "d3";
+import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation, select } from "d3";
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../AppContext";
@@ -58,13 +58,15 @@ export const GraphView = ({
   const transform = useZoom(svgRef);
 
   useEffect(() => {
-    if (nodes?.length > 0 && source) {
+    if (nodes.length > 0 && source) {
       const svg = select(svgRef.current);
 
       const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
         id: node.properties.uuid,
         x: 0,
         y: 0,
+        fx: node.properties.uuid === source.properties.uuid ? 0 : undefined,
+        fy: node.properties.uuid === source.properties.uuid ? 0 : undefined,
         ...node,
       }));
       const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
@@ -83,7 +85,6 @@ export const GraphView = ({
             ({ id }) => mutableNodes.find((node) => node.id === id) as any
           )
         )
-        .force("center", forceCenter())
         .force(
           "collide",
           forceCollide(Math.max(graphConfig.nodeDimensions.width / 2, graphConfig.nodeDimensions.height / 2))
@@ -102,10 +103,6 @@ export const GraphView = ({
           .attr("y1", (l) => (l.source as GraphNodeDatum).y!)
           .attr("x2", (l) => (l.target as GraphNodeDatum).x!)
           .attr("y2", (l) => (l.target as GraphNodeDatum).y!);
-      });
-
-      simulation.on("end", () => {
-        simulation.force("center", null);
       });
     }
   }, [nodes, links, source]);
