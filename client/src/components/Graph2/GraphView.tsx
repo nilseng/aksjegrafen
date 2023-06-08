@@ -1,14 +1,4 @@
-import {
-  D3DragEvent,
-  Simulation,
-  drag,
-  forceCenter,
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  select,
-} from "d3";
+import { D3DragEvent, Simulation, drag, forceCenter, forceCollide, forceLink, forceSimulation, select } from "d3";
 import { cloneDeep } from "lodash";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../AppContext";
@@ -52,7 +42,15 @@ const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
     .on("end", dragended);
 };
 
-export const GraphView = ({ nodes, links }: { nodes: IGraphNode[]; links: GraphLink[] }) => {
+export const GraphView = ({
+  source,
+  nodes,
+  links,
+}: {
+  source?: IGraphNode;
+  nodes: IGraphNode[];
+  links: GraphLink[];
+}) => {
   const { theme } = useContext(AppContext);
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -60,7 +58,7 @@ export const GraphView = ({ nodes, links }: { nodes: IGraphNode[]; links: GraphL
   const transform = useZoom(svgRef);
 
   useEffect(() => {
-    if (nodes?.length > 0) {
+    if (nodes?.length > 0 && source) {
       const svg = select(svgRef.current);
 
       const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
@@ -85,7 +83,6 @@ export const GraphView = ({ nodes, links }: { nodes: IGraphNode[]; links: GraphL
             ({ id }) => mutableNodes.find((node) => node.id === id) as any
           )
         )
-        .force("charge", forceManyBody())
         .force("center", forceCenter())
         .force(
           "collide",
@@ -111,7 +108,7 @@ export const GraphView = ({ nodes, links }: { nodes: IGraphNode[]; links: GraphL
         simulation.force("center", null);
       });
     }
-  }, [nodes, links]);
+  }, [nodes, links, source]);
 
   return (
     <svg
