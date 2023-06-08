@@ -65,7 +65,6 @@ export const graphSimulation = (
       forceY<IGraphNode>()
         .y((d: any) => {
           if (d.isNew) {
-            // TODO: Figure out an accurate number for the offset
             return d.yForce ?? yForce ?? d.y + dimensions.height / 2;
           }
           return d.yForce ?? d.y + dimensions.height / 2;
@@ -77,7 +76,6 @@ export const graphSimulation = (
       forceX()
         .x((d: any) => {
           if (d.isNew) {
-            // TODO: Figure out an accurate number for the offset
             return activeNode.x;
           }
           return d.x;
