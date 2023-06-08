@@ -22,7 +22,7 @@ export const Graph = () => {
   return (
     <div className="flex w-full h-full px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
-        {isModalOpen && <Modal />}
+        {isModalOpen && <Modal source={source} />}
         {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
         {status === FetchState.Success && <GraphView source={source} nodes={nodes} links={links} />}
         {status === FetchState.Error && <p>{error}</p>}
