@@ -3,7 +3,7 @@ import { GraphNode } from "../models/models";
 
 export const useNode = (uuid?: string) => {
   const [node, setNode] = useState<GraphNode>();
-  const [isLoading, setIsLoading] = useState<boolean>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     if (uuid) {
