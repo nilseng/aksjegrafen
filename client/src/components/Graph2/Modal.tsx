@@ -59,6 +59,10 @@ export const Modal = () => {
                         </div>
                       ),
                       handleClick: (node: GraphNode) => {
+                        history.push({
+                          pathname: `/graph2`,
+                          search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
+                        });
                         dispatch(close());
                       },
                     },
@@ -67,12 +71,6 @@ export const Modal = () => {
                 placeholder="Søk og velg selskap..."
                 apiPath="/api/node"
                 query={{ limit: 10 }}
-                handleClick={(node: GraphNode) =>
-                  history.push({
-                    pathname: `/graph2`,
-                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
-                  })
-                }
               />
             </div>
           </>
