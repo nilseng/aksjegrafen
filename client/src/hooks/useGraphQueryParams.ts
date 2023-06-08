@@ -6,21 +6,21 @@ export const useGraphQueryParams = () => {
   const query = useQuery();
 
   const [graphType, setGraphType] = useState<GraphType>(GraphType.Default);
-  const [sourceUuid, setSourceId] = useState<string>();
-  const [targetUuid, setTargetId] = useState<string>();
+  const [sourceUuid, setSourceUuid] = useState<string>();
+  const [targetUuid, setTargetUuid] = useState<string>();
 
   useEffect(() => {
     const graphTypeParam = query.get("graphType");
     const sourceIdParam = query.get("sourceUuid");
     const targetIdParam = query.get("targetUuid");
     if (graphTypeParam && isGraphType(graphTypeParam)) setGraphType(graphTypeParam);
-    if (sourceIdParam) setSourceId(sourceIdParam);
-    if (targetIdParam) setTargetId(targetIdParam);
+    if (sourceIdParam) setSourceUuid(sourceIdParam);
+    if (targetIdParam) setTargetUuid(targetIdParam);
 
     return () => {
       setGraphType(GraphType.Default);
-      setSourceId(undefined);
-      setTargetId(undefined);
+      setSourceUuid(undefined);
+      setTargetUuid(undefined);
     };
   }, [query]);
 
