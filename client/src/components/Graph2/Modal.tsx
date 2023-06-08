@@ -2,7 +2,6 @@ import { faRoute, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { useGraph } from "../../hooks/useGraph";
 import { GraphNode, GraphType } from "../../models/models";
 import { ModalContent, close } from "../../slices/modalSlice";
 import { RootState } from "../../store";
@@ -10,15 +9,11 @@ import { NeuButton } from "../NeuButton";
 import { SearchComponent } from "../SearchComponent";
 import { NodeSearch } from "./NodeSearch";
 
-export const Modal = () => {
+export const Modal = ({ source }: { source?: GraphNode }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
   const content = useSelector<RootState, ModalContent>((state) => state.modalHandler.content);
-
-  const {
-    data: { source },
-  } = useGraph();
 
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center">
