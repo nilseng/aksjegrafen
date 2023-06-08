@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { AppContext } from "../../AppContext";
-import { GraphNodeDatum } from "../../slices/graphSlice";
+import { GraphNode as IGraphNode } from "../../models/models";
 
-export const GraphNode = ({ node }: { node: GraphNodeDatum }) => {
+export const GraphNode = ({ node }: { node: IGraphNode }) => {
   const { theme } = useContext(AppContext);
 
   return (

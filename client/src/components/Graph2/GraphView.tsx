@@ -13,6 +13,7 @@ import { cloneDeep } from "lodash";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../AppContext";
 import { useZoom } from "../../hooks/useSvgZoom2";
+import { GraphLink, GraphNode as IGraphNode } from "../../models/models";
 import { GraphLinkDatum, GraphNodeDatum } from "../../slices/graphSlice";
 import { IGraphDimensions, graphConfig } from "./GraphConfig";
 import { GraphNode } from "./GraphNode";
@@ -51,7 +52,7 @@ const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
     .on("end", dragended);
 };
 
-export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: GraphLinkDatum[] }) => {
+export const GraphView = ({ nodes, links }: { nodes: IGraphNode[]; links: GraphLink[] }) => {
   const { theme } = useContext(AppContext);
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -62,11 +63,16 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
     if (nodes?.length > 0) {
       const svg = select(svgRef.current);
 
-      const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node, index) => ({ index, x: 0, y: 0, ...node }));
-      const mutableLinks = links.map((link) => ({
+      const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
+        id: node.properties.uuid,
+        x: 0,
+        y: 0,
+        ...node,
+      }));
+      const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
         ...link,
-        source: mutableNodes.find((node) => node.properties.uuid === (link.source as GraphNodeDatum).properties.uuid)!,
-        target: mutableNodes.find((node) => node.properties.uuid === (link.target as GraphNodeDatum).properties.uuid)!,
+        source: mutableNodes.find((node) => node.id === (link.source as GraphNodeDatum).properties.uuid)!,
+        target: mutableNodes.find((node) => node.id === (link.target as GraphNodeDatum).properties.uuid)!,
       }));
 
       const link = svg.selectAll("line").data(mutableLinks).join("line");
@@ -75,7 +81,9 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
         .alpha(0.4)
         .force(
           "link",
-          forceLink(mutableLinks).id(({ index }) => mutableNodes.find((node) => node.index === index) as any)
+          forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(
+            ({ id }) => mutableNodes.find((node) => node.id === id) as any
+          )
         )
         .force("charge", forceManyBody())
         .force("center", forceCenter())
@@ -91,12 +99,12 @@ export const GraphView = ({ nodes, links }: { nodes: GraphNodeDatum[]; links: Gr
         .call(handleDrag(simulation));
 
       simulation.on("tick", () => {
-        node.attr("x", (d) => d.x! - nodeOffset.x).attr("y", (d) => d.y! - nodeOffset.y);
+        node.attr("x", (n) => n.x! - nodeOffset.x).attr("y", (n) => n.y! - nodeOffset.y);
         link
-          .attr("x1", (d) => d.source.x!)
-          .attr("y1", (d) => d.source.y!)
-          .attr("x2", (d) => d.target.x!)
-          .attr("y2", (d) => d.target.y!);
+          .attr("x1", (l) => (l.source as GraphNodeDatum).x!)
+          .attr("y1", (l) => (l.source as GraphNodeDatum).y!)
+          .attr("x2", (l) => (l.target as GraphNodeDatum).x!)
+          .attr("y2", (l) => (l.target as GraphNodeDatum).y!);
       });
 
       simulation.on("end", () => {

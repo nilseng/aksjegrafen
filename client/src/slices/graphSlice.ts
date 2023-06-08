@@ -4,14 +4,14 @@ import { FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
 
 export interface GraphState {
   data: {
-    nodes: GraphNodeDatum[];
-    links: GraphLinkDatum[];
+    nodes: GraphNode[];
+    links: GraphLink[];
   };
   status: FetchState;
   error?: string | null;
 }
 
-export type GraphNodeDatum = GraphNode & SimulationNodeDatum;
+export type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
 export type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
 export const graphSlice = createSlice<GraphState, {}, "graph">({
