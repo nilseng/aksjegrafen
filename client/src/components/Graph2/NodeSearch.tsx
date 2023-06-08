@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { GraphNode, GraphNodeLabel } from "../../models/models";
-import { close } from "../../slices/modalSlice";
+import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
 
@@ -74,7 +74,9 @@ export const NodeSearch = () => {
                   <p className="text-xs text-muted">relasjoner</p>
                 </div>
               ),
-              handleClick: (node: GraphNode) => {},
+              handleClick: (node: GraphNode) => {
+                dispatch(setContent(ModalContent.PathSearch));
+              },
             },
           ],
         })}

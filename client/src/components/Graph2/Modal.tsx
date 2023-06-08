@@ -1,11 +1,24 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { close } from "../../slices/modalSlice";
+import { faRoute, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { useGraph } from "../../hooks/useGraph";
+import { GraphNode, GraphType } from "../../models/models";
+import { ModalContent, close } from "../../slices/modalSlice";
+import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
+import { SearchComponent } from "../SearchComponent";
 import { NodeSearch } from "./NodeSearch";
 
 export const Modal = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
+
+  const content = useSelector<RootState, ModalContent>((state) => state.modalHandler.content);
+
+  const {
+    data: { source },
+  } = useGraph();
 
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center">
@@ -18,7 +31,52 @@ export const Modal = () => {
           icon={faTimes}
           action={() => dispatch(close())}
         />
-        <NodeSearch />
+        {content === ModalContent.NodeSearch && <NodeSearch />}
+        {content === ModalContent.PathSearch && (
+          <>
+            <p>Finn relasjoner fra {source?.properties.name} til...</p>
+            <div style={{ height: "38px" }}>
+              <SearchComponent
+                inputContainerClassName="w-full"
+                inputStyle={{
+                  backgroundColor: "transparent",
+                  backgroundClip: "padding-box",
+                  borderColor: "transparent",
+                }}
+                inputClassName="focus:outline-none p-2"
+                mapResultToListItem={(node: GraphNode) => ({
+                  key: node.properties.uuid,
+                  name: node.properties.name,
+                  tags: [],
+                  buttons: [
+                    {
+                      name: "shortest-path-button",
+                      condition: true,
+                      buttonContent: (
+                        <div>
+                          <FontAwesomeIcon icon={faRoute} className="text-primary" size="lg" />
+                          <p className="text-xs text-muted">korteste vei</p>
+                        </div>
+                      ),
+                      handleClick: (node: GraphNode) => {
+                        dispatch(close());
+                      },
+                    },
+                  ],
+                })}
+                placeholder="Søk og velg selskap..."
+                apiPath="/api/node"
+                query={{ limit: 10 }}
+                handleClick={(node: GraphNode) =>
+                  history.push({
+                    pathname: `/graph2`,
+                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
+                  })
+                }
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

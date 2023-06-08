@@ -1,18 +1,39 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-export const modalSlice = createSlice({
+export enum ModalContent {
+  NodeSearch = "NodeSearch",
+  PathSearch = "PathSearch",
+}
+
+interface ModalState {
+  isOpen: boolean;
+  content: ModalContent;
+}
+
+export const modalSlice = createSlice<
+  ModalState,
+  {
+    open: (state: ModalState) => void;
+    close: (state: ModalState) => void;
+    setContent: (state: ModalState, action: PayloadAction<ModalContent>) => void;
+  }
+>({
   name: "modalHandler",
   initialState: {
-    value: true,
+    isOpen: true,
+    content: ModalContent.NodeSearch,
   },
   reducers: {
     open: (state) => {
-      state.value = true;
+      state.isOpen = true;
     },
     close: (state) => {
-      state.value = false;
+      state.isOpen = false;
+    },
+    setContent: (state, action) => {
+      state.content = action.payload;
     },
   },
 });
 
-export const { open, close } = modalSlice.actions;
+export const { open, close, setContent } = modalSlice.actions;
