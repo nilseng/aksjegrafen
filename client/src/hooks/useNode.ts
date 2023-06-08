@@ -17,6 +17,11 @@ export const useNode = (uuid?: string) => {
           setIsLoading(false);
         });
     }
+
+    return () => {
+      setNode(undefined);
+      setIsLoading(false);
+    };
   }, [uuid]);
 
   return { node, isLoading };
