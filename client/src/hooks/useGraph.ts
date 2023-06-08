@@ -28,10 +28,11 @@ export const useGraph = () => {
     }
   }, [dispatch, graphType, source, target?.properties.uuid]);
 
-  const { data, status } = useSelector<RootState, GraphState>((state) => state.graph);
+  const { data, status, error } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return {
-    data: { ...data, source, target },
     status: status === FetchState.Idle && (isLoadingSource || isLoadingTarget) ? FetchState.Loading : status,
+    data: { ...data, source, target },
+    error,
   };
 };
