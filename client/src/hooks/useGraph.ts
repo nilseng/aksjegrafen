@@ -31,7 +31,7 @@ export const useGraph = () => {
   const { data, status } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return {
-    data,
+    data: { ...data, source, target },
     status: status === FetchState.Idle && (isLoadingSource || isLoadingTarget) ? FetchState.Loading : status,
   };
 };

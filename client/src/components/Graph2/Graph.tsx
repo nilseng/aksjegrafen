@@ -15,7 +15,7 @@ export const Graph = () => {
 
   const {
     status,
-    data: { nodes, links },
+    data: { nodes, links, source },
   } = useGraph();
 
   return (
@@ -23,7 +23,7 @@ export const Graph = () => {
       <div className="relative flex w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
         {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
-        {status === FetchState.Success && <GraphView nodes={nodes} links={links} />}
+        {status === FetchState.Success && <GraphView source={source} nodes={nodes} links={links} />}
       </div>
     </div>
   );
