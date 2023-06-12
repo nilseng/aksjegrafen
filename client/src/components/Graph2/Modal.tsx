@@ -18,7 +18,7 @@ export const Modal = ({ source }: { source?: GraphNode }) => {
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center">
       <div className="absolute w-full h-full" onClick={() => dispatch(close())}></div>
-      <div className="relative w-full sm:w-3/4 max-w-2xl h-1/2 flex justify-center items-center bg-gray-50 dark:bg-gray-800 rounded-lg bg-clip-padding backdrop-filter backdrop-blur-md dark:backdrop-blur-lg bg-opacity-60 dark:bg-opacity-40 border border-white dark:border-gray-500 p-2 sm:p-4 m-2 sm:m-0">
+      <div className="relative w-full sm:w-3/4 max-w-2xl h-1/2 flex flex-col justify-center items-center bg-gray-50 dark:bg-gray-800 rounded-lg bg-clip-padding backdrop-filter backdrop-blur-md dark:backdrop-blur-lg bg-opacity-60 dark:bg-opacity-40 border border-white dark:border-gray-500 p-2 sm:p-4 m-2 sm:m-0">
         <NeuButton
           className="absolute top-0 right-0 h-12 w-12 p-2 m-2 sm:m-4"
           style={{ borderRadius: "100%" }}
@@ -28,17 +28,19 @@ export const Modal = ({ source }: { source?: GraphNode }) => {
         />
         {content === ModalContent.NodeSearch && <NodeSearch />}
         {content === ModalContent.PathSearch && (
-          <>
-            <p>Finn relasjoner fra {source?.properties.name} til...</p>
-            <div style={{ height: "38px" }}>
+          <div className="w-full flex flex-col justify-center items-center">
+            <p className="pb-4">
+              Finn relasjoner fra <span className="text-primary font-bold">{source?.properties.name}</span> til...
+            </p>
+            <div className="h-[2.375rem] w-full">
               <SearchComponent
-                inputContainerClassName="w-full"
+                inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
                 inputStyle={{
                   backgroundColor: "transparent",
                   backgroundClip: "padding-box",
                   borderColor: "transparent",
                 }}
-                inputClassName="focus:outline-none p-2"
+                inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
                 mapResultToListItem={(node: GraphNode) => ({
                   key: node.properties.uuid,
                   name: node.properties.name,
@@ -63,12 +65,12 @@ export const Modal = ({ source }: { source?: GraphNode }) => {
                     },
                   ],
                 })}
-                placeholder="Søk og velg selskap..."
+                placeholder="Selskap, aksjonær eller rolleinnehaver..."
                 apiPath="/api/node"
                 query={{ limit: 10 }}
               />
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
