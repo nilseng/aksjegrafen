@@ -1,4 +1,5 @@
 import { graphDB } from "../../database/graphDB";
+import { GraphLink, GraphNode } from "../../models/models";
 import { NodeEntry, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
 
 const runQuery = async <T extends { [key: string]: unknown } = never>({
@@ -114,4 +115,27 @@ export const findRoleUnits = async ({ uuid, limit }: { uuid: string; limit: numb
       mapRecordToGraphLink({ record, sourceKey: "holder", targetKey: "unit", relationshipKey: "r" })
     ),
   };
+};
+
+export const findShortestPath = async ({
+  sourceUuid,
+  targetUuid,
+  limit,
+}: {
+  sourceUuid: string;
+  targetUuid: string;
+  limit: number;
+}): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
+  console.log(sourceUuid, targetUuid, limit);
+  const session = graphDB.session();
+
+  const findShortestPathQuery = `
+  MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
+  OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
+  RETURN path
+  `;
+  const res = await session.run(findShortestPathQuery, { sourceUuid, targetUuid, limit });
+  session.close();
+
+  return res.records[0].get("path");
 };
