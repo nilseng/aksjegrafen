@@ -1,10 +1,6 @@
 import { Driver as GraphDB, Node, Path, PathSegment } from "neo4j-driver";
 import { Ownership, Relation, Role, ShareholderType } from "../models/models";
 
-interface PathResult {
-  records: [];
-}
-
 export const findShortestPath = async ({
   graphDB,
   fromOrgnr,
