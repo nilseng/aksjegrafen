@@ -9,6 +9,7 @@ import { Company, Ownership, Shareholder } from "../models/models";
 import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
 import { findShortestPath } from "../use-cases/findShortestPath";
+import { findShortestPath as findShortestPath2 } from "../use-cases/findShortestPath2";
 import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
@@ -355,6 +356,23 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
       const query = matchedData(req);
       const data = await findNeighbours({ uuid: query.uuid, limit: query.limit });
       return res.status(200).json(data);
+    })
+  );
+
+  router.get(
+    "/graph/shortest-path",
+    query(["sourceUuid"]),
+    query(["targetUuid"]),
+    query(["limit"]).default(10).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.sourceUuid || !query.targetUuid) return res.status(400).json("Source and target uuid required.");
+      const data = await findShortestPath2({
+        sourceUuid: query.sourceUuid,
+        targetUuid: query.targetUuid,
+        limit: query.limit,
+      });
+      return res.json(data);
     })
   );
 
