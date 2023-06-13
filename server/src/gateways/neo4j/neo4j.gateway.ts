@@ -1,6 +1,6 @@
 import { graphDB } from "../../database/graphDB";
 import { GraphLink, GraphNode } from "../../models/models";
-import { NodeEntry, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
+import { NodeEntry, mapPathToGraph, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
 
 const runQuery = async <T extends { [key: string]: unknown } = never>({
   query,
@@ -137,5 +137,5 @@ export const findShortestPath = async ({
   const res = await session.run(findShortestPathQuery, { sourceUuid, targetUuid, limit });
   session.close();
 
-  return res.records[0].get("path");
+  return mapPathToGraph(res.records[0].get("path"));
 };
