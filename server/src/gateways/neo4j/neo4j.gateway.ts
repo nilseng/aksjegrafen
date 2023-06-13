@@ -137,7 +137,7 @@ export const findShortestPath = async ({
   const res = await session.run(findShortestPathQuery, { sourceUuid, targetUuid, limit });
   session.close();
 
-  const pathRecord = res.records[0].get("path");
+  const pathRecord = res.records[0]?.get("path");
 
   return pathRecord ? mapPathToGraph(pathRecord) : { nodes: [], links: [] };
 };
