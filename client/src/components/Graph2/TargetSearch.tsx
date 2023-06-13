@@ -16,9 +16,9 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
       <p className="pb-4">
         Finn relasjoner fra <span className="text-primary font-bold">{source?.properties.name}</span> til...
       </p>
-      <div className="h-[2.375rem] w-full">
+      <div className="h-[2.375rem] w-full md:max-w-sm">
         <SearchComponent
-          inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
+          inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
           inputStyle={{
             backgroundColor: "transparent",
             backgroundClip: "padding-box",
