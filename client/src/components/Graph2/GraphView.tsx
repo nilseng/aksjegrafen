@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom2";
 import { GraphType, GraphLink as IGraphLink, GraphNode as IGraphNode } from "../../models/models";
+import { GraphNodeDatum } from "../../slices/graphSlice";
 import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
 import { GraphNode } from "./GraphNode";
@@ -35,7 +36,15 @@ export const GraphView = ({
     >
       <g transform={transform}>
         <>
-          {links?.length && links.map((link) => <GraphLink link={link} />)}
+          {links?.length &&
+            links.map((link) => (
+              <GraphLink
+                key={`${(link.source as GraphNodeDatum).properties.uuid}-${
+                  (link.target as GraphNodeDatum).properties.uuid
+                }-${link.type}`}
+                link={link}
+              />
+            ))}
           {nodes?.length &&
             nodes.map((node) => (
               <foreignObject

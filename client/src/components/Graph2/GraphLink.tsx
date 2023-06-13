@@ -1,8 +1,7 @@
-import { Fragment, useContext } from "react";
+import { useContext } from "react";
 import { AppContext } from "../../AppContext";
 import { GraphLink as IGraphLink } from "../../models/models";
 import { useRoleTypes } from "../../services/brregService";
-import { GraphNodeDatum } from "../../slices/graphSlice";
 
 export const GraphLink = ({ link }: { link: IGraphLink }) => {
   const { theme } = useContext(AppContext);
@@ -10,11 +9,7 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
   const roleTypes = useRoleTypes();
 
   return (
-    <Fragment
-      key={`${(link.source as GraphNodeDatum).properties.uuid}-${(link.target as GraphNodeDatum).properties.uuid}-${
-        link.type
-      }`}
-    >
+    <>
       <line className="graph-link" stroke={theme.primary} strokeWidth={1} />
       <g className="graph-link-arrow">
         <line x1={-5} y1={-5} x2={0} y2={0} stroke={theme.primary} strokeWidth="2" strokeLinecap="round" />
@@ -26,6 +21,6 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
           </p>
         </foreignObject>
       </g>
-    </Fragment>
+    </>
   );
 };
