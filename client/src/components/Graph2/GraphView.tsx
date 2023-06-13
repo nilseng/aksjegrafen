@@ -1,10 +1,9 @@
-import { useContext, useRef } from "react";
-import { AppContext } from "../../AppContext";
+import { useRef } from "react";
 import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom2";
-import { GraphLink, GraphType, GraphNode as IGraphNode } from "../../models/models";
-import { GraphNodeDatum } from "../../slices/graphSlice";
+import { GraphType, GraphLink as IGraphLink, GraphNode as IGraphNode } from "../../models/models";
 import { graphConfig } from "./GraphConfig";
+import { GraphLink } from "./GraphLink";
 import { GraphNode } from "./GraphNode";
 
 export const GraphView = ({
@@ -18,10 +17,8 @@ export const GraphView = ({
   source?: IGraphNode;
   target?: IGraphNode;
   nodes: IGraphNode[];
-  links: GraphLink[];
+  links: IGraphLink[];
 }) => {
-  const { theme } = useContext(AppContext);
-
   const svgRef = useRef<SVGSVGElement>(null);
 
   const transform = useZoom(svgRef);
@@ -38,19 +35,11 @@ export const GraphView = ({
     >
       <g transform={transform}>
         <>
-          {links?.length &&
-            links.map((link) => (
-              <line
-                key={`${(link.source as GraphNodeDatum).properties.uuid}-${
-                  (link.target as GraphNodeDatum).properties.uuid
-                }-${link.type}`}
-                stroke={theme.primary}
-                strokeWidth={1}
-              />
-            ))}
+          {links?.length && links.map((link) => <GraphLink link={link} />)}
           {nodes?.length &&
             nodes.map((node) => (
               <foreignObject
+                className="graph-node"
                 key={node.properties.uuid}
                 width={graphConfig.nodeDimensions.width}
                 height={graphConfig.nodeDimensions.height}
