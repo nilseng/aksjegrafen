@@ -18,7 +18,7 @@ export const useForceSimulation = ({
   graphType,
   svgRef,
 }: {
-  nodes: GraphNode[];
+  nodes?: GraphNode[];
   links: GraphLink[];
   source?: GraphNode;
   target?: GraphNode;
@@ -26,7 +26,7 @@ export const useForceSimulation = ({
   svgRef: RefObject<SVGSVGElement>;
 }) => {
   useEffect(() => {
-    if (svgRef.current && nodes.length > 0 && source) {
+    if (svgRef.current && nodes && nodes?.length > 0 && source) {
       const svg = select<SVGElement, null>(svgRef.current);
 
       const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
