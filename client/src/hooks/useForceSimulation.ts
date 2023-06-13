@@ -27,7 +27,7 @@ export const useForceSimulation = ({
 }) => {
   useEffect(() => {
     if (svgRef.current && nodes.length > 0 && source) {
-      const svg = select(svgRef.current);
+      const svg = select<SVGElement, null>(svgRef.current);
 
       const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
         id: node.properties.uuid,
@@ -49,7 +49,8 @@ export const useForceSimulation = ({
         target: mutableNodes.find((node) => node.id === (link.target as GraphNodeDatum).properties.uuid)!,
       }));
 
-      const link = svg.selectAll("line").data(mutableLinks).join("line");
+      const link = svg.selectAll(".graph-link").data(mutableLinks).join(".graph-link");
+      const linkArrow = svg.selectAll(".graph-link-arrow").data(mutableLinks).join(".graph-link-arrow");
 
       const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(mutableNodes)
         .alpha(0.4)
@@ -65,9 +66,9 @@ export const useForceSimulation = ({
         );
 
       const node = svg
-        .selectAll<SVGForeignObjectElement, GraphNodeDatum>("foreignObject")
+        .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
         .data(mutableNodes)
-        .join("foreignObject")
+        .join<SVGElement>(".graph-node")
         .call(handleDrag(simulation));
 
       simulation.on("tick", () => {
@@ -77,6 +78,7 @@ export const useForceSimulation = ({
           .attr("y1", (l) => (l.source as GraphNodeDatum).y!)
           .attr("x2", (l) => (l.target as GraphNodeDatum).x!)
           .attr("y2", (l) => (l.target as GraphNodeDatum).y!);
+        linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
       });
     }
   }, [nodes, links, source, graphType, target, svgRef]);
@@ -124,8 +126,22 @@ const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
     if (!event.active) simulation.alphaTarget(0);
   }
 
-  return drag<SVGForeignObjectElement, GraphNodeDatum>()
-    .on("start", dragstarted)
-    .on("drag", dragged)
-    .on("end", dragended);
+  return drag<SVGElement, GraphNodeDatum>().on("start", dragstarted).on("drag", dragged).on("end", dragended);
+};
+
+const getLinkArrowTransform = (l: GraphLinkDatum) => {
+  const sourcePos = { x: (l.source as GraphNodeDatum).x!, y: (l.source as GraphNodeDatum).y! };
+  const targetPos = { x: (l.target as GraphNodeDatum).x!, y: (l.target as GraphNodeDatum).y! };
+  const center = {
+    x: (sourcePos.x + targetPos.x) / 2,
+    y: (sourcePos.y + targetPos.y) / 2,
+  };
+  const cos_theta =
+    (targetPos.y - sourcePos.y) /
+    Math.sqrt(Math.pow(targetPos.x - sourcePos.x, 2) + Math.pow(targetPos.y - sourcePos.y, 2));
+  const rotation =
+    targetPos.x > sourcePos.x
+      ? -(Math.acos(cos_theta) / (2 * Math.PI)) * 360
+      : (Math.acos(cos_theta) / (2 * Math.PI)) * 360;
+  return `translate(${center.x}, ${center.y}) rotate(${rotation})`;
 };
