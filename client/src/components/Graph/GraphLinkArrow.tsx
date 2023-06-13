@@ -14,25 +14,9 @@ export const GraphLinkArrow = ({ rotation, center, stroke }: IProps) => {
   const { theme } = useContext(AppContext);
 
   return (
-    <g transform={`rotate(${rotation} ${center.x} ${center.y})`}>
-      <line
-        x1={center.x - 5}
-        y1={center.y - 5}
-        x2={center.x}
-        y2={center.y}
-        stroke={stroke ?? theme.muted}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <line
-        x1={center.x}
-        y1={center.y}
-        x2={center.x + 5}
-        y2={center.y - 5}
-        stroke={stroke ?? theme.muted}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
+    <g transform={`translate(${center.x}, ${center.y}) rotate(${rotation})`}>
+      <line x1={-5} y1={-5} x2={0} y2={0} stroke={stroke ?? theme.muted} strokeWidth="2" strokeLinecap="round" />
+      <line x1={0} y1={0} x2={5} y2={-5} stroke={stroke ?? theme.muted} strokeWidth="2" strokeLinecap="round" />
     </g>
   );
 };
