@@ -13,7 +13,7 @@ export const graphConfig: IGraphDimensions = {
   width: 1000,
   height: 1000,
   nodeDimensions: {
-    width: 240,
-    height: 150,
+    width: 180,
+    height: 120,
   },
 };
