@@ -37,10 +37,10 @@ export const useForceSimulation = ({
       }));
 
       if (source) {
-        fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === source.properties.uuid)!, graphType });
+        fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === source.properties.uuid), graphType });
       }
       if (target) {
-        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === target.properties.uuid)!, graphType });
+        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === target.properties.uuid), graphType });
       }
 
       const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
@@ -84,7 +84,8 @@ export const useForceSimulation = ({
   }, [nodes, links, source, graphType, target, svgRef]);
 };
 
-const fixSourcePosition = ({ node, graphType }: { node: GraphNodeDatum; graphType: GraphType }) => {
+const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
+  if (!node) return;
   if (graphType === GraphType.Default) {
     node.fx = 0;
     node.fy = 0;
@@ -99,7 +100,8 @@ const fixSourcePosition = ({ node, graphType }: { node: GraphNodeDatum; graphTyp
   }
 };
 
-const fixTargetPosition = ({ node, graphType }: { node: GraphNodeDatum; graphType: GraphType }) => {
+const fixTargetPosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
+  if (!node) return;
   if (graphType === GraphType.ShortestPath) {
     node.fx = graphConfig.width / 2 - nodeOffset.x;
     node.fy = graphConfig.height / 2 - nodeOffset.y;
