@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../../AppContext";
 import { useZoom } from "../../hooks/useSvgZoom2";
-import { GraphLink, GraphNode as IGraphNode } from "../../models/models";
+import { GraphLink, GraphType, GraphNode as IGraphNode } from "../../models/models";
 import { GraphLinkDatum, GraphNodeDatum } from "../../slices/graphSlice";
 import { IGraphDimensions, graphConfig } from "./GraphConfig";
 import { GraphNode } from "./GraphNode";
@@ -42,12 +42,42 @@ const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
     .on("end", dragended);
 };
 
+const fixSourcePosition = ({ node, graphType }: { node: GraphNodeDatum; graphType: GraphType }) => {
+  if (graphType === GraphType.Default) {
+    node.fx = 0;
+    node.fy = 0;
+  }
+  if (graphType === GraphType.ShortestPath) {
+    node.fx = -(graphConfig.width / 2 - nodeOffset.x);
+    node.fy = -(graphConfig.height / 2 - nodeOffset.y);
+  }
+  if (graphType === GraphType.AllPaths) {
+    node.fx = 0;
+    node.fy = -(graphConfig.height / 2 - nodeOffset.y);
+  }
+};
+
+const fixTargetPosition = ({ node, graphType }: { node: GraphNodeDatum; graphType: GraphType }) => {
+  if (graphType === GraphType.ShortestPath) {
+    node.fx = graphConfig.width / 2 - nodeOffset.x;
+    node.fy = graphConfig.height / 2 - nodeOffset.y;
+  }
+  if (graphType === GraphType.AllPaths) {
+    node.fx = 0;
+    node.fy = graphConfig.height / 2 + nodeOffset.y;
+  }
+};
+
 export const GraphView = ({
+  graphType,
   source,
+  target,
   nodes,
   links,
 }: {
+  graphType: GraphType;
   source?: IGraphNode;
+  target?: IGraphNode;
   nodes: IGraphNode[];
   links: GraphLink[];
 }) => {
@@ -65,10 +95,16 @@ export const GraphView = ({
         id: node.properties.uuid,
         x: 0,
         y: 0,
-        fx: node.properties.uuid === source.properties.uuid ? 0 : undefined,
-        fy: node.properties.uuid === source.properties.uuid ? 0 : undefined,
         ...node,
       }));
+
+      if (source) {
+        fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === source.properties.uuid)!, graphType });
+      }
+      if (target) {
+        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === target.properties.uuid)!, graphType });
+      }
+
       const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
         ...link,
         source: mutableNodes.find((node) => node.id === (link.source as GraphNodeDatum).properties.uuid)!,
@@ -105,7 +141,7 @@ export const GraphView = ({
           .attr("y2", (l) => (l.target as GraphNodeDatum).y!);
       });
     }
-  }, [nodes, links, source]);
+  }, [nodes, links, source, graphType, target]);
 
   return (
     <svg
