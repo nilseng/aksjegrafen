@@ -38,7 +38,7 @@ export const useGraph = () => {
 
   return {
     status: isLoading ? FetchState.Loading : status,
-    data: { ...data, source, target },
+    data: { ...data, source, target, graphType },
     error,
   };
 };

@@ -15,7 +15,7 @@ export const Graph = () => {
 
   const {
     status,
-    data: { nodes, links, source },
+    data: { nodes, links, source, target, graphType },
     error,
   } = useGraph();
 
@@ -24,7 +24,9 @@ export const Graph = () => {
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal source={source} />}
         {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
-        {status === FetchState.Success && <GraphView source={source} nodes={nodes} links={links} />}
+        {status === FetchState.Success && (
+          <GraphView source={source} target={target} nodes={nodes} links={links} graphType={graphType} />
+        )}
         {status === FetchState.Error && <p>{error}</p>}
       </div>
     </div>
