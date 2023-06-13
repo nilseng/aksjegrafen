@@ -7,6 +7,7 @@ import { RootState } from "../../store";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { Modal } from "./Modal";
+import { Toolbar } from "./Toolbar";
 
 export const Graph = () => {
   const { theme } = useContext(AppContext);
@@ -23,6 +24,7 @@ export const Graph = () => {
     <div className="flex w-full h-full px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal source={source} />}
+        <Toolbar />
         {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
         {status === FetchState.Success && (
           <GraphView source={source} target={target} nodes={nodes} links={links} graphType={graphType} />
