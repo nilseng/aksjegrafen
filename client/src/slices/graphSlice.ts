@@ -55,10 +55,7 @@ function fetchGraph({
   skip: number;
 }) {
   if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip });
-  if (graphType === GraphType.ShortestPath) {
-    fetchShortestPath({ sourceUuid, targetUuid, limit });
-    return { nodes: [], links: [] };
-  }
+  if (graphType === GraphType.ShortestPath) return fetchShortestPath({ sourceUuid, targetUuid, limit });
   if (graphType === GraphType.AllPaths) throw Error("Not implemented yet.");
   throw Error("Unknown graph type");
 }
