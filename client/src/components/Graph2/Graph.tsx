@@ -26,9 +26,10 @@ export const Graph = () => {
         {isModalOpen && <Modal source={source} />}
         <Toolbar />
         {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
-        {status === FetchState.Success && (
+        {status === FetchState.Success && nodes && nodes.length > 0 && (
           <GraphView source={source} target={target} nodes={nodes} links={links} graphType={graphType} />
         )}
+        {status === FetchState.Success && (!nodes || nodes?.length === 0) && <p>Ingen relasjon funnet 🔎</p>}
         {status === FetchState.Error && <p>{error}</p>}
       </div>
     </div>
