@@ -1,7 +1,7 @@
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { GraphNode } from "../../models/models";
-import { ModalContent, close } from "../../slices/modalSlice";
+import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
 import { NodeSearch } from "./NodeSearch";
@@ -22,6 +22,13 @@ export const Modal = ({ source }: { source?: GraphNode }) => {
           textClassName="text-primary/60 text-xl"
           icon={faTimes}
           action={() => dispatch(close())}
+        />
+        <NeuButton
+          className="absolute top-0 left-0 h-12 w-12 p-2 m-2 sm:m-4"
+          style={{ borderRadius: "100%" }}
+          textClassName="text-primary/60 text-xl"
+          icon={faArrowLeft}
+          action={() => dispatch(setContent(ModalContent.NodeSearch))}
         />
         {content === ModalContent.NodeSearch && <NodeSearch />}
         {content === ModalContent.PathSearch && <TargetSearch source={source} />}
