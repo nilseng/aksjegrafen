@@ -145,5 +145,7 @@ const getLinkArrowTransform = (l: GraphLinkDatum) => {
     targetPos.x > sourcePos.x
       ? -(Math.acos(cos_theta) / (2 * Math.PI)) * 360
       : (Math.acos(cos_theta) / (2 * Math.PI)) * 360;
+  // If all coordinates are 0, cos_theta will be NaN and rotation should not be specified.
+  if (isNaN(rotation)) return `translate(${center.x}, ${center.y})`;
   return `translate(${center.x}, ${center.y}) rotate(${rotation})`;
 };
