@@ -62,7 +62,7 @@ export const useForceSimulation = ({
         )
         .force(
           "collide",
-          forceCollide(Math.max(graphConfig.nodeDimensions.width / 2, graphConfig.nodeDimensions.height / 2))
+          forceCollide(Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5))
         );
 
       const node = svg
