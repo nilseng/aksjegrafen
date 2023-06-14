@@ -1,16 +1,21 @@
 import { faArrowLeft, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GraphNode } from "../../models/models";
+import { GraphNode, GraphType } from "../../models/models";
 import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
 import { NodeSearch } from "./NodeSearch";
 import { TargetSearch } from "./TargetSearch";
 
-export const Modal = ({ source }: { source?: GraphNode }) => {
+export const Modal = ({ source, graphType }: { source?: GraphNode; graphType: GraphType }) => {
   const dispatch = useDispatch();
 
   const content = useSelector<RootState, ModalContent>((state) => state.modalHandler.content);
+
+  useEffect(() => {
+    if (graphType !== GraphType.Default && source) dispatch(setContent(ModalContent.PathSearch));
+  }, [dispatch, graphType, source]);
 
   return (
     <div className="absolute w-full h-full z-50 flex justify-center items-center">
