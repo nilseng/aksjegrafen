@@ -23,13 +23,15 @@ export const Modal = ({ source }: { source?: GraphNode }) => {
           icon={faTimes}
           action={() => dispatch(close())}
         />
-        <NeuButton
-          className="absolute top-0 left-0 h-12 w-12 p-2 m-2 sm:m-4"
-          style={{ borderRadius: "100%" }}
-          textClassName="text-primary/60 text-xl"
-          icon={faArrowLeft}
-          action={() => dispatch(setContent(ModalContent.NodeSearch))}
-        />
+        {content !== ModalContent.NodeSearch && (
+          <NeuButton
+            className="absolute top-0 left-0 h-12 w-12 p-2 m-2 sm:m-4"
+            style={{ borderRadius: "100%" }}
+            textClassName="text-primary/60 text-xl"
+            icon={faArrowLeft}
+            action={() => dispatch(setContent(ModalContent.NodeSearch))}
+          />
+        )}
         {content === ModalContent.NodeSearch && <NodeSearch />}
         {content === ModalContent.PathSearch && <TargetSearch source={source} />}
       </div>
