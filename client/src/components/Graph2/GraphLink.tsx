@@ -27,7 +27,7 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
             height={50}
             transform={"translate(-10, -100) rotate(90)"}
           >
-            <p>{link.properties.stocks} aksjer</p>
+            <p>{link.properties.stocks?.toLocaleString(navigator.language)} aksjer</p>
             <p>{((link.properties.share ?? 0) * 100).toFixed(0)}%</p>
           </foreignObject>
         )}
