@@ -21,12 +21,9 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
-      <p className="pb-4">
-        Finn relasjoner fra <span className="text-primary font-bold">{source?.properties.name}</span> til...
-      </p>
-      <div className="w-full md:max-w-sm flex justify-around items-center pb-4">
+      <div className="w-full md:max-w-sm flex justify-center items-center pb-8">
         <button
-          className="w-20 flex flex-col justify-center items-center p-1"
+          className="w-20 flex flex-col justify-center items-center p-1 mr-2"
           style={isDirected ? { ...theme.lowering } : { ...theme.button }}
           onClick={() => setIsDirected(true)}
         >
@@ -36,7 +33,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
           <p className="text-xs text-muted">rettet</p>
         </button>
         <button
-          className="w-20 flex flex-col justify-center items-center p-1"
+          className="w-20 flex flex-col justify-center items-center p-1 ml-2"
           style={isDirected ? { ...theme.button } : { ...theme.lowering }}
           disabled={true}
           /* onClick={() => setIsDirected(false)} */
@@ -47,6 +44,9 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
           <p className="text-xs text-muted">ikke rettet</p>
         </button>
       </div>
+      <p className="pb-4">
+        Finn relasjoner fra <span className="text-primary font-bold">{source?.properties.name}</span> til...
+      </p>
       <div className="h-[2.375rem] w-full md:max-w-sm">
         <SearchComponent
           inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
