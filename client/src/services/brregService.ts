@@ -266,6 +266,10 @@ export const useRoleTypes = (): RoleTypeResponse["_embedded"]["rolletyper"] | un
 
   useEffect(() => {
     getRoleTypes().then((res) => setRoleTypes(res._embedded.rolletyper));
+
+    return () => {
+      setRoleTypes(undefined);
+    };
   }, []);
 
   return roleTypes;
