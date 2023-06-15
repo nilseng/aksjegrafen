@@ -13,20 +13,20 @@ const nodeOffset = {
 export const useForceSimulation = ({
   nodes,
   links,
-  source,
-  target,
+  sourceUuid,
+  targetUuid,
   graphType,
   svgRef,
 }: {
   nodes?: GraphNode[];
   links: GraphLink[];
-  source?: GraphNode;
-  target?: GraphNode;
+  sourceUuid?: string;
+  targetUuid?: string;
   graphType: GraphType;
   svgRef: RefObject<SVGSVGElement>;
 }) => {
   useEffect(() => {
-    if (svgRef.current && nodes && nodes?.length > 0 && source) {
+    if (svgRef.current && nodes && nodes?.length > 0 && sourceUuid) {
       const svg = select<SVGElement, null>(svgRef.current);
 
       const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
@@ -36,11 +36,9 @@ export const useForceSimulation = ({
         ...node,
       }));
 
-      if (source) {
-        fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === source.properties.uuid), graphType });
-      }
-      if (target) {
-        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === target.properties.uuid), graphType });
+      fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === sourceUuid), graphType });
+      if (targetUuid) {
+        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === targetUuid), graphType });
       }
 
       const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
@@ -81,7 +79,7 @@ export const useForceSimulation = ({
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
       });
     }
-  }, [nodes, links, source, graphType, target, svgRef]);
+  }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid]);
 };
 
 const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
