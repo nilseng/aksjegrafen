@@ -1,30 +1,25 @@
 import { useRef } from "react";
+import { useSelector } from "react-redux";
 import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom2";
-import { GraphType, GraphLink as IGraphLink, GraphNode as IGraphNode } from "../../models/models";
-import { GraphNodeDatum } from "../../slices/graphSlice";
+import { GraphNodeDatum, GraphState } from "../../slices/graphSlice";
+import { RootState } from "../../store";
 import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
 import { GraphNode } from "./GraphNode";
 
-export const GraphView = ({
-  graphType,
-  source,
-  target,
-  nodes,
-  links,
-}: {
-  graphType: GraphType;
-  source?: IGraphNode;
-  target?: IGraphNode;
-  nodes: IGraphNode[];
-  links: IGraphLink[];
-}) => {
+export const GraphView = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const transform = useZoom(svgRef);
 
-  useForceSimulation({ nodes, links, source, target, graphType, svgRef });
+  const {
+    data: { nodes, links, sourceUuid, targetUuid, graphType },
+  } = useSelector<RootState, GraphState>((state) => state.graph);
+
+  useForceSimulation({ nodes, links, sourceUuid, targetUuid, graphType, svgRef });
+
+  if (!nodes || nodes.length === 0) return <p>Ingen relasjoner funnet 🔎</p>;
 
   return (
     <svg
