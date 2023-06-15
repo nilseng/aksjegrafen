@@ -78,7 +78,7 @@ export const NodeSearch = () => {
               handleClick: (node: GraphNode) => {
                 history.push({
                   pathname: `/graph2`,
-                  search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${node.properties.uuid}`,
+                  search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${node.properties.uuid}&isDirected=true`,
                 });
                 dispatch(setSource(node));
                 dispatch(setContent(ModalContent.PathSearch));

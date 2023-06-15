@@ -20,10 +20,11 @@ export const useGraph = () => {
           graphType,
           sourceUuid,
           targetUuid,
+          isDirected,
           limit: 5,
           skip: 0,
         })
       );
     }
-  }, [dispatch, graphType, sourceUuid, targetUuid]);
+  }, [dispatch, graphType, isDirected, sourceUuid, targetUuid]);
 };

@@ -1,23 +1,29 @@
 import { faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { useQuery } from "../../hooks/useQuery";
 import { ReactComponent as DirectedGraphIcon } from "../../icons/directed_graph.svg";
 import { ReactComponent as UndirectGraphIcon } from "../../icons/undirected_graph.svg";
 import { GraphNode, GraphType } from "../../models/models";
+import { GraphState, setIsDirected } from "../../slices/graphSlice";
 import { close } from "../../slices/modalSlice";
+import { RootState } from "../../store";
 import { SearchComponent } from "../SearchComponent";
 
 export const TargetSearch = ({ source }: { source?: GraphNode }) => {
   const { theme } = useContext(AppContext);
 
   const history = useHistory();
+  const query = useQuery();
 
   const dispatch = useDispatch();
 
-  const [isDirected, setIsDirected] = useState(true);
+  const {
+    data: { isDirected },
+  } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return (
     <div className="w-full flex flex-col justify-center items-center">
@@ -25,7 +31,11 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
         <button
           className="w-20 flex flex-col justify-center items-center p-1 mr-2"
           style={isDirected ? { ...theme.lowering } : { ...theme.button }}
-          onClick={() => setIsDirected(true)}
+          onClick={() => {
+            query.set("isDirected", "true");
+            history.push({ search: query.toString() });
+            dispatch(setIsDirected(true));
+          }}
         >
           <div className="h-8">
             <DirectedGraphIcon />
@@ -35,8 +45,11 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
         <button
           className="w-20 flex flex-col justify-center items-center p-1 ml-2"
           style={isDirected ? { ...theme.button } : { ...theme.lowering }}
-          disabled={true}
-          /* onClick={() => setIsDirected(false)} */
+          onClick={() => {
+            query.set("isDirected", "false");
+            history.push({ search: query.toString() });
+            dispatch(setIsDirected(false));
+          }}
         >
           <div className="h-8">
             <UndirectGraphIcon />
