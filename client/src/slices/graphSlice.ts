@@ -1,10 +1,15 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export interface GraphState {
   data: {
+    graphType: GraphType;
+    sourceUuid?: string;
+    targetUuid?: string;
+    source?: GraphNode;
+    target?: GraphNode;
     nodes: GraphNode[];
     links: GraphLink[];
   };
@@ -15,23 +20,72 @@ export interface GraphState {
 export type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
 export type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
-export const graphSlice = createSlice<GraphState, {}, "graph">({
+export const graphSlice = createSlice<
+  GraphState,
+  {
+    setGraphType: (state: GraphState, action: PayloadAction<GraphType>) => void;
+    setSourceUuid: (state: GraphState, action: PayloadAction<string>) => void;
+    setTargetUuid: (state: GraphState, action: PayloadAction<string>) => void;
+    setSource: (state: GraphState, action: PayloadAction<GraphNode>) => void;
+  },
+  "graph"
+>({
   name: "graph",
   initialState: {
-    data: { nodes: [], links: [] },
+    data: { graphType: GraphType.Default, nodes: [], links: [] },
     status: FetchState.Idle,
     error: null,
   },
-  reducers: {},
+  reducers: {
+    setGraphType: (state, action) => {
+      state.data.graphType = action.payload;
+    },
+    setSourceUuid: (state, action) => {
+      state.data.sourceUuid = action.payload;
+    },
+    setTargetUuid: (state, action) => {
+      state.data.targetUuid = action.payload;
+    },
+    setSource: (state, action) => {
+      state.data.source = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
+      // Fetch source cases
+      .addCase(fetchSourceThunk.pending, (state) => {
+        state.data.source = undefined;
+        state.status = FetchState.Loading;
+      })
+      .addCase(fetchSourceThunk.fulfilled, (state, action: PayloadAction<GraphNode>) => {
+        state.data.source = action.payload;
+      })
+      .addCase(fetchSourceThunk.rejected, (state) => {
+        state.status = FetchState.Error;
+      })
+      // Fetch target cases
+      .addCase(fetchTargetThunk.pending, (state) => {
+        state.data.target = undefined;
+        state.status = FetchState.Loading;
+      })
+      .addCase(fetchTargetThunk.fulfilled, (state, action: PayloadAction<GraphNode>) => {
+        state.data.target = action.payload;
+      })
+      .addCase(fetchTargetThunk.rejected, (state) => {
+        state.status = FetchState.Error;
+      })
+      // Fetch graph cases
       .addCase(fetchGraphThunk.pending, (state) => {
         state.status = FetchState.Loading;
       })
-      .addCase(fetchGraphThunk.fulfilled, (state, action) => {
-        state.status = FetchState.Success;
-        state.data = action.payload;
-      })
+      .addCase(
+        fetchGraphThunk.fulfilled,
+        (state, action: PayloadAction<{ nodes: GraphNode[]; links: GraphLink[] }>) => {
+          state.status = FetchState.Success;
+          state.data.nodes = action.payload.nodes;
+          state.data.links = action.payload.links;
+        }
+      )
       .addCase(fetchGraphThunk.rejected, (state, action) => {
         state.status = FetchState.Error;
         state.error = action.error.message;
@@ -39,7 +93,17 @@ export const graphSlice = createSlice<GraphState, {}, "graph">({
   },
 });
 
-export const fetchGraphThunk = createAsyncThunk("graph/fetchNeighbours", fetchGraph);
+export const { setGraphType, setSourceUuid, setTargetUuid, setSource } = graphSlice.actions;
+
+export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);
+export const fetchTargetThunk = createAsyncThunk("graph/fetchTarget", fetchNode);
+
+async function fetchNode(uuid: string): Promise<GraphNode> {
+  const res = await fetch(`/api/node?uuid=${uuid}`);
+  return res.json();
+}
+
+export const fetchGraphThunk = createAsyncThunk("graph/fetchGraph", fetchGraph);
 
 function fetchGraph({
   graphType,
