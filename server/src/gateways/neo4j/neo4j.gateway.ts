@@ -126,7 +126,6 @@ export const findShortestPath = async ({
   targetUuid: string;
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
-  console.log(sourceUuid, targetUuid, limit);
   const session = graphDB.session();
 
   const findShortestPathQuery = `
