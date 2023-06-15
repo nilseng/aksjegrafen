@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { useGraph } from "../../hooks/useGraph";
 import { FetchState } from "../../models/models";
+import { GraphState } from "../../slices/graphSlice";
 import { RootState } from "../../store";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
@@ -12,9 +13,11 @@ import { Toolbar } from "./Toolbar";
 export const Graph = () => {
   const { theme } = useContext(AppContext);
 
+  useGraph();
+
   const isModalOpen = useSelector<RootState, boolean>((state) => state.modalHandler.isOpen);
 
-  const { status, error } = useGraph();
+  const { status, error } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return (
     <div className="flex w-full h-full px-2 sm:px-4 pb-2 sm:pb-4 pt-0">

@@ -1,31 +1,17 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { GraphState, fetchGraphThunk, setGraphType, setSourceUuid, setTargetUuid } from "../slices/graphSlice";
+import { GraphState, fetchGraphThunk } from "../slices/graphSlice";
 import { AppDispatch, RootState } from "../store";
 import { useGraphQueryParams } from "./useGraphQueryParams";
 
 export const useGraph = () => {
   const dispatch = useDispatch<AppDispatch>();
 
-  const { graphType, sourceUuid, targetUuid } = useGraphQueryParams();
+  useGraphQueryParams();
 
-  const graphState = useSelector<RootState, GraphState>((state) => state.graph);
-
-  useEffect(() => {
-    dispatch(setGraphType(graphType));
-  }, [dispatch, graphType]);
-
-  useEffect(() => {
-    if (sourceUuid) {
-      dispatch(setSourceUuid(sourceUuid));
-    }
-  }, [dispatch, sourceUuid]);
-
-  useEffect(() => {
-    if (targetUuid) {
-      dispatch(setTargetUuid(targetUuid));
-    }
-  }, [dispatch, targetUuid]);
+  const {
+    data: { graphType, sourceUuid, targetUuid, isDirected },
+  } = useSelector<RootState, GraphState>((state) => state.graph);
 
   useEffect(() => {
     if (sourceUuid) {
@@ -40,6 +26,4 @@ export const useGraph = () => {
       );
     }
   }, [dispatch, graphType, sourceUuid, targetUuid]);
-
-  return graphState;
 };

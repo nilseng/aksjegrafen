@@ -1,30 +1,25 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { GraphType } from "../models/models";
+import { setGraphType, setIsDirected, setSourceUuid, setTargetUuid } from "../slices/graphSlice";
+import { AppDispatch } from "../store";
 import { useQuery } from "./useQuery";
 
 export const useGraphQueryParams = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const query = useQuery();
 
-  const [graphType, setGraphType] = useState<GraphType>(GraphType.Default);
-  const [sourceUuid, setSourceUuid] = useState<string>();
-  const [targetUuid, setTargetUuid] = useState<string>();
-
   useEffect(() => {
-    const graphTypeParam = query.get("graphType");
-    const sourceIdParam = query.get("sourceUuid");
-    const targetIdParam = query.get("targetUuid");
-    if (graphTypeParam && isGraphType(graphTypeParam)) setGraphType(graphTypeParam);
-    if (sourceIdParam) setSourceUuid(sourceIdParam);
-    if (targetIdParam) setTargetUuid(targetIdParam);
-
-    return () => {
-      setGraphType(GraphType.Default);
-      setSourceUuid(undefined);
-      setTargetUuid(undefined);
-    };
-  }, [query]);
-
-  return { graphType, sourceUuid, targetUuid };
+    const graphType = query.get("graphType");
+    const sourceUuid = query.get("sourceUuid");
+    const targetUuid = query.get("targetUuid");
+    const isDirected = query.get("isDirected");
+    query.set("test", "hest");
+    if (graphType && isGraphType(graphType)) dispatch(setGraphType(graphType));
+    if (sourceUuid) dispatch(setSourceUuid(sourceUuid));
+    if (targetUuid) dispatch(setTargetUuid(targetUuid));
+    if (isDirected) dispatch(setIsDirected(!!isDirected && isDirected !== "false"));
+  }, [dispatch, query]);
 };
 
 const isGraphType = (type: string): type is GraphType => {
