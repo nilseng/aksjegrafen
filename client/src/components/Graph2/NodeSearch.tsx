@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
+import { setSource } from "../../slices/graphSlice";
 import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
@@ -79,6 +80,7 @@ export const NodeSearch = () => {
                   pathname: `/graph2`,
                   search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${node.properties.uuid}`,
                 });
+                dispatch(setSource(node));
                 dispatch(setContent(ModalContent.PathSearch));
               },
             },
