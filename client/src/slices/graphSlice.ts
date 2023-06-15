@@ -114,15 +114,18 @@ function fetchGraph({
   graphType,
   sourceUuid,
   targetUuid,
+  isDirected,
   limit,
   skip,
 }: {
   graphType: GraphType;
   sourceUuid: string;
   targetUuid?: string;
+  isDirected?: boolean;
   limit: number;
   skip: number;
 }) {
+  if (isDirected === false) throw Error("Not implemented yet.");
   if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip });
   if (graphType === GraphType.ShortestPath) return fetchShortestPath({ sourceUuid, targetUuid, limit });
   if (graphType === GraphType.AllPaths) throw Error("Not implemented yet.");
