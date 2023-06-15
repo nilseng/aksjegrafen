@@ -18,8 +18,7 @@ const runQuery = async <T extends { [key: string]: unknown } = never>({
 export const findNode = async ({ uuid }: { uuid: string }) => {
   const records = await runQuery<{ n: NodeEntry }>({
     query: `
-        MATCH (n) 
-        WHERE n.uuid = $uuid
+        MATCH (n:Person|Unit|Shareholder|Company {uuid: $uuid}) 
         RETURN n
         LIMIT 1
     `,
