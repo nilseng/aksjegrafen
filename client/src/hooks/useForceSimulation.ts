@@ -88,25 +88,17 @@ const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphTy
     node.fx = 0;
     node.fy = 0;
   }
-  if (graphType === GraphType.ShortestPath) {
+  if (graphType === GraphType.ShortestPath || graphType === GraphType.AllPaths) {
     node.fx = -(graphConfig.width / 2 - nodeOffset.x);
-    node.fy = -(graphConfig.height / 2 - nodeOffset.y);
-  }
-  if (graphType === GraphType.AllPaths) {
-    node.fx = 0;
     node.fy = -(graphConfig.height / 2 - nodeOffset.y);
   }
 };
 
 const fixTargetPosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
   if (!node) return;
-  if (graphType === GraphType.ShortestPath) {
+  if (graphType === GraphType.ShortestPath || graphType === GraphType.AllPaths) {
     node.fx = graphConfig.width / 2 - nodeOffset.x;
     node.fy = graphConfig.height / 2 - nodeOffset.y;
-  }
-  if (graphType === GraphType.AllPaths) {
-    node.fx = 0;
-    node.fy = graphConfig.height / 2 + nodeOffset.y;
   }
 };
 
