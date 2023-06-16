@@ -43,8 +43,9 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
           <p className="text-xs text-muted">rettet</p>
         </button>
         <button
-          className="w-20 flex flex-col justify-center items-center p-1 ml-2"
+          className="w-20 flex flex-col justify-center items-center text-muted p-1 ml-2"
           style={isDirected ? { ...theme.button } : { ...theme.lowering }}
+          disabled
           onClick={() => {
             query.set("isDirected", "false");
             history.push({ search: query.toString() });
