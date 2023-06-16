@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
-import { graphReducer } from "./slices/graphSlice";
+import { graphSlice } from "./slices/graphSlice";
 import { modalSlice } from "./slices/modalSlice";
+import { rolesSlice } from "./slices/rolesSlice";
 
 export const store = configureStore({
   reducer: {
     modalHandler: modalSlice.reducer,
-    graph: graphReducer,
+    graph: graphSlice.reducer,
+    roles: rolesSlice.reducer,
   },
 });
 

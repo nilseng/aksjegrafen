@@ -1,12 +1,13 @@
 import { useContext } from "react";
+import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { GraphLink as IGraphLink } from "../../models/models";
-import { useRoleTypes } from "../../services/brregService";
+import { RootState } from "../../store";
 
 export const GraphLink = ({ link }: { link: IGraphLink }) => {
   const { theme } = useContext(AppContext);
 
-  const roleTypes = useRoleTypes();
+  const roleTypes = useSelector<RootState, RootState["roles"]["data"]>((state) => state.roles.data);
 
   return (
     <>
