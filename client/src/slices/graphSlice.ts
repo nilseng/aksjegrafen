@@ -127,8 +127,8 @@ function fetchGraph({
 }) {
   if (isDirected === false) throw Error("Not implemented yet.");
   if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip });
-  if (graphType === GraphType.ShortestPath) return fetchShortestPath({ sourceUuid, targetUuid, limit });
-  if (graphType === GraphType.AllPaths) throw Error("Not implemented yet.");
+  if (graphType === GraphType.ShortestPath) return fetchShortestPath({ sourceUuid, targetUuid });
+  if (graphType === GraphType.AllPaths) return fetchAllPaths({ sourceUuid, targetUuid, limit });
   throw Error("Unknown graph type");
 }
 
@@ -145,7 +145,14 @@ async function fetchNeighbours({
   return res.json();
 }
 
-async function fetchShortestPath({
+async function fetchShortestPath({ sourceUuid, targetUuid }: { sourceUuid: string; targetUuid?: string }) {
+  if (!targetUuid) throw Error("Målnode ikke definert...");
+  const query = buildQuery({ sourceUuid, targetUuid });
+  const res = await fetch(`/api/graph/shortest-path${query}`);
+  return res.json();
+}
+
+async function fetchAllPaths({
   sourceUuid,
   targetUuid,
   limit,
@@ -156,7 +163,7 @@ async function fetchShortestPath({
 }) {
   if (!targetUuid) throw Error("Målnode ikke definert...");
   const query = buildQuery({ sourceUuid, targetUuid, limit });
-  const res = await fetch(`/api/graph/shortest-path${query}`);
+  const res = await fetch(`/api/graph/all-paths${query}`);
   return res.json();
 }
 
