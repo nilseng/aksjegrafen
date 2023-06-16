@@ -367,6 +367,10 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       if (!query.sourceUuid || !query.targetUuid) return res.status(400).json("Source and target uuid required.");
+      if (query.sourceUuid === query.targetUuid) {
+        const data = await findNode({ uuid: query.sourceUuid });
+        return res.json({ nodes: [data], links: [] });
+      }
       const data = await findShortestPath2({
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
