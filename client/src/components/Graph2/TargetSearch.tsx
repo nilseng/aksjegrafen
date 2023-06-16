@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { useQuery } from "../../hooks/useQuery";
+import { ReactComponent as AllPathsIcon } from "../../icons/all_paths.svg";
 import { ReactComponent as DirectedGraphIcon } from "../../icons/directed_graph.svg";
 import { ReactComponent as UndirectGraphIcon } from "../../icons/undirected_graph.svg";
 import { GraphNode, GraphType } from "../../models/models";
@@ -88,6 +89,25 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
                   history.push({
                     pathname: `/graph2`,
                     search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
+                  });
+                  dispatch(close());
+                },
+              },
+              {
+                name: "all-paths-button",
+                condition: true,
+                buttonContent: (
+                  <div>
+                    <div className="h-6">
+                      <AllPathsIcon />
+                    </div>
+                    <p className="text-xs text-muted">alle stier</p>
+                  </div>
+                ),
+                handleClick: (node: GraphNode) => {
+                  history.push({
+                    pathname: `/graph2`,
+                    search: `?graphType=${GraphType.AllPaths}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
                   });
                   dispatch(close());
                 },
