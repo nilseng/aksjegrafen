@@ -1,19 +1,25 @@
-import { useContext } from "react";
-import { useSelector } from "react-redux";
+import { useContext, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { useGraph } from "../../hooks/useGraph";
 import { FetchState } from "../../models/models";
 import { GraphState } from "../../slices/graphSlice";
-import { RootState } from "../../store";
+import { fetchRolesThunk } from "../../slices/rolesSlice";
+import { AppDispatch, RootState } from "../../store";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { Modal } from "./Modal";
 import { Toolbar } from "./Toolbar";
 
 export const Graph = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
   const { theme } = useContext(AppContext);
 
   useGraph();
+  useEffect(() => {
+    dispatch(fetchRolesThunk());
+  }, [dispatch]);
 
   const isModalOpen = useSelector<RootState, boolean>((state) => state.modalHandler.isOpen);
 
