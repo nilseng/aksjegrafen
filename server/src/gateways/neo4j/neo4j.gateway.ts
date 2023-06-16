@@ -125,17 +125,14 @@ export const findShortestPath = async ({
   targetUuid: string;
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
-  const session = graphDB.session();
-
-  const findShortestPathQuery = `
-  MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
-  OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
-  RETURN path
+  const query = `
+    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
+    OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
+    RETURN path
   `;
-  const res = await session.run(findShortestPathQuery, { sourceUuid, targetUuid, limit });
-  session.close();
+  const records = await runQuery({ query, params: { sourceUuid, targetUuid, limit } });
 
-  const pathRecord = res.records[0]?.get("path");
+  const pathRecord = records[0]?.get("path");
 
   return pathRecord ? mapPathToGraph(pathRecord) : { nodes: [], links: [] };
 };
