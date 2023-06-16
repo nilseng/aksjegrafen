@@ -1,3 +1,4 @@
+import { flatMap, uniqBy, uniqWith } from "lodash";
 import { Integer, Node, Path, PathSegment, Record } from "neo4j-driver";
 import { GraphLink, GraphNode, GraphNodeLabel, Year } from "../../models/models";
 
@@ -64,9 +65,43 @@ export const mapRecordToGraphLink = ({
   };
 };
 
+export const mapPathsToGraph = (paths: Path[]): { nodes: GraphNode[]; links: GraphLink[] } => {
+  const mappedPaths = paths.map((path) => mapPathToGraph(path));
+  const links = uniqWith(
+    flatMap(mappedPaths, "links") as GraphLink[],
+    (a, b) =>
+      a.source.properties.uuid === b.source.properties.uuid &&
+      a.target.properties.uuid === b.target.properties.uuid &&
+      a.type === b.type &&
+      a.properties.year === b.properties.year
+  );
+  console.log(links[0]);
+  return {
+    nodes: uniqBy(flatMap(mappedPaths, "nodes") as GraphNode[], "properties.uuid"),
+    links: uniqWith(
+      flatMap(mappedPaths, "links") as GraphLink[],
+      (a, b) =>
+        a.source.properties.uuid === b.source.properties.uuid &&
+        a.target.properties.uuid === b.target.properties.uuid &&
+        a.type === b.type &&
+        a.properties.year === b.properties.year
+    ),
+  };
+};
+
 export const mapPathToGraph = (path: Path): { nodes: GraphNode[]; links: GraphLink[] } => ({
-  nodes: [mapNodeEntryToGraphNode(path.start as NodeEntry), ...(path.segments.map((s) => s.end) as NodeEntry[])],
-  links: mapSegmentsToLinks(path.segments),
+  nodes: uniqBy(
+    [mapNodeEntryToGraphNode(path.start as NodeEntry), ...(path.segments.map((s) => s.end) as NodeEntry[])],
+    "properties.uuid"
+  ),
+  links: uniqWith(
+    mapSegmentsToLinks(path.segments),
+    (a, b) =>
+      a.source.properties.uuid === b.source.properties.uuid &&
+      a.target.properties.uuid === b.target.properties.uuid &&
+      a.type === b.type &&
+      a.properties.year === b.properties.year
+  ),
 });
 
 const mapSegmentsToLinks = (segments: PathSegment[]): GraphLink[] =>
@@ -74,5 +109,8 @@ const mapSegmentsToLinks = (segments: PathSegment[]): GraphLink[] =>
     source: mapNodeEntryToGraphNode(s.start as NodeEntry),
     target: mapNodeEntryToGraphNode(s.end as NodeEntry),
     type: s.relationship.type,
-    properties: s.relationship.properties,
+    properties: {
+      ...s.relationship.properties,
+      ...(s.relationship.properties.year?.low ? { year: s.relationship.properties.year?.low } : {}),
+    },
   }));
