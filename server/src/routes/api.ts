@@ -6,6 +6,7 @@ import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { findAllPaths } from "../use-cases/findAllPaths";
 import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
 import { findShortestPath } from "../use-cases/findShortestPath";
@@ -363,7 +364,6 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     "/graph/shortest-path",
     query(["sourceUuid"]),
     query(["targetUuid"]),
-    query(["limit"]).default(10).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       if (!query.sourceUuid || !query.targetUuid) return res.status(400).json("Source and target uuid required.");
@@ -372,6 +372,26 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         return res.json({ nodes: [data], links: [] });
       }
       const data = await findShortestPath2({
+        sourceUuid: query.sourceUuid,
+        targetUuid: query.targetUuid,
+      });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/all-paths",
+    query(["sourceUuid"]),
+    query(["targetUuid"]),
+    query(["limit"]).default(10).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.sourceUuid || !query.targetUuid) return res.status(400).json("Source and target uuid required.");
+      if (query.sourceUuid === query.targetUuid) {
+        const data = await findNode({ uuid: query.sourceUuid });
+        return res.json({ nodes: [data], links: [] });
+      }
+      const data = await findAllPaths({
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
         limit: query.limit,

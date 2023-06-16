@@ -1,6 +1,6 @@
 import { graphDB } from "../../database/graphDB";
 import { GraphLink, GraphNode } from "../../models/models";
-import { NodeEntry, mapPathToGraph, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
+import { NodeEntry, mapPathToGraph, mapPathsToGraph, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
 
 const runQuery = async <T extends { [key: string]: unknown } = never>({
   query,
@@ -119,6 +119,25 @@ export const findRoleUnits = async ({ uuid, limit }: { uuid: string; limit: numb
 export const findShortestPath = async ({
   sourceUuid,
   targetUuid,
+}: {
+  sourceUuid: string;
+  targetUuid: string;
+}): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
+  const query = `
+    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
+    OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
+    RETURN path
+  `;
+  const records = await runQuery({ query, params: { sourceUuid, targetUuid } });
+
+  const pathRecord = records[0]?.get("path");
+
+  return pathRecord ? mapPathToGraph(pathRecord) : { nodes: [], links: [] };
+};
+
+export const findAllPaths = async ({
+  sourceUuid,
+  targetUuid,
   limit,
 }: {
   sourceUuid: string;
@@ -126,13 +145,11 @@ export const findShortestPath = async ({
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
-    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
-    OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
+    MATCH path = (source:Person|Unit|Shareholder {uuid: $sourceUuid})-[*]->(target:Company|Unit {uuid: $targetUuid})
     RETURN path
+    LIMIT ${limit}
   `;
   const records = await runQuery({ query, params: { sourceUuid, targetUuid, limit } });
 
-  const pathRecord = records[0]?.get("path");
-
-  return pathRecord ? mapPathToGraph(pathRecord) : { nodes: [], links: [] };
+  return records?.length > 0 ? mapPathsToGraph(records.map((record) => record.get("path"))) : { nodes: [], links: [] };
 };
