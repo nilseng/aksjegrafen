@@ -26,7 +26,7 @@ export const Graph = () => {
   const { status, error } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return (
-    <div className="flex w-full h-full px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
+    <div className="flex w-full h-full dark:text-white px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
         <Toolbar />

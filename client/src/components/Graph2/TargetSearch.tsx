@@ -27,7 +27,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
   } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return (
-    <div className="w-full flex flex-col justify-center items-center">
+    <div className="w-full flex flex-col justify-center items-center dark:text-white">
       <div className="w-full md:max-w-sm flex justify-center items-center pb-8">
         <button
           className="w-20 flex flex-col justify-center items-center p-1 mr-2"
