@@ -31,3 +31,13 @@ In order to mount attached EBS volume automatically to /data, add the following 
 `/dev/nvme1n1 /mnt/neo4j ext4 defaults 0 0`
 
 <EBS volume device name> <mount path> <file system type> <mount options> <dump frequency> <fsck order>
+
+## Install plugins
+
+Neo4j Graph Data Science plugin:
+
+- Navigate to /plugins
+- Run `sudo curl -L -O https://graphdatascience.ninja/neo4j-graph-data-science-2.4.0.zip`
+- `sudo yum install unzip`
+- `sudo unzip neo4j-graph-data-science-2.4.0.zip`
+- Restart the Docker container
