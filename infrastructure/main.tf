@@ -87,7 +87,7 @@ resource "null_resource" "setup_script" {
 
   # The script is rerun whenever a value in the triggers map changes, so increase the version number to rerun the script.
   triggers = {
-    version = 1
+    version = 10
   }
 
   depends_on = [aws_volume_attachment.db_volume_attachment]
@@ -113,7 +113,7 @@ resource "null_resource" "setup_script" {
       "sudo systemctl start docker",
       "sudo systemctl enable docker", */
       # Creates a new docker container
-      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v /mnt/neo4j:/data -v /plugins:/var/lib/neo4j/plugins --env NEO4J_dbms_security_procedures_unrestricted=apoc.* --env NEO4J_dbms_memory_pagecache_size=5g --env NEO4J_db_transaction_timeout=20s neo4j"
+      "sudo docker run -d --name neo4j -p 7474:7474 -p 7687:7687 -v /mnt/neo4j:/data -v /plugins:/var/lib/neo4j/plugins --env NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.* --env NEO4J_dbms_memory_pagecache_size=3g --env NEO4J_server_memory_heap_max__size=4g --env NEO4J_db_transaction_timeout=20s neo4j"
     ]
   }
 }
