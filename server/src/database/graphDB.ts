@@ -42,10 +42,30 @@ const createConstraints = async () => {
   session.close();
 };
 
+const createProjections = async () => {
+  const session = graphDB.session();
+  console.info("Creating projections");
+  await session.run(`
+    CALL gds.graph.project(
+      'directedGraph',    
+      ['Person', 'Unit', 'Company', 'Shareholder'],   
+      ['OWNS', 'BEST', 'BOBE', 'DAGL', 'DTPR', 'DTSO', 'EIKM', 'FFØR', 'HFOR', 'HLSE', 'KDEB', 'KIRK', 'KOMP', 'KONT', 'LEDE',
+      'MEDL', 'NEST', 'OBS', 'OPMV', 'ORGL', 'REGN', 'REPR', 'REVI', 'VARA']
+    )
+    YIELD graphName
+  `);
+  console.info("Created projections");
+  session.close();
+};
+
 createIndexes().catch((e) => {
   console.error("Failed to create indexes", e);
 });
 
 createConstraints().catch((e) => {
-  console.error("Feiled to create constraints", e);
+  console.error("Failed to create constraints", e);
 });
+
+/* createProjections().catch((e) => {
+  console.error("Failed to create projections", e);
+}); */
