@@ -145,11 +145,17 @@ export const findAllPaths = async ({
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
-    MATCH path = (source:Person|Unit|Shareholder {uuid: $sourceUuid})-[*]->(target:Company|Unit {uuid: $targetUuid})
+    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid})
+    MATCH (target:Company|Unit {uuid: $targetUuid})
+    CALL gds.shortestPath.yens.stream('directedGraph', {
+      sourceNode: source,
+      targetNode: target,
+      k: ${limit}
+    })
+    YIELD index, path
     RETURN path
-    LIMIT ${limit}
+    ORDER BY index
   `;
   const records = await runQuery({ query, params: { sourceUuid, targetUuid, limit } });
-
   return records?.length > 0 ? mapPathsToGraph(records.map((record) => record.get("path"))) : { nodes: [], links: [] };
 };
