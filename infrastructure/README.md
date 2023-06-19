@@ -40,4 +40,5 @@ Neo4j Graph Data Science plugin:
 - Run `sudo curl -L -O https://graphdatascience.ninja/neo4j-graph-data-science-2.4.0.zip`
 - `sudo yum install unzip`
 - `sudo unzip neo4j-graph-data-science-2.4.0.zip`
+- Add `gds.*` to `dbms.security.procedures.unrestricted` in `neo4j.conf`
 - Restart the Docker container
