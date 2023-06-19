@@ -75,7 +75,6 @@ export const mapPathsToGraph = (paths: Path[]): { nodes: GraphNode[]; links: Gra
       a.type === b.type &&
       a.properties.year === b.properties.year
   );
-  console.log(links[0]);
   return {
     nodes: uniqBy(flatMap(mappedPaths, "nodes") as GraphNode[], "properties.uuid"),
     links: uniqWith(
