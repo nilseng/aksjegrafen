@@ -20,8 +20,6 @@ Run `terraform destroy`.
 
 ## Notes
 
-If the Docker run command does not work, move the apoc plugin manually from /labs to /plugins
-
 To enter a docker container run:
 
 - `docker exec -it <container_id> /bin/bash`
@@ -33,6 +31,10 @@ In order to mount attached EBS volume automatically to /data, add the following 
 <EBS volume device name> <mount path> <file system type> <mount options> <dump frequency> <fsck order>
 
 ## Install plugins
+
+APOC:
+
+- Move the apoc plugin from /labs to /plugins
 
 Neo4j Graph Data Science plugin:
 
