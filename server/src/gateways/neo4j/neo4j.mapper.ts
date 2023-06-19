@@ -67,14 +67,6 @@ export const mapRecordToGraphLink = ({
 
 export const mapPathsToGraph = (paths: Path[]): { nodes: GraphNode[]; links: GraphLink[] } => {
   const mappedPaths = paths.map((path) => mapPathToGraph(path));
-  const links = uniqWith(
-    flatMap(mappedPaths, "links") as GraphLink[],
-    (a, b) =>
-      a.source.properties.uuid === b.source.properties.uuid &&
-      a.target.properties.uuid === b.target.properties.uuid &&
-      a.type === b.type &&
-      a.properties.year === b.properties.year
-  );
   return {
     nodes: uniqBy(flatMap(mappedPaths, "nodes") as GraphNode[], "properties.uuid"),
     links: uniqWith(
