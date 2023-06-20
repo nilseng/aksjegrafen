@@ -1,3 +1,4 @@
+import { uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
 import { GraphLink, GraphNode } from "../../models/models";
 import { NodeEntry, mapPathToGraph, mapPathsToGraph, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
@@ -158,4 +159,22 @@ export const findAllPaths = async ({
   `;
   const records = await runQuery({ query, params: { sourceUuid, targetUuid, limit } });
   return records?.length > 0 ? mapPathsToGraph(records.map((record) => record.get("path"))) : { nodes: [], links: [] };
+};
+
+export const findRelationships = async (links: GraphLink[]): Promise<GraphLink[]> => {
+  const query = `
+    UNWIND $links as link
+    MATCH (source:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]->(target:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
+    RETURN source, r, target
+  `;
+  const records = await runQuery({ query, params: { links } });
+  return uniqWith(
+    records.map((record) =>
+      mapRecordToGraphLink({ record, sourceKey: "source", targetKey: "target", relationshipKey: "r" })
+    ),
+    (a, b) =>
+      a.source.properties.uuid === b.source.properties.uuid &&
+      a.target.properties.uuid === b.target.properties.uuid &&
+      a.type === b.type
+  );
 };
