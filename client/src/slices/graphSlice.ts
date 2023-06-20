@@ -25,10 +25,11 @@ export const graphSlice = createSlice<
   GraphState,
   {
     setGraphType: (state: GraphState, action: PayloadAction<GraphType>) => void;
-    setSourceUuid: (state: GraphState, action: PayloadAction<string>) => void;
-    setTargetUuid: (state: GraphState, action: PayloadAction<string>) => void;
+    setSourceUuid: (state: GraphState, action: PayloadAction<string | undefined>) => void;
+    setTargetUuid: (state: GraphState, action: PayloadAction<string | undefined>) => void;
     setIsDirected: (state: GraphState, action: PayloadAction<boolean>) => void;
-    setSource: (state: GraphState, action: PayloadAction<GraphNode>) => void;
+    setSource: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
+    setTarget: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
   },
   "graph"
 >({
@@ -53,6 +54,9 @@ export const graphSlice = createSlice<
     },
     setSource: (state, action) => {
       state.data.source = action.payload;
+    },
+    setTarget: (state, action) => {
+      state.data.target = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -98,7 +102,7 @@ export const graphSlice = createSlice<
   },
 });
 
-export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setIsDirected } = graphSlice.actions;
+export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected } = graphSlice.actions;
 
 export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);
 export const fetchTargetThunk = createAsyncThunk("graph/fetchTarget", fetchNode);

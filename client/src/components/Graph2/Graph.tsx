@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { useGraph } from "../../hooks/useGraph";
 import { FetchState, GraphType } from "../../models/models";
-import { GraphState, fetchSourceThunk, fetchTargetThunk } from "../../slices/graphSlice";
+import { GraphState, fetchSourceThunk, fetchTargetThunk, setSource, setTarget } from "../../slices/graphSlice";
 import { ModalContent, setContent } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
@@ -20,12 +20,17 @@ export const Graph = () => {
   const { sourceUuid, targetUuid, graphType } = useSelector<RootState, RootState["graph"]["data"]>(
     (state) => state.graph.data
   );
+
   useEffect(() => {
     if (sourceUuid) dispatch(fetchSourceThunk(sourceUuid));
+    else dispatch(setSource(undefined));
   }, [dispatch, sourceUuid]);
+
   useEffect(() => {
     if (targetUuid) dispatch(fetchTargetThunk(targetUuid));
+    else dispatch(setTarget(undefined));
   }, [dispatch, targetUuid]);
+
   useEffect(() => {
     if (graphType !== GraphType.Default && sourceUuid) dispatch(setContent(ModalContent.PathSearch));
   }, [dispatch, graphType, sourceUuid]);

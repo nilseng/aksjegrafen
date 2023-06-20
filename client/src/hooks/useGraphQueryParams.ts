@@ -15,8 +15,8 @@ export const useGraphQueryParams = () => {
     const targetUuid = query.get("targetUuid");
     const isDirected = query.get("isDirected");
     if (graphType && isGraphType(graphType)) dispatch(setGraphType(graphType));
-    if (sourceUuid) dispatch(setSourceUuid(sourceUuid));
-    if (targetUuid) dispatch(setTargetUuid(targetUuid));
+    dispatch(setSourceUuid(sourceUuid ?? undefined));
+    dispatch(setTargetUuid(targetUuid ?? undefined));
     if (isDirected) dispatch(setIsDirected(!!isDirected && isDirected !== "false"));
   }, [dispatch, query]);
 };
