@@ -36,6 +36,7 @@ interface IProps<Result extends unknown> {
   inputStyle?: CSSProperties;
   searchListClassName?: string;
   focus?: boolean;
+  initialResult?: Result[];
 }
 
 export const SearchComponent = <Result extends unknown>({
@@ -50,6 +51,7 @@ export const SearchComponent = <Result extends unknown>({
   inputStyle,
   searchListClassName,
   focus,
+  initialResult,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
 
@@ -61,7 +63,13 @@ export const SearchComponent = <Result extends unknown>({
 
   const [searchTerm, setSearchTerm] = useState<string>("");
 
-  const { result: searchList, isLoading } = useSearch<Result[]>(apiPath, searchTerm, query, minSearchTermLength);
+  const { result: searchList, isLoading } = useSearch<Result[]>(
+    apiPath,
+    searchTerm,
+    query,
+    minSearchTermLength,
+    initialResult
+  );
 
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);

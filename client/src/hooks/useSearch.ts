@@ -27,13 +27,18 @@ export const useSearch = <T>(
   apiPath: string,
   searchTerm?: string,
   query?: { [key: string]: string | number },
-  minSearchTermLength = 3
+  minSearchTermLength = 3,
+  inititalResult: null | T = null
 ) => {
-  const [state, setState] = useState<{ result: T | null; isLoading: boolean }>({ result: null, isLoading: false });
+  const [state, setState] = useState<{ result: T | null; isLoading: boolean }>({
+    result: inititalResult,
+    isLoading: false,
+  });
 
   useEffect(() => {
     const abortController = new AbortController();
-    if (!searchTerm || searchTerm.length < minSearchTermLength) setState({ result: null, isLoading: false });
+    if (searchTerm && searchTerm.length < minSearchTermLength) setState({ result: null, isLoading: false });
+    else if (!searchTerm) setState({ result: inititalResult, isLoading: false });
     else {
       let url = `${apiPath}/${searchTerm}`;
       if (query) url += buildQuery(query);
@@ -44,7 +49,7 @@ export const useSearch = <T>(
       setState({ result: null, isLoading: false });
       abortController.abort();
     };
-  }, [apiPath, query, searchTerm, minSearchTermLength]);
+  }, [apiPath, query, searchTerm, minSearchTermLength, inititalResult]);
 
   return state;
 };
