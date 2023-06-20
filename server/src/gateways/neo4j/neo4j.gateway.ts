@@ -173,8 +173,6 @@ export const findRelationships = async (links: GraphLink[]): Promise<GraphLink[]
       mapRecordToGraphLink({ record, sourceKey: "source", targetKey: "target", relationshipKey: "r" })
     ),
     (a, b) =>
-      a.source.properties.uuid === b.source.properties.uuid &&
-      a.target.properties.uuid === b.target.properties.uuid &&
-      a.type === b.type
+      a.source.properties.uuid === b.source.properties.uuid && a.target.properties.uuid === b.target.properties.uuid
   );
 };
