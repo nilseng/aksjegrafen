@@ -1,7 +1,14 @@
 import { uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
 import { GraphLink, GraphNode } from "../../models/models";
-import { NodeEntry, mapPathToGraph, mapPathsToGraph, mapRecordToGraphLink, mapRecordToGraphNode } from "./neo4j.mapper";
+import {
+  NodeEntry,
+  mapPathToGraph,
+  mapPathsToGraph,
+  mapRecordToGraphLink,
+  mapRecordToGraphNode,
+  mapUndirectedRecordToGraphLink,
+} from "./neo4j.mapper";
 
 const runQuery = async <T extends { [key: string]: unknown } = never>({
   query,
@@ -118,16 +125,24 @@ export const findRoleUnits = async ({ uuid, limit }: { uuid: string; limit: numb
 };
 
 export const findShortestPath = async ({
+  isDirected,
   sourceUuid,
   targetUuid,
 }: {
+  isDirected?: boolean;
   sourceUuid: string;
   targetUuid: string;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
-    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid}), (target:Company|Unit {uuid: $targetUuid})
-    OPTIONAL MATCH path = shortestPath((source)-[r*]->(target))
+    MATCH (source:Person|Unit|Shareholder|Company {uuid: $sourceUuid})
+    MATCH (target:Person|Unit|Shareholder|Company {uuid: $targetUuid})
+    CALL gds.shortestPath.dijkstra.stream(${isDirected ? "'directedGraph'" : "'undirectedGraph'"}, {
+      sourceNode: source,
+      targetNode: target
+    })
+    YIELD index, path
     RETURN path
+    ORDER BY index
   `;
   const records = await runQuery({ query, params: { sourceUuid, targetUuid } });
 
@@ -137,18 +152,20 @@ export const findShortestPath = async ({
 };
 
 export const findAllPaths = async ({
+  isDirected = true,
   sourceUuid,
   targetUuid,
   limit,
 }: {
+  isDirected?: boolean;
   sourceUuid: string;
   targetUuid: string;
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
-    MATCH (source:Person|Unit|Shareholder {uuid: $sourceUuid})
-    MATCH (target:Company|Unit {uuid: $targetUuid})
-    CALL gds.shortestPath.yens.stream('directedGraph', {
+    MATCH (source:Person|Unit|Shareholder|Company {uuid: $sourceUuid})
+    MATCH (target:Person|Unit|Shareholder|Company {uuid: $targetUuid})
+    CALL gds.shortestPath.yens.stream(${isDirected ? "'directedGraph'" : "'undirectedGraph'"}, {
       sourceNode: source,
       targetNode: target,
       k: ${limit}
@@ -164,15 +181,17 @@ export const findAllPaths = async ({
 export const findRelationships = async (links: GraphLink[]): Promise<GraphLink[]> => {
   const query = `
     UNWIND $links as link
-    MATCH (source:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]->(target:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
-    RETURN source, r, target
+    MATCH (n1:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]-(n2:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
+    RETURN n1, r, n2
   `;
   const records = await runQuery({ query, params: { links } });
   return uniqWith(
     records.map((record) =>
-      mapRecordToGraphLink({ record, sourceKey: "source", targetKey: "target", relationshipKey: "r" })
+      mapUndirectedRecordToGraphLink({ record, nodeKey1: "n1", nodeKey2: "n2", relationshipKey: "r" })
     ),
     (a, b) =>
-      a.source.properties.uuid === b.source.properties.uuid && a.target.properties.uuid === b.target.properties.uuid
+      (a.source.properties.uuid === b.source.properties.uuid &&
+        a.target.properties.uuid === b.target.properties.uuid) ||
+      (a.source.properties.uuid === b.target.properties.uuid && a.target.properties.uuid === b.source.properties.uuid)
   );
 };
