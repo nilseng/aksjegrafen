@@ -14,7 +14,6 @@ export const useGraphQueryParams = () => {
     const sourceUuid = query.get("sourceUuid");
     const targetUuid = query.get("targetUuid");
     const isDirected = query.get("isDirected");
-    query.set("test", "hest");
     if (graphType && isGraphType(graphType)) dispatch(setGraphType(graphType));
     if (sourceUuid) dispatch(setSourceUuid(sourceUuid));
     if (targetUuid) dispatch(setTargetUuid(targetUuid));
