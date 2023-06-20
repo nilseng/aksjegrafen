@@ -62,7 +62,10 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
-                history.push({ pathname: `/graph2`, search: `?sourceUuid=${node.properties.uuid}` });
+                history.push({
+                  pathname: `/graph2`,
+                  search: `?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`,
+                });
                 dispatch(close());
               },
             },
