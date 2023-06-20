@@ -44,9 +44,8 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
           <p className="text-xs text-muted">rettet</p>
         </button>
         <button
-          className="w-20 flex flex-col justify-center items-center text-muted p-1 ml-2"
+          className="w-20 flex flex-col justify-center items-center text-primary p-1 ml-2"
           style={isDirected ? { ...theme.button } : { ...theme.lowering }}
-          disabled
           onClick={() => {
             query.set("isDirected", "false");
             history.push({ search: query.toString() });
@@ -88,7 +87,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
                 handleClick: (node: GraphNode) => {
                   history.push({
                     pathname: `/graph2`,
-                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
+                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}&isDirected=${isDirected}`,
                   });
                   dispatch(close());
                 },
@@ -107,7 +106,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
                 handleClick: (node: GraphNode) => {
                   history.push({
                     pathname: `/graph2`,
-                    search: `?graphType=${GraphType.AllPaths}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}`,
+                    search: `?graphType=${GraphType.AllPaths}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}&isDirected=${isDirected}`,
                   });
                   dispatch(close());
                 },
