@@ -100,7 +100,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
                     <div className="h-6">
                       <AllPathsIcon />
                     </div>
-                    <p className="text-xs text-muted">alle stier</p>
+                    <p className="text-xs text-muted">flere veier</p>
                   </div>
                 ),
                 handleClick: (node: GraphNode) => {
