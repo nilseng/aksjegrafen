@@ -1,12 +1,13 @@
 import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
 import { setSource } from "../../slices/graphSlice";
 import { ModalContent, close, setContent } from "../../slices/modalSlice";
+import { RootState } from "../../store";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
 
@@ -15,6 +16,7 @@ export const NodeSearch = () => {
   const dispatch = useDispatch();
 
   const { theme } = useContext(AppContext);
+  const { source } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
 
   return (
     <div className="w-full h-14">
@@ -89,6 +91,7 @@ export const NodeSearch = () => {
             },
           ],
         })}
+        initialResult={source ? [source] : undefined}
       />
     </div>
   );
