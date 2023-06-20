@@ -14,7 +14,7 @@ import { close } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { SearchComponent } from "../SearchComponent";
 
-export const TargetSearch = ({ source }: { source?: GraphNode }) => {
+export const TargetSearch = () => {
   const { theme } = useContext(AppContext);
 
   const history = useHistory();
@@ -23,7 +23,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
   const dispatch = useDispatch();
 
   const {
-    data: { isDirected },
+    data: { isDirected, source, target },
   } = useSelector<RootState, GraphState>((state) => state.graph);
 
   return (
@@ -116,6 +116,7 @@ export const TargetSearch = ({ source }: { source?: GraphNode }) => {
           placeholder="Selskap, aksjonær eller rolleinnehaver..."
           apiPath="/api/node"
           query={{ limit: 10 }}
+          initialResult={target ? [target] : undefined}
         />
       </div>
     </div>
