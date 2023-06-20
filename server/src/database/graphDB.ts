@@ -54,6 +54,39 @@ const createProjections = async () => {
     )
     YIELD graphName
   `);
+  await session.run(`
+    CALL gds.graph.project(
+      'undirectedGraph',    
+      ['Person', 'Unit', 'Company', 'Shareholder'],   
+      {
+        OWNS: {orientation: 'UNDIRECTED'}, 
+        BEST: {orientation: 'UNDIRECTED'}, 
+        BOBE: {orientation: 'UNDIRECTED'}, 
+        DAGL: {orientation: 'UNDIRECTED'}, 
+        DTPR: {orientation: 'UNDIRECTED'}, 
+        DTSO: {orientation: 'UNDIRECTED'}, 
+        EIKM: {orientation: 'UNDIRECTED'}, 
+        FFØR: {orientation: 'UNDIRECTED'}, 
+        HFOR: {orientation: 'UNDIRECTED'}, 
+        HLSE: {orientation: 'UNDIRECTED'}, 
+        KDEB: {orientation: 'UNDIRECTED'}, 
+        KIRK: {orientation: 'UNDIRECTED'}, 
+        KOMP: {orientation: 'UNDIRECTED'}, 
+        KONT: {orientation: 'UNDIRECTED'}, 
+        LEDE: {orientation: 'UNDIRECTED'},
+        MEDL: {orientation: 'UNDIRECTED'}, 
+        NEST: {orientation: 'UNDIRECTED'}, 
+        OBS: {orientation: 'UNDIRECTED'}, 
+        OPMV: {orientation: 'UNDIRECTED'}, 
+        ORGL: {orientation: 'UNDIRECTED'}, 
+        REGN: {orientation: 'UNDIRECTED'}, 
+        REPR: {orientation: 'UNDIRECTED'}, 
+        REVI: {orientation: 'UNDIRECTED'}, 
+        VARA: {orientation: 'UNDIRECTED'}
+      }
+    )
+    YIELD graphName
+  `);
   console.info("Created projections");
   session.close();
 };
@@ -68,4 +101,5 @@ createConstraints().catch((e) => {
 
 /* createProjections().catch((e) => {
   console.error("Failed to create projections", e);
-}); */
+});
+ */
