@@ -1,5 +1,5 @@
 import { flatMap, uniqBy, uniqWith } from "lodash";
-import { Integer, Node, Path, PathSegment, Record } from "neo4j-driver";
+import { Integer, Node, Path, PathSegment, Record, Relationship } from "neo4j-driver";
 import { GraphLink, GraphNode, GraphNodeLabel, Year } from "../../models/models";
 
 interface NodeEntryProperties {
@@ -62,6 +62,28 @@ export const mapRecordToGraphLink = ({
     target: mapRecordToGraphNode(record, targetKey),
     properties: record.get(relationshipKey).properties,
     type: record.get(relationshipKey).type,
+  };
+};
+
+export const mapUndirectedRecordToGraphLink = ({
+  record,
+  nodeKey1,
+  nodeKey2,
+  relationshipKey,
+}: {
+  record: Record;
+  nodeKey1: string;
+  nodeKey2: string;
+  relationshipKey: string;
+}): GraphLink => {
+  const n1 = record.get(nodeKey1);
+  const n2 = record.get(nodeKey2);
+  const relationship: Relationship = record.get(relationshipKey);
+  return {
+    source: relationship.startNodeElementId === n1.elementId ? n1 : n2,
+    target: relationship.endNodeElementId === n2.elementId ? n2 : n1,
+    properties: relationship.properties,
+    type: relationship.type,
   };
 };
 
