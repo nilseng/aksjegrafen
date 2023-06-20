@@ -362,6 +362,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
 
   router.get(
     "/graph/shortest-path",
+    query(["isDirected"]).toBoolean().optional(),
     query(["sourceUuid"]),
     query(["targetUuid"]),
     asyncRouter(async (req, res) => {
@@ -372,6 +373,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         return res.json({ nodes: [data], links: [] });
       }
       const data = await findShortestPath2({
+        isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
       });
@@ -381,6 +383,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
 
   router.get(
     "/graph/all-paths",
+    query(["isDirected"]).toBoolean().optional(),
     query(["sourceUuid"]),
     query(["targetUuid"]),
     query(["limit"]).default(10).toInt(),
@@ -392,6 +395,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         return res.json({ nodes: [data], links: [] });
       }
       const data = await findAllPaths({
+        isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
         limit: query.limit,
