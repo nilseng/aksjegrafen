@@ -2,8 +2,9 @@ import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
 import { useGraph } from "../../hooks/useGraph";
-import { FetchState } from "../../models/models";
-import { GraphState } from "../../slices/graphSlice";
+import { FetchState, GraphType } from "../../models/models";
+import { GraphState, fetchSourceThunk, fetchTargetThunk } from "../../slices/graphSlice";
+import { ModalContent, setContent } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
 import Loading from "../Loading";
@@ -15,6 +16,19 @@ export const Graph = () => {
   const dispatch = useDispatch<AppDispatch>();
 
   const { theme } = useContext(AppContext);
+
+  const { sourceUuid, targetUuid, graphType } = useSelector<RootState, RootState["graph"]["data"]>(
+    (state) => state.graph.data
+  );
+  useEffect(() => {
+    if (sourceUuid) dispatch(fetchSourceThunk(sourceUuid));
+  }, [dispatch, sourceUuid]);
+  useEffect(() => {
+    if (targetUuid) dispatch(fetchTargetThunk(targetUuid));
+  }, [dispatch, targetUuid]);
+  useEffect(() => {
+    if (graphType !== GraphType.Default && sourceUuid) dispatch(setContent(ModalContent.PathSearch));
+  }, [dispatch, graphType, sourceUuid]);
 
   useGraph();
   useEffect(() => {
