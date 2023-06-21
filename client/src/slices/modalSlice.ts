@@ -3,6 +3,8 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 export enum ModalContent {
   NodeSearch = "NodeSearch",
   PathSearch = "PathSearch",
+  InvestorTable = "InvestorTable",
+  InvestmentTable = "InvestmentTable",
 }
 
 interface ModalState {

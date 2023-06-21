@@ -41,7 +41,10 @@ export const NodeSearch = () => {
                   <p className="text-xs text-muted">investorer</p>
                 </div>
               ),
-              handleClick: (node: GraphNode) => {},
+              handleClick: (node: GraphNode) => {
+                dispatch(setSource(node));
+                dispatch(setContent(ModalContent.InvestorTable));
+              },
             },
             {
               name: "investments-button",
@@ -52,7 +55,10 @@ export const NodeSearch = () => {
                   <p className="text-xs text-muted">investeringer</p>
                 </div>
               ),
-              handleClick: (node: GraphNode) => {},
+              handleClick: (node: GraphNode) => {
+                dispatch(setSource(node));
+                dispatch(setContent(ModalContent.InvestmentTable));
+              },
             },
             {
               name: "graph-button",
