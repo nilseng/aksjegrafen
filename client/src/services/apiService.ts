@@ -165,25 +165,30 @@ export const useInvestments = (entity?: ICompany | IShareholder, year?: number, 
 
 export const useGetCompany = (id?: string, orgnr?: string) => {
   const [company, setCompany] = useState<ICompany>();
+  const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
     if (id) {
+      setLoading(true);
       getCompany(id).then((c) => {
         if (c.error) return;
         setCompany(c);
+        setLoading(false);
       });
     } else if (orgnr) {
+      setLoading(true);
       getCompanyByOrgnr(orgnr).then((c) => {
         if (!c || c.error) {
           console.warn(`No company with orgnr=${orgnr} found.`);
           return;
         }
         setCompany(c);
+        setLoading(false);
       });
     }
     return () => setCompany(undefined);
   }, [id, orgnr]);
 
-  return company;
+  return { company, loading };
 };
 
 export const useCompanies = (searchTerm?: string, limit?: number) => {
@@ -221,21 +226,26 @@ export const useOwnerships = (year?: number, limit?: number) => {
 
 export const useGetShareholder = (_id?: string, shareholderId?: string) => {
   const [shareholder, setShareholder] = useState<IShareholder>();
+  const [loading, setLoading] = useState<boolean>();
   useEffect(() => {
     if (_id) {
+      setLoading(true);
       getShareholder(_id).then((s) => {
         if (s.error) return;
         setShareholder(s);
+        setLoading(false);
       });
     } else if (shareholderId) {
+      setLoading(true);
       getShareholder(undefined, shareholderId).then((s) => {
         if (s.error) return;
         setShareholder(s);
+        setLoading(false);
       });
     }
   }, [_id, shareholderId]);
 
-  return shareholder;
+  return { shareholder, loading };
 };
 
 export const useInvestorCount = (

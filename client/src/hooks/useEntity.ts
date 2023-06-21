@@ -26,7 +26,7 @@ export const useEntity = () => {
   }, [query]);
 
   // #2.1.1: If there is a shareholder_id, a shareholder is retrieved
-  const shareholder = useGetShareholder(shareholder_id);
+  const { shareholder } = useGetShareholder(shareholder_id);
 
   // #2.1.2: If there is a shareholder and the shareholder has an orgnr, set orgnr
   useEffect(() => {
@@ -35,7 +35,7 @@ export const useEntity = () => {
   }, [shareholder]);
 
   // #2.2.1 || #2.1.3: If there is an orgnr, a company is retrieved if it exists
-  const company = useGetCompany(companyId, orgnr);
+  const { company } = useGetCompany(companyId, orgnr);
 
   const [entity, setEntity] = useState<ICompany | IShareholder>();
 
