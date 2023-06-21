@@ -65,7 +65,9 @@ export const TableModal = () => {
                   cursor: "pointer",
                   borderRadius: "100%",
                   width: "3.2rem",
+                  minWidth: "3.2rem",
                   height: "3.2rem",
+                  minHeight: "3.2rem",
                 }}
                 onClick={() => {
                   closeModal();
@@ -91,7 +93,9 @@ export const TableModal = () => {
                   cursor: "pointer",
                   borderRadius: "100%",
                   width: "3.2rem",
+                  minWidth: "3.2rem",
                   height: "3.2rem",
+                  minHeight: "3.2rem",
                 }}
                 onClick={() => {
                   closeModal();
