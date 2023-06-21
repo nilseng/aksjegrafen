@@ -49,13 +49,7 @@ const getOwnershipChange = (o: IOwnership, year: Year) => {
 
 const getOwnershipChangeText = (o: IOwnership, year: Year) => {
   const change = getOwnershipChange(o, year);
-  if (!change && change !== 0) return <p className="text-xs m-0" style={{ height: "1rem" }}></p>;
-  if (change === 0)
-    return (
-      <p className="text-xs text-warning m-0" style={{ height: "1rem" }}>
-        {change}
-      </p>
-    );
+  if (!change) return null;
   if (change > 0)
     return (
       <p className="text-xs text-success m-0" style={{ height: "1rem" }}>
