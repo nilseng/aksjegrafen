@@ -22,7 +22,7 @@ export const InvestmentTable = () => {
       <div className="h-full overflow-auto mt-12">
         <h5 className="text-center text-lg pb-2">
           <span className="font-semibold mr-2">Investeringene til {shareholder?.name}</span>{" "}
-          <span style={{ color: theme.muted }}>({shareholder?.orgnr})</span>
+          {shareholder?.orgnr && <span style={{ color: theme.muted }}>({shareholder?.orgnr})</span>}
         </h5>
         <OwnershipTable investor={shareholder} ownerships={investments} closeModal={() => dispatch(close())} />
         <div className="w-full flex justify-between pt-2">
