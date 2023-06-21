@@ -1,8 +1,8 @@
-import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation, select } from "d3";
+import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation, forceX, forceY, select } from "d3";
 import { cloneDeep } from "lodash";
 import { RefObject, useEffect } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
-import { GraphLink, GraphNode, GraphType } from "../models/models";
+import { GraphLink, GraphNode, GraphNodeLabel, GraphType } from "../models/models";
 import { GraphLinkDatum, GraphNodeDatum } from "../slices/graphSlice";
 
 const nodeOffset = {
@@ -36,7 +36,8 @@ export const useForceSimulation = ({
         ...node,
       }));
 
-      fixSourcePosition({ node: mutableNodes.find((n) => n.properties.uuid === sourceUuid), graphType });
+      const source = mutableNodes.find((n) => n.properties.uuid === sourceUuid);
+      fixSourcePosition({ node: source, graphType });
       if (targetUuid) {
         fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === targetUuid), graphType });
       }
@@ -62,6 +63,39 @@ export const useForceSimulation = ({
           "collide",
           forceCollide(Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5))
         );
+
+      if (graphType === GraphType.Default) {
+        simulation.force(
+          "y",
+          forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
+            d.labels.includes(GraphNodeLabel.Company) ? 1 : 0
+          )
+        );
+        simulation.force(
+          "y",
+          forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+            d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
+          )
+        );
+        simulation.force(
+          "x",
+          forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
+            d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
+          )
+        );
+        simulation.force(
+          "y",
+          forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+            d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
+          )
+        );
+        simulation.force(
+          "x",
+          forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
+            d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
+          )
+        );
+      }
 
       const node = svg
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
