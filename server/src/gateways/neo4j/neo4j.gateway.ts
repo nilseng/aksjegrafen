@@ -178,10 +178,18 @@ export const findAllPaths = async ({
   return records?.length > 0 ? mapPathsToGraph(records.map((record) => record.get("path"))) : { nodes: [], links: [] };
 };
 
-export const findRelationships = async (links: GraphLink[]): Promise<GraphLink[]> => {
+export const findRelationships = async ({
+  links,
+  isDirected,
+}: {
+  links: GraphLink[];
+  isDirected?: boolean;
+}): Promise<GraphLink[]> => {
   const query = `
     UNWIND $links as link
-    MATCH (n1:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]-(n2:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
+    MATCH (n1:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]-${
+      isDirected ? ">" : ""
+    }(n2:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
     RETURN n1, r, n2
   `;
   const records = await runQuery({ query, params: { links } });

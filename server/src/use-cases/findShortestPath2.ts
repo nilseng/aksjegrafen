@@ -14,6 +14,6 @@ export const findShortestPath = async ({
   nodes: GraphNode[];
 }> => {
   const { nodes, links: pathLinks } = await shortestPathFinder({ isDirected, sourceUuid, targetUuid });
-  const links = await findRelationships(pathLinks);
+  const links = await findRelationships({ links: pathLinks, isDirected });
   return { nodes, links };
 };

@@ -11,6 +11,6 @@ export const findAllPaths = async (params: {
   nodes: GraphNode[];
 }> => {
   const { links: pathLinks, nodes } = await allPathsFinder(params);
-  const links = await findRelationships(pathLinks);
+  const links = await findRelationships({ links: pathLinks, isDirected: params.isDirected });
   return { links, nodes };
 };
