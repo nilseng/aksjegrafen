@@ -50,6 +50,9 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
       } else if (req.query._id) {
         const shareholder = await db.shareholders.findOne({ _id: new ObjectId(req.query._id as string) });
         return res.json(shareholder);
+      } else if (req.query.shareholderId) {
+        const shareholder = await db.shareholders.findOne({ id: req.query.shareholderId });
+        return res.json(shareholder);
       } else {
         return res.status(400).json({ error: "Invalid query." });
       }
