@@ -17,7 +17,7 @@ export const Graph = () => {
 
   const { theme } = useContext(AppContext);
 
-  const { sourceUuid, targetUuid, graphType } = useSelector<RootState, RootState["graph"]["data"]>(
+  const { sourceUuid, targetUuid, graphType, isDirected } = useSelector<RootState, RootState["graph"]["data"]>(
     (state) => state.graph.data
   );
 
@@ -49,9 +49,15 @@ export const Graph = () => {
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
         <Toolbar />
-        {status === FetchState.Loading && <Loading backgroundColor="transparent" color={theme.primary} />}
+        {status === FetchState.Loading && (
+          <Loading
+            backgroundColor="transparent"
+            color={theme.primary}
+            text={isDirected === false ? "Søk som ikke er rettet kan ta litt tid...⏳" : ""}
+          />
+        )}
         {status === FetchState.Success && <GraphView />}
-        {status === FetchState.Error && <p>{error}</p>}
+        {status === FetchState.Error && <p className="text-primary text-sm">{error}</p>}
       </div>
     </div>
   );
