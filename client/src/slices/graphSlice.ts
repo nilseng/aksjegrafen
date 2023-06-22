@@ -96,6 +96,7 @@ export const graphSlice = createSlice<
         }
       )
       .addCase(fetchGraphThunk.rejected, (state, action) => {
+        if (action.error.name === "AbortError") return;
         state.status = FetchState.Error;
         state.error = action.error.message;
       });
@@ -114,70 +115,83 @@ async function fetchNode(uuid: string): Promise<GraphNode> {
 
 export const fetchGraphThunk = createAsyncThunk("graph/fetchGraph", fetchGraph);
 
-function fetchGraph({
-  graphType,
-  sourceUuid,
-  targetUuid,
-  isDirected,
-  limit,
-  skip,
-}: {
-  graphType: GraphType;
-  sourceUuid: string;
-  targetUuid?: string;
-  isDirected?: boolean;
-  limit: number;
-  skip: number;
-}) {
-  if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip });
-  if (graphType === GraphType.ShortestPath) return fetchShortestPath({ isDirected, sourceUuid, targetUuid });
-  if (graphType === GraphType.AllPaths) return fetchAllPaths({ isDirected, sourceUuid, targetUuid, limit });
+function fetchGraph(
+  {
+    graphType,
+    sourceUuid,
+    targetUuid,
+    isDirected,
+    limit,
+    skip,
+  }: {
+    graphType: GraphType;
+    sourceUuid: string;
+    targetUuid?: string;
+    isDirected?: boolean;
+    limit: number;
+    skip: number;
+  },
+  { signal }: { signal: AbortSignal }
+) {
+  if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip }, { signal });
+  if (graphType === GraphType.ShortestPath)
+    return fetchShortestPath({ isDirected, sourceUuid, targetUuid }, { signal });
+  if (graphType === GraphType.AllPaths) return fetchAllPaths({ isDirected, sourceUuid, targetUuid, limit }, { signal });
   throw Error("Unknown graph type");
 }
 
-async function fetchNeighbours({
-  uuid,
-  limit,
-  skip,
-}: {
-  uuid: string;
-  limit: number;
-  skip: number;
-}): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
-  const res = await fetch(`/api/graph/neighbours?uuid=${uuid}&limit=${limit}&skip=${skip}`);
+async function fetchNeighbours(
+  {
+    uuid,
+    limit,
+    skip,
+  }: {
+    uuid: string;
+    limit: number;
+    skip: number;
+  },
+  { signal }: { signal: AbortSignal }
+): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
+  const res = await fetch(`/api/graph/neighbours?uuid=${uuid}&limit=${limit}&skip=${skip}`, { signal });
   return res.json();
 }
 
-async function fetchShortestPath({
-  isDirected,
-  sourceUuid,
-  targetUuid,
-}: {
-  isDirected?: boolean;
-  sourceUuid: string;
-  targetUuid?: string;
-}) {
+async function fetchShortestPath(
+  {
+    isDirected,
+    sourceUuid,
+    targetUuid,
+  }: {
+    isDirected?: boolean;
+    sourceUuid: string;
+    targetUuid?: string;
+  },
+  { signal }: { signal: AbortSignal }
+) {
   if (!targetUuid) throw Error("Målnode ikke definert...");
   const query = buildQuery({ isDirected, sourceUuid, targetUuid });
-  const res = await fetch(`/api/graph/shortest-path${query}`);
+  const res = await fetch(`/api/graph/shortest-path${query}`, { signal });
   if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
 }
 
-async function fetchAllPaths({
-  isDirected,
-  sourceUuid,
-  targetUuid,
-  limit,
-}: {
-  isDirected?: boolean;
-  sourceUuid: string;
-  targetUuid?: string;
-  limit?: number;
-}) {
+async function fetchAllPaths(
+  {
+    isDirected,
+    sourceUuid,
+    targetUuid,
+    limit,
+  }: {
+    isDirected?: boolean;
+    sourceUuid: string;
+    targetUuid?: string;
+    limit?: number;
+  },
+  { signal }: { signal: AbortSignal }
+) {
   if (!targetUuid) throw Error("Målnode ikke definert...");
   const query = buildQuery({ isDirected, sourceUuid, targetUuid, limit });
-  const res = await fetch(`/api/graph/all-paths${query}`);
+  const res = await fetch(`/api/graph/all-paths${query}`, { signal });
   if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
 }

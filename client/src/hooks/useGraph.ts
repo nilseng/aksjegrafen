@@ -15,7 +15,7 @@ export const useGraph = () => {
 
   useEffect(() => {
     if (sourceUuid) {
-      dispatch(
+      const res = dispatch(
         fetchGraphThunk({
           graphType,
           sourceUuid,
@@ -25,6 +25,10 @@ export const useGraph = () => {
           skip: 0,
         })
       );
+
+      return () => {
+        res.abort();
+      };
     }
   }, [dispatch, graphType, isDirected, sourceUuid, targetUuid]);
 };

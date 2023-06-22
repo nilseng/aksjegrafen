@@ -36,6 +36,7 @@ export const Graph = () => {
   }, [dispatch, graphType, sourceUuid]);
 
   useGraph();
+
   useEffect(() => {
     dispatch(fetchRolesThunk());
   }, [dispatch]);
