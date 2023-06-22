@@ -160,6 +160,7 @@ async function fetchShortestPath({
   if (!targetUuid) throw Error("Målnode ikke definert...");
   const query = buildQuery({ isDirected, sourceUuid, targetUuid });
   const res = await fetch(`/api/graph/shortest-path${query}`);
+  if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
 }
 
@@ -177,6 +178,7 @@ async function fetchAllPaths({
   if (!targetUuid) throw Error("Målnode ikke definert...");
   const query = buildQuery({ isDirected, sourceUuid, targetUuid, limit });
   const res = await fetch(`/api/graph/all-paths${query}`);
+  if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
 }
 
