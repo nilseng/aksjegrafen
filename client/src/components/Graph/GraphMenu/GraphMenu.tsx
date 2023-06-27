@@ -1,6 +1,6 @@
 import { faListAlt } from "@fortawesome/free-regular-svg-icons";
 import { faHome, faInfo, faList, faWindowRestore, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { useContext, useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
 import { Year } from "../../../models/models";
@@ -55,7 +55,7 @@ export interface IMenu {
   node?: IGraphNode;
   x?: number;
   y?: number;
-  setMenu?: React.Dispatch<React.SetStateAction<IMenu>>;
+  setMenu?: Dispatch<SetStateAction<IMenu>>;
 }
 
 export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
