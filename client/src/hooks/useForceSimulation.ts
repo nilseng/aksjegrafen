@@ -147,8 +147,6 @@ const addNodeTypeForces = ({
 const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
   function dragstarted(event: D3DragEvent<HTMLElement, any, any>) {
     if (!event.active) simulation.alphaTarget(0.1).restart();
-    event.subject.fx = event.subject.x;
-    event.subject.fy = event.subject.y;
   }
 
   function dragged(event: D3DragEvent<HTMLElement, any, any>) {
