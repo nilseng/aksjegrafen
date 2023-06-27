@@ -64,38 +64,7 @@ export const useForceSimulation = ({
           forceCollide(Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5))
         );
 
-      if (graphType === GraphType.Default) {
-        simulation.force(
-          "y",
-          forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
-            d.labels.includes(GraphNodeLabel.Company) ? 1 : 0
-          )
-        );
-        simulation.force(
-          "y",
-          forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-            d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
-          )
-        );
-        simulation.force(
-          "x",
-          forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-            d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
-          )
-        );
-        simulation.force(
-          "y",
-          forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-            d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
-          )
-        );
-        simulation.force(
-          "x",
-          forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-            d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
-          )
-        );
-      }
+      if (graphType === GraphType.Default) addNodeTypeForces({ simulation, source });
 
       const node = svg
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
@@ -134,6 +103,45 @@ const fixTargetPosition = ({ node, graphType }: { node?: GraphNodeDatum; graphTy
     node.fx = graphConfig.width / 2 - nodeOffset.x;
     node.fy = graphConfig.height / 2 - nodeOffset.y;
   }
+};
+
+const addNodeTypeForces = ({
+  simulation,
+  source,
+}: {
+  simulation: Simulation<GraphNodeDatum, GraphLinkDatum>;
+  source?: GraphNodeDatum;
+}) => {
+  simulation.force(
+    "y",
+    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
+      d.labels.includes(GraphNodeLabel.Company) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "y",
+    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+      d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "x",
+    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
+      d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "y",
+    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+      d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "x",
+    forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
+      d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
+    )
+  );
 };
 
 const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
