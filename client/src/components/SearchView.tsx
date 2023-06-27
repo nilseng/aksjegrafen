@@ -36,7 +36,6 @@ export const SearchView = () => {
         <StatCard label="aksjeselskaper" labelIcon={faBuilding} stat={companyCount} />
         <div className="w-full mt-12">
           <SearchComponent
-            focus={true}
             inputContainerClassName="w-full"
             inputStyle={{
               backgroundColor: "transparent",
