@@ -16,9 +16,6 @@ export const GraphMenuItem = (item: IMenuItem) => {
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
         color: isDisabled(item) ? theme.muted : theme.text,
         cursor: isDisabled(item) ? "default" : "pointer",
-        borderLeft: 0,
-        borderTop: 0,
-        borderRight: 0,
         borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
         borderRadius: "8px",
       }}

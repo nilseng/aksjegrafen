@@ -74,7 +74,15 @@ export const GraphMenu = ({ open, node, x, y }: IMenu) => {
         borderRadius: "8px",
       }}
     >
-      {node && <GraphMenuItem key={node.properties.uuid} name={node.properties.name} node={node} border={true} />}
+      {node && (
+        <GraphMenuItem
+          key={node.properties.uuid}
+          name={node.properties.name}
+          node={node}
+          border={true}
+          condition={() => false}
+        />
+      )}
       {node &&
         nodeItems?.map((item) => {
           return <GraphMenuItem key={item.name} node={node} {...item} action={() => console.log(item)} />;
