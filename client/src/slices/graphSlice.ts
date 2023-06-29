@@ -13,6 +13,14 @@ export interface GraphState {
     target?: GraphNode;
     nodes: GraphNode[];
     links: GraphLink[];
+    menu: {
+      isOpen: boolean;
+      position: {
+        x?: number;
+        y?: number;
+      };
+      node?: GraphNode;
+    };
   };
   status: FetchState;
   error?: string | null;
@@ -30,12 +38,25 @@ export const graphSlice = createSlice<
     setIsDirected: (state: GraphState, action: PayloadAction<boolean>) => void;
     setSource: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
     setTarget: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
+    openMenu: (
+      state: GraphState,
+      action: PayloadAction<{ node: GraphNode; position: { x: number; y: number } }>
+    ) => void;
+    closeMenu: (state: GraphState) => void;
   },
   "graph"
 >({
   name: "graph",
   initialState: {
-    data: { graphType: GraphType.Default, nodes: [], links: [] },
+    data: {
+      graphType: GraphType.Default,
+      nodes: [],
+      links: [],
+      menu: {
+        isOpen: false,
+        position: {},
+      },
+    },
     status: FetchState.Idle,
     error: null,
   },
@@ -57,6 +78,12 @@ export const graphSlice = createSlice<
     },
     setTarget: (state, action) => {
       state.data.target = action.payload;
+    },
+    openMenu: (state, action) => {
+      state.data.menu = { isOpen: true, node: action.payload.node, position: action.payload.position };
+    },
+    closeMenu: (state) => {
+      state.data.menu = { isOpen: false, node: undefined, position: {} };
     },
   },
   extraReducers: (builder) => {
@@ -103,7 +130,8 @@ export const graphSlice = createSlice<
   },
 });
 
-export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected } = graphSlice.actions;
+export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected, openMenu } =
+  graphSlice.actions;
 
 export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);
 export const fetchTargetThunk = createAsyncThunk("graph/fetchTarget", fetchNode);
@@ -134,8 +162,9 @@ function fetchGraph(
   { signal }: { signal: AbortSignal }
 ) {
   if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip }, { signal });
-  if (graphType === GraphType.ShortestPath)
+  if (graphType === GraphType.ShortestPath) {
     return fetchShortestPath({ isDirected, sourceUuid, targetUuid }, { signal });
+  }
   if (graphType === GraphType.AllPaths) return fetchAllPaths({ isDirected, sourceUuid, targetUuid, limit }, { signal });
   throw Error("Unknown graph type");
 }

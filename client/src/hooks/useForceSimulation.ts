@@ -3,7 +3,8 @@ import { cloneDeep } from "lodash";
 import { RefObject, useEffect } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
 import { GraphLink, GraphNode, GraphNodeLabel, GraphType } from "../models/models";
-import { GraphLinkDatum, GraphNodeDatum } from "../slices/graphSlice";
+import { GraphLinkDatum, GraphNodeDatum, openMenu } from "../slices/graphSlice";
+import { useAppDispatch } from "../store";
 
 const nodeOffset = {
   x: graphConfig.nodeDimensions.width / 2,
@@ -25,6 +26,8 @@ export const useForceSimulation = ({
   graphType: GraphType;
   svgRef: RefObject<SVGSVGElement>;
 }) => {
+  const dispatch = useAppDispatch();
+
   useEffect(() => {
     if (svgRef.current && nodes && nodes?.length > 0 && sourceUuid) {
       const svg = select<SVGElement, null>(svgRef.current);
@@ -70,7 +73,10 @@ export const useForceSimulation = ({
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
         .data(mutableNodes)
         .join<SVGElement>(".graph-node")
-        .call(handleDrag(simulation));
+        .call(handleDrag(simulation))
+        .on("click", (e: PointerEvent, d) =>
+          dispatch(openMenu({ node: { ...d }, position: { x: e.clientX, y: e.clientY - nodeOffset.y } }))
+        );
 
       simulation.on("tick", () => {
         node.attr("x", (n) => n.x! - nodeOffset.x).attr("y", (n) => n.y! - nodeOffset.y);
@@ -82,7 +88,7 @@ export const useForceSimulation = ({
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
       });
     }
-  }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid]);
+  }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid, dispatch]);
 };
 
 const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
