@@ -10,7 +10,6 @@ import { AppDispatch, RootState } from "../../store";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { Modal } from "./Modal";
-import { Toolbar } from "./Toolbar";
 
 export const Graph = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -49,7 +48,6 @@ export const Graph = () => {
     <div className="flex w-full h-full dark:text-white px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
-        <Toolbar />
         {status === FetchState.Loading && (
           <Loading
             backgroundColor="transparent"
