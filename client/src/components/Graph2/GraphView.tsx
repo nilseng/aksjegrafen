@@ -8,7 +8,6 @@ import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";
-import { Toolbar } from "./Toolbar";
 
 export const GraphView = () => {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -25,7 +24,6 @@ export const GraphView = () => {
 
   return (
     <>
-      <Toolbar />
       <GraphMenu open={menu.isOpen} node={menu.node} x={menu.position.x} y={menu.position.y} />
       <svg
         ref={svgRef}
