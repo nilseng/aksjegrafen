@@ -130,7 +130,7 @@ export const graphSlice = createSlice<
   },
 });
 
-export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected, openMenu } =
+export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected, openMenu, closeMenu } =
   graphSlice.actions;
 
 export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);

@@ -2,8 +2,8 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom2";
-import { GraphNodeDatum, GraphState } from "../../slices/graphSlice";
-import { RootState } from "../../store";
+import { GraphNodeDatum, GraphState, closeMenu } from "../../slices/graphSlice";
+import { RootState, useAppDispatch } from "../../store";
 import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
 import { GraphMenu } from "./GraphMenu/GraphMenu";
@@ -13,6 +13,8 @@ export const GraphView = () => {
   const svgRef = useRef<SVGSVGElement>(null);
 
   const transform = useZoom(svgRef);
+
+  const dispatch = useAppDispatch();
 
   const {
     data: { nodes, links, sourceUuid, targetUuid, graphType, menu },
@@ -32,6 +34,16 @@ export const GraphView = () => {
         xmlns="http://www.w3.org/2000/svg"
         viewBox={`${-graphConfig.width / 2} ${-graphConfig.height / 2} ${graphConfig.width} ${graphConfig.height}`}
       >
+        <rect
+          x={-graphConfig.width}
+          y={-graphConfig.height}
+          height={graphConfig.height * 2}
+          width={graphConfig.width * 2}
+          fill="transparent"
+          onClick={() => {
+            if (menu.isOpen) dispatch(closeMenu());
+          }}
+        />
         <g transform={transform}>
           <>
             {links?.length &&
