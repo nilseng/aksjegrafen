@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { AppContext } from "../../../AppContext";
-import { IMenuItem } from "./GraphMenu";
+import { MenuItem } from "./GraphMenu";
 
-export const GraphMenuItem = (item: IMenuItem) => {
+export const GraphMenuItem = (item: MenuItem) => {
   const { theme } = useContext(AppContext);
 
   const [hovered, setHovered] = useState<boolean>(false);
@@ -15,7 +15,7 @@ export const GraphMenuItem = (item: IMenuItem) => {
       style={{
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
         color: isDisabled(item) ? theme.muted : theme.text,
-        cursor: isDisabled(item) ? "default" : "pointer",
+        cursor: isDisabled(item) || !item.action ? "default" : "pointer",
         borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
         borderRadius: "8px",
       }}
@@ -24,7 +24,7 @@ export const GraphMenuItem = (item: IMenuItem) => {
         item.action(item.node);
       }}
       onMouseEnter={() => {
-        if (!isDisabled(item)) setHovered(true);
+        if (!isDisabled(item) && item.action) setHovered(true);
       }}
       onMouseLeave={() => setHovered(false)}
     >
@@ -39,6 +39,6 @@ export const GraphMenuItem = (item: IMenuItem) => {
   );
 };
 
-const isDisabled = (item: IMenuItem) => {
-  return item.condition && !item.condition(item.node);
+const isDisabled = (item: MenuItem) => {
+  return item.condition === false;
 };
