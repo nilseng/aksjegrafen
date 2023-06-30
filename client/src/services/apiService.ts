@@ -243,6 +243,11 @@ export const useGetShareholder = (_id?: string, shareholderId?: string) => {
         setLoading(false);
       });
     }
+
+    return () => {
+      setShareholder(undefined);
+      setLoading(false);
+    };
   }, [_id, shareholderId]);
 
   return { shareholder, loading };
