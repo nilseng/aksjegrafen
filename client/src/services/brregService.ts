@@ -248,17 +248,25 @@ export const useBrregEntityInfo = (entity?: ICompany | IShareholder) => {
   return info;
 };
 
-export const useFinancialsByUnit = (entity?: ICompany | IShareholder) => {
+export const useFinancialsByUnit = (orgnr?: string) => {
   const [financials, setFinancials] = useState<IFinancials[]>();
+  const [isLoading, setIsLoading] = useState<boolean>();
 
   useEffect(() => {
-    if (entity?.orgnr) {
-      getFinancialsByUnit(entity.orgnr).then((res) => setFinancials(res));
+    if (orgnr) {
+      setIsLoading(true);
+      getFinancialsByUnit(orgnr).then((res) => {
+        setFinancials(res);
+        setIsLoading(false);
+      });
     }
-    return () => setFinancials(undefined);
-  }, [entity]);
+    return () => {
+      setFinancials(undefined);
+      setIsLoading(false);
+    };
+  }, [orgnr]);
 
-  return financials;
+  return { financials, isLoading };
 };
 
 export const useRoleTypes = (): RoleTypeResponse["_embedded"]["rolletyper"] | undefined => {

@@ -12,7 +12,7 @@ interface IProps {
 export const Financials = ({ entity }: IProps) => {
   const { theme } = useContext(AppContext);
 
-  const financials = useFinancialsByUnit(entity);
+  const { financials } = useFinancialsByUnit(entity.orgnr);
 
   if (!financials || (financials as any).error) return null;
 
