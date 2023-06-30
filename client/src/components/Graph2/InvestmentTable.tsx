@@ -15,9 +15,12 @@ export const InvestmentTable = () => {
   const [limit] = useState(10);
   const [skip, setSkip] = useState(0);
   const { investments, loading: isLoadingInvestments } = useInvestments(shareholder, undefined, limit, skip);
-  if (isLoadingInvestments || isLoadingShareholder)
+
+  if (isLoadingInvestments || isLoadingShareholder) {
     return <Loading color={theme.primary} backgroundColor="transparent" />;
-  if (investments)
+  }
+
+  if (investments) {
     return (
       <div className="h-full overflow-auto mt-12">
         <h5 className="text-center text-lg pb-2">
@@ -53,5 +56,6 @@ export const InvestmentTable = () => {
         </div>
       </div>
     );
+  }
   return <p>Noe ser ut til å være galt...🤔</p>;
 };
