@@ -79,7 +79,7 @@ export const TargetSearch = () => {
                 name: "shortest-path-button",
                 condition: true,
                 buttonContent: (
-                  <div>
+                  <div className="w-[4.125rem]">
                     <FontAwesomeIcon icon={faRoute} className="text-primary" size="lg" />
                     <p className="text-xs text-muted">korteste vei</p>
                   </div>
@@ -96,7 +96,7 @@ export const TargetSearch = () => {
                 name: "all-paths-button",
                 condition: true,
                 buttonContent: (
-                  <div>
+                  <div className="w-[4.125rem]">
                     <div className="h-6">
                       <AllPathsIcon />
                     </div>
