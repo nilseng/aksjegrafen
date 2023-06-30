@@ -52,7 +52,12 @@ export const GraphMenu = ({ open, node, x, y }: Menu) => {
     if (node) {
       setMenuItems([
         { name: node.properties.name, border: true, node },
-        { name: "Detaljer", icon: faInfo, node },
+        {
+          name: "Detaljer",
+          icon: faInfo,
+          node,
+          condition: node.labels.includes(GraphNodeLabel.Company) || node.labels.includes(GraphNodeLabel.Unit),
+        },
         {
           name: "Åpne i ny graf",
           svgIcon: <GraphLogo width="16px" height="16px" />,
