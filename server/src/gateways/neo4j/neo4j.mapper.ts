@@ -104,7 +104,10 @@ export const mapPathsToGraph = (paths: Path[]): { nodes: GraphNode[]; links: Gra
 
 export const mapPathToGraph = (path: Path): { nodes: GraphNode[]; links: GraphLink[] } => ({
   nodes: uniqBy(
-    [mapNodeEntryToGraphNode(path.start as NodeEntry), ...(path.segments.map((s) => s.end) as NodeEntry[])],
+    [
+      mapNodeEntryToGraphNode(path.start as NodeEntry),
+      ...(path.segments.map((s) => s.end) as NodeEntry[]).map((n) => mapNodeEntryToGraphNode(n)),
+    ],
     "properties.uuid"
   ),
   links: uniqWith(
