@@ -105,6 +105,7 @@ export interface GraphNode {
       };
     };
   };
+  currentRoles?: CurrentRole[];
 }
 
 export interface GraphLink {
@@ -116,6 +117,13 @@ export interface GraphLink {
     stocks?: number;
   };
   type: string;
+}
+
+export enum CurrentRole {
+  Investor = "Investor",
+  Investment = "Investment",
+  Actor = "Actor",
+  Unit = "Unit",
 }
 
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
