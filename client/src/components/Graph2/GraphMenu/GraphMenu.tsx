@@ -1,5 +1,5 @@
 import { faListAlt } from "@fortawesome/free-regular-svg-icons";
-import { faInfo, faList, faWindowRestore, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faDollarSign, faList, faWindowRestore, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -53,10 +53,16 @@ export const GraphMenu = ({ open, node, x, y }: Menu) => {
       setMenuItems([
         { name: node.properties.name, border: true, node },
         {
-          name: "Detaljer",
-          icon: faInfo,
+          name: "Regnskap",
+          icon: faDollarSign,
           node,
-          condition: node.labels.includes(GraphNodeLabel.Company) || node.labels.includes(GraphNodeLabel.Unit),
+          condition: node.labels.includes(GraphNodeLabel.Company),
+          action: () => {
+            dispatch(setSource(node));
+            dispatch(openModal());
+            dispatch(setContent(ModalContent.Financials));
+            dispatch(closeMenu());
+          },
         },
         {
           name: "Åpne i ny graf",

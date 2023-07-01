@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
+import { Financials } from "./Financials";
 import { InvestmentTable } from "./InvestmentTable";
 import { InvestorTable } from "./InvestorTable";
 import { NodeSearch } from "./NodeSearch";
@@ -37,6 +38,7 @@ export const Modal = () => {
         {content === ModalContent.PathSearch && <TargetSearch />}
         {content === ModalContent.InvestmentTable && <InvestmentTable />}
         {content === ModalContent.InvestorTable && <InvestorTable />}
+        {content === ModalContent.Financials && <Financials />}
       </div>
     </div>
   );

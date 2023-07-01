@@ -5,6 +5,8 @@ export enum ModalContent {
   PathSearch = "PathSearch",
   InvestorTable = "InvestorTable",
   InvestmentTable = "InvestmentTable",
+  Details = "Details",
+  Financials = "Financials",
 }
 
 interface ModalState {
