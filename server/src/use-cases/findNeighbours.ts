@@ -16,10 +16,7 @@ export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: num
     links: uniqWith(
       [...investors.links, ...investments.links, ...holders.links, ...units.links],
       (a, b) =>
-        a.source.properties.uuid === b.source.properties.uuid &&
-        a.target.properties.uuid === b.target.properties.uuid &&
-        a.type === b.type &&
-        a.properties.year === b.properties.year
+        a.source.properties.uuid === b.source.properties.uuid && a.target.properties.uuid === b.target.properties.uuid
     ),
   };
 };
