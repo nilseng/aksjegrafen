@@ -142,6 +142,12 @@ export interface GraphNode {
       };
     };
   };
+  skip?: {
+    investors: number;
+    investments: number;
+    actors: number;
+    units: number;
+  };
 }
 
 export interface GraphLink {
