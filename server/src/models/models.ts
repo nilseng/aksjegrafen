@@ -105,6 +105,12 @@ export interface GraphNode {
       };
     };
   };
+  skip?: {
+    investors: number;
+    investments: number;
+    actors: number;
+    units: number;
+  };
   currentRoles?: CurrentRole[];
 }
 
