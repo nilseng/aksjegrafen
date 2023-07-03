@@ -67,7 +67,7 @@ export const useForceSimulation = ({
           forceCollide(Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5))
         );
 
-      if (graphType === GraphType.Default) addNodeTypeForces({ simulation, source });
+      if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
 
       const node = svg
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
@@ -111,7 +111,7 @@ const fixTargetPosition = ({ node, graphType }: { node?: GraphNodeDatum; graphTy
   }
 };
 
-const addNodeTypeForces = ({
+const addCurrentRoleForces = ({
   simulation,
   source,
 }: {
