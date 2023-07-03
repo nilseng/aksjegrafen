@@ -2,7 +2,7 @@ import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation
 import { cloneDeep } from "lodash";
 import { RefObject, useEffect } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
-import { GraphLink, GraphNode, GraphNodeLabel, GraphType } from "../models/models";
+import { CurrentRole, GraphLink, GraphNode, GraphType } from "../models/models";
 import { GraphLinkDatum, GraphNodeDatum, openMenu } from "../slices/graphSlice";
 import { useAppDispatch } from "../store";
 
@@ -119,33 +119,51 @@ const addNodeTypeForces = ({
   source?: GraphNodeDatum;
 }) => {
   simulation.force(
-    "y",
-    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
-      d.labels.includes(GraphNodeLabel.Company) ? 1 : 0
-    )
-  );
-  simulation.force(
-    "y",
-    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-      d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
-    )
-  );
-  simulation.force(
-    "x",
-    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-      d.labels.includes(GraphNodeLabel.Shareholder) ? 1 : 0
-    )
-  );
-  simulation.force(
-    "y",
-    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-      d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
-    )
-  );
-  simulation.force(
-    "x",
+    "actorX",
     forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-      d.labels.includes(GraphNodeLabel.Person) ? 1 : 0
+      d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "actorY",
+    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "investorX",
+    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "investorY",
+    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "investmentX",
+    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "investmentY",
+    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "unitX",
+    forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
+    )
+  );
+  simulation.force(
+    "unitY",
+    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
+      d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
     )
   );
 };
