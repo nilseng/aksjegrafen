@@ -18,14 +18,24 @@ export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: num
     (a, b) =>
       a.source.properties.uuid === b.source.properties.uuid && a.target.properties.uuid === b.target.properties.uuid
   );
-  addContextData({ nodes: uniqueNodes, links: uniqueLinks });
+  addSourceSkip({
+    uuid,
+    nodes: uniqueNodes,
+    skip: {
+      actors: holders.nodes.length ? holders.nodes.length - 1 : 0,
+      units: units.nodes.length ? units.nodes.length - 1 : 0,
+      investors: investors.nodes.length ? investors.nodes.length - 1 : 0,
+      investments: investments.nodes.length ? investments.nodes.length - 1 : 0,
+    },
+  });
+  addCurrentRoles({ nodes: uniqueNodes, links: uniqueLinks });
   return {
     nodes: uniqueNodes,
     links: uniqueLinks,
   };
 };
 
-const addContextData = ({ nodes, links }: { nodes: GraphNode[]; links: GraphLink[] }) => {
+const addCurrentRoles = ({ nodes, links }: { nodes: GraphNode[]; links: GraphLink[] }) => {
   nodes.forEach((node) => {
     const currentRoles = new Set<CurrentRole>();
     const sourceLinks = links.filter((link) => link.source.properties.uuid === node.properties.uuid);
@@ -41,4 +51,10 @@ const addContextData = ({ nodes, links }: { nodes: GraphNode[]; links: GraphLink
 
     node.currentRoles = Array.from(currentRoles);
   });
+};
+
+const addSourceSkip = ({ uuid, nodes, skip }: { uuid: string; nodes: GraphNode[]; skip: GraphNode["skip"] }) => {
+  const source = nodes.find((node) => node.properties.uuid === uuid);
+  if (!source) throw Error(`Source node with uuid=${uuid} not found.`);
+  source.skip = skip;
 };
