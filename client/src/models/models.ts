@@ -142,12 +142,20 @@ export interface GraphNode {
       };
     };
   };
+  currentRoles?: CurrentRole[];
   skip?: {
     investors: number;
     investments: number;
     actors: number;
     units: number;
   };
+}
+
+export enum CurrentRole {
+  Investor = "Investor",
+  Investment = "Investment",
+  Actor = "Actor",
+  Unit = "Unit",
 }
 
 export interface GraphLink {
