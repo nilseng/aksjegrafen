@@ -11,7 +11,7 @@ export const GraphMenuItem = (item: MenuItem) => {
   return (
     <div
       key={item.name}
-      className="flex items-center text-xs font-bold p-3"
+      className="flex items-center text-xs font-bold p-2"
       style={{
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
         color: isDisabled(item) ? theme.muted : theme.text,
