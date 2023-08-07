@@ -29,16 +29,16 @@ export const GraphMenu = ({ open, node, x, y }: Menu) => {
 
   const [pos, setPos] = useState<{ x: number; y: number }>();
 
+  const menuItems = useGraphMenu(node);
+
   // If there is not enough space to display the ctx menu to the right/below clicked item,
   // adjust the position with the height/width of the ctx menu.
   useEffect(() => {
     if ((x || x === 0) && (y || y === 0) && node) {
-      setPos({ x: Math.min(x, width - 200), y: Math.min(y, height - 395) });
+      setPos({ x: Math.min(x, width - 200), y: Math.min(y, height - (80 + 36 * (menuItems?.length ?? 0))) });
     }
     return () => setPos(undefined);
-  }, [height, width, x, y, node]);
-
-  const menuItems = useGraphMenu(node);
+  }, [height, width, x, y, node, menuItems?.length]);
 
   if (!open || !node || !menuItems) return null;
 
@@ -53,19 +53,17 @@ export const GraphMenu = ({ open, node, x, y }: Menu) => {
         borderRadius: "8px",
       }}
     >
-      {menuItems?.map((item) =>
-        item.condition !== false ? (
-          <GraphMenuItem
-            key={item.name}
-            name={item.name}
-            node={node}
-            icon={item.icon}
-            svgIcon={item.svgIcon}
-            action={item.action}
-            border={item.border}
-          />
-        ) : null
-      )}
+      {menuItems?.map((item) => (
+        <GraphMenuItem
+          key={item.name}
+          name={item.name}
+          node={node}
+          icon={item.icon}
+          svgIcon={item.svgIcon}
+          action={item.action}
+          border={item.border}
+        />
+      ))}
     </div>
   );
 };
