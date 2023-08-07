@@ -86,7 +86,7 @@ export const useGraphMenu = (node?: GraphNode) => {
           {
             name: "Flere aktører",
             condition: node.labels.includes(GraphNodeLabel.Company) || node.labels.includes(GraphNodeLabel.Unit),
-            icon: faArrowUp,
+            icon: faArrowDown,
             node,
             action: () => {
               throw Error("Not implemented.");
@@ -95,7 +95,7 @@ export const useGraphMenu = (node?: GraphNode) => {
           {
             name: "Flere roller",
             condition: node.labels.includes(GraphNodeLabel.Person) || node.labels.includes(GraphNodeLabel.Unit),
-            icon: faArrowDown,
+            icon: faArrowUp,
             node,
             action: () => {
               throw Error("Not implemented.");
