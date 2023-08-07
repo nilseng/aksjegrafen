@@ -32,24 +32,6 @@ export const useGraphMenu = (node?: GraphNode) => {
           },
         },
         {
-          name: "Åpne i ny graf",
-          svgIcon: <GraphLogo width="16px" height="16px" />,
-          node,
-          action: () => {
-            history.push(`/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
-            dispatch(closeMenu());
-          },
-        },
-        {
-          name: "Åpne i ny fane",
-          icon: faWindowRestore,
-          node,
-          action: () => {
-            window.open(`${getBaseUrl()}/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
-            dispatch(closeMenu());
-          },
-        },
-        {
           name: "Investeringstabell",
           condition: !!node.labels.includes(GraphNodeLabel.Shareholder),
           icon: faListAlt,
@@ -70,6 +52,24 @@ export const useGraphMenu = (node?: GraphNode) => {
             dispatch(setSource(node));
             dispatch(openModal());
             dispatch(setContent(ModalContent.InvestorTable));
+            dispatch(closeMenu());
+          },
+        },
+        {
+          name: "Åpne i ny graf",
+          svgIcon: <GraphLogo width="16px" height="16px" />,
+          node,
+          action: () => {
+            history.push(`/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
+            dispatch(closeMenu());
+          },
+        },
+        {
+          name: "Åpne i ny fane",
+          icon: faWindowRestore,
+          node,
+          action: () => {
+            window.open(`${getBaseUrl()}/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
             dispatch(closeMenu());
           },
         },
