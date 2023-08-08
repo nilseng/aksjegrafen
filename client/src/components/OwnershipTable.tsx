@@ -5,13 +5,6 @@ import { availableYears } from "../config";
 import { ICompany, IOwnership, IShareholder, Year } from "../models/models";
 import { GraphLogo } from "./GraphLogo";
 
-const getGraphLink = (o: IOwnership): string => {
-  if (o.investment) return `/graph?_id=${o.investment._id}`;
-  if (o.investor?.company) return `/graph?_id=${o.investor.company._id}`;
-  if (o.investor?.shareholder) return `/graph?shareholder_id=${o.investor.shareholder._id}`;
-  throw Error(`Graph link not found for ownership w id=${o._id}`);
-};
-
 const getCompanyStocks = (
   o: IOwnership,
   year: Year,
@@ -68,11 +61,13 @@ export const OwnershipTable = ({
   investor,
   investment,
   closeModal,
+  getGraphLink,
 }: {
   ownerships: IOwnership[];
   investor?: IShareholder;
   investment?: ICompany;
   closeModal: () => void;
+  getGraphLink?: (o: IOwnership) => string | Promise<string>;
 }) => {
   const { theme } = useContext(AppContext);
   const history = useHistory();
@@ -95,24 +90,27 @@ export const OwnershipTable = ({
         <Fragment key={o._id}>
           <span className="flex justify-between items-center w-1/3 overflow-auto px-1 sm:pl-4">
             <p className="text-xs m-0">{investment ? o.investor?.shareholder?.name : o.investment?.name}</p>
-            <span
-              className="flex justify-center items-center ml-2 mr-sm-4"
-              style={{
-                ...theme.button,
-                cursor: "pointer",
-                borderRadius: "100%",
-                width: "1.6rem",
-                minWidth: "1.6rem",
-                height: "1.6rem",
-                minHeight: "1.6rem",
-              }}
-              onClick={() => {
-                closeModal();
-                history.push(getGraphLink(o));
-              }}
-            >
-              <GraphLogo inputColor={theme.secondary} width={"1rem"} height={"1rem"} />
-            </span>
+            {getGraphLink ? (
+              <span
+                className="flex justify-center items-center ml-2 mr-sm-4"
+                style={{
+                  ...theme.button,
+                  cursor: "pointer",
+                  borderRadius: "100%",
+                  width: "1.6rem",
+                  minWidth: "1.6rem",
+                  height: "1.6rem",
+                  minHeight: "1.6rem",
+                }}
+                onClick={async () => {
+                  closeModal();
+                  const link = await getGraphLink(o);
+                  history.push(link);
+                }}
+              >
+                <GraphLogo inputColor={theme.secondary} width={"1rem"} height={"1rem"} />
+              </span>
+            ) : null}
           </span>
           {availableYears.map((year) => (
             <div key={year} className="w-1/6 overflow-auto px-1 py-2">

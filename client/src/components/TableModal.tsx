@@ -3,10 +3,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../AppContext";
+import { IOwnership } from "../models/models";
 import { useInvestments, useInvestors } from "../services/apiService";
 import { GraphLogo } from "./GraphLogo";
 import Loading from "./Loading";
 import { OwnershipTable } from "./OwnershipTable";
+
+const getGraphLink = (o: IOwnership): string => {
+  if (o.investment) return `/graph?_id=${o.investment._id}`;
+  if (o.investor?.company) return `/graph?_id=${o.investor.company._id}`;
+  if (o.investor?.shareholder) return `/graph?shareholder_id=${o.investor.shareholder._id}`;
+  throw Error(`Graph link not found for ownership w id=${o._id}`);
+};
 
 export const TableModal = () => {
   const {
@@ -78,7 +86,12 @@ export const TableModal = () => {
               </span>
             </h5>
             <div className="w-full overflow-auto grow rounded" style={theme.borderPrimary}>
-              <OwnershipTable ownerships={investors} investment={investment} closeModal={closeModal} />
+              <OwnershipTable
+                getGraphLink={getGraphLink}
+                ownerships={investors}
+                investment={investment}
+                closeModal={closeModal}
+              />
             </div>
           </>
         )}
@@ -106,7 +119,12 @@ export const TableModal = () => {
               </span>
             </h5>
             <div className="w-full overflow-auto grow rounded" style={theme.borderPrimary}>
-              <OwnershipTable ownerships={investments} investor={investor} closeModal={closeModal} />
+              <OwnershipTable
+                getGraphLink={getGraphLink}
+                ownerships={investments}
+                investor={investor}
+                closeModal={closeModal}
+              />
             </div>
           </>
         )}
