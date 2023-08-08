@@ -6,9 +6,13 @@ import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/databaseSetup";
 import { Company, Ownership, Shareholder } from "../models/models";
+import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
+import { findInvestments } from "../use-cases/findInvestments";
+import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
+import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { findShortestPath as findShortestPath2 } from "../use-cases/findShortestPath2";
 import { searchNode } from "../use-cases/searchNode";
@@ -403,6 +407,54 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         targetUuid: query.targetUuid,
         limit: query.limit,
       });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/actors",
+    query("uuid"),
+    query("limit").default(5).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      const data = await findActors({ uuid: query.uuid, limit: query.limit, skip: query.skip });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/role-units",
+    query("uuid"),
+    query("limit").default(5).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      const data = await findRoleUnits({ uuid: query.uuid, limit: query.limit, skip: query.skip });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/investors",
+    query("uuid"),
+    query("limit").default(5).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      const data = await findInvestors({ uuid: query.uuid, limit: query.limit, skip: query.skip });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/investments",
+    query("uuid"),
+    query("limit").default(5).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      const data = await findInvestments({ uuid: query.uuid, limit: query.limit, skip: query.skip });
       return res.json(data);
     })
   );
