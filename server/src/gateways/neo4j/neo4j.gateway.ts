@@ -48,12 +48,13 @@ export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; li
   return records.map((record) => mapRecordToGraphNode(record, "node"));
 };
 
-export const findInvestors = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+export const findInvestors = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
   const records = await runQuery<{ investor: NodeEntry; investment: NodeEntry }>({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investment.uuid = $uuid
         RETURN investor, investment, r
+        SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
     params: { uuid },
@@ -67,12 +68,13 @@ export const findInvestors = async ({ uuid, limit }: { uuid: string; limit: numb
   };
 };
 
-export const findInvestments = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+export const findInvestments = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
   const records = await runQuery({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investor.uuid = $uuid
         RETURN investor, investment, r
+        SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
     params: { uuid },
@@ -86,12 +88,13 @@ export const findInvestments = async ({ uuid, limit }: { uuid: string; limit: nu
   };
 };
 
-export const findRoleHolders = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+export const findRoleHolders = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
   const records = await runQuery({
     query: `
         MATCH (holder:Person|Unit)-[r]->(unit:Unit)
         WHERE unit.uuid = $uuid AND type(r) <> "OWNS"
         RETURN holder, r, unit
+        SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
     params: { uuid },
@@ -105,12 +108,13 @@ export const findRoleHolders = async ({ uuid, limit }: { uuid: string; limit: nu
   };
 };
 
-export const findRoleUnits = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+export const findRoleUnits = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
   const records = await runQuery({
     query: `
         MATCH (holder:Unit|Person)-[r]->(unit:Unit|Company)
         WHERE holder.uuid = $uuid AND type(r) <> "OWNS"
         RETURN holder, unit, r
+        SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
     params: { uuid },
