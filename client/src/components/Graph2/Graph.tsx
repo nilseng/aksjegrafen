@@ -9,6 +9,7 @@ import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
+import { HowToModal } from "./HowToModal";
 import { Modal } from "./Modal";
 import { Toolbar } from "./Toolbar";
 
@@ -50,6 +51,7 @@ export const Graph = () => {
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
         <Toolbar />
+        <HowToModal />
         {status === FetchState.Loading && (
           <Loading
             backgroundColor="transparent"
