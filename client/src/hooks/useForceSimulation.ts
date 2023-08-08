@@ -40,7 +40,9 @@ export const useForceSimulation = ({
       }));
 
       const source = mutableNodes.find((n) => n.properties.uuid === sourceUuid);
+
       fixSourcePosition({ node: source, graphType });
+
       if (targetUuid) {
         fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === targetUuid), graphType });
       }
