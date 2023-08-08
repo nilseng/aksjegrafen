@@ -137,12 +137,13 @@ export const graphSlice = createSlice<
         if (!source) {
           throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
         }
+        const newNodesCount = getNewNodesCount(action.payload.nodes);
         source.skip = source.skip
-          ? { ...source.skip, actors: (source.skip.actors += action.payload.nodes.length - 1) }
-          : { actors: action.payload.nodes.length - 1, units: 0, investments: 0, investors: 0 };
-        const newNodesCount = addToGraphIfNotExist(state, action);
-        toast(`Lastet ${newNodesCount} nye aktører i ${action.meta.arg.node.properties.name}.`, {
-          type: newNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+          ? { ...source.skip, actors: (source.skip.actors += newNodesCount) }
+          : { actors: newNodesCount, units: 0, investments: 0, investors: 0 };
+        const addedNodesCount = addToGraphIfNotExist(state, action);
+        toast(`Lastet ${addedNodesCount} nye aktører i ${action.meta.arg.node.properties.name}.`, {
+          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
       })
       .addCase(fetchActorsThunk.rejected, (_, action) => {
@@ -157,12 +158,13 @@ export const graphSlice = createSlice<
         if (!source) {
           throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
         }
+        const newNodesCount = getNewNodesCount(action.payload.nodes);
         source.skip = source.skip
-          ? { ...source.skip, units: (source.skip.units += action.payload.nodes.length - 1) }
-          : { units: action.payload.nodes.length - 1, actors: 0, investments: 0, investors: 0 };
-        const newNodesCount = addToGraphIfNotExist(state, action);
-        toast(`Lastet ${newNodesCount} av rollene til ${action.meta.arg.node.properties.name}.`, {
-          type: newNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+          ? { ...source.skip, units: (source.skip.units += newNodesCount) }
+          : { units: newNodesCount, actors: 0, investments: 0, investors: 0 };
+        const addedNodesCount = addToGraphIfNotExist(state, action);
+        toast(`Lastet ${addedNodesCount} av rollene til ${action.meta.arg.node.properties.name}.`, {
+          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
       })
       .addCase(fetchRoleUnitsThunk.rejected, (_, action) => {
@@ -180,12 +182,13 @@ export const graphSlice = createSlice<
         if (!source) {
           throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
         }
+        const newNodesCount = getNewNodesCount(action.payload.nodes);
         source.skip = source.skip
-          ? { ...source.skip, investors: (source.skip.investors += action.payload.nodes.length - 1) }
-          : { investors: action.payload.nodes.length - 1, actors: 0, investments: 0, units: 0 };
-        const newNodesCount = addToGraphIfNotExist(state, action);
-        toast(`Lastet ${newNodesCount} av investorene til ${action.meta.arg.node.properties.name}.`, {
-          type: newNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+          ? { ...source.skip, investors: (source.skip.investors += newNodesCount) }
+          : { investors: newNodesCount, actors: 0, investments: 0, units: 0 };
+        const addedNodesCount = addToGraphIfNotExist(state, action);
+        toast(`Lastet ${addedNodesCount} av investorene til ${action.meta.arg.node.properties.name}.`, {
+          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
       })
       .addCase(fetchInvestorsThunk.rejected, (_, action) => {
@@ -203,12 +206,13 @@ export const graphSlice = createSlice<
         if (!source) {
           throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
         }
+        const newNodesCount = getNewNodesCount(action.payload.nodes);
         source.skip = source.skip
-          ? { ...source.skip, investments: (source.skip.investments += action.payload.nodes.length - 1) }
-          : { investments: action.payload.nodes.length - 1, actors: 0, units: 0, investors: 0 };
-        const newNodesCount = addToGraphIfNotExist(state, action);
-        toast(`Lastet ${newNodesCount} av investeringene til ${action.meta.arg.node.properties.name}.`, {
-          type: newNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+          ? { ...source.skip, investments: (source.skip.investments += newNodesCount) }
+          : { investments: newNodesCount, actors: 0, units: 0, investors: 0 };
+        const addedNodesCount = addToGraphIfNotExist(state, action);
+        toast(`Lastet ${addedNodesCount} av investeringene til ${action.meta.arg.node.properties.name}.`, {
+          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
       })
       .addCase(fetchInvestmentsThunk.rejected, (_, action) => {
@@ -218,6 +222,11 @@ export const graphSlice = createSlice<
       });
   },
 });
+
+const getNewNodesCount = (nodes: GraphNode[]) => {
+  // If nodes are returned, adjust for the source node, otherwise assume 0 new nodes.
+  return nodes.length ? nodes.length - 1 : 0;
+};
 
 const addToGraphIfNotExist = (
   state: GraphState,
@@ -359,7 +368,7 @@ export const fetchRoleUnitsThunk = createAsyncThunk("graph/fetchRoleUnits", fetc
 async function fetchRoleUnits(
   { node, limit, skip }: { node: GraphNode; limit: number; skip?: number },
   { signal }: { signal: AbortSignal }
-) {
+): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const query = buildQuery({ uuid: node.properties.uuid, limit, skip });
   const res = await fetch(`/api/graph/role-units${query}`, { signal });
   return res.json();
@@ -370,7 +379,7 @@ export const fetchInvestorsThunk = createAsyncThunk("graph/fetchInvestors", fetc
 async function fetchInvestors(
   { node, limit, skip }: { node: GraphNode; limit: number; skip?: number },
   { signal }: { signal: AbortSignal }
-) {
+): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const query = buildQuery({ uuid: node.properties.uuid, limit, skip });
   const res = await fetch(`/api/graph/investors${query}`, { signal });
   return res.json();
@@ -381,7 +390,7 @@ export const fetchInvestmentsThunk = createAsyncThunk("graph/fetchInvestments", 
 async function fetchInvestments(
   { node, limit, skip }: { node: GraphNode; limit: number; skip?: number },
   { signal }: { signal: AbortSignal }
-) {
+): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   const query = buildQuery({ uuid: node.properties.uuid, limit, skip });
   const res = await fetch(`/api/graph/investments${query}`, { signal });
   return res.json();
