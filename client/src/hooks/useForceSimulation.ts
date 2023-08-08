@@ -61,6 +61,7 @@ export const useForceSimulation = ({
 
       const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(Object.values(mutableNodesMap))
         .alpha(0.4)
+        .alphaDecay(0.05)
         .alphaMin(0.05)
         .force(
           "link",
