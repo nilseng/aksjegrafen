@@ -7,7 +7,7 @@ export const Toolbar = () => {
   const dispatch = useDispatch();
   return (
     <div className="absolute flex right-0 top-0 p-2 mb-2 sm:mb-4">
-      <NeuButton icon={faSearch} className="text-primary text-md p-2" action={() => dispatch(open())} />
+      <NeuButton icon={faSearch} className="text-primary p-2" action={() => dispatch(open())} />
     </div>
   );
 };
