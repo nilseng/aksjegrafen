@@ -17,6 +17,8 @@ export const Graph = () => {
 
   const { theme } = useContext(AppContext);
 
+  useGraph();
+
   const { sourceUuid, targetUuid, graphType, isDirected } = useSelector<RootState, RootState["graph"]["data"]>(
     (state) => state.graph.data
   );
@@ -34,8 +36,6 @@ export const Graph = () => {
   useEffect(() => {
     if (graphType !== GraphType.Default && sourceUuid) dispatch(setContent(ModalContent.PathSearch));
   }, [dispatch, graphType, sourceUuid]);
-
-  useGraph();
 
   useEffect(() => {
     dispatch(fetchRolesThunk());
