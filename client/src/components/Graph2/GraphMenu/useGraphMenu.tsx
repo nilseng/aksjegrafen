@@ -12,15 +12,23 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../../models/models";
-import { closeMenu, setSource } from "../../../slices/graphSlice";
+import {
+  closeMenu,
+  fetchActorsThunk,
+  fetchInvestmentsThunk,
+  fetchInvestorsThunk,
+  fetchRoleUnitsThunk,
+  setSource,
+} from "../../../slices/graphSlice";
 import { ModalContent, open as openModal, setContent } from "../../../slices/modalSlice";
+import { AppDispatch } from "../../../store";
 import { getBaseUrl } from "../../../utils/utils";
 import { GraphLogo } from "../../GraphLogo";
 import { MenuItem } from "./GraphMenu";
 
 export const useGraphMenu = (node?: GraphNode) => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>();
 
@@ -71,7 +79,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faBuilding,
             node,
             action: () => {
-              throw Error("Not implemented.");
+              dispatch(fetchInvestmentsThunk({ node, limit: 5, skip: node.skip?.investments }));
+              dispatch(closeMenu());
             },
           },
           {
@@ -80,7 +89,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faUserTie,
             node,
             action: () => {
-              throw Error("Not implemented.");
+              dispatch(fetchInvestorsThunk({ node, limit: 5, skip: node.skip?.investors }));
+              dispatch(closeMenu());
             },
           },
           {
@@ -89,7 +99,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faArrowUp,
             node,
             action: () => {
-              throw Error("Not implemented.");
+              dispatch(fetchActorsThunk({ node, limit: 5, skip: node.skip?.actors }));
+              dispatch(closeMenu());
             },
           },
           {
@@ -98,7 +109,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faArrowDown,
             node,
             action: () => {
-              throw Error("Not implemented.");
+              dispatch(fetchRoleUnitsThunk({ node, limit: 5, skip: node.skip?.units }));
+              dispatch(closeMenu());
             },
           },
           {
