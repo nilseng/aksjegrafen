@@ -1,6 +1,6 @@
 import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation, forceX, forceY, select } from "d3";
 import { cloneDeep } from "lodash";
-import { RefObject, useEffect } from "react";
+import { RefObject, useEffect, useRef } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
 import { CurrentRole, GraphLink, GraphNode, GraphType } from "../models/models";
 import { GraphLinkDatum, GraphNodeDatum, openMenu } from "../slices/graphSlice";
@@ -28,42 +28,43 @@ export const useForceSimulation = ({
 }) => {
   const dispatch = useAppDispatch();
 
+  const simulationNodesMap = useRef<{ [uuid: string]: GraphNodeDatum }>({});
+
   useEffect(() => {
     if (svgRef.current && nodes && nodes?.length > 0 && sourceUuid) {
       const svg = select<SVGElement, null>(svgRef.current);
 
-      const mutableNodes: GraphNodeDatum[] = cloneDeep(nodes).map((node) => ({
-        id: node.properties.uuid,
-        x: 0,
-        y: 0,
-        ...node,
-      }));
+      const mutableNodesMap: { [uuid: string]: GraphNodeDatum } = {};
 
-      const source = mutableNodes.find((n) => n.properties.uuid === sourceUuid);
+      cloneDeep(nodes).forEach((node) => {
+        mutableNodesMap[node.properties.uuid] = {
+          ...simulationNodesMap.current[node.properties.uuid],
+          id: node.properties.uuid,
+          ...node,
+        };
+      });
+
+      const source = mutableNodesMap[sourceUuid];
 
       fixSourcePosition({ node: source, graphType });
 
-      if (targetUuid) {
-        fixTargetPosition({ node: mutableNodes.find((n) => n.properties.uuid === targetUuid), graphType });
-      }
+      if (targetUuid) fixTargetPosition({ node: mutableNodesMap[targetUuid], graphType });
 
       const mutableLinks: GraphLinkDatum[] = links.map((link) => ({
         ...link,
-        source: mutableNodes.find((node) => node.id === (link.source as GraphNodeDatum).properties.uuid)!,
-        target: mutableNodes.find((node) => node.id === (link.target as GraphNodeDatum).properties.uuid)!,
+        source: mutableNodesMap[(link.source as GraphNodeDatum).properties.uuid],
+        target: mutableNodesMap[(link.target as GraphNodeDatum).properties.uuid],
       }));
 
       const link = svg.selectAll(".graph-link").data(mutableLinks).join(".graph-link");
       const linkArrow = svg.selectAll(".graph-link-arrow").data(mutableLinks).join(".graph-link-arrow");
 
-      const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(mutableNodes)
+      const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(Object.values(mutableNodesMap))
         .alpha(0.4)
         .alphaMin(0.05)
         .force(
           "link",
-          forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(
-            ({ id }) => mutableNodes.find((node) => node.id === id) as any
-          )
+          forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(({ id }) => mutableNodesMap[id].id)
         )
         .force(
           "collide",
@@ -74,7 +75,7 @@ export const useForceSimulation = ({
 
       const node = svg
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
-        .data(mutableNodes)
+        .data(Object.values(mutableNodesMap))
         .join<SVGElement>(".graph-node")
         .call(handleDrag(simulation))
         .on("click", (e: PointerEvent, d) =>
@@ -82,6 +83,7 @@ export const useForceSimulation = ({
         );
 
       simulation.on("tick", () => {
+        simulationNodesMap.current = mutableNodesMap;
         node.attr("x", (n) => n.x! - nodeOffset.x).attr("y", (n) => n.y! - nodeOffset.y);
         link
           .attr("x1", (l) => (l.source as GraphNodeDatum).x!)
@@ -174,6 +176,8 @@ const addCurrentRoleForces = ({
 const handleDrag = (simulation: Simulation<GraphNodeDatum, GraphLinkDatum>) => {
   function dragstarted(event: D3DragEvent<HTMLElement, any, any>) {
     if (!event.active) simulation.alphaTarget(0.1).restart();
+    event.subject.fx = event.x;
+    event.subject.fy = event.y;
   }
 
   function dragged(event: D3DragEvent<HTMLElement, any, any>) {
