@@ -42,6 +42,7 @@ const createConstraints = async () => {
   session.close();
 };
 
+/* Neo4j Graph Data Science algorithms are run on projections of the graph and not the DB itself. */
 const createProjections = async () => {
   const session = graphDB.session();
   console.info("Creating projections");
