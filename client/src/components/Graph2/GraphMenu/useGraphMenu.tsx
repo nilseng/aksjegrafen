@@ -118,7 +118,7 @@ export const useGraphMenu = (node?: GraphNode) => {
             svgIcon: <GraphLogo width="16px" height="16px" />,
             node,
             action: () => {
-              history.push(`/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
+              history.push(`?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
               dispatch(closeMenu());
             },
           },
@@ -127,7 +127,7 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faWindowRestore,
             node,
             action: () => {
-              window.open(`${getBaseUrl()}/graph2?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
+              window.open(`${getBaseUrl()}?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
               dispatch(closeMenu());
             },
           },

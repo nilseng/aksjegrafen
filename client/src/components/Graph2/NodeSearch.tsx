@@ -70,7 +70,7 @@ export const NodeSearch = () => {
               ),
               handleClick: (node: GraphNode) => {
                 history.push({
-                  pathname: `/graph2`,
+                  pathname: `/`,
                   search: `?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`,
                 });
                 dispatch(close());
@@ -87,7 +87,7 @@ export const NodeSearch = () => {
               ),
               handleClick: (node: GraphNode) => {
                 history.push({
-                  pathname: `/graph2`,
+                  pathname: `/`,
                   search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${node.properties.uuid}&isDirected=true`,
                 });
                 dispatch(setSource(node));

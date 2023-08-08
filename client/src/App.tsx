@@ -3,7 +3,6 @@ import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
 import { GraphContainer } from "./components/Graph/GraphContainer";
-import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
 import { RelationFinder } from "./components/RelationFinder";
@@ -61,13 +60,12 @@ const App = () => {
           }}
         >
           <Switch>
-            <Route path="/" component={Landing} exact />
             <Route path="/graph" component={GraphContainer} />
             <Route path="/search" component={SearchPage} />
             <Route path="/stats" component={Stats} />
             <Route path="/relation-finder" component={RelationFinder} />
             <Route path="/api-docs" component={ApiDocs} />
-            <Route path="/graph2" component={Graph} />
+            <Route path="/" component={Graph} />
           </Switch>
         </div>
         <Overlays />
