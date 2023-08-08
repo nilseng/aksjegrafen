@@ -54,6 +54,7 @@ export const findInvestors = async ({ uuid, limit, skip }: { uuid: string; limit
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investment.uuid = $uuid
         RETURN investor, investment, r
+        ORDER BY r.share DESC
         SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
@@ -74,6 +75,7 @@ export const findInvestments = async ({ uuid, limit, skip }: { uuid: string; lim
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investor.uuid = $uuid
         RETURN investor, investment, r
+        ORDER BY r.share DESC
         SKIP ${skip ?? 0}
         LIMIT ${limit}
     `,
