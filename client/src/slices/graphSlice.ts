@@ -233,12 +233,14 @@ const addToGraphIfNotExist = (
   );
   for (const node of action.payload.nodes) {
     if (!currentNodeIds.has(node.properties.uuid)) {
+      currentNodeIds.add(node.properties.uuid);
       state.data.nodes.push(node);
       newNodesCount += 1;
     }
   }
   for (const link of action.payload.links) {
     if (!currentLinkIds.has(`${link.source.properties.uuid}-${link.target.properties.uuid}`)) {
+      currentLinkIds.add(`${link.source.properties.uuid}-${link.target.properties.uuid}`);
       state.data.links.push(link);
     }
   }
