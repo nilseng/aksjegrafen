@@ -8,20 +8,29 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
   return (
     <div className="w-full sm:w-1/2">
       <p className="font-bold my-1">Resultat</p>
-      <p className="text-xs font-bold m-0">Driftsinntekter</p>
-      <code style={{ color: theme.primary }} className="text-xs m-0">
-        {pAndL?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(navigator?.language)}
-      </code>
-      <p className="text-xs font-bold m-0">Driftsresultat</p>
-      <code
-        style={{
-          color: pAndL?.driftsresultat?.driftsresultat > 0 ? theme.primary : theme.danger,
-        }}
-        className="text-xs m-0"
-      >
-        {pAndL?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
-      </code>
-      {pAndL?.totalresultat && (
+      {(pAndL?.driftsresultat?.driftsinntekter?.sumDriftsinntekter ||
+        pAndL?.driftsresultat?.driftsinntekter?.sumDriftsinntekter === 0) && (
+        <>
+          <p className="text-xs font-bold m-0">Driftsinntekter</p>
+          <code style={{ color: theme.primary }} className="text-xs m-0">
+            {pAndL?.driftsresultat?.driftsinntekter?.sumDriftsinntekter?.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      )}
+      {pAndL?.driftsresultat?.driftsresultat || pAndL?.driftsresultat?.driftsresultat === 0 ? (
+        <>
+          <p className="text-xs font-bold m-0">Driftsresultat</p>
+          <code
+            style={{
+              color: pAndL?.driftsresultat?.driftsresultat > 0 ? theme.primary : theme.danger,
+            }}
+            className="text-xs m-0"
+          >
+            {pAndL?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      ) : null}
+      {(pAndL?.totalresultat || pAndL?.totalresultat === 0) && (
         <>
           <p className="text-xs font-bold m-0">Totalresultat</p>
           <code
@@ -34,7 +43,7 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
           </code>
         </>
       )}
-      {pAndL?.aarsresultat && (
+      {pAndL?.aarsresultat || pAndL?.aarsresultat === 0 ? (
         <>
           <p className="text-xs font-bold m-0">Årsresultat</p>
           <code
@@ -46,7 +55,7 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
             {pAndL?.aarsresultat?.toLocaleString(navigator?.language)}
           </code>
         </>
-      )}
+      ) : null}
     </div>
   );
 };
