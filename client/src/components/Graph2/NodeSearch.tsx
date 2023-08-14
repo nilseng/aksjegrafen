@@ -29,7 +29,7 @@ export const NodeSearch = () => {
         mapResultToListItem={(node: GraphNode) => ({
           key: node.properties.uuid,
           name: node.properties.name,
-          tags: [],
+          tags: [node.properties.orgnr].filter((tag) => !!tag) as (string | number)[],
           buttons: [
             {
               name: "investors-button",
