@@ -17,8 +17,17 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
           </code>
         </>
       )}
-      {pAndL?.driftsresultat?.driftsresultat || pAndL?.driftsresultat?.driftsresultat === 0 ? (
+      {(pAndL?.driftsresultat?.driftskostnad?.sumDriftskostnad ||
+        pAndL?.driftsresultat?.driftskostnad?.sumDriftskostnad === 0) && (
         <>
+          <p className="text-xs font-bold m-0">Driftskostnad</p>
+          <code style={{ color: theme.danger }} className="text-xs m-0">
+            {pAndL.driftsresultat.driftskostnad.sumDriftskostnad.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      )}
+      {pAndL?.driftsresultat?.driftsresultat || pAndL?.driftsresultat?.driftsresultat === 0 ? (
+        <div className="pb-2">
           <p className="text-xs font-bold m-0">Driftsresultat</p>
           <code
             style={{
@@ -28,8 +37,50 @@ export const ProfitAndLoss = ({ pAndL }: { pAndL: IFinancials["resultatregnskapR
           >
             {pAndL?.driftsresultat?.driftsresultat?.toLocaleString(navigator?.language)}
           </code>
-        </>
+        </div>
       ) : null}
+      {(pAndL?.finansresultat?.finansinntekt?.sumFinansinntekter ||
+        pAndL?.finansresultat?.finansinntekt?.sumFinansinntekter === 0) && (
+        <>
+          <p className="text-xs font-bold m-0">Finansinntekter</p>
+          <code style={{ color: theme.primary }} className="text-xs m-0">
+            {pAndL?.finansresultat?.finansinntekt?.sumFinansinntekter?.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      )}
+      {(pAndL?.finansresultat?.finanskostnad?.sumFinanskostnad ||
+        pAndL?.finansresultat?.finanskostnad?.sumFinanskostnad === 0) && (
+        <>
+          <p className="text-xs font-bold m-0">Finanskostnad</p>
+          <code style={{ color: theme.danger }} className="text-xs m-0">
+            {pAndL?.finansresultat?.finanskostnad?.sumFinanskostnad?.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      )}
+      {(pAndL?.finansresultat?.nettoFinans || pAndL?.finansresultat?.nettoFinans === 0) && (
+        <div className="pb-2">
+          <p className="text-xs font-bold m-0">Finansresultat</p>
+          <code
+            style={{ color: pAndL?.finansresultat?.nettoFinans >= 0 ? theme.primary : theme.danger }}
+            className="text-xs m-0"
+          >
+            {pAndL?.finansresultat?.nettoFinans?.toLocaleString(navigator?.language)}
+          </code>
+        </div>
+      )}
+      {(pAndL?.ordinaertResultatFoerSkattekostnad || pAndL?.ordinaertResultatFoerSkattekostnad === 0) && (
+        <>
+          <p className="text-xs font-bold m-0">Resultat før skatt</p>
+          <code
+            className="text-xs mb-0"
+            style={{
+              color: pAndL?.ordinaertResultatFoerSkattekostnad > 0 ? theme.primary : theme.danger,
+            }}
+          >
+            {pAndL?.ordinaertResultatFoerSkattekostnad?.toLocaleString(navigator?.language)}
+          </code>
+        </>
+      )}
       {(pAndL?.totalresultat || pAndL?.totalresultat === 0) && (
         <>
           <p className="text-xs font-bold m-0">Totalresultat</p>
