@@ -20,12 +20,16 @@ export const Financials = () => {
     return <p className="text-center">Fant ikke regnskapstall for {source?.properties.name} 😢</p>;
 
   return (
-    <div className="w-full h-full overflow-auto mt-12">
+    <div className="flex flex-col w-full h-full max-h-full pt-12">
       <p style={{ color: theme.primary }} className="text-center font-semibold pb-2">
-        Finansielle nøkkeltall fra forrige regnskapsår
+        Regnskap for {source?.properties.name}
       </p>
       {financials?.map((f) => (
-        <div key={f.id} style={{ border: `${theme.primary} solid 1px` }} className="w-full rounded p-4">
+        <div
+          key={f.id}
+          style={{ border: `${theme.primary} solid 1px` }}
+          className="w-full grow overflow-scroll rounded p-4"
+        >
           <div className="flex justify-between flex-wrap">
             <ProfitAndLoss pAndL={f.resultatregnskapResultat} />
             <BalanceSheet assets={f.eiendeler} equityAndDebt={f.egenkapitalGjeld} />
