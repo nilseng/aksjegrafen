@@ -132,6 +132,21 @@ export interface GraphLink {
   type: string;
 }
 
+export interface UserEvent {
+  uuid?: string;
+  orgnr?: string;
+  type: UserEventType;
+  createdAt: Date;
+}
+
+export enum UserEventType {
+  GraphLoad = "GraphLoad",
+  InvestorTableLoad = "InvestorTableLoad",
+  InvestmentTableLoad = "InvestmentTableLoad",
+  RelationSourceLoad = "RelationSourceLoad",
+  RelationTargetLoad = "RelationTargetLoad",
+}
+
 export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
 
 export const isOwnership = (o: any): o is Ownership => {
