@@ -1,5 +1,5 @@
 import { Driver as Neo4j } from "neo4j-driver";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Year } from "../models/models";
 
 export const importData = async (graphDB: Neo4j, db: IDatabase, year?: Year, data?: (number | string)[]) => {

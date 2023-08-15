@@ -1,16 +1,6 @@
-import { Collection } from "mongodb";
 import { Driver } from "neo4j-driver";
-import { BusinessCode, Company, Ownership, Role, Shareholder } from "../models/models";
 import { graphDB } from "./graphDB";
-import { connectToMongoDb } from "./mongoDB";
-
-export interface IDatabase {
-  ownerships: Collection<Ownership>;
-  shareholders: Collection<Shareholder>;
-  companies: Collection<Company>;
-  roles: Collection<Role>;
-  businessCodes: Collection<BusinessCode>;
-}
+import { IDatabase, connectToMongoDb } from "./mongoDB";
 
 export class Database {
   private static _db: IDatabase;

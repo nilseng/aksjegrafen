@@ -1,6 +1,14 @@
-import { MongoClient } from "mongodb";
-import { BusinessCode, Company, Ownership, Role, Shareholder } from "../models/models";
-import { IDatabase } from "./databaseSetup";
+import { Collection, MongoClient } from "mongodb";
+import { BusinessCode, Company, Ownership, Role, Shareholder, UserEvent } from "../models/models";
+
+export interface IDatabase {
+  ownerships: Collection<Ownership>;
+  shareholders: Collection<Shareholder>;
+  companies: Collection<Company>;
+  roles: Collection<Role>;
+  businessCodes: Collection<BusinessCode>;
+  userEvents: Collection<UserEvent>;
+}
 
 export const connectToMongoDb = async (): Promise<IDatabase> => {
   const db_uri = process.env.DB_URI || process.env.MONGODB_URI;
@@ -12,16 +20,15 @@ export const connectToMongoDb = async (): Promise<IDatabase> => {
 
   console.log(`Mongoclient connected to database server`);
 
-  // Retrieving mongodb collections
   const collections = {
     ownerships: client.db().collection<Ownership>("ownerships"),
     shareholders: client.db().collection<Shareholder>("shareholders"),
     companies: client.db().collection<Company>("companies"),
     roles: client.db().collection<Role>("roles"),
     businessCodes: client.db().collection<BusinessCode>("businessCodes"),
+    userEvents: client.db().collection<UserEvent>("user_events"),
   };
 
-  //Creating indices
   /* await collections.shareholders.dropIndexes();
     await collections.shareholders.createIndex({ id: 1 }, { unique: true });
     await collections.shareholders.createIndex({ name: 1 });
