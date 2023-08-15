@@ -1,4 +1,4 @@
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Ownership, Year } from "../models/models";
 
 export const countHoldingsByYear = async (db: IDatabase) => {

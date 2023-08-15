@@ -1,5 +1,5 @@
 import { AnyBulkWriteOperation } from "mongodb";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Ownership } from "../models/models";
 
 export const mergeDuplicateOwnershipsByShareholderOrgnr = async (db: IDatabase) => {

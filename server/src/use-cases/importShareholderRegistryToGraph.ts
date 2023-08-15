@@ -1,5 +1,5 @@
 import { Driver } from "neo4j-driver";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership, Shareholder, Year } from "../models/models";
 
 type GraphOwnership = Ownership & {

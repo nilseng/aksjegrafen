@@ -1,7 +1,7 @@
 import JSONStream from "JSONStream";
 import fs from "fs";
 import path from "path";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { UnitRoles } from "../models/brregModels";
 import { Role } from "../models/models";
 

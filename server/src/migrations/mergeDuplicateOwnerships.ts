@@ -1,4 +1,4 @@
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 
 export const mergeDuplicateOwnerships = async (db: IDatabase) => {
   let count = 0;

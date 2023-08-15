@@ -1,6 +1,6 @@
 import { AnyBulkWriteOperation } from "mongodb";
 import { availableYears } from "../config";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership } from "../models/models";
 
 export const countCompanySharesByYear = async (db: IDatabase) => {

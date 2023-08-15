@@ -1,5 +1,5 @@
 import { AnyBulkWriteOperation } from "mongodb";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import { Ownership, Year } from "../models/models";
 
 const getHoldingsByYear = (ownerships: Ownership[], year: Year) => {

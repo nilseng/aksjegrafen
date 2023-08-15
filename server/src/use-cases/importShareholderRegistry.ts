@@ -1,7 +1,7 @@
 import csv from "csv-parser";
 import fs from "fs";
 import path from "path";
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 import {
   Company,
   isCompany,

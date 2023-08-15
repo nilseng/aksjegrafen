@@ -1,4 +1,4 @@
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 
 export const deleteRedundantOwnershipFields = async (db: IDatabase) => {
   const res = await db.ownerships.updateMany(

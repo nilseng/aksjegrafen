@@ -1,4 +1,4 @@
-import { IDatabase } from "../database/databaseSetup";
+import { IDatabase } from "../database/mongoDB";
 
 export const deleteOwnershipsWoId = async (db: IDatabase) => {
   const res = await db.ownerships.deleteMany({ shareHolderId: { $exists: false } });
