@@ -1,11 +1,11 @@
 import { Router } from "express";
-import { matchedData, query } from "express-validator";
+import { body, matchedData, query } from "express-validator";
 import { Redis } from "ioredis";
 import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
-import { IDatabase } from "../database/databaseSetup";
-import { Company, Ownership, Shareholder } from "../models/models";
+import { IDatabase } from "../database/mongoDB";
+import { Company, Ownership, Shareholder, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
 import { findInvestments } from "../use-cases/findInvestments";
@@ -15,6 +15,7 @@ import { findNode } from "../use-cases/findNode";
 import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { findShortestPath as findShortestPath2 } from "../use-cases/findShortestPath2";
+import { saveUserEvent } from "../use-cases/saveUserEvent";
 import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
@@ -456,6 +457,19 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
       const query = matchedData(req);
       const data = await findInvestments({ uuid: query.uuid, limit: query.limit, skip: query.skip });
       return res.json(data);
+    })
+  );
+
+  router.post(
+    "/user-event",
+    body("uuid").optional(),
+    body("orgnr").optional(),
+    body("type"),
+    asyncRouter(async (req, res) => {
+      const body = matchedData(req);
+      if (!isUserEvent(body)) return res.status(400).json("Invalid User Event.");
+      await saveUserEvent(body);
+      return res.send();
     })
   );
 
