@@ -160,3 +160,7 @@ export const isShareholder = (o: any): o is Shareholder => {
 export const isCompany = (o: any): o is Company => {
   return o.orgnr && typeof o.orgnr === "string" && o.name && typeof o.name === "string";
 };
+
+export const isUserEvent = (o: any): o is UserEvent => {
+  return o && o.type && o.type in UserEventType;
+};
