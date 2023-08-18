@@ -8,5 +8,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "target": "ES5"
-  }
+  },
+  "exclude": ["**/migrations/**"]
 }
