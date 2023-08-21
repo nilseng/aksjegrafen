@@ -183,3 +183,18 @@ export enum GraphType {
   ShortestPath = "ShortestPath",
   AllPaths = "AllPaths",
 }
+
+export interface UserEvent {
+  uuid?: string;
+  orgnr?: string;
+  type: UserEventType;
+  createdAt?: Date;
+}
+
+export enum UserEventType {
+  GraphLoad = "GraphLoad",
+  InvestorTableLoad = "InvestorTableLoad",
+  InvestmentTableLoad = "InvestmentTableLoad",
+  RelationSourceLoad = "RelationSourceLoad",
+  RelationTargetLoad = "RelationTargetLoad",
+}
