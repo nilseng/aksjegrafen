@@ -23,7 +23,7 @@ export const useForceSimulation = ({
   links: GraphLink[];
   sourceUuid?: string;
   targetUuid?: string;
-  graphType: GraphType;
+  graphType?: GraphType;
   svgRef: RefObject<SVGSVGElement>;
 }) => {
   const dispatch = useAppDispatch();
@@ -31,7 +31,7 @@ export const useForceSimulation = ({
   const simulationNodesMap = useRef<{ [uuid: string]: GraphNodeDatum }>({});
 
   useEffect(() => {
-    if (svgRef.current && nodes && nodes?.length > 0 && sourceUuid) {
+    if (svgRef.current && graphType && nodes && nodes?.length > 0 && sourceUuid) {
       const svg = select<SVGElement, null>(svgRef.current);
 
       const mutableNodesMap: { [uuid: string]: GraphNodeDatum } = {};

@@ -6,7 +6,7 @@ import { buildQuery } from "../utils/buildQuery";
 
 export interface GraphState {
   data: {
-    graphType: GraphType;
+    graphType?: GraphType;
     sourceUuid?: string;
     targetUuid?: string;
     isDirected?: boolean;
@@ -50,7 +50,7 @@ export const graphSlice = createSlice<
   name: "graph",
   initialState: {
     data: {
-      graphType: GraphType.Default,
+      graphType: undefined,
       nodes: [],
       links: [],
       menu: {
@@ -288,7 +288,9 @@ function fetchGraph(
   },
   { signal }: { signal: AbortSignal }
 ): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
-  if (graphType === GraphType.Default) return fetchNeighbours({ uuid: sourceUuid, limit, skip }, { signal });
+  if (graphType === GraphType.Default) {
+    return fetchNeighbours({ uuid: sourceUuid, limit, skip }, { signal });
+  }
   if (graphType === GraphType.ShortestPath) {
     return fetchShortestPath({ isDirected, sourceUuid, targetUuid }, { signal });
   }
