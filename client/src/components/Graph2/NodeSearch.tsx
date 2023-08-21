@@ -1,19 +1,19 @@
 import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
 import { setSource } from "../../slices/graphSlice";
 import { ModalContent, close, setContent } from "../../slices/modalSlice";
-import { RootState } from "../../store";
+import { RootState, useAppDispatch } from "../../store";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
 
 export const NodeSearch = () => {
   const history = useHistory();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const { theme } = useContext(AppContext);
   const { source } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
@@ -69,6 +69,7 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
+                dispatch(setSource(undefined));
                 history.push({
                   pathname: `/`,
                   search: `?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`,
