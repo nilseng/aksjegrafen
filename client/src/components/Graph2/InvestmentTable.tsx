@@ -1,20 +1,34 @@
-import { useContext, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useContext, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
+import { UserEventType } from "../../models/models";
 import { useGetShareholder, useInvestments } from "../../services/apiService";
 import { close } from "../../slices/modalSlice";
-import { RootState } from "../../store";
+import { captureUserEventThunk } from "../../slices/userEventSlice";
+import { RootState, useAppDispatch } from "../../store";
 import Loading from "../Loading";
 import { OwnershipTable } from "../OwnershipTable";
 
 export const InvestmentTable = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { theme } = useContext(AppContext);
   const { source } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
   const { shareholder, loading: isLoadingShareholder } = useGetShareholder(undefined, source?.properties.shareholderId);
   const [limit] = useState(10);
   const [skip, setSkip] = useState(0);
   const { investments, loading: isLoadingInvestments } = useInvestments(shareholder, undefined, limit, skip);
+
+  useEffect(() => {
+    if (source) {
+      dispatch(
+        captureUserEventThunk({
+          type: UserEventType.InvestmentTableLoad,
+          uuid: source.properties.uuid,
+          orgnr: source.properties.orgnr,
+        })
+      );
+    }
+  }, [dispatch, source]);
 
   if (isLoadingInvestments || isLoadingShareholder) {
     return <Loading color={theme.primary} backgroundColor="transparent" />;
