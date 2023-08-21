@@ -1,4 +1,3 @@
-import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import sslRedirect from "heroku-ssl-redirect";
@@ -33,13 +32,13 @@ const app = express();
 app.use(sslRedirect());
 
 app.use(
-  bodyParser.urlencoded({
+  express.urlencoded({
     extended: true,
     limit: "50mb",
   })
 );
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.raw());
+app.use(express.json());
+app.use(express.raw());
 
 app.use(morgan("tiny"));
 
