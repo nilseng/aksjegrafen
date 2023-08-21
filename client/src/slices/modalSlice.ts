@@ -9,7 +9,7 @@ export enum ModalContent {
   Financials = "Financials",
 }
 
-interface ModalState {
+export interface ModalState {
   isOpen: boolean;
   content: ModalContent;
 }
