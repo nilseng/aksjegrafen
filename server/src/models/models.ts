@@ -162,5 +162,5 @@ export const isCompany = (o: any): o is Company => {
 };
 
 export const isUserEvent = (o: any): o is UserEvent => {
-  return o && o.type && o.type in UserEventType;
+  return o && o.type && Object.values(UserEventType).includes(o.type);
 };
