@@ -4,7 +4,7 @@ import { AppContext } from "../../AppContext";
 import { useGraph } from "../../hooks/useGraph";
 import { FetchState, GraphType } from "../../models/models";
 import { GraphState, fetchSourceThunk, fetchTargetThunk, setSource, setTarget } from "../../slices/graphSlice";
-import { ModalContent, setContent } from "../../slices/modalSlice";
+import { ModalContent, ModalState, setContent } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
 import Loading from "../Loading";
@@ -42,7 +42,7 @@ export const Graph = () => {
     dispatch(fetchRolesThunk());
   }, [dispatch]);
 
-  const isModalOpen = useSelector<RootState, boolean>((state) => state.modalHandler.isOpen);
+  const { isOpen: isModalOpen } = useSelector<RootState, ModalState>((state) => state.modalHandler);
 
   const { status, error } = useSelector<RootState, GraphState>((state) => state.graph);
 
