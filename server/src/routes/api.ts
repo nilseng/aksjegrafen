@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, matchedData, query } from "express-validator";
+import { body, matchedData, query, validationResult } from "express-validator";
 import { Redis } from "ioredis";
 import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
@@ -462,13 +462,11 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
 
   router.post(
     "/user-event",
-    body("uuid").optional(),
-    body("orgnr").optional(),
-    body("type"),
+    [body("uuid").optional(), body("orgnr").optional(), body("type")],
     asyncRouter(async (req, res) => {
-      const body = matchedData(req);
-      if (!isUserEvent(body)) return res.status(400).json("Invalid User Event.");
-      await saveUserEvent(body);
+      const errors = validationResult(req.body);
+      if (!isUserEvent(req.body) || !errors.isEmpty()) return res.status(400).json("Invalid User Event.");
+      await saveUserEvent(req.body);
       return res.send();
     })
   );
