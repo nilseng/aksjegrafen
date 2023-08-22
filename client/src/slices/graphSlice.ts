@@ -30,6 +30,20 @@ export interface GraphState {
 export type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
 export type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
+const initialState = {
+  data: {
+    graphType: undefined,
+    nodes: [],
+    links: [],
+    menu: {
+      isOpen: false,
+      position: {},
+    },
+  },
+  status: FetchState.Idle,
+  error: null,
+};
+
 export const graphSlice = createSlice<
   GraphState,
   {
@@ -44,23 +58,12 @@ export const graphSlice = createSlice<
       action: PayloadAction<{ node: GraphNode; position: { x: number; y: number } }>
     ) => void;
     closeMenu: (state: GraphState) => void;
+    resetGraph: (state: GraphState) => void;
   },
   "graph"
 >({
   name: "graph",
-  initialState: {
-    data: {
-      graphType: undefined,
-      nodes: [],
-      links: [],
-      menu: {
-        isOpen: false,
-        position: {},
-      },
-    },
-    status: FetchState.Idle,
-    error: null,
-  },
+  initialState,
   reducers: {
     setGraphType: (state, action) => {
       state.data.graphType = action.payload;
@@ -85,6 +88,9 @@ export const graphSlice = createSlice<
     },
     closeMenu: (state) => {
       state.data.menu = { isOpen: false, node: undefined, position: {} };
+    },
+    resetGraph: (state) => {
+      state = initialState;
     },
   },
   extraReducers: (builder) => {
@@ -257,8 +263,17 @@ const addToGraphIfNotExist = (
   return newNodesCount;
 };
 
-export const { setGraphType, setSourceUuid, setTargetUuid, setSource, setTarget, setIsDirected, openMenu, closeMenu } =
-  graphSlice.actions;
+export const {
+  setGraphType,
+  setSourceUuid,
+  setTargetUuid,
+  setSource,
+  setTarget,
+  setIsDirected,
+  openMenu,
+  closeMenu,
+  resetGraph,
+} = graphSlice.actions;
 
 export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);
 export const fetchTargetThunk = createAsyncThunk("graph/fetchTarget", fetchNode);
