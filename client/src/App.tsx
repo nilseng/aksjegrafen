@@ -11,6 +11,7 @@ import { Stats } from "./components/Stats";
 import { ICompany, IShareholder } from "./models/models";
 
 import { Graph } from "./components/Graph2/Graph";
+import { Landing } from "./components/Landing";
 import { Theme, theming } from "./theming/theme";
 
 const getStoredTheme = () => {
@@ -65,6 +66,7 @@ const App = () => {
             <Route path="/stats" component={Stats} />
             <Route path="/relation-finder" component={RelationFinder} />
             <Route path="/api-docs" component={ApiDocs} />
+            <Route path="/legacy" component={Landing} />
             <Route path="/" component={Graph} />
           </Switch>
         </div>
