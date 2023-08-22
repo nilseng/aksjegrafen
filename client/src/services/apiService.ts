@@ -27,7 +27,9 @@ export const getShareholder = async (_id?: string, shareholderId?: string) => {
     const res = await fetch(`/api/shareholder?_id=${_id}`);
     return res.json();
   } else if (shareholderId) {
-    const res = await fetch(`/api/shareholder?shareholderId=${shareholderId}`);
+    const params = new URLSearchParams();
+    params.append("shareholderId", shareholderId);
+    const res = await fetch(`/api/shareholder?${params.toString()}`);
     return res.json();
   } else {
     return new Promise(() => undefined);
@@ -72,7 +74,7 @@ export const getInvestments = async (
   limit?: number,
   skip: number = 0
 ): Promise<IOwnership[] | undefined> => {
-  if (!(entity.orgnr || (entity as IShareholder).id)) return;
+  if (!entity.orgnr && !(entity as IShareholder).id) return;
   const identifier = entity.orgnr ? { shareholderOrgnr: entity.orgnr } : { shareHolderId: (entity as IShareholder).id };
   const query = buildQuery({ ...identifier, year, limit, skip });
   const path = `/api/investments${query}`;
@@ -238,7 +240,7 @@ export const useGetShareholder = (_id?: string, shareholderId?: string) => {
     } else if (shareholderId) {
       setLoading(true);
       getShareholder(undefined, shareholderId).then((s) => {
-        if (s.error) return;
+        if (s?.error) return;
         setShareholder(s);
         setLoading(false);
       });
