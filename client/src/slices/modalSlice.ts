@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { GraphNode } from "../models/models";
 
 export enum ModalContent {
   NodeSearch = "NodeSearch",
@@ -12,6 +13,8 @@ export enum ModalContent {
 export interface ModalState {
   isOpen: boolean;
   content: ModalContent;
+  source?: GraphNode;
+  target?: GraphNode;
 }
 
 export const modalSlice = createSlice<
@@ -19,7 +22,10 @@ export const modalSlice = createSlice<
   {
     open: (state: ModalState) => void;
     close: (state: ModalState) => void;
-    setContent: (state: ModalState, action: PayloadAction<ModalContent>) => void;
+    setContent: (
+      state: ModalState,
+      action: PayloadAction<{ content: ModalContent; source?: GraphNode; target?: GraphNode }>
+    ) => void;
   }
 >({
   name: "modalHandler",
@@ -35,7 +41,9 @@ export const modalSlice = createSlice<
       state.isOpen = false;
     },
     setContent: (state, action) => {
-      state.content = action.payload;
+      state.content = action.payload.content;
+      if (action.payload.source) state.source = action.payload.source;
+      if (action.payload.target) state.target = action.payload.target;
     },
   },
 });

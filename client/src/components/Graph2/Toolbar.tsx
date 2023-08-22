@@ -1,13 +1,25 @@
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
-import { useDispatch } from "react-redux";
-import { open } from "../../slices/modalSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { GraphState } from "../../slices/graphSlice";
+import { ModalContent, open, setContent } from "../../slices/modalSlice";
+import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
 
 export const Toolbar = () => {
   const dispatch = useDispatch();
+
+  const { source } = useSelector<RootState, GraphState["data"]>((state) => state.graph.data);
+
   return (
     <div className="absolute flex right-0 top-0 p-2 mb-2 sm:mb-4">
-      <NeuButton icon={faSearch} className="text-primary p-2" action={() => dispatch(open())} />
+      <NeuButton
+        icon={faSearch}
+        className="text-primary p-2"
+        action={() => {
+          dispatch(setContent({ content: ModalContent.NodeSearch, source }));
+          dispatch(open());
+        }}
+      />
     </div>
   );
 };

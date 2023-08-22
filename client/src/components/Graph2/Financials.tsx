@@ -10,7 +10,7 @@ import { ProfitAndLoss } from "./ProfitAndLoss";
 export const Financials = () => {
   const { theme } = useContext(AppContext);
 
-  const source = useSelector<RootState, RootState["graph"]["data"]["source"]>((state) => state.graph.data.source);
+  const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
 
   const { financials, isLoading } = useFinancialsByUnit(source?.properties.orgnr);
 

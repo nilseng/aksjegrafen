@@ -16,7 +16,7 @@ export const NodeSearch = () => {
   const dispatch = useAppDispatch();
 
   const { theme } = useContext(AppContext);
-  const { source } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
+  const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
 
   return (
     <div className="w-full h-14">
@@ -41,8 +41,7 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
-                dispatch(setSource(node));
-                dispatch(setContent(ModalContent.InvestorTable));
+                dispatch(setContent({ content: ModalContent.InvestorTable, source: node }));
               },
             },
             {
@@ -55,8 +54,7 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
-                dispatch(setSource(node));
-                dispatch(setContent(ModalContent.InvestmentTable));
+                dispatch(setContent({ content: ModalContent.InvestmentTable, source: node }));
               },
             },
             {
@@ -87,12 +85,7 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
-                history.push({
-                  pathname: `/`,
-                  search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${node.properties.uuid}&isDirected=true`,
-                });
-                dispatch(setSource(node));
-                dispatch(setContent(ModalContent.PathSearch));
+                dispatch(setContent({ content: ModalContent.PathSearch, source: node }));
               },
             },
           ],

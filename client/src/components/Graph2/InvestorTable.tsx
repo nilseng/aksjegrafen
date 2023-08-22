@@ -12,7 +12,7 @@ import { OwnershipTable } from "../OwnershipTable";
 export const InvestorTable = () => {
   const dispatch = useAppDispatch();
   const { theme } = useContext(AppContext);
-  const { source } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
+  const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
   const { company, loading: isLoadingCompany } = useGetCompany(undefined, source?.properties.orgnr);
   const [limit] = useState(10);
   const [skip, setSkip] = useState(0);

@@ -1,16 +1,15 @@
 import { faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
-import { useQuery } from "../../hooks/useQuery";
 import { ReactComponent as AllPathsIcon } from "../../icons/all_paths.svg";
 import { ReactComponent as DirectedGraphIcon } from "../../icons/directed_graph.svg";
 import { ReactComponent as UndirectGraphIcon } from "../../icons/undirected_graph.svg";
 import { GraphNode, GraphType } from "../../models/models";
-import { GraphState, setIsDirected } from "../../slices/graphSlice";
-import { close } from "../../slices/modalSlice";
+import { GraphState } from "../../slices/graphSlice";
+import { ModalState, close } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { SearchComponent } from "../SearchComponent";
 
@@ -18,24 +17,23 @@ export const TargetSearch = () => {
   const { theme } = useContext(AppContext);
 
   const history = useHistory();
-  const query = useQuery();
 
   const dispatch = useDispatch();
 
-  const {
-    data: { isDirected, source, target },
-  } = useSelector<RootState, GraphState>((state) => state.graph);
+  const { isDirected: isGraphDirected } = useSelector<RootState, GraphState["data"]>((state) => state.graph.data);
+
+  const [isDirected, setIsDirected] = useState(isGraphDirected);
+
+  const { source, target } = useSelector<RootState, ModalState>((state) => state.modalHandler);
 
   return (
     <div className="w-full flex flex-col justify-center items-center dark:text-white">
       <div className="w-full md:max-w-sm flex justify-center items-center pb-8">
         <button
           className="w-20 flex flex-col justify-center items-center p-1 mr-2"
-          style={isDirected ? { ...theme.lowering } : { ...theme.button }}
+          style={isDirected !== false ? { ...theme.lowering } : { ...theme.button }}
           onClick={() => {
-            query.set("isDirected", "true");
-            history.push({ search: query.toString() });
-            dispatch(setIsDirected(true));
+            setIsDirected(true);
           }}
         >
           <div className="h-8">
@@ -45,11 +43,9 @@ export const TargetSearch = () => {
         </button>
         <button
           className="w-20 flex flex-col justify-center items-center text-primary p-1 ml-2"
-          style={isDirected ? { ...theme.button } : { ...theme.lowering }}
+          style={isDirected !== false ? { ...theme.button } : { ...theme.lowering }}
           onClick={() => {
-            query.set("isDirected", "false");
-            history.push({ search: query.toString() });
-            dispatch(setIsDirected(false));
+            setIsDirected(false);
           }}
         >
           <div className="h-8">
@@ -87,7 +83,9 @@ export const TargetSearch = () => {
                 handleClick: (node: GraphNode) => {
                   history.push({
                     pathname: `/`,
-                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}&isDirected=${isDirected}`,
+                    search: `?graphType=${GraphType.ShortestPath}&sourceUuid=${source?.properties.uuid}&targetUuid=${
+                      node.properties.uuid
+                    }&isDirected=${isDirected === false ? false : true}`,
                   });
                   dispatch(close());
                 },
@@ -106,7 +104,9 @@ export const TargetSearch = () => {
                 handleClick: (node: GraphNode) => {
                   history.push({
                     pathname: `/`,
-                    search: `?graphType=${GraphType.AllPaths}&sourceUuid=${source?.properties.uuid}&targetUuid=${node.properties.uuid}&isDirected=${isDirected}`,
+                    search: `?graphType=${GraphType.AllPaths}&sourceUuid=${source?.properties.uuid}&targetUuid=${
+                      node.properties.uuid
+                    }&isDirected=${isDirected === false ? false : true}`,
                   });
                   dispatch(close());
                 },

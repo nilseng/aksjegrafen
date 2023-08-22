@@ -31,7 +31,7 @@ export const Modal = () => {
             style={{ borderRadius: "100%" }}
             textClassName="text-primary/60 text-xl"
             icon={faArrowLeft}
-            action={() => dispatch(setContent(ModalContent.NodeSearch))}
+            action={() => dispatch(setContent({ content: ModalContent.NodeSearch }))}
           />
         )}
         {content === ModalContent.NodeSearch && <NodeSearch />}

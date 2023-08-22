@@ -18,7 +18,6 @@ import {
   fetchInvestmentsThunk,
   fetchInvestorsThunk,
   fetchRoleUnitsThunk,
-  setSource,
 } from "../../../slices/graphSlice";
 import { ModalContent, open as openModal, setContent } from "../../../slices/modalSlice";
 import { AppDispatch } from "../../../store";
@@ -43,9 +42,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             node,
             condition: node.labels.includes(GraphNodeLabel.Company),
             action: () => {
-              dispatch(setSource(node));
               dispatch(openModal());
-              dispatch(setContent(ModalContent.Financials));
+              dispatch(setContent({ content: ModalContent.Financials, source: node }));
               dispatch(closeMenu());
             },
           },
@@ -55,9 +53,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faListAlt,
             node,
             action: () => {
-              dispatch(setSource(node));
               dispatch(openModal());
-              dispatch(setContent(ModalContent.InvestmentTable));
+              dispatch(setContent({ content: ModalContent.InvestmentTable, source: node }));
               dispatch(closeMenu());
             },
           },
@@ -67,9 +64,8 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faList,
             node,
             action: () => {
-              dispatch(setSource(node));
               dispatch(openModal());
-              dispatch(setContent(ModalContent.InvestorTable));
+              dispatch(setContent({ content: ModalContent.InvestorTable, source: node }));
               dispatch(closeMenu());
             },
           },
