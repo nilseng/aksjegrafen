@@ -12,6 +12,7 @@ import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
+import { findPopularNodes } from "../use-cases/findPopularNodes";
 import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { findShortestPath as findShortestPath2 } from "../use-cases/findShortestPath2";
@@ -468,6 +469,14 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
       if (!isUserEvent(req.body) || !errors.isEmpty()) return res.status(400).json("Invalid User Event.");
       await saveUserEvent(req.body);
       return res.send();
+    })
+  );
+
+  router.get(
+    "/popular-nodes",
+    asyncRouter(async (_, res) => {
+      const data = await findPopularNodes();
+      return res.status(200).json(data);
     })
   );
 
