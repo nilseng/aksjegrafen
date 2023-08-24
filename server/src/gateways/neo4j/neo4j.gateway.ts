@@ -36,6 +36,19 @@ export const findNode = async ({ uuid }: { uuid: string }) => {
   return mapRecordToGraphNode(records[0], "n");
 };
 
+export const findNodesByUuids = async ({ uuids }: { uuids: string[] }) => {
+  const records = await runQuery<{ node: NodeEntry }>({
+    query: `
+    MATCH (node: Company|Person|Shareholder|Unit)
+    WHERE node.uuid IN $uuids
+    RETURN node
+    `,
+    params: { uuids },
+  });
+  if (!records || records.length === 0) return [];
+  return records.map((record) => mapRecordToGraphNode(record, "node"));
+};
+
 export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) => {
   const records = await runQuery<{ node: NodeEntry }>({
     query: `
