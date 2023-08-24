@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GraphNode } from "../models/models";
 
 export enum ModalContent {
@@ -15,6 +15,7 @@ export interface ModalState {
   content: ModalContent;
   source?: GraphNode;
   target?: GraphNode;
+  popularNodes?: GraphNode[];
 }
 
 export const modalSlice = createSlice<
@@ -46,6 +47,18 @@ export const modalSlice = createSlice<
       if (action.payload.target) state.target = action.payload.target;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(fetchPopularNodesThunk.fulfilled, (state, action) => {
+      state.popularNodes = action.payload;
+    });
+  },
 });
 
 export const { open, close, setContent } = modalSlice.actions;
+
+export const fetchPopularNodesThunk = createAsyncThunk("modal/popularNodes", fetchPopularNodes);
+
+async function fetchPopularNodes() {
+  const res = await fetch("/api/popular-nodes");
+  return res.json();
+}
