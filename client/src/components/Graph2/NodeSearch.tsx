@@ -16,7 +16,7 @@ export const NodeSearch = () => {
   const dispatch = useAppDispatch();
 
   const { theme } = useContext(AppContext);
-  const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
+  const { source, popularNodes } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
 
   return (
     <div className="w-full h-14">
@@ -90,7 +90,7 @@ export const NodeSearch = () => {
             },
           ],
         })}
-        initialResult={source ? [source] : undefined}
+        initialResult={source ? [source] : popularNodes}
       />
     </div>
   );
