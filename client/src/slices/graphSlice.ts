@@ -90,7 +90,9 @@ export const graphSlice = createSlice<
       state.data.menu = { isOpen: false, node: undefined, position: {} };
     },
     resetGraph: (state) => {
-      state = initialState;
+      state.status = initialState.status;
+      state.error = initialState.error;
+      state.data = initialState.data;
     },
   },
   extraReducers: (builder) => {
