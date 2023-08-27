@@ -74,4 +74,6 @@ const mapNodeToShareholder = (node: Node) =>
     : undefined;
 
 const mapNodeToCompany = (node: Node) =>
-  node.labels.find((l) => l === "Company") ? { name: node.properties.name, orgnr: node.properties.orgnr } : undefined;
+  node.labels.find((l) => l === "Company")
+    ? { name: node.properties.name, orgnr: node.properties.orgnr, shares: {} }
+    : undefined;
