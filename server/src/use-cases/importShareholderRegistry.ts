@@ -80,6 +80,7 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
         const key = `${ownership.shareholderOrgnr ?? ownership.shareHolderId}-${ownership.orgnr}`;
         if (isOwnership(ownership)) {
           if (ownerships[key]) {
+            // TODO: Handle the case where there are multiple entries of the same stock class. Now writing over dups instead of summarizing.
             ownerships[key].holdings[year] = {
               ...ownerships[key].holdings[year],
               ...ownership.holdings[year],
