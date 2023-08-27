@@ -31,9 +31,9 @@ export const useForceSimulation = ({
   const simulationNodesMap = useRef<{ [uuid: string]: GraphNodeDatum }>({});
 
   useEffect(() => {
-    if (svgRef.current && graphType && nodes && nodes?.length > 0 && sourceUuid) {
-      const svg = select<SVGElement, null>(svgRef.current);
+    const svg = svgRef.current ? select<SVGElement, null>(svgRef.current) : undefined;
 
+    if (svg && graphType && nodes && sourceUuid) {
       const mutableNodesMap: { [uuid: string]: GraphNodeDatum } = {};
 
       cloneDeep(nodes).forEach((node) => {
