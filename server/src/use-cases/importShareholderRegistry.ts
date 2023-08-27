@@ -80,18 +80,27 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
         const key = `${ownership.shareholderOrgnr ?? ownership.shareHolderId}-${ownership.orgnr}`;
         if (isOwnership(ownership)) {
           if (ownerships[key]) {
-            // TODO: Handle the case where there are multiple entries of the same stock class. Now writing over dups instead of summarizing.
+            const stockClass = Object.keys(ownership.holdings[year]!).find((c) => c !== "total")!;
             ownerships[key].holdings[year] = {
               ...ownerships[key].holdings[year],
-              ...ownership.holdings[year],
-              total: ownerships[key].holdings[year]?.total! + ownership.holdings[year]?.total!,
+              [stockClass]:
+                (ownerships[key].holdings[year]?.[stockClass] ?? 0) + ownership.holdings[year]?.[stockClass]!,
+              total: ownerships[key].holdings[year]!.total! + ownership.holdings[year]?.total!,
             };
           } else ownerships[key] = ownership;
         } else console.log("Invalid ownership", ownership, raw);
 
         const company = mapCompany(raw, year);
-        if (isCompany(company)) companies[company.orgnr] = company;
-        else console.log("Invalid company", company, raw);
+        if (isCompany(company)) {
+          if (companies[company.orgnr]?.shares[year]) {
+            const stockClass = Object.keys(company.shares[year]!).find((c) => c !== "total")!;
+            companies[company.orgnr].shares[year] = {
+              ...companies[company.orgnr].shares[year]!,
+              [stockClass]:
+                (companies[company.orgnr].shares[year]?.[stockClass] ?? 0) + company.shares[year]?.[stockClass]!,
+            };
+          } else companies[company.orgnr] = company;
+        } else console.log("Invalid company", company, raw);
 
         const shareholder = mapShareholder(raw, ownership.shareHolderId);
         if (isShareholder(shareholder)) shareholders[shareholder.id] = shareholder;
@@ -152,7 +161,11 @@ const mapOwnership = (raw: OwnershipRaw, year: Year): Omit<Ownership, "_id"> => 
 };
 
 const mapCompany = (raw: OwnershipRaw, year: Year): Omit<Company, "_id"> => {
-  return { orgnr: raw.orgnr, name: raw.companyName, shares: { [year]: { total: +raw.companyStocks } } };
+  return {
+    orgnr: raw.orgnr,
+    name: raw.companyName,
+    shares: { [year]: { total: +raw.companyStocks, [raw.shareClass]: +raw.shareholderStocks } },
+  };
 };
 
 const mapShareholder = (raw: OwnershipRaw, id: string): Partial<Shareholder> => {
