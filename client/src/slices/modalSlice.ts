@@ -18,6 +18,13 @@ export interface ModalState {
   popularNodes?: GraphNode[];
 }
 
+const initialState = {
+  isOpen: true,
+  content: ModalContent.NodeSearch,
+  source: undefined,
+  target: undefined,
+};
+
 export const modalSlice = createSlice<
   ModalState,
   {
@@ -27,13 +34,11 @@ export const modalSlice = createSlice<
       state: ModalState,
       action: PayloadAction<{ content: ModalContent; source?: GraphNode; target?: GraphNode }>
     ) => void;
+    resetModal: (state: ModalState) => void;
   }
 >({
   name: "modalHandler",
-  initialState: {
-    isOpen: true,
-    content: ModalContent.NodeSearch,
-  },
+  initialState,
   reducers: {
     open: (state) => {
       state.isOpen = true;
@@ -46,6 +51,12 @@ export const modalSlice = createSlice<
       if (action.payload.source) state.source = action.payload.source;
       if (action.payload.target) state.target = action.payload.target;
     },
+    resetModal: (state) => {
+      state.isOpen = initialState.isOpen;
+      state.content = initialState.content;
+      state.source = initialState.source;
+      state.target = initialState.target;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchPopularNodesThunk.fulfilled, (state, action) => {
@@ -54,7 +65,7 @@ export const modalSlice = createSlice<
   },
 });
 
-export const { open, close, setContent } = modalSlice.actions;
+export const { open, close, setContent, resetModal } = modalSlice.actions;
 
 export const fetchPopularNodesThunk = createAsyncThunk("modal/popularNodes", fetchPopularNodes);
 
