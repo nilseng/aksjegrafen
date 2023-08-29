@@ -44,7 +44,7 @@ export const InvestmentTable = () => {
         <OwnershipTable investor={shareholder} ownerships={investments} closeModal={() => dispatch(close())} />
         <div className="w-full flex justify-between pt-2">
           <button
-            className="rounded text-white p-2"
+            className="rounded text-white text-xs px-2 py-1"
             style={{ backgroundColor: skip < limit ? theme.muted : theme.primary }}
             disabled={skip < limit}
             onClick={() => {
@@ -54,7 +54,7 @@ export const InvestmentTable = () => {
             Forrige {limit}
           </button>
           <button
-            className="rounded text-white p-2"
+            className="rounded text-white text-xs px-2 py-1"
             style={{
               backgroundColor: !!(((investments?.length ?? 0) + (investments?.length ?? 0)) % limit)
                 ? theme.muted
