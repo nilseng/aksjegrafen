@@ -7,7 +7,7 @@ export interface ICompany {
   zipCode?: string;
   location?: string;
   countryCode?: string;
-  shares?: { [key in Year]?: { total: number } };
+  shares?: { [key in Year]?: { total: number; [stockClass: string]: number } };
   investorCount?: { [key in Year]?: number };
   investmentCount?: { [key in Year]?: number };
 }
