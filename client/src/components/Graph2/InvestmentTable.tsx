@@ -36,13 +36,15 @@ export const InvestmentTable = () => {
 
   if (investments) {
     return (
-      <div className="h-full overflow-auto mt-12">
+      <div className="flex flex-col h-full overflow-auto mt-12">
         <h5 className="text-center text-lg pb-2">
           <span className="font-semibold mr-2">Investeringene til {shareholder?.name}</span>{" "}
           {shareholder?.orgnr && <span style={{ color: theme.muted }}>({shareholder?.orgnr})</span>}
         </h5>
-        <OwnershipTable investor={shareholder} ownerships={investments} closeModal={() => dispatch(close())} />
-        <div className="w-full flex justify-between pt-2">
+        <div className="flex-full overflow-auto border border-primary rounded">
+          <OwnershipTable investor={shareholder} ownerships={investments} closeModal={() => dispatch(close())} />
+        </div>
+        <div className="w-full flex justify-between p-4">
           <button
             className="rounded text-white text-xs px-2 py-1"
             style={{ backgroundColor: skip < limit ? theme.muted : theme.primary }}
