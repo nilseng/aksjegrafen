@@ -11,12 +11,12 @@ export const GraphMenuItem = (item: MenuItem) => {
   return (
     <div
       key={item.name}
-      className="flex items-center text-xs font-bold p-2"
+      className={`w-full flex items-center text-xs ${item.border ? "justify-center" : ""} font-bold p-2`}
       style={{
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
         color: isDisabled(item) ? theme.muted : theme.text,
         cursor: isDisabled(item) || !item.action ? "default" : "pointer",
-        borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
+        borderBottom: item.border ? `1px solid ${theme.muted}` : "",
         borderRadius: "8px",
       }}
       onClick={() => {
