@@ -16,7 +16,7 @@ interface IProps {
 export const GraphDetailsModal = ({ entity, setEntity }: IProps) => {
   const { theme } = useContext(AppContext);
 
-  const brregInfo = useBrregEntityInfo(entity);
+  const brregInfo = useBrregEntityInfo(entity.orgnr);
 
   return (
     <div className="flex justify-center absolute w-full md:w-2/3 h-3/4 mt-12 p-2">

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { ICompany, IShareholder } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 const brregUrl = "https://data.brreg.no/enhetsregisteret/api";
@@ -133,9 +132,10 @@ export interface IBrregUnit {
   organisasjonsform: Organisasjonsform;
   registreringsdatoEnhetsregisteret: string;
   registrertIMvaregisteret: boolean;
-  naeringskode1: Naeringskode1;
+  naeringskode1?: Naeringskode1;
   antallAnsatte: number;
   forretningsadresse: Forretningsadresse;
+  postadresse?: Forretningsadresse;
   stiftelsesdato: string;
   institusjonellSektorkode: InstitusjonellSektorkode;
   registrertIForetaksregisteret: boolean;
@@ -145,6 +145,7 @@ export interface IBrregUnit {
   underAvvikling: boolean;
   underTvangsavviklingEllerTvangsopplosning: boolean;
   maalform: string;
+  hjemmeside: string;
   _links: Links;
 }
 
@@ -235,15 +236,15 @@ export const getRoleTypes = async (): Promise<RoleTypeResponse> => {
   return res ? res.json() : res;
 };
 
-export const useBrregEntityInfo = (entity?: ICompany | IShareholder) => {
-  const [info, setInfo] = useState<any>();
+export const useBrregEntityInfo = (orgnr?: string) => {
+  const [info, setInfo] = useState<IBrregUnit>();
 
   useEffect(() => {
-    if (entity?.orgnr) {
-      getBrregUnit(entity.orgnr).then((res) => setInfo(res));
+    if (orgnr) {
+      getBrregUnit(orgnr).then((res) => setInfo(res));
     }
     return () => setInfo(undefined);
-  }, [entity]);
+  }, [orgnr]);
 
   return info;
 };
