@@ -30,6 +30,7 @@ export const modalSlice = createSlice<
   {
     open: (state: ModalState) => void;
     close: (state: ModalState) => void;
+    setSource: (state: ModalState, action: PayloadAction<GraphNode>) => void;
     setContent: (
       state: ModalState,
       action: PayloadAction<{ content: ModalContent; source?: GraphNode; target?: GraphNode }>
@@ -45,6 +46,9 @@ export const modalSlice = createSlice<
     },
     close: (state) => {
       state.isOpen = false;
+    },
+    setSource: (state, action) => {
+      state.source = action.payload;
     },
     setContent: (state, action) => {
       state.content = action.payload.content;
@@ -65,7 +69,7 @@ export const modalSlice = createSlice<
   },
 });
 
-export const { open, close, setContent, resetModal } = modalSlice.actions;
+export const { open, close, setSource, setContent, resetModal } = modalSlice.actions;
 
 export const fetchPopularNodesThunk = createAsyncThunk("modal/popularNodes", fetchPopularNodes);
 
