@@ -41,7 +41,7 @@ export const NodeSearch = () => {
               condition: node.labels.includes(GraphNodeLabel.Company),
               buttonContent: (
                 <div>
-                  <FontAwesomeIcon icon={faList} className="text-primary" size="lg" />
+                  <FontAwesomeIcon icon={faList} className="text-primary" />
                   <p className="text-xs text-muted">investorer</p>
                 </div>
               ),
@@ -54,7 +54,7 @@ export const NodeSearch = () => {
               condition: node.labels.includes(GraphNodeLabel.Shareholder),
               buttonContent: (
                 <div>
-                  <FontAwesomeIcon icon={faList} className="text-primary" size="lg" />
+                  <FontAwesomeIcon icon={faList} className="text-primary" />
                   <p className="text-xs text-muted">investeringer</p>
                 </div>
               ),
@@ -66,8 +66,8 @@ export const NodeSearch = () => {
               name: "graph-button",
               condition: true,
               buttonContent: (
-                <div>
-                  <GraphLogo inputColor={theme.secondary} width={"1.5rem"} height={"1.5rem"} />
+                <div className="flex flex-col items-center">
+                  <GraphLogo inputColor={theme.secondary} width={"1rem"} height={"1rem"} />
                   <p className="text-xs text-muted">graf</p>
                 </div>
               ),
@@ -85,7 +85,7 @@ export const NodeSearch = () => {
               condition: true,
               buttonContent: (
                 <div>
-                  <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} size="lg" />
+                  <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} />
                   <p className="text-xs text-muted">relasjoner</p>
                 </div>
               ),
