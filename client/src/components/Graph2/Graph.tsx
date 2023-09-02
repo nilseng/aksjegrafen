@@ -1,9 +1,18 @@
 import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
+import { useDocumentTitle } from "../../hooks/useDocumentTitle";
 import { useGraph } from "../../hooks/useGraph";
 import { FetchState } from "../../models/models";
-import { GraphState, fetchSourceThunk, fetchTargetThunk, setSource, setTarget } from "../../slices/graphSlice";
+import {
+  GraphState,
+  fetchSourceThunk,
+  fetchTargetThunk,
+  setSource,
+  setSourceUuid,
+  setTarget,
+  setTargetUuid,
+} from "../../slices/graphSlice";
 import { ModalState, fetchPopularNodesThunk } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
@@ -20,18 +29,30 @@ export const Graph = () => {
 
   useGraph();
 
-  const { sourceUuid, targetUuid, isDirected } = useSelector<RootState, RootState["graph"]["data"]>(
+  const { sourceUuid, targetUuid, isDirected, source } = useSelector<RootState, RootState["graph"]["data"]>(
     (state) => state.graph.data
   );
+
+  useDocumentTitle("Aksjegrafen", source?.properties.name);
 
   useEffect(() => {
     if (sourceUuid) dispatch(fetchSourceThunk(sourceUuid));
     else dispatch(setSource(undefined));
+
+    return () => {
+      dispatch(setSourceUuid(undefined));
+      dispatch(setSource(undefined));
+    };
   }, [dispatch, sourceUuid]);
 
   useEffect(() => {
     if (targetUuid) dispatch(fetchTargetThunk(targetUuid));
     else dispatch(setTarget(undefined));
+
+    return () => {
+      dispatch(setTargetUuid(undefined));
+      dispatch(setTarget(undefined));
+    };
   }, [dispatch, targetUuid]);
 
   useEffect(() => {
