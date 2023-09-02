@@ -83,7 +83,7 @@ const getStockClasses = (ownership: IOwnership) => {
       if (stockClass !== "total") stockClasses.add(stockClass);
     });
   });
-  return Array.from(stockClasses);
+  return Array.from(stockClasses).sort((a, b) => (a < b ? -1 : 1));
 };
 
 export const OwnershipDetail = ({
@@ -116,6 +116,7 @@ export const OwnershipDetail = ({
               </p>
               {isDetailsVisible && (
                 <>
+                  <p className="text-xs font-bold">Totalt</p>
                   <p className="text-xs m-0" style={{ height: "1rem" }}>
                     {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
                   </p>
