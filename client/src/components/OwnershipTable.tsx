@@ -65,7 +65,7 @@ export const OwnershipTable = ({
             ) : null}
           </span>
           <OwnershipDetail ownership={o} investment={investment} investor={investor} />
-          <div className="w-full px-1 sm:px-3 pb-1 sm:pb-3">
+          <div className="w-full px-1 sm:px-3 py-1 sm:py-2">
             <div className="w-full" style={{ borderBottom: `0.5px solid ${theme.primary}` }}></div>
           </div>
         </Fragment>
