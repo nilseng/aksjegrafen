@@ -1,12 +1,12 @@
 import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
-import { setSource } from "../../slices/graphSlice";
-import { ModalContent, close, setContent } from "../../slices/modalSlice";
+import { setSource as setGraphSource } from "../../slices/graphSlice";
+import { ModalContent, close, setContent, setSource } from "../../slices/modalSlice";
 import { RootState, useAppDispatch } from "../../store";
 import { GraphLogo } from "../GraphLogo";
 import { SearchComponent } from "../SearchComponent";
@@ -17,6 +17,11 @@ export const NodeSearch = () => {
 
   const { theme } = useContext(AppContext);
   const { source, popularNodes } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
+  const { source: graphSource } = useSelector<RootState, RootState["graph"]["data"]>((state) => state.graph.data);
+
+  useEffect(() => {
+    if (!source && graphSource) dispatch(setSource(graphSource));
+  }, [dispatch, graphSource, source]);
 
   return (
     <div className="w-full h-14">
@@ -67,7 +72,7 @@ export const NodeSearch = () => {
                 </div>
               ),
               handleClick: (node: GraphNode) => {
-                dispatch(setSource(undefined));
+                dispatch(setGraphSource(undefined));
                 history.push({
                   pathname: `/`,
                   search: `?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`,
