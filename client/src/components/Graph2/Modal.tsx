@@ -8,6 +8,7 @@ import { InvestmentTable } from "./InvestmentTable";
 import { InvestorTable } from "./InvestorTable";
 import { NodeSearch } from "./NodeSearch";
 import { TargetSearch } from "./TargetSearch";
+import { UnitInformation } from "./UnitInformation";
 
 export const Modal = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export const Modal = () => {
         {content === ModalContent.InvestmentTable && <InvestmentTable />}
         {content === ModalContent.InvestorTable && <InvestorTable />}
         {content === ModalContent.Financials && <Financials />}
+        {content === ModalContent.Details && <UnitInformation />}
       </div>
     </div>
   );

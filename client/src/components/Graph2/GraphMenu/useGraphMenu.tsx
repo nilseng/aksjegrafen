@@ -35,7 +35,16 @@ export const useGraphMenu = (node?: GraphNode) => {
     if (node) {
       setMenuItems(
         [
-          { name: node.properties.name, border: true, node },
+          {
+            name: node.properties.name,
+            border: true,
+            node,
+            action: () => {
+              dispatch(openModal());
+              dispatch(setContent({ content: ModalContent.Details, source: node }));
+              dispatch(closeMenu());
+            },
+          },
           {
             name: "Regnskap",
             icon: faDollarSign,
