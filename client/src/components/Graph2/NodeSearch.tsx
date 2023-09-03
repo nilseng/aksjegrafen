@@ -35,6 +35,11 @@ export const NodeSearch = () => {
           key: node.properties.uuid,
           name: node.properties.name,
           tags: [node.properties.orgnr].filter((tag) => !!tag) as (string | number)[],
+          handleTitleClick: node.properties.orgnr
+            ? (node: GraphNode) => {
+                dispatch(setContent({ content: ModalContent.Details, source: node }));
+              }
+            : undefined,
           buttons: [
             {
               name: "investors-button",
