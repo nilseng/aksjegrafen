@@ -133,6 +133,8 @@ export interface IBrregUnit {
   registreringsdatoEnhetsregisteret: string;
   registrertIMvaregisteret: boolean;
   naeringskode1?: Naeringskode1;
+  naeringskode2?: Naeringskode2;
+  naeringskode3?: Naeringskode3;
   antallAnsatte: number;
   forretningsadresse: Forretningsadresse;
   postadresse?: Forretningsadresse;
@@ -146,6 +148,7 @@ export interface IBrregUnit {
   underTvangsavviklingEllerTvangsopplosning: boolean;
   maalform: string;
   hjemmeside: string;
+  slettedato?: string;
   _links: Links;
 }
 
@@ -166,6 +169,14 @@ export interface Self {
 export interface Naeringskode1 {
   beskrivelse: string;
   kode: string;
+}
+
+export interface Naeringskode2 extends Naeringskode1 {
+  hjelpeenhetskode?: boolean;
+}
+
+export interface Naeringskode3 extends Naeringskode1 {
+  hjelpeenhetskode?: boolean;
 }
 
 export interface Forretningsadresse {
