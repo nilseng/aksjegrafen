@@ -1,6 +1,7 @@
 import { uniqWith } from "lodash";
 import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j/neo4j.gateway";
-import { CurrentRole, GraphLink, GraphNode } from "../models/models";
+import { GraphNode } from "../models/models";
+import { addCurrentRoles } from "../utils/addCurrentRoles";
 
 export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: number }) => {
   const [investors, investments, holders, units] = await Promise.all([
@@ -33,24 +34,6 @@ export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: num
     nodes: uniqueNodes,
     links: uniqueLinks,
   };
-};
-
-const addCurrentRoles = ({ nodes, links }: { nodes: GraphNode[]; links: GraphLink[] }) => {
-  nodes.forEach((node) => {
-    const currentRoles = new Set<CurrentRole>();
-    const sourceLinks = links.filter((link) => link.source.properties.uuid === node.properties.uuid);
-    sourceLinks.forEach((link) => {
-      if (link.type === "OWNS") currentRoles?.add(CurrentRole.Investor);
-      else currentRoles?.add(CurrentRole.Actor);
-    });
-    const targetLinks = links.filter((link) => link.target.properties.uuid === node.properties.uuid);
-    targetLinks.forEach((link) => {
-      if (link.type === "OWNS") currentRoles?.add(CurrentRole.Investment);
-      else currentRoles?.add(CurrentRole.Unit);
-    });
-
-    node.currentRoles = Array.from(currentRoles);
-  });
 };
 
 const addSourceSkip = ({ uuid, nodes, skip }: { uuid: string; nodes: GraphNode[]; skip: GraphNode["skip"] }) => {
