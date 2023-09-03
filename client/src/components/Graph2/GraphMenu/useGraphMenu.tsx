@@ -39,11 +39,13 @@ export const useGraphMenu = (node?: GraphNode) => {
             name: node.properties.name,
             border: true,
             node,
-            action: () => {
-              dispatch(openModal());
-              dispatch(setContent({ content: ModalContent.Details, source: node }));
-              dispatch(closeMenu());
-            },
+            action: node.properties.orgnr
+              ? () => {
+                  dispatch(openModal());
+                  dispatch(setContent({ content: ModalContent.Details, source: node }));
+                  dispatch(closeMenu());
+                }
+              : undefined,
           },
           {
             name: "Regnskap",
