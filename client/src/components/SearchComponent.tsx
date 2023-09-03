@@ -130,8 +130,8 @@ export const SearchComponent = <Result extends unknown>({
                         }
                       }}
                     >
-                      <div>
-                        <div className="break-words text-xs font-bold mr-2 pb-1">{item.name}</div>
+                      <div className="flex flex-col items-center">
+                        <div className="break-words text-xs font-bold pb-1">{item.name}</div>
                         <div className="w-full flex justify-center pb-2">
                           {item.tags.map((tag) => (
                             <span key={tag} className="text-xs text-muted mx-2">
