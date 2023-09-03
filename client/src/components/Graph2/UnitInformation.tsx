@@ -28,12 +28,12 @@ export const UnitInformation = () => {
           </p>
         </section>
       )}
-      {unit?.antallAnsatte && (
+      {unit?.antallAnsatte ? (
         <section className="pb-4">
           <p className="text-xs font-bold">Antall ansatte</p>
           <p className="text-sm">{unit?.antallAnsatte.toLocaleString()}</p>
         </section>
-      )}
+      ) : null}
       {unit?.forretningsadresse && (
         <section className="pb-4">
           <p className="text-xs font-bold">Forretningsadresse</p>
