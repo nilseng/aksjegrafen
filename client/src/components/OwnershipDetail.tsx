@@ -116,7 +116,9 @@ export const OwnershipDetail = ({
               </p>
               {isDetailsVisible && (
                 <>
-                  <p className="text-xs font-bold">Totalt</p>
+                  <p className="text-xs font-bold" style={{ height: "1rem" }}>
+                    {ownership.holdings[year]?.total ? "Totalt" : ""}
+                  </p>
                   <p className="text-xs m-0" style={{ height: "1rem" }}>
                     {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
                   </p>
@@ -124,7 +126,9 @@ export const OwnershipDetail = ({
                   {stockClasses?.map((stockClass: string) => (
                     <div key={stockClass}>
                       {ownership.holdings[year] ? (
-                        <p className="font-bold text-xs text-ellipsis overflow-hidden">{stockClass}</p>
+                        <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
+                          {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
+                        </p>
                       ) : null}
                       <p className="text-xs m-0" style={{ height: "1rem" }}>
                         {ownership.holdings[year]?.[stockClass]
