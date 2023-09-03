@@ -18,6 +18,7 @@ interface ListItem<Result> {
   key: string;
   name: string;
   tags: (string | number)[];
+  handleTitleClick?: (res: Result) => void;
   icon?: IconProp;
   iconComponent?: ReactElement;
   buttons?: { name: string; condition: boolean; buttonContent: ReactElement; handleClick: (res: Result) => void }[];
@@ -130,7 +131,11 @@ export const SearchComponent = <Result extends unknown>({
                         }
                       }}
                     >
-                      <div className="flex flex-col items-center">
+                      <div
+                        className="flex flex-col items-center"
+                        style={item.handleTitleClick ? { cursor: "pointer" } : {}}
+                        onClick={() => item.handleTitleClick?.(result)}
+                      >
                         <div className="break-words text-xs font-bold">{item.name}</div>
                         <div className="w-full flex justify-center pb-1">
                           {item.tags.map((tag) => (
