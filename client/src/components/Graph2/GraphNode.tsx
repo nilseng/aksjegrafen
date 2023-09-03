@@ -1,6 +1,15 @@
 import { useContext } from "react";
 import { AppContext } from "../../AppContext";
-import { GraphNode as IGraphNode } from "../../models/models";
+import { CurrentRole, GraphNode as IGraphNode } from "../../models/models";
+
+const getBorder = (node: IGraphNode): string => {
+  const borders = [];
+  if (node.currentRoles?.includes(CurrentRole.Actor)) borders.push("border-r-warning");
+  if (node.currentRoles?.includes(CurrentRole.Unit)) borders.push("border-l-success");
+  if (node.currentRoles?.includes(CurrentRole.Investment)) borders.push("border-t-primary");
+  if (node.currentRoles?.includes(CurrentRole.Investor)) borders.push("border-b-secondary");
+  return borders.join(" ");
+};
 
 export const GraphNode = ({ node }: { node: IGraphNode }) => {
   const { theme } = useContext(AppContext);
@@ -12,7 +21,7 @@ export const GraphNode = ({ node }: { node: IGraphNode }) => {
       style={{ userSelect: "none" }}
     >
       <div
-        className="h-full w-full dark:text-white p-3"
+        className={`h-full w-full dark:text-white border-2 border-transparent ${getBorder(node)} p-3`}
         style={{
           ...theme.elevation,
           backgroundColor: theme.backgroundSecondary,
