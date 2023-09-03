@@ -62,7 +62,7 @@ export const HowToModal = () => {
       </section>
       <section className="flex items-center p-2">
         <div className="w-8 h-6 border-4 border-white/20 border-l-success rounded-lg mr-2"></div>
-        <p>Enhet som har aktører med roller i grafen</p>
+        <p>Enhet som har rolleinnehavere i grafen</p>
       </section>
       <section className="flex items-center p-2">
         <div className="w-8 h-6 border-4 border-white/20 border-r-warning rounded-lg mr-2"></div>
