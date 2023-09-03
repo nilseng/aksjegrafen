@@ -32,26 +32,42 @@ export const HowToModal = () => {
       <button className="float-right m-4" onClick={() => setIsOpen(false)}>
         <FontAwesomeIcon icon={faTimes} style={{ color: theme.muted }} />
       </button>
-      <h5 className="text-xl font-bold p-4">
+      <h5 className="text-xl font-bold p-2">
         <FontAwesomeIcon className="mr-4" style={{ color: theme.primary }} icon={faInfoCircle} />
         Sånn bruker du Aksjegrafen:
       </h5>
-      <p className="p-4 m-0">
+      <p className="p-2 m-0">
         <FontAwesomeIcon className="mr-2" icon={faHandPointer} />
         Trykk på et selskap, aksjonær eller rolleinnehaver for å se meny med valgmuligheter.
       </p>
-      <p className="p-4 m-0">
+      <p className="p-2 m-0">
         <FontAwesomeIcon className="mr-2" icon={faHandLizard} />
         Scroll eller bruk to fingre for å zoome inn eller ut.
       </p>
-      <p className="p-4">
+      <p className="p-2">
         <FontAwesomeIcon className="mr-2" icon={faHandRock} />
         Klikk og dra for å flytte et selskap eller aksjonær.
       </p>
-      <p className="p-4">
+      <p className="p-2">
         <FontAwesomeIcon className="mr-2" icon={faHandRock} />
         Klikk og dra bakgrunnen for å flytte grafen.
       </p>
+      <section className="flex items-center p-2">
+        <div className="w-8 h-6 border-4 border-white/20 border-b-secondary rounded-lg mr-2"></div>
+        <p>Investor som har investeringer i grafen</p>
+      </section>
+      <section className="flex items-center p-2">
+        <div className="w-8 h-6 border-4 border-white/20 border-t-primary rounded-lg mr-2"></div>
+        <p>Investering som har investorer i grafen</p>
+      </section>
+      <section className="flex items-center p-2">
+        <div className="w-8 h-6 border-4 border-white/20 border-l-success rounded-lg mr-2"></div>
+        <p>Enhet som har aktører med roller i grafen</p>
+      </section>
+      <section className="flex items-center p-2">
+        <div className="w-8 h-6 border-4 border-white/20 border-r-warning rounded-lg mr-2"></div>
+        <p>Aktør som har en rolle i en enhet i grafen</p>
+      </section>
     </div>
   );
 };
