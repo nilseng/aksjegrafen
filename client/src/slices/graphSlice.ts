@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { toast } from "react-toastify";
-import { FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
+import { CurrentRole, FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export interface GraphState {
@@ -150,6 +150,9 @@ export const graphSlice = createSlice<
           ? { ...source.skip, actors: (source.skip.actors += newNodesCount) }
           : { actors: newNodesCount, units: 0, investments: 0, investors: 0 };
         const addedNodesCount = addToGraphIfNotExist(state, action);
+        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Unit)) {
+          source.currentRoles?.push(CurrentRole.Unit);
+        }
         toast(`Lastet ${addedNodesCount} nye aktører i ${action.meta.arg.node.properties.name}.`, {
           type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
@@ -171,6 +174,9 @@ export const graphSlice = createSlice<
           ? { ...source.skip, units: (source.skip.units += newNodesCount) }
           : { units: newNodesCount, actors: 0, investments: 0, investors: 0 };
         const addedNodesCount = addToGraphIfNotExist(state, action);
+        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Actor)) {
+          source.currentRoles?.push(CurrentRole.Actor);
+        }
         toast(`Lastet ${addedNodesCount} av rollene til ${action.meta.arg.node.properties.name}.`, {
           type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
@@ -195,6 +201,9 @@ export const graphSlice = createSlice<
           ? { ...source.skip, investors: (source.skip.investors += newNodesCount) }
           : { investors: newNodesCount, actors: 0, investments: 0, units: 0 };
         const addedNodesCount = addToGraphIfNotExist(state, action);
+        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Investment)) {
+          source.currentRoles?.push(CurrentRole.Investment);
+        }
         toast(`Lastet ${addedNodesCount} av investorene til ${action.meta.arg.node.properties.name}.`, {
           type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
@@ -219,6 +228,9 @@ export const graphSlice = createSlice<
           ? { ...source.skip, investments: (source.skip.investments += newNodesCount) }
           : { investments: newNodesCount, actors: 0, units: 0, investors: 0 };
         const addedNodesCount = addToGraphIfNotExist(state, action);
+        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Investor)) {
+          source.currentRoles?.push(CurrentRole.Investor);
+        }
         toast(`Lastet ${addedNodesCount} av investeringene til ${action.meta.arg.node.properties.name}.`, {
           type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
         });
