@@ -53,19 +53,19 @@ export const HowToModal = () => {
         Klikk og dra bakgrunnen for å flytte grafen.
       </p>
       <section className="flex items-center p-2">
-        <div className="w-8 h-6 border-4 border-white/20 border-b-secondary rounded-lg mr-2"></div>
+        <div className="w-8 h-6 border-4 border-gray/20 border-b-secondary rounded-lg mr-2"></div>
         <p>Investor som har investeringer i grafen</p>
       </section>
       <section className="flex items-center p-2">
-        <div className="w-8 h-6 border-4 border-white/20 border-t-primary rounded-lg mr-2"></div>
+        <div className="w-8 h-6 border-4 border-gray/20 border-t-primary rounded-lg mr-2"></div>
         <p>Investering som har investorer i grafen</p>
       </section>
       <section className="flex items-center p-2">
-        <div className="w-8 h-6 border-4 border-white/20 border-l-success rounded-lg mr-2"></div>
+        <div className="w-8 h-6 border-4 border-gray/20 border-l-success rounded-lg mr-2"></div>
         <p>Enhet som har rolleinnehavere i grafen</p>
       </section>
       <section className="flex items-center p-2">
-        <div className="w-8 h-6 border-4 border-white/20 border-r-warning rounded-lg mr-2"></div>
+        <div className="w-8 h-6 border-4 border-gray/20 border-r-warning rounded-lg mr-2"></div>
         <p>Aktør som har en rolle i en enhet i grafen</p>
       </section>
     </div>
