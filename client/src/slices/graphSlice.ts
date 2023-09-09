@@ -1,7 +1,7 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { toast } from "react-toastify";
-import { CurrentRole, FetchState, GraphLink, GraphNode, GraphType } from "../models/models";
+import { CurrentRole, FetchState, GraphLink, GraphNode, GraphNodeSkip, GraphType } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export interface GraphState {
@@ -141,21 +141,14 @@ export const graphSlice = createSlice<
         toast(`Laster aktører i ${action.meta.arg.node.properties.name}`, { type: toast.TYPE.INFO, autoClose: 1000 });
       })
       .addCase(fetchActorsThunk.fulfilled, (state, action) => {
-        const source = state.data.nodes.find((node) => node.properties.uuid === action.meta.arg.node.properties.uuid);
-        if (!source) {
-          throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
-        }
-        const newNodesCount = getNewNodesCount(action.payload.nodes);
-        source.skip = source.skip
-          ? { ...source.skip, actors: (source.skip.actors += newNodesCount) }
-          : { actors: newNodesCount, units: 0, investments: 0, investors: 0 };
-        const addedNodesCount = addToGraphIfNotExist(state, action);
-        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Unit)) {
-          source.currentRoles?.push(CurrentRole.Unit);
-        }
-        toast(`Lastet ${addedNodesCount} nye aktører i ${action.meta.arg.node.properties.name}.`, {
-          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+        const { addedNodesCount, newNodesCount, source } = handleNewNodes({
+          state,
+          action,
+          uuid: action.meta.arg.node.properties.uuid,
+          role: CurrentRole.Unit,
+          type: "actors",
         });
+        showActorsToast({ addedNodesCount, newNodesCount, node: source });
       })
       .addCase(fetchActorsThunk.rejected, (_, action) => {
         toast(`Kunne ikke laste aktører i ${action.meta.arg.node.properties.name}`, { type: toast.TYPE.ERROR });
@@ -165,21 +158,14 @@ export const graphSlice = createSlice<
         toast(`Laster rollene til ${action.meta.arg.node.properties.name}`, { type: toast.TYPE.INFO, autoClose: 1000 });
       })
       .addCase(fetchRoleUnitsThunk.fulfilled, (state, action) => {
-        const source = state.data.nodes.find((node) => node.properties.uuid === action.meta.arg.node.properties.uuid);
-        if (!source) {
-          throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
-        }
-        const newNodesCount = getNewNodesCount(action.payload.nodes);
-        source.skip = source.skip
-          ? { ...source.skip, units: (source.skip.units += newNodesCount) }
-          : { units: newNodesCount, actors: 0, investments: 0, investors: 0 };
-        const addedNodesCount = addToGraphIfNotExist(state, action);
-        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Actor)) {
-          source.currentRoles?.push(CurrentRole.Actor);
-        }
-        toast(`Lastet ${addedNodesCount} av rollene til ${action.meta.arg.node.properties.name}.`, {
-          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+        const { addedNodesCount, newNodesCount, source } = handleNewNodes({
+          state,
+          action,
+          uuid: action.meta.arg.node.properties.uuid,
+          role: CurrentRole.Actor,
+          type: "units",
         });
+        showRolesToast({ node: source, addedNodesCount, newNodesCount });
       })
       .addCase(fetchRoleUnitsThunk.rejected, (_, action) => {
         toast(`Kunne ikke laste rollene til ${action.meta.arg.node.properties.name}`, { type: toast.TYPE.ERROR });
@@ -192,21 +178,14 @@ export const graphSlice = createSlice<
         });
       })
       .addCase(fetchInvestorsThunk.fulfilled, (state, action) => {
-        const source = state.data.nodes.find((node) => node.properties.uuid === action.meta.arg.node.properties.uuid);
-        if (!source) {
-          throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
-        }
-        const newNodesCount = getNewNodesCount(action.payload.nodes);
-        source.skip = source.skip
-          ? { ...source.skip, investors: (source.skip.investors += newNodesCount) }
-          : { investors: newNodesCount, actors: 0, investments: 0, units: 0 };
-        const addedNodesCount = addToGraphIfNotExist(state, action);
-        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Investment)) {
-          source.currentRoles?.push(CurrentRole.Investment);
-        }
-        toast(`Lastet ${addedNodesCount} av investorene til ${action.meta.arg.node.properties.name}.`, {
-          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+        const { addedNodesCount, newNodesCount, source } = handleNewNodes({
+          state,
+          action,
+          uuid: action.meta.arg.node.properties.uuid,
+          role: CurrentRole.Investment,
+          type: "investors",
         });
+        showInvestorsToast({ addedNodesCount, newNodesCount, node: source });
       })
       .addCase(fetchInvestorsThunk.rejected, (_, action) => {
         toast(`Kunne ikke laste investorene til ${action.meta.arg.node.properties.name}`, { type: toast.TYPE.ERROR });
@@ -219,21 +198,14 @@ export const graphSlice = createSlice<
         });
       })
       .addCase(fetchInvestmentsThunk.fulfilled, (state, action) => {
-        const source = state.data.nodes.find((node) => node.properties.uuid === action.meta.arg.node.properties.uuid);
-        if (!source) {
-          throw Error(`Could not update skip, source with id=${action.meta.arg.node.properties.uuid} not found.`);
-        }
-        const newNodesCount = getNewNodesCount(action.payload.nodes);
-        source.skip = source.skip
-          ? { ...source.skip, investments: (source.skip.investments += newNodesCount) }
-          : { investments: newNodesCount, actors: 0, units: 0, investors: 0 };
-        const addedNodesCount = addToGraphIfNotExist(state, action);
-        if (addedNodesCount && !source.currentRoles?.includes(CurrentRole.Investor)) {
-          source.currentRoles?.push(CurrentRole.Investor);
-        }
-        toast(`Lastet ${addedNodesCount} av investeringene til ${action.meta.arg.node.properties.name}.`, {
-          type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+        const { addedNodesCount, newNodesCount, source } = handleNewNodes({
+          state,
+          action,
+          uuid: action.meta.arg.node.properties.uuid,
+          role: CurrentRole.Investor,
+          type: "investments",
         });
+        showInvestmentsToast({ addedNodesCount, newNodesCount, node: source });
       })
       .addCase(fetchInvestmentsThunk.rejected, (_, action) => {
         toast(`Kunne ikke laste investeringene til ${action.meta.arg.node.properties.name}`, {
@@ -243,9 +215,57 @@ export const graphSlice = createSlice<
   },
 });
 
+const handleNewNodes = ({
+  state,
+  action,
+  uuid,
+  type,
+  role,
+}: {
+  state: GraphState;
+  action: PayloadAction<{
+    nodes: GraphNode[];
+    links: GraphLink[];
+  }>;
+  uuid: string;
+  type: keyof GraphNodeSkip;
+  role: CurrentRole;
+}) => {
+  const source = findSourceOrThrow({ nodes: state.data.nodes, uuid });
+  const newNodesCount = getNewNodesCount(action.payload.nodes);
+  if (newNodesCount) source.skip = source.skip = getSkip({ source, newNodesCount, type });
+  const addedNodesCount = addToGraphIfNotExist(state, action);
+  if (addedNodesCount && !source.currentRoles?.includes(role)) {
+    source.currentRoles?.push(role);
+  }
+  return { addedNodesCount, newNodesCount, source };
+};
+
+const findSourceOrThrow = ({ nodes, uuid }: { nodes: GraphNode[]; uuid: string }): GraphNode => {
+  const source = nodes.find((node) => node.properties.uuid === uuid);
+  if (!source) {
+    throw Error(`Could not update skip, source with id=${uuid} not found.`);
+  }
+  return source;
+};
+
 const getNewNodesCount = (nodes: GraphNode[]) => {
   // If nodes are returned, adjust for the source node, otherwise assume 0 new nodes.
   return nodes.length ? nodes.length - 1 : 0;
+};
+
+const getSkip = ({
+  source,
+  newNodesCount,
+  type,
+}: {
+  source: GraphNode;
+  newNodesCount: number;
+  type: keyof GraphNodeSkip;
+}): GraphNodeSkip => {
+  return source.skip
+    ? { ...source.skip, [type]: (source.skip[type] += newNodesCount) }
+    : { ...{ actors: 0, units: 0, investments: 0, investors: 0 }, [type]: newNodesCount };
 };
 
 const addToGraphIfNotExist = (
@@ -275,6 +295,106 @@ const addToGraphIfNotExist = (
   }
   state.status = FetchState.Success;
   return newNodesCount;
+};
+
+const showActorsToast = ({
+  addedNodesCount,
+  newNodesCount,
+  node,
+}: {
+  addedNodesCount: number;
+  newNodesCount: number;
+  node: GraphNode;
+}) => {
+  if (addedNodesCount) {
+    toast(`Lastet ${addedNodesCount} av aktørene i ${node.properties.name}.`, {
+      type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+    });
+  } else if (newNodesCount) {
+    toast(
+      `Lastet ${newNodesCount} av aktørene i ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
+      { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
+    );
+  } else if (node.skip?.units) {
+    toast(`Fant ikke flere aktører for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  } else {
+    toast(`Fant ingen aktører for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  }
+};
+
+const showRolesToast = ({
+  addedNodesCount,
+  newNodesCount,
+  node,
+}: {
+  addedNodesCount: number;
+  newNodesCount: number;
+  node: GraphNode;
+}) => {
+  if (addedNodesCount) {
+    toast(`Lastet ${addedNodesCount} av rollene til ${node.properties.name}.`, {
+      type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+    });
+  } else if (newNodesCount) {
+    toast(
+      `Lastet ${newNodesCount} av rollene til ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
+      { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
+    );
+  } else if (node.skip?.units) {
+    toast(`Fant ikke flere roller for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  } else {
+    toast(`Fant ingen roller for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  }
+};
+
+const showInvestorsToast = ({
+  addedNodesCount,
+  newNodesCount,
+  node,
+}: {
+  addedNodesCount: number;
+  newNodesCount: number;
+  node: GraphNode;
+}) => {
+  if (addedNodesCount) {
+    toast(`Lastet ${addedNodesCount} av investorene til ${node.properties.name}.`, {
+      type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+    });
+  } else if (newNodesCount) {
+    toast(
+      `Lastet ${newNodesCount} av investorene til ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
+      { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
+    );
+  } else if (node.skip?.units) {
+    toast(`Fant ikke flere investorer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  } else {
+    toast(`Fant ingen investorer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  }
+};
+
+const showInvestmentsToast = ({
+  addedNodesCount,
+  newNodesCount,
+  node,
+}: {
+  addedNodesCount: number;
+  newNodesCount: number;
+  node: GraphNode;
+}) => {
+  if (addedNodesCount) {
+    toast(`Lastet ${addedNodesCount} av investeringene til ${node.properties.name}.`, {
+      type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO,
+    });
+  } else if (newNodesCount) {
+    toast(
+      `Lastet ${newNodesCount} av investeringene til ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
+      { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
+    );
+  } else if (node.skip?.units) {
+    toast(`Fant ikke flere investeringer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  } else {
+    toast(`Fant ingen investeringer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
+  }
 };
 
 export const {
