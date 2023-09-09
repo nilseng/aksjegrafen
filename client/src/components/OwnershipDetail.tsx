@@ -1,7 +1,7 @@
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import { availableYears } from "../config";
-import { useNumberFormatter } from "../hooks/useNumberFormatter";
+import { useResponsiveNumberFormatter } from "../hooks/useResponsiveNumberFormatter";
 import { ICompany, IOwnership, IShareholder, Year } from "../models/models";
 import { NeuButton } from "./NeuButton";
 
@@ -95,7 +95,7 @@ export const OwnershipDetail = ({
   investor?: IShareholder;
   investment?: ICompany;
 }) => {
-  const formatNumber = useNumberFormatter();
+  const formatNumber = useResponsiveNumberFormatter();
 
   const [stockClasses, setStockClasses] = useState<string[]>();
 

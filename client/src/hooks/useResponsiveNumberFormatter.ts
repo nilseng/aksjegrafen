@@ -4,7 +4,7 @@ import { useWindowDimensions } from "./useWindowDimensions";
 
 const defaultFormatter = (num: number) => num?.toLocaleString(navigator?.language);
 
-export const useNumberFormatter = () => {
+export const useResponsiveNumberFormatter = () => {
   const { width } = useWindowDimensions();
   const [formatNumber, setFormatNumber] = useState<(num: number) => string>(() => defaultFormatter);
 
