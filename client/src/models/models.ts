@@ -141,6 +141,8 @@ export interface GraphNode {
         total: number;
       };
     };
+    location?: string;
+    yearOfBirth?: string;
   };
   currentRoles?: CurrentRole[];
   skip?: GraphNodeSkip;

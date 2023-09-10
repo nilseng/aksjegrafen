@@ -104,6 +104,8 @@ export interface GraphNode {
         total: number;
       };
     };
+    location?: string;
+    yearOfBirth?: string;
   };
   skip?: {
     investors: number;
