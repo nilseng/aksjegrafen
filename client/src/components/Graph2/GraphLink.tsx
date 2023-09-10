@@ -5,7 +5,7 @@ import { AppContext } from "../../AppContext";
 import { GraphLink as IGraphLink } from "../../models/models";
 import { RootState } from "../../store";
 
-const formatNumber = format(".3s");
+const formatNumber = (num: number) => (num >= 100 ? format(".3s")(num) : format(".0f")(num));
 
 export const GraphLink = ({ link }: { link: IGraphLink }) => {
   const { theme } = useContext(AppContext);
