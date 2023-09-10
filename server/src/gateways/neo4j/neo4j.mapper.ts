@@ -8,6 +8,8 @@ interface NodeEntryProperties {
   orgnr?: string;
   id?: string;
   total_stocks_2022?: number;
+  year_of_birth: string;
+  location: string;
 }
 
 export type NodeEntry = Node<Integer, NodeEntryProperties, GraphNodeLabel>;
@@ -42,6 +44,8 @@ export const mapNodeEntryToGraphNode = (node: NodeEntry): GraphNode => {
             2022: { total: node.properties.total_stocks_2022 },
           }
         : undefined,
+      yearOfBirth: node.properties.year_of_birth,
+      location: node.properties.location,
     },
   };
 };
