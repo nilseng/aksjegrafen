@@ -34,7 +34,9 @@ export const NodeSearch = () => {
         mapResultToListItem={(node: GraphNode) => ({
           key: node.properties.uuid,
           name: node.properties.name,
-          tags: [node.properties.orgnr].filter((tag) => !!tag) as (string | number)[],
+          tags: [node.properties.orgnr, node.properties.yearOfBirth, node.properties.location].filter(
+            (tag) => !!tag
+          ) as (string | number)[],
           handleTitleClick: node.properties.orgnr
             ? (node: GraphNode) => {
                 dispatch(setContent({ content: ModalContent.Details, source: node }));
