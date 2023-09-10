@@ -315,7 +315,7 @@ const showActorsToast = ({
       `Lastet ${newNodesCount} av aktørene i ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
       { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
     );
-  } else if (node.skip?.units) {
+  } else if (node.skip?.actors) {
     toast(`Fant ikke flere aktører for ${node.properties.name}.`, { type: toast.TYPE.INFO });
   } else {
     toast(`Fant ingen aktører for ${node.properties.name}.`, { type: toast.TYPE.INFO });
@@ -365,7 +365,7 @@ const showInvestorsToast = ({
       `Lastet ${newNodesCount} av investorene til ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
       { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
     );
-  } else if (node.skip?.units) {
+  } else if (node.skip?.investors) {
     toast(`Fant ikke flere investorer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
   } else {
     toast(`Fant ingen investorer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
@@ -390,7 +390,7 @@ const showInvestmentsToast = ({
       `Lastet ${newNodesCount} av investeringene til ${node.properties.name}. ${newNodesCount} av nodene var allerede i grafen.`,
       { type: addedNodesCount ? toast.TYPE.SUCCESS : toast.TYPE.INFO }
     );
-  } else if (node.skip?.units) {
+  } else if (node.skip?.investments) {
     toast(`Fant ikke flere investeringer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
   } else {
     toast(`Fant ingen investeringer for ${node.properties.name}.`, { type: toast.TYPE.INFO });
