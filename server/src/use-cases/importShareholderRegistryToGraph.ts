@@ -105,8 +105,8 @@ export const importShareholderRegistryToGraph = async ({
     WITH ownership
     WHERE ownership.investor.shareholder.id IS NOT NULL
     MERGE (s:Shareholder {id: ownership.investor.shareholder.id})
-    ON CREATE SET s.name = ownership.investor.shareholder.name
-    ON MATCH SET s.name = ownership.investor.shareholder.name
+    ON CREATE SET s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
+    ON MATCH SET s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
   `;
 
     await session.executeWrite((t) => t.run(createShareholdersQuery, params));
