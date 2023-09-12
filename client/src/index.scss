@@ -26,3 +26,13 @@ code {
 input.ag-input::placeholder {
   @apply from-secondary via-primary to-secondary bg-gradient-to-r bg-clip-text text-transparent font-bold;
 }
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.glassy {
+  @apply bg-gray-50 dark:bg-gray-800 bg-clip-padding backdrop-filter backdrop-blur-md dark:backdrop-blur-lg bg-opacity-60 dark:bg-opacity-40 border border-white dark:border-gray-500;
+}
