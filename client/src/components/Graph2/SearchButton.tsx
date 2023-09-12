@@ -5,13 +5,13 @@ import { ModalContent, open, setContent } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
 
-export const Toolbar = () => {
+export const SearchButton = () => {
   const dispatch = useDispatch();
 
   const { source } = useSelector<RootState, GraphState["data"]>((state) => state.graph.data);
 
   return (
-    <div className="absolute flex right-0 top-0 p-2 mb-2 sm:mb-4">
+    <div className="absolute flex left-0 top-0 p-2">
       <NeuButton
         icon={faSearch}
         className="text-primary p-2"
