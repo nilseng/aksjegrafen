@@ -20,7 +20,8 @@ import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { HowToModal } from "./HowToModal";
 import { Modal } from "./Modal";
-import { Toolbar } from "./Toolbar";
+import { SearchButton } from "./SearchButton";
+import { Settings } from "./Settings";
 
 export const Graph = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -71,7 +72,8 @@ export const Graph = () => {
     <div className="flex w-full h-full dark:text-white px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
         {isModalOpen && <Modal />}
-        <Toolbar />
+        <SearchButton />
+        <Settings />
         <HowToModal />
         {status === FetchState.Loading && (
           <Loading
