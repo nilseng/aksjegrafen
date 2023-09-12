@@ -8,7 +8,7 @@ export const Settings = () => {
   if (isOpen)
     return (
       <div className="absolute flex right-0 top-0 p-2">
-        <div className="glassy rounded-lg p-5">
+        <div className="relative glassy rounded-lg p-5">
           <NeuButton
             className="absolute top-0 right-0 h-5 w-5 p-1 m-1"
             style={{ borderRadius: "100%" }}
