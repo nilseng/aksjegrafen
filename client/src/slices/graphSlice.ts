@@ -22,6 +22,10 @@ export interface GraphState {
       };
       node?: GraphNode;
     };
+    filter: {
+      linkTypes: string[];
+      ownershipShareThreshold: number;
+    };
   };
   status: FetchState;
   error?: string | null;
@@ -38,6 +42,10 @@ const initialState = {
     menu: {
       isOpen: false,
       position: {},
+    },
+    filter: {
+      linkTypes: [],
+      ownershipShareThreshold: 0,
     },
   },
   status: FetchState.Idle,
