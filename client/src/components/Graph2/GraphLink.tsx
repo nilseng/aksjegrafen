@@ -2,7 +2,7 @@ import { format } from "d3";
 import { useContext } from "react";
 import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
-import { GraphLink as IGraphLink } from "../../models/models";
+import { GraphLinkType, GraphLink as IGraphLink } from "../../models/models";
 import { RootState } from "../../store";
 
 const formatNumber = (num: number) => (num >= 100 ? format(".3s")(num) : format(".0f")(num));
@@ -24,7 +24,7 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
           height={50}
           transform={"translate(24, -100) rotate(90)"}
         >
-          {link.type !== "OWNS" && (
+          {link.type !== GraphLinkType.OWNS && (
             <p className="font-bold">{roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}</p>
           )}
           {link.properties.stocks && (
