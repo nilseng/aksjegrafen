@@ -1,7 +1,15 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { toast } from "react-toastify";
-import { CurrentRole, FetchState, GraphLink, GraphNode, GraphNodeSkip, GraphType } from "../models/models";
+import {
+  CurrentRole,
+  FetchState,
+  GraphLink,
+  GraphLinkType,
+  GraphNode,
+  GraphNodeSkip,
+  GraphType,
+} from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export interface GraphState {
@@ -22,13 +30,15 @@ export interface GraphState {
       };
       node?: GraphNode;
     };
-    filter: {
-      linkTypes: string[];
-      ownershipShareThreshold: number;
-    };
+    filter: Filter;
   };
   status: FetchState;
   error?: string | null;
+}
+
+interface Filter {
+  linkTypes: GraphLinkType[];
+  ownershipShareThreshold?: number;
 }
 
 export type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
@@ -61,6 +71,7 @@ export const graphSlice = createSlice<
     setIsDirected: (state: GraphState, action: PayloadAction<boolean>) => void;
     setSource: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
     setTarget: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
+    setFilter: (state: GraphState, action: PayloadAction<Filter>) => void;
     openMenu: (
       state: GraphState,
       action: PayloadAction<{ node: GraphNode; position: { x: number; y: number } }>
@@ -90,6 +101,9 @@ export const graphSlice = createSlice<
     },
     setTarget: (state, action) => {
       state.data.target = action.payload;
+    },
+    setFilter: (state, action) => {
+      state.data.filter = action.payload;
     },
     openMenu: (state, action) => {
       state.data.menu = { isOpen: true, node: action.payload.node, position: action.payload.position };
@@ -405,18 +419,6 @@ const showInvestmentsToast = ({
   }
 };
 
-export const {
-  setGraphType,
-  setSourceUuid,
-  setTargetUuid,
-  setSource,
-  setTarget,
-  setIsDirected,
-  openMenu,
-  closeMenu,
-  resetGraph,
-} = graphSlice.actions;
-
 export const fetchSourceThunk = createAsyncThunk("graph/fetchSource", fetchNode);
 export const fetchTargetThunk = createAsyncThunk("graph/fetchTarget", fetchNode);
 
@@ -555,4 +557,15 @@ async function fetchInvestments(
   return res.json();
 }
 
-export const graphReducer = graphSlice.reducer;
+export const {
+  setGraphType,
+  setSourceUuid,
+  setTargetUuid,
+  setSource,
+  setTarget,
+  setIsDirected,
+  setFilter,
+  openMenu,
+  closeMenu,
+  resetGraph,
+} = graphSlice.actions;
