@@ -87,7 +87,10 @@ export const useForceSimulation = ({
           forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(({ id }) => mutableNodesMap[id].id)
         )
         .force("collide", forceCollide(getCollisionRadius(width)).strength(0.5))
-        .force("radial", forceRadial(graphConfig.nodeDimensions.width * 5).strength(0.8));
+        .force(
+          "radial",
+          forceRadial(graphConfig.nodeDimensions.width * 5).strength(() => (graphType === GraphType.Default ? 0.8 : 0))
+        );
 
       if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
 
