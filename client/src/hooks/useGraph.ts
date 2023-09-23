@@ -12,7 +12,15 @@ export const useGraph = () => {
   useGraphQueryParams();
 
   const {
-    data: { graphType, sourceUuid, targetUuid, isDirected, source, target },
+    data: {
+      graphType,
+      sourceUuid,
+      targetUuid,
+      isDirected,
+      source,
+      target,
+      filter: { linkTypes },
+    },
   } = useSelector<RootState, GraphState>((state) => state.graph);
 
   useEffect(() => {
@@ -23,6 +31,7 @@ export const useGraph = () => {
           sourceUuid,
           targetUuid,
           isDirected,
+          linkTypes,
           limit: 5,
           skip: 0,
         })
@@ -32,7 +41,7 @@ export const useGraph = () => {
         res.abort();
       };
     }
-  }, [dispatch, graphType, isDirected, sourceUuid, targetUuid]);
+  }, [dispatch, graphType, isDirected, linkTypes, sourceUuid, targetUuid]);
 
   useEffect(() => {
     if (graphType === GraphType.Default && source) {

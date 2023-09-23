@@ -435,6 +435,7 @@ function fetchGraph(
     sourceUuid,
     targetUuid,
     isDirected,
+    linkTypes,
     limit,
     skip,
   }: {
@@ -442,13 +443,14 @@ function fetchGraph(
     sourceUuid: string;
     targetUuid?: string;
     isDirected?: boolean;
+    linkTypes?: GraphLinkType[];
     limit: number;
     skip: number;
   },
   { signal }: { signal: AbortSignal }
 ): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
   if (graphType === GraphType.Default) {
-    return fetchNeighbours({ uuid: sourceUuid, limit, skip }, { signal });
+    return fetchNeighbours({ uuid: sourceUuid, linkTypes, limit, skip }, { signal });
   }
   if (graphType === GraphType.ShortestPath) {
     return fetchShortestPath({ isDirected, sourceUuid, targetUuid }, { signal });
@@ -460,16 +462,19 @@ function fetchGraph(
 async function fetchNeighbours(
   {
     uuid,
+    linkTypes,
     limit,
     skip,
   }: {
     uuid: string;
+    linkTypes?: GraphLinkType[];
     limit: number;
     skip: number;
   },
   { signal }: { signal: AbortSignal }
 ): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> {
-  const res = await fetch(`/api/graph/neighbours?uuid=${uuid}&limit=${limit}&skip=${skip}`, { signal });
+  const query = buildQuery({ uuid, linkTypes, limit, skip });
+  const res = await fetch(`/api/graph/neighbours${query}`, { signal });
   return res.json();
 }
 
