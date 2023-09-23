@@ -19,7 +19,7 @@ export const HowToModal = () => {
 
   return (
     <div
-      className="absolute h-3/4 md:vh-1/2 vw-75 md:vw-1/2"
+      className="absolute h-3/4 md:vh-1/2 vw-75 md:vw-1/2 p-4"
       style={{
         color: theme.text,
         right: 0,
@@ -52,6 +52,7 @@ export const HowToModal = () => {
         <FontAwesomeIcon className="mr-2" icon={faHandRock} />
         Klikk og dra bakgrunnen for å flytte grafen.
       </p>
+      <h2 className="text font-bold p-2">Fargekoder</h2>
       <section className="flex items-center p-2">
         <div className="w-8 h-6 border-4 border-gray/20 border-b-secondary rounded-lg mr-2"></div>
         <p>Investor som har investeringer i grafen</p>
