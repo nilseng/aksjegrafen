@@ -161,6 +161,8 @@ export const SearchComponent = <Result extends unknown>({
                               <button
                                 key={b.name}
                                 className="px-0"
+                                aria-label={`Gå til ${b.name}`}
+                                aria-describedby={`Klikk for å se ${b.name}`}
                                 onClick={() => {
                                   b.handleClick(result);
                                 }}
