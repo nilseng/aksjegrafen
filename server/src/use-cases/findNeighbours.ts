@@ -1,14 +1,24 @@
 import { uniqWith } from "lodash";
 import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j/neo4j.gateway";
-import { GraphNode } from "../models/models";
+import { GraphLinkType, GraphNode } from "../models/models";
 import { addCurrentRoles } from "../utils/addCurrentRoles";
 
-export const findNeighbours = async ({ uuid, limit }: { uuid: string; limit: number }) => {
+export const findNeighbours = async ({
+  uuid,
+  linkTypes,
+  limit,
+}: {
+  uuid: string;
+  linkTypes?: GraphLinkType[];
+  limit: number;
+}) => {
   const [investors, investments, holders, units] = await Promise.all([
-    findInvestors({ uuid, limit }),
-    findInvestments({ uuid, limit }),
-    findRoleHolders({ uuid, limit }),
-    findRoleUnits({ uuid, limit }),
+    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestors({ uuid, limit }) : emptyGraphResponse,
+    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestments({ uuid, limit }) : emptyGraphResponse,
+    // Assumes roles and units should be returned if there are multiple link types
+    // TODO: Check actual link types
+    shouldIncludeLinkType(GraphLinkType.UNKNOWN, linkTypes) ? findRoleHolders({ uuid, limit }) : emptyGraphResponse,
+    shouldIncludeLinkType(GraphLinkType.UNKNOWN, linkTypes) ? findRoleUnits({ uuid, limit }) : emptyGraphResponse,
   ]);
   const uniqueNodes = uniqWith(
     [...investors.nodes, ...investments.nodes, ...holders.nodes, ...units.nodes],
@@ -40,4 +50,16 @@ const addSourceSkip = ({ uuid, nodes, skip }: { uuid: string; nodes: GraphNode[]
   const source = nodes.find((node) => node.properties.uuid === uuid);
   if (!source) throw Error(`Source node with uuid=${uuid} not found.`);
   source.skip = skip;
+};
+
+const shouldIncludeLinkType = (type: GraphLinkType, linkTypes?: GraphLinkType[]) => {
+  if (!linkTypes || linkTypes.length === 0) return true;
+  if (linkTypes.includes(type)) return true;
+  if (type !== GraphLinkType.OWNS && linkTypes.filter((t) => t !== GraphLinkType.OWNS).length > 0) return true;
+  return false;
+};
+
+const emptyGraphResponse = {
+  nodes: [],
+  links: [],
 };

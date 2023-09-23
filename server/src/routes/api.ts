@@ -360,11 +360,12 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
   router.get(
     "/graph/neighbours",
     query(["uuid"]),
+    query(["linkTypes"]).toArray(),
     query(["limit"]).default(10).toInt(),
     query(["skip"]).default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findNeighbours({ uuid: query.uuid, limit: query.limit });
+      const data = await findNeighbours({ uuid: query.uuid, linkTypes: query.linkTypes, limit: query.limit });
       return res.status(200).json(data);
     })
   );
