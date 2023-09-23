@@ -47,10 +47,10 @@ export const NodeSearch = () => {
               name: "investors-button",
               condition: node.labels.includes(GraphNodeLabel.Company),
               buttonContent: (
-                <div>
+                <span className="flex flex-col justify-center items-center">
                   <FontAwesomeIcon icon={faList} className="text-primary" />
-                  <p className="text-xs text-muted">investorer</p>
-                </div>
+                  <span className="text-xs text-muted">investorer</span>
+                </span>
               ),
               handleClick: (node: GraphNode) => {
                 dispatch(setContent({ content: ModalContent.InvestorTable, source: node }));
@@ -60,10 +60,10 @@ export const NodeSearch = () => {
               name: "investments-button",
               condition: node.labels.includes(GraphNodeLabel.Shareholder),
               buttonContent: (
-                <div>
+                <span className="flex flex-col justify-center items-center">
                   <FontAwesomeIcon icon={faList} className="text-primary" />
-                  <p className="text-xs text-muted">investeringer</p>
-                </div>
+                  <span className="text-xs text-muted">investeringer</span>
+                </span>
               ),
               handleClick: (node: GraphNode) => {
                 dispatch(setContent({ content: ModalContent.InvestmentTable, source: node }));
@@ -73,10 +73,10 @@ export const NodeSearch = () => {
               name: "graph-button",
               condition: true,
               buttonContent: (
-                <div className="flex flex-col items-center">
+                <span className="flex flex-col items-center">
                   <GraphLogo inputColor={theme.secondary} width={"1rem"} height={"1rem"} />
-                  <p className="text-xs text-muted">graf</p>
-                </div>
+                  <span className="text-xs text-muted">graf</span>
+                </span>
               ),
               handleClick: (node: GraphNode) => {
                 dispatch(setGraphSource(undefined));
@@ -91,10 +91,10 @@ export const NodeSearch = () => {
               name: "relation-finder-button",
               condition: true,
               buttonContent: (
-                <div>
+                <span className="flex flex-col justify-center items-center">
                   <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} />
-                  <p className="text-xs text-muted">relasjoner</p>
-                </div>
+                  <span className="text-xs text-muted">relasjoner</span>
+                </span>
               ),
               handleClick: (node: GraphNode) => {
                 dispatch(setContent({ content: ModalContent.PathSearch, source: node }));
