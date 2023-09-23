@@ -1,14 +1,31 @@
-import { D3DragEvent, Simulation, drag, forceCollide, forceLink, forceSimulation, forceX, forceY, select } from "d3";
+import {
+  D3DragEvent,
+  Simulation,
+  drag,
+  forceCollide,
+  forceLink,
+  forceRadial,
+  forceSimulation,
+  forceX,
+  forceY,
+  select,
+} from "d3";
 import { cloneDeep } from "lodash";
 import { RefObject, useEffect, useRef } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
 import { CurrentRole, GraphLink, GraphNode, GraphType } from "../models/models";
 import { GraphLinkDatum, GraphNodeDatum, openMenu } from "../slices/graphSlice";
 import { useAppDispatch } from "../store";
+import { useWindowDimensions } from "./useWindowDimensions";
 
 const nodeOffset = {
   x: graphConfig.nodeDimensions.width / 2,
   y: graphConfig.nodeDimensions.height / 2,
+};
+
+const getCollisionRadius = (width: number) => {
+  if (width <= 768) return Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5);
+  return Math.max(graphConfig.nodeDimensions.width / 1.4, graphConfig.nodeDimensions.height / 1.4);
 };
 
 export const useForceSimulation = ({
@@ -27,6 +44,8 @@ export const useForceSimulation = ({
   svgRef: RefObject<SVGSVGElement>;
 }) => {
   const dispatch = useAppDispatch();
+
+  const { width } = useWindowDimensions();
 
   const simulationNodesMap = useRef<{ [uuid: string]: GraphNodeDatum }>({});
 
@@ -67,10 +86,8 @@ export const useForceSimulation = ({
           "link",
           forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(({ id }) => mutableNodesMap[id].id)
         )
-        .force(
-          "collide",
-          forceCollide(Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5))
-        );
+        .force("collide", forceCollide(getCollisionRadius(width)).strength(0.5))
+        .force("radial", forceRadial(graphConfig.nodeDimensions.width * 5).strength(0.8));
 
       if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
 
@@ -94,7 +111,7 @@ export const useForceSimulation = ({
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
       });
     }
-  }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid, dispatch]);
+  }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid, dispatch, width]);
 };
 
 const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
