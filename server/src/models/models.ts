@@ -131,7 +131,39 @@ export interface GraphLink {
     share?: number;
     stocks?: number;
   };
-  type: string;
+  type: GraphLinkType;
+}
+
+export enum GraphLinkType {
+  OWNS = "OWNS",
+  UNKNOWN = "UNKNOWN",
+  ADOS = "ADOS",
+  BEST = "BEST",
+  BOBE = "BOBE",
+  DAGL = "DAGL",
+  DTPR = "DTPR",
+  DTSO = "DTSO",
+  EIKM = "EIKM",
+  FFØR = "FFØR",
+  HFOR = "HFOR",
+  HLSE = "HLSE",
+  INNH = "INNH",
+  KDEB = "KDEB",
+  KENK = "KENK",
+  KIRK = "KIRK",
+  KOMP = "KOMP",
+  KONT = "KONT",
+  KTRF = "KTRF",
+  LEDE = "LEDE",
+  MEDL = "MEDL",
+  NEST = "NEST",
+  OBS = "OBS",
+  OPMV = "OPMV",
+  ORGL = "ORGL",
+  REGN = "REGN",
+  REPR = "REPR",
+  REVI = "REVI",
+  VARA = "VARA",
 }
 
 export interface UserEvent {
