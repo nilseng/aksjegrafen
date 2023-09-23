@@ -177,11 +177,13 @@ export const findAllPaths = async ({
   isDirected = true,
   sourceUuid,
   targetUuid,
+  linkTypes,
   limit,
 }: {
   isDirected?: boolean;
   sourceUuid: string;
   targetUuid: string;
+  linkTypes?: GraphLinkType[];
   limit: number;
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
@@ -190,13 +192,14 @@ export const findAllPaths = async ({
     CALL gds.shortestPath.yens.stream(${isDirected ? "'directedGraph'" : "'undirectedGraph'"}, {
       sourceNode: source,
       targetNode: target,
+      ${!isEmpty(linkTypes) ? "relationshipTypes: $linkTypes," : ""}
       k: ${limit}
     })
     YIELD index, path
     RETURN path
     ORDER BY index
   `;
-  const records = await runQuery({ query, params: { sourceUuid, targetUuid, limit } });
+  const records = await runQuery({ query, params: { sourceUuid, targetUuid, linkTypes, limit } });
   return records?.length > 0 ? mapPathsToGraph(records.map((record) => record.get("path"))) : { nodes: [], links: [] };
 };
 

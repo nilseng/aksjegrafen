@@ -411,7 +411,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
-        //linkTypes: query.linkTypes,
+        linkTypes: query.linkTypes,
         limit: query.limit,
       });
       return res.json(data);
