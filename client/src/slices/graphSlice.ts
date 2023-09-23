@@ -453,9 +453,10 @@ function fetchGraph(
     return fetchNeighbours({ uuid: sourceUuid, linkTypes, limit, skip }, { signal });
   }
   if (graphType === GraphType.ShortestPath) {
-    return fetchShortestPath({ isDirected, sourceUuid, targetUuid }, { signal });
+    return fetchShortestPath({ isDirected, sourceUuid, targetUuid, linkTypes }, { signal });
   }
-  if (graphType === GraphType.AllPaths) return fetchAllPaths({ isDirected, sourceUuid, targetUuid, limit }, { signal });
+  if (graphType === GraphType.AllPaths)
+    return fetchAllPaths({ isDirected, sourceUuid, targetUuid, linkTypes, limit }, { signal });
   throw Error("Unknown graph type");
 }
 
@@ -483,15 +484,17 @@ async function fetchShortestPath(
     isDirected,
     sourceUuid,
     targetUuid,
+    linkTypes,
   }: {
     isDirected?: boolean;
     sourceUuid: string;
     targetUuid?: string;
+    linkTypes?: GraphLinkType[];
   },
   { signal }: { signal: AbortSignal }
 ) {
   if (!targetUuid) throw Error("Målnode ikke definert...");
-  const query = buildQuery({ isDirected, sourceUuid, targetUuid });
+  const query = buildQuery({ isDirected, sourceUuid, targetUuid, linkTypes });
   const res = await fetch(`/api/graph/shortest-path${query}`, { signal });
   if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
@@ -503,16 +506,18 @@ async function fetchAllPaths(
     sourceUuid,
     targetUuid,
     limit,
+    linkTypes,
   }: {
     isDirected?: boolean;
     sourceUuid: string;
     targetUuid?: string;
+    linkTypes?: GraphLinkType[];
     limit?: number;
   },
   { signal }: { signal: AbortSignal }
 ) {
   if (!targetUuid) throw Error("Målnode ikke definert...");
-  const query = buildQuery({ isDirected, sourceUuid, targetUuid, limit });
+  const query = buildQuery({ isDirected, sourceUuid, targetUuid, linkTypes, limit });
   const res = await fetch(`/api/graph/all-paths${query}`, { signal });
   if (!res.ok) throw Error("Beklager, noe gikk galt! Tar søket mer enn 30 sekunder, feiler det automatisk...");
   return res.json();
