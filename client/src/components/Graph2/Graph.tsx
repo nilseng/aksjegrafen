@@ -57,11 +57,8 @@ export const Graph = () => {
   }, [dispatch, targetUuid]);
 
   useEffect(() => {
-    dispatch(fetchRolesThunk());
-  }, [dispatch]);
-
-  useEffect(() => {
     dispatch(fetchPopularNodesThunk());
+    dispatch(fetchRolesThunk());
   }, [dispatch]);
 
   const { isOpen: isModalOpen } = useSelector<RootState, ModalState>((state) => state.modalHandler);
