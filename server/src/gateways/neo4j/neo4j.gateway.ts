@@ -1,6 +1,6 @@
-import { uniqWith } from "lodash";
+import { isEmpty, uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
-import { GraphLink, GraphNode } from "../../models/models";
+import { GraphLink, GraphLinkType, GraphNode } from "../../models/models";
 import {
   NodeEntry,
   mapPathToGraph,
@@ -147,10 +147,12 @@ export const findShortestPath = async ({
   isDirected,
   sourceUuid,
   targetUuid,
+  linkTypes,
 }: {
   isDirected?: boolean;
   sourceUuid: string;
   targetUuid: string;
+  linkTypes?: GraphLinkType[];
 }): Promise<{ nodes: GraphNode[]; links: GraphLink[] }> => {
   const query = `
     MATCH (source:Person|Unit|Shareholder|Company {uuid: $sourceUuid})
@@ -158,12 +160,13 @@ export const findShortestPath = async ({
     CALL gds.shortestPath.dijkstra.stream(${isDirected ? "'directedGraph'" : "'undirectedGraph'"}, {
       sourceNode: source,
       targetNode: target
+      ${!isEmpty(linkTypes) ? ", relationshipTypes: $linkTypes" : ""}
     })
     YIELD index, path
     RETURN path
     ORDER BY index
   `;
-  const records = await runQuery({ query, params: { sourceUuid, targetUuid } });
+  const records = await runQuery({ query, params: { sourceUuid, targetUuid, linkTypes } });
 
   const pathRecord = records[0]?.get("path");
 

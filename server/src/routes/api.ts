@@ -375,6 +375,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     query(["isDirected"]).toBoolean().optional(),
     query(["sourceUuid"]),
     query(["targetUuid"]),
+    query(["linkTypes"]).toArray(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       if (!query.sourceUuid || !query.targetUuid) return res.status(400).json("Source and target uuid required.");
@@ -386,6 +387,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
+        linkTypes: query.linkTypes,
       });
       return res.json(data);
     })
@@ -396,6 +398,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     query(["isDirected"]).toBoolean().optional(),
     query(["sourceUuid"]),
     query(["targetUuid"]),
+    query(["linkTypes"]).toArray(),
     query(["limit"]).default(10).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
@@ -408,6 +411,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
         isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
+        //linkTypes: query.linkTypes,
         limit: query.limit,
       });
       return res.json(data);
