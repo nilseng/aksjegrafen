@@ -81,7 +81,7 @@ export const Settings = () => {
               Eierskap
             </label>
           </div>
-          <label className="text-xs">Min.</label>
+          {/* <label className="text-xs">Min.</label>
           <input
             className="w-6 ag-input focus:outline-none text-right text-primary text-xs dark:text-white bg-gray-50 dark:bg-gray-700 rounded p-[0.1rem] mx-1"
             type="number"
@@ -91,8 +91,7 @@ export const Settings = () => {
             onChange={handleThresholdChange}
             disabled={!isOwnershipChecked}
           />
-          <label className="text-xs">%</label>
-          <p className="text-warning text-xs pt-4">Filtrering er under implementering og fungerer snart!</p>
+          <label className="text-xs">%</label> */}
         </div>
       </div>
     );
