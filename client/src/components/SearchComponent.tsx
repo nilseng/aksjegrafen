@@ -131,20 +131,20 @@ export const SearchComponent = <Result extends unknown>({
                         }
                       }}
                     >
-                      <div
+                      <section
                         className="flex flex-col items-center"
                         style={item.handleTitleClick ? { cursor: "pointer" } : {}}
                         onClick={() => item.handleTitleClick?.(result)}
                       >
-                        <div className="break-words text-xs font-bold">{item.name}</div>
+                        <p className="break-words text-xs font-bold">{item.name}</p>
                         <div className="w-full flex justify-center pb-1">
                           {item.tags.map((tag) => (
-                            <span key={tag} className="text-xs text-muted mx-2">
+                            <p key={tag} className="text-xs text-muted mx-2">
                               {tag}
-                            </span>
+                            </p>
                           ))}
                         </div>
-                      </div>
+                      </section>
                       {item.icon && (
                         <FontAwesomeIcon
                           icon={item.icon}
