@@ -1,6 +1,6 @@
 import { flatMap, uniqBy, uniqWith } from "lodash";
 import { Integer, Node, Path, PathSegment, Record, Relationship } from "neo4j-driver";
-import { GraphLink, GraphNode, GraphNodeLabel, Year } from "../../models/models";
+import { GraphLink, GraphLinkType, GraphNode, GraphNodeLabel, Year } from "../../models/models";
 
 interface NodeEntryProperties {
   uuid: string;
@@ -87,7 +87,7 @@ export const mapUndirectedRecordToGraphLink = ({
     source: relationship.startNodeElementId === n1.elementId ? n1 : n2,
     target: relationship.endNodeElementId === n2.elementId ? n2 : n1,
     properties: relationship.properties,
-    type: relationship.type,
+    type: getLinkType(relationship.type),
   };
 };
 
@@ -128,9 +128,15 @@ const mapSegmentsToLinks = (segments: PathSegment[]): GraphLink[] =>
   segments.map((s) => ({
     source: mapNodeEntryToGraphNode(s.start as NodeEntry),
     target: mapNodeEntryToGraphNode(s.end as NodeEntry),
-    type: s.relationship.type,
+    type: getLinkType(s.relationship.type),
     properties: {
       ...s.relationship.properties,
       ...(s.relationship.properties.year?.low ? { year: s.relationship.properties.year?.low } : {}),
     },
   }));
+
+const getLinkType = (type: string) => {
+  const linkType = Object.values(GraphLinkType).find((t) => t === type);
+  if (!linkType) return GraphLinkType.UNKNOWN;
+  return linkType;
+};
