@@ -3,6 +3,9 @@ import "./NavBar.scss";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { resetGraph } from "../slices/graphSlice";
+import { resetModal } from "../slices/modalSlice";
+import { useAppDispatch } from "../store";
 import { theming } from "../theming/theme";
 import { GraphLogo } from "./GraphLogo";
 import { NeuButton } from "./NeuButton";
@@ -14,9 +17,18 @@ interface IProps {
 }
 
 const NavBar = ({ theme, setTheme }: IProps) => {
+  const dispatch = useAppDispatch();
+
   return (
     <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
-      <Link to="/" aria-label="Home">
+      <Link
+        to="/"
+        aria-label="Home"
+        onClick={() => {
+          dispatch(resetGraph());
+          dispatch(resetModal());
+        }}
+      >
         <NeuButton
           className="h-12 w-12 p-2"
           ariaLabel="Home"

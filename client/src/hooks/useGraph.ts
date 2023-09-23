@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { GraphType, UserEventType } from "../models/models";
-import { GraphState, fetchGraphThunk, resetGraph } from "../slices/graphSlice";
-import { resetModal } from "../slices/modalSlice";
+import { GraphState, fetchGraphThunk } from "../slices/graphSlice";
 import { captureUserEventThunk } from "../slices/userEventSlice";
 import { AppDispatch, RootState } from "../store";
 import { useGraphQueryParams } from "./useGraphQueryParams";
@@ -34,13 +33,6 @@ export const useGraph = () => {
       };
     }
   }, [dispatch, graphType, isDirected, sourceUuid, targetUuid]);
-
-  useEffect(() => {
-    if (!sourceUuid) {
-      dispatch(resetGraph());
-      dispatch(resetModal());
-    }
-  }, [dispatch, sourceUuid]);
 
   useEffect(() => {
     if (graphType === GraphType.Default && source) {
