@@ -174,8 +174,9 @@ export interface GraphLink {
 }
 
 export enum GraphLinkType {
+  // Commented out link types do not exist in the graph and will throw an error if used in a GDS query
   OWNS = "OWNS",
-  ADOS = "ADOS",
+  //ADOS = "ADOS",
   BEST = "BEST",
   BOBE = "BOBE",
   DAGL = "DAGL",
@@ -185,13 +186,13 @@ export enum GraphLinkType {
   FFØR = "FFØR",
   HFOR = "HFOR",
   HLSE = "HLSE",
-  INNH = "INNH",
+  //INNH = "INNH",
   KDEB = "KDEB",
-  KENK = "KENK",
+  //KENK = "KENK",
   KIRK = "KIRK",
   KOMP = "KOMP",
   KONT = "KONT",
-  KTRF = "KTRF",
+  //KTRF = "KTRF",
   LEDE = "LEDE",
   MEDL = "MEDL",
   NEST = "NEST",
