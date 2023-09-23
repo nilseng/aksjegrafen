@@ -89,7 +89,7 @@ export const useForceSimulation = ({
         .force("collide", forceCollide(getCollisionRadius(width)).strength(0.5))
         .force(
           "radial",
-          forceRadial(graphConfig.nodeDimensions.width * 5).strength(() => (graphType === GraphType.Default ? 0.8 : 0))
+          forceRadial(graphConfig.nodeDimensions.width * 5).strength(() => (graphType === GraphType.Default ? 0.6 : 0))
         );
 
       if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
@@ -147,7 +147,7 @@ const addCurrentRoleForces = ({
   simulation.force(
     "actorX",
     forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
+      source?.currentRoles?.includes(CurrentRole.Investment) && d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
     )
   );
   simulation.force(
@@ -159,7 +159,7 @@ const addCurrentRoleForces = ({
   simulation.force(
     "investorX",
     forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
+      source?.currentRoles?.includes(CurrentRole.Unit) && d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
     )
   );
   simulation.force(
@@ -171,7 +171,7 @@ const addCurrentRoleForces = ({
   simulation.force(
     "investmentX",
     forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
+      source?.currentRoles?.includes(CurrentRole.Actor) && d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
     )
   );
   simulation.force(
@@ -183,7 +183,7 @@ const addCurrentRoleForces = ({
   simulation.force(
     "unitX",
     forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
+      source?.currentRoles?.includes(CurrentRole.Investor) && d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
     )
   );
   simulation.force(
