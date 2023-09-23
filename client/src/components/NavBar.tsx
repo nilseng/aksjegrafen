@@ -43,10 +43,10 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               className="px-4 py-2 mr-4"
               ariaLabel="API Documentation"
               componentIcon={
-                <div className="text-xs text-primary font-bold">
+                <span className="text-xs text-primary font-bold">
                   API
                   <FontAwesomeIcon icon={faCode} className="ml-2" />
-                </div>
+                </span>
               }
             />
           </Link>
