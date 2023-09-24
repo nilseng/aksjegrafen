@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useSelector } from "react-redux";
 import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom2";
-import { GraphNodeDatum, GraphState, closeMenu } from "../../slices/graphSlice";
+import { GraphState, closeMenu } from "../../slices/graphSlice";
 import { RootState, useAppDispatch } from "../../store";
 import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
@@ -49,9 +49,7 @@ export const GraphView = () => {
             {links?.length &&
               links.map((link) => (
                 <GraphLink
-                  key={`${(link.source as GraphNodeDatum).properties.uuid}-${
-                    (link.target as GraphNodeDatum).properties.uuid
-                  }-${link.type}`}
+                  key={`${link.source.properties.uuid}-${link.target.properties.uuid}-${link.type}`}
                   link={link}
                 />
               ))}

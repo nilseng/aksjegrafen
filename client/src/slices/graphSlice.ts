@@ -1,5 +1,4 @@
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { SimulationLinkDatum, SimulationNodeDatum } from "d3";
 import { toast } from "react-toastify";
 import {
   CurrentRole,
@@ -40,9 +39,6 @@ interface Filter {
   linkTypes: GraphLinkType[];
   ownershipShareThreshold?: number;
 }
-
-export type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
-export type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
 const initialState = {
   data: {

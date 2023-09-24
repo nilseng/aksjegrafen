@@ -1,6 +1,8 @@
 import {
   D3DragEvent,
   Simulation,
+  SimulationLinkDatum,
+  SimulationNodeDatum,
   drag,
   forceCollide,
   forceLink,
@@ -14,9 +16,12 @@ import { cloneDeep } from "lodash";
 import { RefObject, useEffect, useRef } from "react";
 import { graphConfig } from "../components/Graph2/GraphConfig";
 import { CurrentRole, GraphLink, GraphNode, GraphType } from "../models/models";
-import { GraphLinkDatum, GraphNodeDatum, openMenu } from "../slices/graphSlice";
+import { openMenu } from "../slices/graphSlice";
 import { useAppDispatch } from "../store";
 import { useWindowDimensions } from "./useWindowDimensions";
+
+type GraphNodeDatum = GraphNode & SimulationNodeDatum & { id: string };
+type GraphLinkDatum = SimulationLinkDatum<GraphNodeDatum> & Pick<GraphLink, "properties" | "type">;
 
 const nodeOffset = {
   x: graphConfig.nodeDimensions.width / 2,
