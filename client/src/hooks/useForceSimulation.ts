@@ -69,7 +69,7 @@ export const useForceSimulation = ({
       });
 
       // TODO: May be undefined. Should not be.
-      const source = mutableNodesMap[sourceUuid];
+      const source = mutableNodesMap[sourceUuid] as GraphNodeDatum | undefined;
 
       fixSourcePosition({ node: source, graphType });
 
@@ -143,6 +143,10 @@ export const useForceSimulation = ({
           .attr("cx", (l) => graphConfig.nodeDimensions.width / 2 + (l.source as GraphNodeDatum).x!)
           .attr("cy", (l) => (l.source as GraphNodeDatum).y!);
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
+      });
+
+      simulation.on("end", () => {
+        simulation.force("radial", null);
       });
     }
   }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid, dispatch, width]);
