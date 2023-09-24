@@ -127,8 +127,8 @@ export const useForceSimulation = ({
 const fixSourcePosition = ({ node, graphType }: { node?: GraphNodeDatum; graphType: GraphType }) => {
   if (!node) return;
   if (graphType === GraphType.Default) {
-    node.fx = 0;
-    node.fy = 0;
+    node.fx = node.fx ?? 0;
+    node.fy = node.fy ?? 0;
   }
   if (graphType === GraphType.ShortestPath || graphType === GraphType.AllPaths) {
     node.fx = -(graphConfig.width / 2 - nodeOffset.x);
