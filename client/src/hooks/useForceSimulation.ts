@@ -161,16 +161,12 @@ const addCurrentRoleForces = ({
     "actorX",
     forceX<GraphNodeDatum>(
       (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) - graphConfig.nodeDimensions.width
-    ).strength((d) => {
-      console.log(
-        mutableNodesMap[d.sourceUuid ?? ""],
-        (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) - graphConfig.nodeDimensions.width
-      );
-      return mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Investment) &&
-        d.currentRoles?.includes(CurrentRole.Actor)
+    ).strength((d) =>
+      mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Investment) &&
+      d.currentRoles?.includes(CurrentRole.Actor)
         ? 1
-        : 0;
-    })
+        : 0
+    )
   );
   simulation.force(
     "actorY",
