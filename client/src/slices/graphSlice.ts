@@ -147,6 +147,9 @@ export const graphSlice = createSlice<
           state.status = FetchState.Success;
           state.data.nodes = action.payload.nodes;
           state.data.links = action.payload.links;
+          if (state.data.graphType === GraphType.Default) {
+            updateSourceUuid({ sourceUuid: state.data.sourceUuid, nodes: state.data.nodes });
+          }
         }
       )
       .addCase(fetchGraphThunk.rejected, (state, action) => {
@@ -251,11 +254,10 @@ const handleNewNodes = ({
 }) => {
   const source = findSourceOrThrow({ nodes: state.data.nodes, uuid });
   const newNodesCount = getNewNodesCount(action.payload.nodes);
-  if (newNodesCount) source.skip = source.skip = getSkip({ source, newNodesCount, type });
+  if (newNodesCount) source.skip = getSkip({ source, newNodesCount, type });
+  updateSourceUuid({ sourceUuid: uuid, nodes: action.payload.nodes });
   const addedNodesCount = addToGraphIfNotExist(state, action);
-  if (addedNodesCount && !source.currentRoles?.includes(role)) {
-    source.currentRoles?.push(role);
-  }
+  if (addedNodesCount && !source.currentRoles?.includes(role)) source.currentRoles?.push(role);
   return { addedNodesCount, newNodesCount, source };
 };
 
@@ -313,6 +315,12 @@ const addToGraphIfNotExist = (
   }
   state.status = FetchState.Success;
   return newNodesCount;
+};
+
+const updateSourceUuid = ({ sourceUuid, nodes }: { sourceUuid?: string; nodes: GraphNode[] }) => {
+  nodes.forEach((node) => {
+    if (node.properties.uuid !== sourceUuid) node.sourceUuid = sourceUuid;
+  });
 };
 
 const showActorsToast = ({
