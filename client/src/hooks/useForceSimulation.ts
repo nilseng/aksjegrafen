@@ -63,6 +63,7 @@ export const useForceSimulation = ({
         };
       });
 
+      // TODO: May be undefined. Should not be.
       const source = mutableNodesMap[sourceUuid];
 
       fixSourcePosition({ node: source, graphType });
@@ -89,7 +90,13 @@ export const useForceSimulation = ({
         .force("collide", forceCollide(getCollisionRadius(width)).strength(0.5))
         .force(
           "radial",
-          forceRadial(graphConfig.nodeDimensions.width * 5).strength(() => (graphType === GraphType.Default ? 0.6 : 0))
+          forceRadial<GraphNodeDatum>(graphConfig.nodeDimensions.width * 5).strength((d) =>
+            graphType === GraphType.Default &&
+            d.properties.uuid !== source?.properties.uuid &&
+            (source?.currentRoles?.length ?? 0) >= 2
+              ? 0.6
+              : 0
+          )
         );
 
       if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
