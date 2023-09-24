@@ -69,7 +69,7 @@ export const useForceSimulation = ({
       });
 
       // TODO: May be undefined. Should not be.
-      const source = mutableNodesMap[sourceUuid];
+      const source: GraphNodeDatum | undefined = mutableNodesMap[sourceUuid];
 
       fixSourcePosition({ node: source, graphType });
 
@@ -98,13 +98,14 @@ export const useForceSimulation = ({
           forceRadial<GraphNodeDatum>(graphConfig.nodeDimensions.width * 5).strength((d) =>
             graphType === GraphType.Default &&
             d.properties.uuid !== source?.properties.uuid &&
+            d.sourceUuid === source.properties.uuid &&
             (source?.currentRoles?.length ?? 0) >= 2
               ? 0.6
               : 0
           )
         );
 
-      if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, source });
+      if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, mutableNodesMap });
 
       const node = svg
         .selectAll<SVGElement, GraphNodeDatum>(".graph-node")
@@ -151,58 +152,82 @@ const fixTargetPosition = ({ node, graphType }: { node?: GraphNodeDatum; graphTy
 
 const addCurrentRoleForces = ({
   simulation,
-  source,
+  mutableNodesMap,
 }: {
   simulation: Simulation<GraphNodeDatum, GraphLinkDatum>;
-  source?: GraphNodeDatum;
+  mutableNodesMap: { [uuid: string]: GraphNodeDatum };
 }) => {
   simulation.force(
     "actorX",
-    forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-      source?.currentRoles?.includes(CurrentRole.Investment) && d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
-    )
+    forceX<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) - graphConfig.nodeDimensions.width
+    ).strength((d) => {
+      console.log(
+        mutableNodesMap[d.sourceUuid ?? ""],
+        (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) - graphConfig.nodeDimensions.width
+      );
+      return mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Investment) &&
+        d.currentRoles?.includes(CurrentRole.Actor)
+        ? 1
+        : 0;
+    })
   );
   simulation.force(
     "actorY",
-    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0
-    )
+    forceY<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.y ?? 0) - graphConfig.nodeDimensions.height
+    ).strength((d) => (d.currentRoles?.includes(CurrentRole.Actor) ? 1 : 0))
   );
   simulation.force(
     "investorX",
-    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-      source?.currentRoles?.includes(CurrentRole.Unit) && d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
+    forceX<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) + graphConfig.nodeDimensions.width
+    ).strength((d) =>
+      mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Unit) &&
+      d.currentRoles?.includes(CurrentRole.Investor)
+        ? 1
+        : 0
     )
   );
   simulation.force(
     "investorY",
-    forceY<GraphNodeDatum>((source?.y ?? 0) - graphConfig.nodeDimensions.height).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0
-    )
+    forceY<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.y ?? 0) - graphConfig.nodeDimensions.height
+    ).strength((d) => (d.currentRoles?.includes(CurrentRole.Investor) ? 1 : 0))
   );
   simulation.force(
     "investmentX",
-    forceX<GraphNodeDatum>((source?.x ?? 0) + graphConfig.nodeDimensions.width).strength((d) =>
-      source?.currentRoles?.includes(CurrentRole.Actor) && d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
+    forceX<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) + graphConfig.nodeDimensions.width
+    ).strength((d) =>
+      mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Actor) &&
+      d.currentRoles?.includes(CurrentRole.Investment)
+        ? 1
+        : 0
     )
   );
   simulation.force(
     "investmentY",
-    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0
-    )
+    forceY<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.y ?? 0) + graphConfig.nodeDimensions.height
+    ).strength((d) => (d.currentRoles?.includes(CurrentRole.Investment) ? 1 : 0))
   );
   simulation.force(
     "unitX",
-    forceX<GraphNodeDatum>((source?.x ?? 0) - graphConfig.nodeDimensions.width).strength((d) =>
-      source?.currentRoles?.includes(CurrentRole.Investor) && d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
+    forceX<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.x ?? 0) - graphConfig.nodeDimensions.width
+    ).strength((d) =>
+      mutableNodesMap[d.sourceUuid ?? ""]?.currentRoles?.includes(CurrentRole.Investor) &&
+      d.currentRoles?.includes(CurrentRole.Unit)
+        ? 1
+        : 0
     )
   );
   simulation.force(
     "unitY",
-    forceY<GraphNodeDatum>((source?.y ?? 0) + graphConfig.nodeDimensions.height).strength((d) =>
-      d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0
-    )
+    forceY<GraphNodeDatum>(
+      (d) => (mutableNodesMap[d.sourceUuid ?? ""]?.y ?? 0) + graphConfig.nodeDimensions.height
+    ).strength((d) => (d.currentRoles?.includes(CurrentRole.Unit) ? 1 : 0))
   );
 };
 
