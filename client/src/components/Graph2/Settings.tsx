@@ -28,6 +28,14 @@ export const Settings = () => {
     setThreshold(`${filter.ownershipShareThreshold}`);
   }, [filter.ownershipShareThreshold, isOpen]);
 
+  useEffect(() => {
+    const showAll = filter.linkTypes.length === 0;
+    const showRoles = showAll || filter.linkTypes.length > 1;
+    setIsRolesChecked(showRoles);
+    const showOwnerships = showAll || filter.linkTypes.includes(GraphLinkType.OWNS);
+    setIsOwnershipChecked(showOwnerships);
+  }, [filter.linkTypes]);
+
   const handleRolesFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
     setIsRolesChecked(e.target.checked);
     dispatch(
