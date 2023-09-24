@@ -81,7 +81,22 @@ export const useForceSimulation = ({
         target: mutableNodesMap[(link.target as GraphNodeDatum).properties.uuid],
       }));
 
-      const link = svg.selectAll(".graph-link").data(mutableLinks).join(".graph-link");
+      const link = svg
+        .selectAll(".graph-link")
+        .data(
+          mutableLinks.filter(
+            (l) => (l.source as GraphNodeDatum).properties.uuid !== (l.target as GraphNodeDatum).properties.uuid
+          )
+        )
+        .join(".graph-link");
+      const circleLink = svg
+        .selectAll(".graph-circle-link")
+        .data(
+          mutableLinks.filter(
+            (l) => (l.source as GraphNodeDatum).properties.uuid === (l.target as GraphNodeDatum).properties.uuid
+          )
+        )
+        .join(".graph-circle-link");
       const linkArrow = svg.selectAll(".graph-link-arrow").data(mutableLinks).join(".graph-link-arrow");
 
       const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(Object.values(mutableNodesMap))
@@ -124,6 +139,9 @@ export const useForceSimulation = ({
           .attr("y1", (l) => (l.source as GraphNodeDatum).y!)
           .attr("x2", (l) => (l.target as GraphNodeDatum).x!)
           .attr("y2", (l) => (l.target as GraphNodeDatum).y!);
+        circleLink
+          .attr("cx", (l) => graphConfig.nodeDimensions.width / 2 + (l.source as GraphNodeDatum).x!)
+          .attr("cy", (l) => (l.source as GraphNodeDatum).y!);
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
       });
     }
