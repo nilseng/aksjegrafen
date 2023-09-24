@@ -69,7 +69,7 @@ export const useForceSimulation = ({
       });
 
       // TODO: May be undefined. Should not be.
-      const source: GraphNodeDatum | undefined = mutableNodesMap[sourceUuid];
+      const source = mutableNodesMap[sourceUuid];
 
       fixSourcePosition({ node: source, graphType });
 
@@ -98,7 +98,7 @@ export const useForceSimulation = ({
           forceRadial<GraphNodeDatum>(graphConfig.nodeDimensions.width * 5).strength((d) =>
             graphType === GraphType.Default &&
             d.properties.uuid !== source?.properties.uuid &&
-            d.sourceUuid === source.properties.uuid &&
+            d.sourceUuid === source?.properties.uuid &&
             (source?.currentRoles?.length ?? 0) >= 2
               ? 0.6
               : 0
