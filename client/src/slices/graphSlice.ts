@@ -317,7 +317,8 @@ const addToGraphIfNotExist = (
   return newNodesCount;
 };
 
-const updateSourceUuid = ({ sourceUuid, nodes }: { sourceUuid?: string; nodes: GraphNode[] }) => {
+const updateSourceUuid = ({ sourceUuid, nodes }: { sourceUuid?: string; nodes?: GraphNode[] }) => {
+  if (!nodes) return;
   nodes.forEach((node) => {
     if (node.properties.uuid !== sourceUuid) node.sourceUuid = sourceUuid;
   });
