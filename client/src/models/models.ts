@@ -146,6 +146,7 @@ export interface GraphNode {
   };
   currentRoles?: CurrentRole[];
   skip?: GraphNodeSkip;
+  sourceUuid?: string;
 }
 
 export enum CurrentRole {
