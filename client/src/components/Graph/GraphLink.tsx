@@ -44,25 +44,20 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
             strokeWidth="2"
             strokeLinecap="round"
           />
-          <foreignObject
-            className="text-primary text-xs text-center"
-            width={200}
-            height={50}
-            transform={`translate(${graphConfig.nodeDimensions.width / 2 + 4}, -12)`}
-          >
-            {link.type !== GraphLinkType.OWNS && (
-              <p className="font-bold">
-                {roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}
-              </p>
-            )}
-            {link.properties.stocks && (
-              <p>
-                <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
-                {formatNumber(link.properties.stocks)}){" "}
-              </p>
-            )}
-          </foreignObject>
         </g>
+        <foreignObject
+          className="graph-link-text text-primary text-xs text-center"
+          width={200}
+          height={50}
+          transform={`translate(0, 0)`}
+        >
+          {link.properties.stocks && (
+            <span className="bg-gray-50/90 dark:bg-gray-800/90 rounded py-1 px-2">
+              <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
+              {formatNumber(link.properties.stocks)}){" "}
+            </span>
+          )}
+        </foreignObject>
       </>
     );
 

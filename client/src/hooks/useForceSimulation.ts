@@ -292,5 +292,6 @@ const getLinkTextTransform = (l: GraphLinkDatum) => {
     x: (sourcePos.x + targetPos.x) / 2,
     y: (sourcePos.y + targetPos.y) / 2,
   };
+  if (sourcePos.x === targetPos.x && sourcePos.y === targetPos.y) return `translate(${center.x + 36}, ${center.y})`;
   return `translate(${center.x - 100}, ${center.y})`;
 };
