@@ -66,6 +66,7 @@ export const TargetSearch = () => {
             borderColor: "transparent",
           }}
           inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
+          maxHeight="10rem"
           mapResultToListItem={(node: GraphNode) => ({
             key: node.properties.uuid,
             name: node.properties.name,
