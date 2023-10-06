@@ -183,8 +183,6 @@ export enum UserEventType {
   RelationTargetLoad = "RelationTargetLoad",
 }
 
-export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: Ownership };
-
 export const isOwnership = (o: any): o is Ownership => {
   return o.orgnr && typeof o.orgnr === "string" && o.shareHolderId && typeof o.shareHolderId === "string" && o.holdings;
 };
