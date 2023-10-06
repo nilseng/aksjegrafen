@@ -38,6 +38,7 @@ interface IProps<Result extends unknown> {
   searchListClassName?: string;
   focus?: boolean;
   initialResult?: Result[];
+  maxHeight?: string;
 }
 
 export const SearchComponent = <Result extends unknown>({
@@ -53,6 +54,7 @@ export const SearchComponent = <Result extends unknown>({
   searchListClassName,
   focus,
   initialResult,
+  maxHeight,
 }: IProps<Result>) => {
   const { theme } = useContext(AppContext);
 
@@ -103,13 +105,10 @@ export const SearchComponent = <Result extends unknown>({
       </div>
       {searchList && (
         <div className={searchListClassName ?? `w-full max-w-full px-0`}>
-          <div
-            className="w-full relative p-3"
-            style={{ ...theme.elevation, backgroundColor: theme.background, zIndex: 100 }}
-          >
+          <div className="w-full relative rounded-lg" style={{ zIndex: 100 }}>
             <div
-              className="flex flex-col h-full max-h-64 w-full max-w-full overflow-auto relative px-4 py-2"
-              style={{ ...theme.lowering, zIndex: 102 }}
+              className="flex flex-col h-full w-full max-w-full overflow-auto relative"
+              style={{ zIndex: 102, maxHeight }}
             >
               {searchList.length ? (
                 searchList
@@ -117,12 +116,11 @@ export const SearchComponent = <Result extends unknown>({
                   .map(({ result, item }) => (
                     <div
                       key={item.key}
-                      className="w-full max-w-full flex flex-col items-center justify-between border-0 p-2 my-2"
+                      className="w-full max-w-full flex flex-col items-center justify-between border border-primary/20 rounded-lg p-2 my-1"
                       style={{
                         zIndex: 101,
                         backgroundColor: "transparent",
                         ...(handleClick ? { cursor: "pointer" } : {}),
-                        ...theme.elevation,
                       }}
                       onClick={() => {
                         if (handleClick) {
