@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Slide, ToastContainer } from "react-toastify";
 import { AppContext } from "../AppContext";
-import { TableModal } from "./TableModal";
 
 export const Overlays = () => {
   const { theme } = useContext(AppContext);
@@ -15,7 +14,6 @@ export const Overlays = () => {
         hideProgressBar={true}
         theme={theme.id === "dark" ? "dark" : "light"}
       />
-      <TableModal />
     </>
   );
 };

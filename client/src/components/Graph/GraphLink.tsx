@@ -1,143 +1,94 @@
-import { useContext, useEffect, useState } from "react";
+import { format } from "d3";
+import { useContext } from "react";
+import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
-import { ICompany, Year } from "../../models/models";
-import { GraphContext } from "./GraphContainer";
-import { GraphLinkArrow } from "./GraphLinkArrow";
-import { IGraphLink, IGraphNode } from "./GraphUtils";
+import { GraphLinkType, GraphLink as IGraphLink } from "../../models/models";
+import { RootState } from "../../store";
+import { graphConfig } from "./GraphConfig";
 
-interface IProps {
-  link: IGraphLink;
-  offset: {
-    x: number;
-    y: number;
-  };
-}
+const formatNumber = (num: number) => (num >= 100 ? format(".3s")(num) : format(".0f")(num));
 
-const isLinkHighlighted = (link: IGraphLink, node?: IGraphNode) => {
-  return node?.id === link.source.id || node?.id === link.target.id;
-};
-
-const getOwnershipPercentage = (link: IGraphLink, year: Year) => {
-  const companyStocks = (link.target.entity as ICompany).shares?.[year]?.total;
-  if (!companyStocks) return;
-  return (
-    link.ownerships.reduce((ownershipPercentage: number, o) => {
-      return ownershipPercentage + (o.holdings[year]?.total ?? 0) / companyStocks;
-    }, 0) * 100
-  );
-};
-
-export const GraphLink = ({ link, offset }: IProps) => {
+export const GraphLink = ({ link }: { link: IGraphLink }) => {
   const { theme } = useContext(AppContext);
-  const graphContext = useContext(GraphContext);
 
-  const [rotation, setRotation] = useState<number>();
-  const [arrowPos, setArrowPos] = useState<{ x: number; y: number }>({
-    x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
-    y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
-  });
-  const [arrowPos2, setArrowPos2] = useState<{ x: number; y: number }>({
-    x: (2 * link.source.x + link.target.x) / 3 + offset.x,
-    y: (2 * link.source.y + link.target.y) / 3 + offset.y,
-  });
-  const [countPos, setCountPos] = useState<{ x: number; y: number }>({
-    x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
-    y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
-  });
-  const [percentagePos, setPercentagePos] = useState<{ x: number; y: number }>({
-    x: (link.source.x + link.target.x) / 2 + offset.x,
-    y: (link.source.y + link.target.y) / 2 + offset.y,
-  });
+  const roleTypes = useSelector<RootState, RootState["roles"]["data"]>((state) => state.roles.data);
 
-  useEffect(() => {
-    const cos_theta =
-      (link.target.y - link.source.y) /
-      Math.sqrt(Math.pow(link.target.x - link.source.x, 2) + Math.pow(link.target.y - link.source.y, 2));
-    setRotation(
-      link.target.x > link.source.x
-        ? -(Math.acos(cos_theta) / (2 * Math.PI)) * 360
-        : (Math.acos(cos_theta) / (2 * Math.PI)) * 360
-    );
-    setArrowPos({
-      x: (link.source.x + 2 * link.target.x) / 3 + offset.x,
-      y: (link.source.y + 2 * link.target.y) / 3 + offset.y,
-    });
-    setArrowPos2({
-      x: (2 * link.source.x + link.target.x) / 3 + offset.x,
-      y: (2 * link.source.y + link.target.y) / 3 + offset.y,
-    });
-    setCountPos({
-      x: (2 * link.source.x + 3 * link.target.x) / 5 + offset.x + 5,
-      y: (2 * link.source.y + 3 * link.target.y) / 5 + offset.y,
-    });
-    setPercentagePos({
-      x: (link.source.x + link.target.x) / 2 + offset.x,
-      y: (link.source.y + link.target.y) / 2 + offset.y,
-    });
-  }, [link, offset]);
-
-  if (!link) return null;
-
-  if (link.source === link.target)
+  if (link.source.properties.uuid === link.target.properties.uuid)
     return (
-      <g>
+      <>
         <circle
+          className="graph-circle-link"
           fill="transparent"
-          stroke={theme.muted}
+          stroke={theme.primary}
           strokeWidth="1"
-          cx={link.source.x + 2 * offset.x}
-          cy={link.source.y + offset.y}
+          cx={graphConfig.nodeDimensions.width / 2}
+          cy={0}
           r="40"
         />
-        <GraphLinkArrow
-          center={{
-            x: link.source.x + 2 * offset.x + 40,
-            y: link.source.y + offset.y,
-          }}
-          rotation={0}
-        />
-        <foreignObject x={link.source.x + 2 * offset.x + 40} y={link.source.y + offset.y} width={100} height={20}>
-          <div data-xmlns="http://www.w3.org/1999/xhtml">
-            <div className="font-bold" style={{ color: theme.primary }}>
-              {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
-            </div>
-          </div>
-        </foreignObject>
-      </g>
+        <g className="graph-link-arrow">
+          <line
+            x1={graphConfig.nodeDimensions.width / 2 + 35}
+            y1={-5}
+            x2={graphConfig.nodeDimensions.width / 2 + 40}
+            y2={0}
+            stroke={theme.primary}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1={graphConfig.nodeDimensions.width / 2 + 40}
+            y1={0}
+            x2={graphConfig.nodeDimensions.width / 2 + 45}
+            y2={-5}
+            stroke={theme.secondary}
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <foreignObject
+            className="text-primary text-xs text-center"
+            width={200}
+            height={50}
+            transform={`translate(${graphConfig.nodeDimensions.width / 2 + 4}, -12)`}
+          >
+            {link.type !== GraphLinkType.OWNS && (
+              <p className="font-bold">
+                {roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}
+              </p>
+            )}
+            {link.properties.stocks && (
+              <p>
+                <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
+                {formatNumber(link.properties.stocks)} aksjer){" "}
+              </p>
+            )}
+          </foreignObject>
+        </g>
+      </>
     );
 
   return (
-    <g>
-      <line
-        x1={link.source.x + offset.x}
-        y1={link.source.y + offset.y}
-        x2={link.target.x + offset.x}
-        y2={link.target.y + offset.y}
-        stroke={isLinkHighlighted(link, graphContext?.hoveredNode) ? theme.primary : theme.muted}
-        strokeWidth={isLinkHighlighted(link, graphContext?.hoveredNode) ? 2 : 1}
-      />
-      {(rotation || rotation === 0) && (
-        <>
-          <GraphLinkArrow rotation={rotation} center={arrowPos} stroke={theme.secondary} />
-          <GraphLinkArrow rotation={rotation} center={arrowPos2} stroke={theme.primary} />
-        </>
-      )}
-      {link.ownerships.length > 1 && (
-        <foreignObject x={countPos.x} y={countPos.y} width={50} height={50}>
-          <div data-xmlns="http://www.w3.org/1999/xhtml">
-            <div className="font-bold" style={{ color: theme.primary }}>
-              {link.ownerships.length}
-            </div>
-          </div>
+    <>
+      <line className="graph-link" stroke={theme.primary} strokeWidth={1} />
+      <g className="graph-link-arrow">
+        <line x1={-5} y1={-5} x2={0} y2={0} stroke={theme.primary} strokeWidth="2" strokeLinecap="round" />
+        <line x1={0} y1={0} x2={5} y2={-5} stroke={theme.secondary} strokeWidth="2" strokeLinecap="round" />
+        <foreignObject
+          className="text-primary text-xs text-center"
+          width={200}
+          height={50}
+          transform={"translate(24, -100) rotate(90)"}
+        >
+          {link.type !== GraphLinkType.OWNS && (
+            <p className="font-bold">{roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}</p>
+          )}
+          {link.properties.stocks && (
+            <p>
+              <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
+              {formatNumber(link.properties.stocks)} aksjer){" "}
+            </p>
+          )}
         </foreignObject>
-      )}
-      <foreignObject x={percentagePos.x} y={percentagePos.y} width={100} height={20}>
-        <div data-xmlns="http://www.w3.org/1999/xhtml">
-          <div className="font-bold" style={{ color: theme.primary }}>
-            {getOwnershipPercentage(link, graphContext?.year as Year)?.toFixed(2) + "%"}
-          </div>
-        </div>
-      </foreignObject>
-    </g>
+      </g>
+    </>
   );
 };

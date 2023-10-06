@@ -14,7 +14,7 @@ import {
 } from "d3";
 import { cloneDeep } from "lodash";
 import { RefObject, useEffect, useRef } from "react";
-import { graphConfig } from "../components/Graph2/GraphConfig";
+import { graphConfig } from "../components/Graph/GraphConfig";
 import { CurrentRole, GraphLink, GraphNode, GraphType } from "../models/models";
 import { openMenu } from "../slices/graphSlice";
 import { useAppDispatch } from "../store";

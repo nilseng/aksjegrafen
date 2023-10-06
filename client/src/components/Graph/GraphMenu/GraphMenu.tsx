@@ -1,81 +1,46 @@
-import { faListAlt } from "@fortawesome/free-regular-svg-icons";
-import { faHome, faInfo, faList, faWindowRestore, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import { IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../AppContext";
 import { useWindowDimensions } from "../../../hooks/useWindowDimensions";
-import { Year } from "../../../models/models";
-import { GraphLogo } from "../../GraphLogo";
-import { GraphContext, IGraphDefaultActions, IGraphNodeActions } from "../GraphContainer";
-import { IGraphNode } from "../GraphUtils";
+import { GraphNode } from "../../../models/models";
 import { GraphMenuItem } from "./GraphMenuItem";
+import { useGraphMenu } from "./useGraphMenu";
 
-export interface IMenuItem {
-  node?: IGraphNode;
+export interface MenuItem {
+  node: GraphNode;
   name: string;
   icon?: IconDefinition;
   svgIcon?: JSX.Element;
   border?: boolean;
-  nodeActionId?: keyof IGraphNodeActions;
-  nodeAction?: ((node: IGraphNode) => Promise<void>) | ((node: IGraphNode) => void);
-  actionId?: keyof IGraphDefaultActions;
-  action?: (() => Promise<void>) | (() => void);
-  condition?: (node: IGraphNode, year: Year) => boolean;
+  action?: ((node: GraphNode) => Promise<void>) | ((node: GraphNode) => void);
+  condition?: boolean;
 }
 
-const nodeItems: IMenuItem[] = [
-  { nodeActionId: "showDetails", name: "Detaljer", icon: faInfo },
-  {
-    nodeActionId: "openInNewGraph",
-    name: "Åpne i ny graf",
-    svgIcon: <GraphLogo width="16px" height="16px" />,
-  },
-  {
-    nodeActionId: "openInNewWindow",
-    name: "Åpne i ny fane",
-    icon: faWindowRestore,
-  },
-  {
-    nodeActionId: "showInvestmentTable",
-    name: "Investeringstabell",
-    condition: (node: IGraphNode) => !!node.entity.investmentCount,
-    icon: faListAlt,
-  },
-  {
-    nodeActionId: "showInvestorTable",
-    name: "Investortabell",
-    condition: (node: IGraphNode) => !!node.entity.investorCount,
-    icon: faList,
-  },
-];
-
-const defaultItems: IMenuItem[] = [{ actionId: "resetGraph", name: "Tilbakestill graf", icon: faHome }];
-
-export interface IMenu {
+export interface Menu {
   open: boolean;
-  node?: IGraphNode;
+  node?: GraphNode;
   x?: number;
   y?: number;
-  setMenu?: Dispatch<SetStateAction<IMenu>>;
 }
 
-export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
+export const GraphMenu = ({ open, node, x, y }: Menu) => {
   const { theme } = useContext(AppContext);
   const { width, height } = useWindowDimensions();
 
-  const graphContext = useContext(GraphContext);
-
   const [pos, setPos] = useState<{ x: number; y: number }>();
+
+  const menuItems = useGraphMenu(node);
 
   // If there is not enough space to display the ctx menu to the right/below clicked item,
   // adjust the position with the height/width of the ctx menu.
   useEffect(() => {
     if ((x || x === 0) && (y || y === 0) && node) {
-      setPos({ x: Math.min(x, width - 200), y: Math.min(y, height - 395) });
+      setPos({ x: Math.min(x, width - 200), y: Math.min(y, height - (80 + 36 * (menuItems?.length ?? 0))) });
     }
     return () => setPos(undefined);
-  }, [height, width, x, y, node]);
+  }, [height, width, x, y, node, menuItems?.length]);
 
-  if (!open || !graphContext) return null;
+  if (!open || !node || !menuItems) return null;
 
   return (
     <div
@@ -87,27 +52,18 @@ export const GraphMenu = ({ open, node, x, y, setMenu }: IMenu) => {
         ...theme.elevation,
         borderRadius: "8px",
       }}
-      onClick={() => {
-        if (setMenu) setMenu((menu) => ({ ...menu, open: false }));
-      }}
     >
-      {node?.entity && <GraphMenuItem key={node.id} name={node.entity.name} border={true} />}
-      {node &&
-        nodeItems?.map((item) => {
-          if (!item.nodeActionId) return null;
-          return (
-            <GraphMenuItem
-              key={item.name}
-              node={node}
-              {...item}
-              nodeAction={graphContext?.nodeActions[item.nodeActionId]}
-            />
-          );
-        })}
-      {defaultItems?.map((item) => {
-        if (!item.actionId) return null;
-        return <GraphMenuItem key={item.name} {...item} action={graphContext?.actions[item.actionId]} />;
-      })}
+      {menuItems?.map((item) => (
+        <GraphMenuItem
+          key={item.name}
+          name={item.name}
+          node={node}
+          icon={item.icon}
+          svgIcon={item.svgIcon}
+          action={item.action}
+          border={item.border}
+        />
+      ))}
     </div>
   );
 };

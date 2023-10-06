@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ICompany, IOwnership, IShareholder, Relation, isShareholder } from "../models/models";
+import { ICompany, IOwnership, IShareholder } from "../models/models";
 import { buildQuery } from "../utils/buildQuery";
 
 export const getCompany = async (id: string) => {
@@ -88,21 +88,6 @@ export const getInvestments = async (
 export const getInvestorCount = async (company: ICompany, year: number) => {
   const res = await fetch(`/api/investors?orgnr=${company.orgnr}&year=${year}&count=true`);
   return res.json();
-};
-
-export const getShortestPath = async (
-  source: ICompany | IShareholder,
-  target: ICompany
-): Promise<Relation[] | null | undefined> => {
-  const query = buildQuery({
-    fromOrgnr: source.orgnr,
-    fromShareholderId: isShareholder(source) ? source.id : undefined,
-    toOrgnr: target.orgnr,
-  });
-  const res = await fetch(`/api/find-relations${query}`);
-  if (!res.ok) throw Error("Failed to fetch shortest path");
-  if (res?.status === 204) return null;
-  return res?.json();
 };
 
 export const useShareholderCount = () => {
@@ -277,33 +262,4 @@ export const useInvestorCount = (
   }, [company, year]);
 
   return { count, loading };
-};
-
-export const useShortestPath = (source?: ICompany | IShareholder, target?: ICompany) => {
-  const [path, setPath] = useState<Relation[] | null>();
-  const [isLoading, setIsLoading] = useState<boolean>();
-  const [error, setError] = useState<string>();
-
-  useEffect(() => {
-    if ((source?.orgnr || isShareholder(source)) && target?.orgnr) {
-      setIsLoading(true);
-      getShortestPath(source, target)
-        .then((p) => {
-          setPath(p);
-          setIsLoading(false);
-        })
-        .catch(() => {
-          setError("Noe gikk galt - fant ikke korteste vei😞");
-          setIsLoading(false);
-        });
-    }
-
-    return () => {
-      setIsLoading(false);
-      setPath(undefined);
-      setError(undefined);
-    };
-  }, [source, target]);
-
-  return { path, isLoading, error };
 };

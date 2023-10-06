@@ -104,24 +104,6 @@ export const isOwnership = (o: any): o is IOwnership => {
   );
 };
 
-export interface Role {
-  type: string;
-  orgnr: string;
-  holder: {
-    person?: {
-      fornavn?: string;
-      etternavn?: string;
-    };
-    unit?: {
-      orgnr: string;
-      organisasjonsform: string;
-      navn: string;
-    } & ICompany;
-  };
-  company?: ICompany;
-  shareholder?: IShareholder;
-}
-
 export enum GraphNodeLabel {
   Shareholder = "Shareholder",
   Company = "Company",
@@ -205,8 +187,6 @@ export enum GraphLinkType {
   REVI = "REVI",
   VARA = "VARA",
 }
-
-export type Relation = { role: Role; ownership?: never } | { role?: never; ownership: IOwnership };
 
 export enum FetchState {
   Idle = "Idle",

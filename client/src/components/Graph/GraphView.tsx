@@ -1,70 +1,72 @@
-import { useContext, useRef, useState } from "react";
-import { AppContext } from "../../AppContext";
+import { useRef } from "react";
+import { useSelector } from "react-redux";
+import { useForceSimulation } from "../../hooks/useForceSimulation";
 import { useZoom } from "../../hooks/useSvgZoom";
-import { Year } from "../../models/models";
-import { GraphContext } from "./GraphContainer";
+import { GraphState, closeMenu } from "../../slices/graphSlice";
+import { RootState, useAppDispatch } from "../../store";
+import { graphConfig } from "./GraphConfig";
 import { GraphLink } from "./GraphLink";
-import { GraphMenu, IMenu } from "./GraphMenu/GraphMenu";
+import { GraphMenu } from "./GraphMenu/GraphMenu";
 import { GraphNode } from "./GraphNode";
-import { IGraphLink, IGraphNode, INodeDimensions } from "./GraphUtils";
-import { HowToModal } from "./HowToModal";
-import { YearSelector } from "./YearSelector";
 
-interface IProps {
-  year: Year;
-  nodeDimensions: INodeDimensions;
-  nodes: IGraphNode[];
-  links: IGraphLink[];
-}
-
-export const GraphView = ({ year, nodeDimensions, nodes, links }: IProps) => {
-  const { theme } = useContext(AppContext);
-  const graphContext = useContext(GraphContext);
-
-  const [menu, setMenu] = useState<IMenu>({ open: false });
-
+export const GraphView = () => {
   const svgRef = useRef<SVGSVGElement>(null);
-  useZoom(svgRef);
+
+  const transform = useZoom(svgRef);
+
+  const dispatch = useAppDispatch();
+
+  const {
+    data: { nodes, links, sourceUuid, targetUuid, graphType, menu },
+  } = useSelector<RootState, GraphState>((state) => state.graph);
+
+  useForceSimulation({ nodes, links, sourceUuid, targetUuid, graphType, svgRef });
+
+  if (!nodes || nodes.length === 0) return <p>Ingen relasjoner funnet 🔎</p>;
+
   return (
-    <div className="flex w-full h-full px-2 px-sm-4 pb-2 pb-sm-4 pt-0">
-      <YearSelector />
-      <HowToModal />
-      <div className="flex w-full h-full" style={{ ...theme.lowering }}>
-        <GraphMenu {...menu} setMenu={setMenu} />
-        <svg ref={svgRef} height="100%" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox={"0 0 1000 1000"}>
-          <rect
-            fill="transparent"
-            width="3000"
-            height="3000"
-            x={-1000}
-            y={-1000}
-            onClick={(e) => {
-              setMenu({ open: !menu.open, x: e.pageX, y: e.pageY });
-            }}
-            onContextMenu={(e) => {
-              e.preventDefault();
-              setMenu({ open: !menu.open, x: e.pageX, y: e.pageY });
-            }}
-          ></rect>
-          <g transform={graphContext?.svgTransform}>
-            {links.map((link) => (
-              <GraphLink
-                key={`${link.source.id}-${link.target.id}`}
-                link={link}
-                offset={{
-                  x: nodeDimensions.width / 2,
-                  y: nodeDimensions.height / 2,
-                }}
-              />
-            ))}
-            {nodes.map((node) => (
-              <g key={node.id}>
-                <GraphNode node={{ ...node, ...nodeDimensions }} year={year} setMenu={setMenu} />
-              </g>
-            ))}
-          </g>
-        </svg>
-      </div>
-    </div>
+    <>
+      <GraphMenu open={menu.isOpen} node={menu.node} x={menu.position.x} y={menu.position.y} />
+      <svg
+        ref={svgRef}
+        height="100%"
+        width="100%"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox={`${-graphConfig.width / 2} ${-graphConfig.height / 2} ${graphConfig.width} ${graphConfig.height}`}
+      >
+        <rect
+          x={-graphConfig.width}
+          y={-graphConfig.height}
+          height={graphConfig.height * 2}
+          width={graphConfig.width * 2}
+          fill="transparent"
+          onClick={() => {
+            if (menu.isOpen) dispatch(closeMenu());
+          }}
+        />
+        <g transform={transform}>
+          <>
+            {links?.length &&
+              links.map((link) => (
+                <GraphLink
+                  key={`${link.source.properties.uuid}-${link.target.properties.uuid}-${link.type}`}
+                  link={link}
+                />
+              ))}
+            {nodes?.length &&
+              nodes.map((node) => (
+                <foreignObject
+                  className="graph-node"
+                  key={node.properties.uuid}
+                  width={graphConfig.nodeDimensions.width}
+                  height={graphConfig.nodeDimensions.height}
+                >
+                  <GraphNode node={node} />
+                </foreignObject>
+              ))}
+          </>
+        </g>
+      </svg>
+    </>
   );
 };

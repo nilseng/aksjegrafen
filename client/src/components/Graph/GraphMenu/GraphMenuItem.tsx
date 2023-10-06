@@ -1,40 +1,30 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext, useState } from "react";
 import { AppContext } from "../../../AppContext";
-import { Year } from "../../../models/models";
-import { GraphContext } from "../GraphContainer";
-import { IMenuItem } from "./GraphMenu";
+import { MenuItem } from "./GraphMenu";
 
-export const GraphMenuItem = (item: IMenuItem) => {
+export const GraphMenuItem = (item: MenuItem) => {
   const { theme } = useContext(AppContext);
-  const graphContext = useContext(GraphContext);
 
   const [hovered, setHovered] = useState<boolean>(false);
 
   return (
     <div
       key={item.name}
-      className="flex items-center text-xs font-bold p-3"
+      className={`w-full flex items-center text-xs ${item.border ? "justify-center" : ""} font-bold p-2`}
       style={{
         backgroundColor: hovered ? theme.backgroundSecondary : theme.background,
-        color: isDisabled(item, graphContext?.year) ? theme.muted : theme.text,
-        cursor: isDisabled(item, graphContext?.year) ? "default" : "pointer",
-        borderLeft: 0,
-        borderTop: 0,
-        borderRight: 0,
-        borderBottom: item.border ? `1px solid ${theme.muted}` : 0,
+        color: isDisabled(item) ? theme.muted : theme.text,
+        cursor: isDisabled(item) || !item.action ? "default" : "pointer",
+        borderBottom: item.border ? `1px solid ${theme.muted}` : "",
         borderRadius: "8px",
       }}
       onClick={() => {
-        if (isDisabled(item, graphContext?.year)) return;
-        else if (item.nodeAction && item.node) {
-          item.nodeAction(item.node);
-        } else if (item.action) {
-          item.action();
-        }
+        if (isDisabled(item) || !item.action) return;
+        item.action(item.node);
       }}
       onMouseEnter={() => {
-        if (!isDisabled(item, graphContext?.year)) setHovered(true);
+        if (!isDisabled(item) && item.action) setHovered(true);
       }}
       onMouseLeave={() => setHovered(false)}
     >
@@ -49,11 +39,6 @@ export const GraphMenuItem = (item: IMenuItem) => {
   );
 };
 
-const isDisabled = (item: IMenuItem, year: Year | undefined) => {
-  if (!year) return true;
-  return !hasAction(item) || (item.node && item.condition && !item.condition(item.node, year));
-};
-
-const hasAction = (item: IMenuItem) => {
-  return item.action || item.nodeAction;
+const isDisabled = (item: MenuItem) => {
+  return item.condition === false;
 };

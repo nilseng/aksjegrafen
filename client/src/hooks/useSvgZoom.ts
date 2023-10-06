@@ -1,24 +1,24 @@
-import { select, zoom, zoomTransform, zoomIdentity } from "d3";
-import { useContext, useLayoutEffect } from "react";
-import { GraphContext } from "../components/Graph/GraphContainer";
+import { select, zoom } from "d3";
+import { useLayoutEffect, useState } from "react";
 
-export const useZoom = (svgEl?: React.RefObject<SVGSVGElement>) => {
-  const graphContext = useContext(GraphContext);
+export const defaultSvgTransform = "translate(0,0) scale(1)";
+
+export const useZoom = (svgEl: React.RefObject<SVGSVGElement>) => {
+  const [svgTransform, setSvgTransform] = useState<string>(defaultSvgTransform);
 
   useLayoutEffect(() => {
     const zoomed = (transform: any) => {
-      graphContext?.setSvgTransform(`translate(${transform.x},${transform.y}) scale(${transform.k})`);
+      setSvgTransform(`translate(${transform.x},${transform.y}) scale(${transform.k})`);
     };
 
-    if (svgEl) {
-      const svg: any = select(svgEl.current);
-      const z = zoom().on("zoom", (e) => zoomed(e.transform));
-      if (graphContext?.resetZoom) {
-        svg.call(z.transform, zoomIdentity, zoomTransform(svg.node()).invert([0, 0]));
-        graphContext.setResetZoom(false);
-      } else {
-        svg.call(z);
-      }
-    }
-  }, [graphContext, svgEl]);
+    const svg: any = select(svgEl.current);
+    const z = zoom().on("zoom", (e) => zoomed(e.transform));
+    svg.call(z);
+
+    return () => {
+      setSvgTransform(defaultSvgTransform);
+    };
+  }, [svgEl]);
+
+  return svgTransform;
 };
