@@ -98,6 +98,7 @@ export const useForceSimulation = ({
         )
         .join(".graph-circle-link");
       const linkArrow = svg.selectAll(".graph-link-arrow").data(mutableLinks).join(".graph-link-arrow");
+      const linkText = svg.selectAll(".graph-link-text").data(mutableLinks).join(".graph-link-text");
 
       const simulation = forceSimulation<GraphNodeDatum, GraphLinkDatum>(Object.values(mutableNodesMap))
         .alpha(0.4)
@@ -143,6 +144,7 @@ export const useForceSimulation = ({
           .attr("cx", (l) => graphConfig.nodeDimensions.width / 2 + (l.source as GraphNodeDatum).x!)
           .attr("cy", (l) => (l.source as GraphNodeDatum).y!);
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
+        linkText.attr("transform", (l) => getLinkTextTransform(l));
       });
 
       simulation.on("end", () => {
@@ -285,4 +287,14 @@ const getLinkArrowTransform = (l: GraphLinkDatum) => {
   // If all coordinates are 0, cos_theta will be NaN and rotation should not be specified.
   if (isNaN(rotation)) return `translate(${center.x}, ${center.y})`;
   return `translate(${center.x}, ${center.y}) rotate(${rotation})`;
+};
+
+const getLinkTextTransform = (l: GraphLinkDatum) => {
+  const sourcePos = { x: (l.source as GraphNodeDatum).x!, y: (l.source as GraphNodeDatum).y! };
+  const targetPos = { x: (l.target as GraphNodeDatum).x!, y: (l.target as GraphNodeDatum).y! };
+  const center = {
+    x: (sourcePos.x + targetPos.x) / 2,
+    y: (sourcePos.y + targetPos.y) / 2,
+  };
+  return `translate(${center.x - 100}, ${center.y})`;
 };
