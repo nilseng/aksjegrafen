@@ -2,16 +2,10 @@ import { useEffect, useState } from "react";
 import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
-import { GraphContainer } from "./components/Graph/GraphContainer";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
-import { RelationFinder } from "./components/RelationFinder";
-import { SearchPage } from "./components/SearchPage";
-import { Stats } from "./components/Stats";
-import { ICompany, IShareholder } from "./models/models";
 
-import { Graph } from "./components/Graph2/Graph";
-import { Landing } from "./components/Landing";
+import { Graph } from "./components/Graph/Graph";
 import { Theme, theming } from "./theming/theme";
 
 const getStoredTheme = () => {
@@ -25,9 +19,6 @@ const getSystemTheme = () => {
 
 const App = () => {
   const [theme, setTheme] = useState(getStoredTheme() ?? getSystemTheme() ?? theming[Theme.light]);
-  const [modalInvestment, setModalInvestment] = useState<ICompany>();
-  const [modalInvestor, setModalInvestor] = useState<IShareholder>();
-  const [skip, setSkip] = useState<number>(0);
 
   useEffect(() => {
     document.body.style.backgroundColor = theme.background;
@@ -39,15 +30,6 @@ const App = () => {
     <AppContext.Provider
       value={{
         theme,
-        tableModalInput: {
-          investment: modalInvestment,
-          setInvestment: setModalInvestment,
-          investor: modalInvestor,
-          setInvestor: setModalInvestor,
-          limit: 20,
-          skip,
-          setSkip,
-        },
       }}
     >
       <Router>
@@ -61,12 +43,7 @@ const App = () => {
           }}
         >
           <Switch>
-            <Route path="/graph" component={GraphContainer} />
-            <Route path="/search" component={SearchPage} />
-            <Route path="/stats" component={Stats} />
-            <Route path="/relation-finder" component={RelationFinder} />
             <Route path="/api-docs" component={ApiDocs} />
-            <Route path="/legacy" component={Landing} />
             <Route path="/" component={Graph} />
           </Switch>
         </div>
