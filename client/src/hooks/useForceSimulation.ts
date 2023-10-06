@@ -146,10 +146,6 @@ export const useForceSimulation = ({
         linkArrow.attr("transform", (l) => getLinkArrowTransform(l));
         linkText.attr("transform", (l) => getLinkTextTransform(l));
       });
-
-      simulation.on("end", () => {
-        simulation.force("radial", null);
-      });
     }
   }, [nodes, links, graphType, svgRef, targetUuid, sourceUuid, dispatch, width]);
 };
