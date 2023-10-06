@@ -14,7 +14,6 @@ import { findNode } from "../use-cases/findNode";
 import { findPopularNodes } from "../use-cases/findPopularNodes";
 import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
-import { findShortestPath as findShortestPath2 } from "../use-cases/findShortestPath2";
 import { saveUserEvent } from "../use-cases/saveUserEvent";
 import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
@@ -313,23 +312,6 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
   );
 
   router.get(
-    "/find-relations",
-    query(["fromOrgnr", "fromShareholderId"]).optional(),
-    query(["toOrgnr"]),
-    asyncRouter(async (req, res) => {
-      const query = matchedData(req);
-      if (!(query.fromOrgnr || query.fromShareholderId) || !query.toOrgnr) return res.status(400).send();
-      const data = await findShortestPath({
-        graphDB,
-        fromOrgnr: query.fromOrgnr,
-        fromShareholderId: query.fromShareholderId,
-        toOrgnr: query.toOrgnr,
-      });
-      return data ? res.status(200).json(data) : res.status(204).json();
-    })
-  );
-
-  router.get(
     "/node",
     query(["uuid"]),
     asyncRouter(async (req, res) => {
@@ -376,7 +358,7 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
         const data = await findNode({ uuid: query.sourceUuid });
         return res.json({ nodes: [data], links: [] });
       }
-      const data = await findShortestPath2({
+      const data = await findShortestPath({
         isDirected: query.isDirected,
         sourceUuid: query.sourceUuid,
         targetUuid: query.targetUuid,
