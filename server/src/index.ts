@@ -6,7 +6,6 @@ import { Driver } from "neo4j-driver";
 import path from "path";
 import { hideBin } from "yargs/helpers";
 import yargs from "yargs/yargs";
-import { initializeCache } from "./cache/cache";
 import { Database } from "./database/databaseSetup";
 import { Year } from "./models/models";
 import { api } from "./routes/api";
@@ -23,7 +22,6 @@ const argv = yargs(hideBin(process.argv))
     transform: { type: "boolean", default: false, description: "Run data transformation when starting the server." },
     year: { type: "number", description: "Specify from which year data should be imported - 2019, 2020, 2021 or 2022" },
     data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
-    clearCache: { type: "boolean", description: "Clear current db in Redis cache" },
   })
   .parseSync();
 
@@ -45,9 +43,7 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
-  const cache = await initializeCache();
-
-  app.use("/api", api({ graphDB, mongoDB: db, cache }));
+  app.use("/api", api({ graphDB, mongoDB: db }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
 
@@ -65,7 +61,6 @@ const initializeApp = async () => {
 
   if (argv.import) importData(graphDB, db, argv.year as Year, argv.data);
   if (argv.transform && argv.year) transformData(db, argv.year as Year);
-  if (argv.clearCache) cache.flushdb();
 
   gracefulShutdown({ graphDB });
 };

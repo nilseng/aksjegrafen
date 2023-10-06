@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { body, matchedData, query, validationResult } from "express-validator";
-import { Redis } from "ioredis";
 import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
@@ -22,15 +21,12 @@ import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
 
-export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB: IDatabase; cache: Redis }) => {
+export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatabase }) => {
   router.get(
     "/company",
     asyncRouter(async (req, res) => {
       if (req.query.count) {
-        const cachedCount = await cache.get("company_count");
-        if (cachedCount) return res.json(cachedCount);
         const count = await db.companies.countDocuments();
-        cache.set("company_count", count);
         return res.json(count);
       } else if (req.query._id) {
         const company = await db.companies.findOne({ _id: new ObjectId(req.query._id as string) });
@@ -48,10 +44,7 @@ export const api = ({ graphDB, mongoDB: db, cache }: { graphDB: Driver; mongoDB:
     "/shareholder",
     asyncRouter(async (req, res) => {
       if (req.query.count) {
-        const cachedCount = await cache.get("shareholder_count");
-        if (cachedCount) return res.json(cachedCount);
         const count = await db.shareholders.countDocuments();
-        cache.set("shareholder_count", count);
         return res.json(count);
       } else if (req.query._id) {
         const shareholder = await db.shareholders.findOne({ _id: new ObjectId(req.query._id as string) });
