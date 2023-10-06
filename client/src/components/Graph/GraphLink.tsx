@@ -58,7 +58,7 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
             {link.properties.stocks && (
               <p>
                 <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
-                {formatNumber(link.properties.stocks)} aksjer){" "}
+                {formatNumber(link.properties.stocks)}){" "}
               </p>
             )}
           </foreignObject>
@@ -72,23 +72,27 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
       <g className="graph-link-arrow">
         <line x1={-5} y1={-5} x2={0} y2={0} stroke={theme.primary} strokeWidth="2" strokeLinecap="round" />
         <line x1={0} y1={0} x2={5} y2={-5} stroke={theme.secondary} strokeWidth="2" strokeLinecap="round" />
-        <foreignObject
-          className="text-primary text-xs text-center"
-          width={200}
-          height={50}
-          transform={"translate(24, -100) rotate(90)"}
-        >
-          {link.type !== GraphLinkType.OWNS && (
-            <p className="font-bold">{roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}</p>
-          )}
-          {link.properties.stocks && (
-            <p>
-              <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
-              {formatNumber(link.properties.stocks)} aksjer){" "}
-            </p>
-          )}
-        </foreignObject>
       </g>
+      <foreignObject
+        className="graph-link-text text-primary text-xs text-center pt-2"
+        width={200}
+        height={100}
+        transform={"translate(0, 0)"}
+      >
+        {link.type !== GraphLinkType.OWNS && (
+          <span className="bg-gray-50/90 dark:bg-gray-800/90 rounded py-1 px-2">
+            <span className="font-bold">
+              {roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}
+            </span>
+          </span>
+        )}
+        {link.properties.stocks && (
+          <span className="bg-gray-50/90 dark:bg-gray-800/90 rounded py-1 px-2">
+            <span className="font-bold pr-1">{((link.properties.share ?? 0) * 100).toFixed(0)}%</span>(
+            {formatNumber(link.properties.stocks)}){" "}
+          </span>
+        )}
+      </foreignObject>
     </>
   );
 };
