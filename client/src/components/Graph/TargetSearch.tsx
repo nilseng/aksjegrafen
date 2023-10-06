@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { ReactComponent as AllPathsIcon } from "../../icons/all_paths.svg";
 import { ReactComponent as DirectedGraphIcon } from "../../icons/directed_graph.svg";
 import { ReactComponent as UndirectGraphIcon } from "../../icons/undirected_graph.svg";
@@ -15,15 +16,12 @@ import { SearchComponent } from "../SearchComponent";
 
 export const TargetSearch = () => {
   const { theme } = useContext(AppContext);
-
   const history = useHistory();
-
   const dispatch = useDispatch();
+  const { width } = useWindowDimensions();
 
   const { isDirected: isGraphDirected } = useSelector<RootState, GraphState["data"]>((state) => state.graph.data);
-
   const [isDirected, setIsDirected] = useState(isGraphDirected);
-
   const { source, target } = useSelector<RootState, ModalState>((state) => state.modalHandler);
 
   return (
@@ -66,7 +64,7 @@ export const TargetSearch = () => {
             borderColor: "transparent",
           }}
           inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
-          maxHeight="10rem"
+          maxHeight={width >= 768 ? "10rem" : "7rem"}
           mapResultToListItem={(node: GraphNode) => ({
             key: node.properties.uuid,
             name: node.properties.name,

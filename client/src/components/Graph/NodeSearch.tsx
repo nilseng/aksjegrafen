@@ -4,6 +4,7 @@ import { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
+import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
 import { setSource as setGraphSource } from "../../slices/graphSlice";
 import { ModalContent, close, setContent, setSource } from "../../slices/modalSlice";
@@ -14,6 +15,7 @@ import { SearchComponent } from "../SearchComponent";
 export const NodeSearch = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const { width } = useWindowDimensions();
 
   const { theme } = useContext(AppContext);
   const { source, popularNodes } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
@@ -29,7 +31,7 @@ export const NodeSearch = () => {
         inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
         inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
         searchListClassName="w-full md:w-3/4 dark:text-white"
-        maxHeight="14rem"
+        maxHeight={width >= 768 ? "14rem" : "12rem"}
         placeholder="Selskap, aksjonær eller rolleinnehaver..."
         apiPath="/api/node"
         mapResultToListItem={(node: GraphNode) => ({
