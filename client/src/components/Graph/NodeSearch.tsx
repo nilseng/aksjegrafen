@@ -4,7 +4,6 @@ import { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../../AppContext";
-import { useWindowDimensions } from "../../hooks/useWindowDimensions";
 import { GraphNode, GraphNodeLabel, GraphType } from "../../models/models";
 import { setSource as setGraphSource } from "../../slices/graphSlice";
 import { ModalContent, close, setContent, setSource } from "../../slices/modalSlice";
@@ -15,7 +14,6 @@ import { SearchComponent } from "../SearchComponent";
 export const NodeSearch = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const { width } = useWindowDimensions();
 
   const { theme } = useContext(AppContext);
   const { source, popularNodes } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
@@ -26,12 +24,12 @@ export const NodeSearch = () => {
   }, [dispatch, graphSource, source]);
 
   return (
-    <div className="w-full h-14">
+    <div className="flex flex-col justify-between items-center w-full h-full max-h-full overflow-hidden">
+      <div className="h-1/2 overflow-hidden"></div>
       <SearchComponent
         inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
         inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
-        searchListClassName="w-full md:w-3/4 dark:text-white"
-        maxHeight={width >= 768 ? "14rem" : "12rem"}
+        searchListClassName="h-1/2 w-full md:w-3/4 dark:text-white overflow-auto"
         placeholder="Selskap, aksjonær eller rolleinnehaver..."
         apiPath="/api/node"
         mapResultToListItem={(node: GraphNode) => ({

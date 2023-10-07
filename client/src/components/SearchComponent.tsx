@@ -83,8 +83,8 @@ export const SearchComponent = <Result extends unknown>({
   };
 
   return (
-    <div className="relative w-full flex flex-col justify-center items-center">
-      <div className={`relative ${inputContainerClassName}`}>
+    <>
+      <div className={`${inputContainerClassName}`}>
         <input
           ref={inputRef}
           className={`w-full ${inputClassName}`}
@@ -103,84 +103,79 @@ export const SearchComponent = <Result extends unknown>({
           </div>
         )}
       </div>
-      {searchList && (
-        <div className={searchListClassName ?? `w-full max-w-full px-0`}>
-          <div className="w-full relative rounded-lg" style={{ zIndex: 100 }}>
-            <div
-              className="flex flex-col h-full w-full max-w-full overflow-auto relative"
-              style={{ zIndex: 102, maxHeight }}
-            >
-              {searchList.length ? (
-                searchList
-                  .map((result) => ({ result, item: mapResultToListItem(result) }))
-                  .map(({ result, item }) => (
-                    <div
-                      key={item.key}
-                      className="w-full max-w-full flex flex-col items-center justify-between border border-primary/20 rounded-lg p-2 my-1"
-                      style={{
-                        zIndex: 101,
-                        backgroundColor: "transparent",
-                        ...(handleClick ? { cursor: "pointer" } : {}),
-                      }}
-                      onClick={() => {
-                        if (handleClick) {
-                          setSearchTerm("");
-                          handleClick(result);
-                        }
-                      }}
+      <div className={searchListClassName ?? `w-full max-w-full px-0`}>
+        {searchList && (
+          <div className="flex flex-col w-full max-w-full h-full max-h-full">
+            {searchList.length ? (
+              searchList
+                .map((result) => ({ result, item: mapResultToListItem(result) }))
+                .map(({ result, item }) => (
+                  <div
+                    key={item.key}
+                    className="w-full max-w-full flex flex-col items-center justify-between border border-primary/20 rounded-lg p-2 my-1"
+                    style={{
+                      zIndex: 101,
+                      backgroundColor: "transparent",
+                      ...(handleClick ? { cursor: "pointer" } : {}),
+                    }}
+                    onClick={() => {
+                      if (handleClick) {
+                        setSearchTerm("");
+                        handleClick(result);
+                      }
+                    }}
+                  >
+                    <section
+                      className="flex flex-col items-center"
+                      style={item.handleTitleClick ? { cursor: "pointer" } : {}}
+                      onClick={() => item.handleTitleClick?.(result)}
                     >
-                      <section
-                        className="flex flex-col items-center"
-                        style={item.handleTitleClick ? { cursor: "pointer" } : {}}
-                        onClick={() => item.handleTitleClick?.(result)}
-                      >
-                        <p className="break-words text-xs font-bold">{item.name}</p>
-                        <div className="w-full flex justify-center pb-1">
-                          {item.tags.map((tag) => (
-                            <p key={tag} className="text-xs text-muted mx-2">
-                              {tag}
-                            </p>
+                      <p className="break-words text-xs font-bold text-gray-700 dark:text-gray-100">{item.name}</p>
+                      <div className="w-full flex justify-center pb-1">
+                        {item.tags.map((tag) => (
+                          <p key={tag} className="text-xs text-muted mx-2">
+                            {tag}
+                          </p>
+                        ))}
+                      </div>
+                    </section>
+                    {item.icon && (
+                      <FontAwesomeIcon
+                        icon={item.icon}
+                        color={theme.primary}
+                        style={{ cursor: "pointer" }}
+                        className="mr-3"
+                      />
+                    )}
+                    {item.buttons?.length && item.buttons?.length && (
+                      <div className="w-full flex justify-around items-end px-2">
+                        {item.buttons
+                          .filter((b) => b.condition)
+                          .map((b) => (
+                            <button
+                              key={b.name}
+                              className="px-0"
+                              aria-label={`Gå til ${b.name}`}
+                              aria-describedby={`Klikk for å se ${b.name}`}
+                              onClick={() => {
+                                b.handleClick(result);
+                              }}
+                            >
+                              {b.buttonContent}
+                            </button>
                           ))}
-                        </div>
-                      </section>
-                      {item.icon && (
-                        <FontAwesomeIcon
-                          icon={item.icon}
-                          color={theme.primary}
-                          style={{ cursor: "pointer" }}
-                          className="mr-3"
-                        />
-                      )}
-                      {item.buttons?.length && item.buttons?.length && (
-                        <div className="w-full flex justify-around items-end px-2">
-                          {item.buttons
-                            .filter((b) => b.condition)
-                            .map((b) => (
-                              <button
-                                key={b.name}
-                                className="px-0"
-                                aria-label={`Gå til ${b.name}`}
-                                aria-describedby={`Klikk for å se ${b.name}`}
-                                onClick={() => {
-                                  b.handleClick(result);
-                                }}
-                              >
-                                {b.buttonContent}
-                              </button>
-                            ))}
-                        </div>
-                      )}
-                    </div>
-                  ))
-              ) : (
-                <p className="m-0" style={{ color: theme.primary }}>
-                  Ingen resultater 🔍
-                </p>
-              )}
-            </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+            ) : (
+              <p className="m-0" style={{ color: theme.primary }}>
+                Ingen resultater 🔍
+              </p>
+            )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
