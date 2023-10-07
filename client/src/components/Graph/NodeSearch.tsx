@@ -42,7 +42,14 @@ export const NodeSearch = () => {
             ? (node: GraphNode) => {
                 dispatch(setContent({ content: ModalContent.Details, source: node }));
               }
-            : undefined,
+            : (node: GraphNode) => {
+                dispatch(setGraphSource(undefined));
+                history.push({
+                  pathname: `/`,
+                  search: `?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`,
+                });
+                dispatch(close());
+              },
           buttons: [
             {
               name: "investors-button",
