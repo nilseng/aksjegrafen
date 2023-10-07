@@ -50,8 +50,32 @@ const createProjections = async () => {
     CALL gds.graph.project(
       'directedGraph',    
       ['Person', 'Unit', 'Company', 'Shareholder'],   
-      ['OWNS', 'BEST', 'BOBE', 'DAGL', 'DTPR', 'DTSO', 'EIKM', 'FFØR', 'HFOR', 'HLSE', 'KDEB', 'KIRK', 'KOMP', 'KONT', 'LEDE',
-      'MEDL', 'NEST', 'OBS', 'OPMV', 'ORGL', 'REGN', 'REPR', 'REVI', 'VARA']
+      {
+        OWNS: {orientation: 'NATURAL', properties: ['stocks', 'share']}, 
+        BEST: {orientation: 'NATURAL'}, 
+        BOBE: {orientation: 'NATURAL'}, 
+        DAGL: {orientation: 'NATURAL'}, 
+        DTPR: {orientation: 'NATURAL'}, 
+        DTSO: {orientation: 'NATURAL'}, 
+        EIKM: {orientation: 'NATURAL'}, 
+        FFØR: {orientation: 'NATURAL'}, 
+        HFOR: {orientation: 'NATURAL'}, 
+        HLSE: {orientation: 'NATURAL'}, 
+        KDEB: {orientation: 'NATURAL'}, 
+        KIRK: {orientation: 'NATURAL'}, 
+        KOMP: {orientation: 'NATURAL'}, 
+        KONT: {orientation: 'NATURAL'}, 
+        LEDE: {orientation: 'NATURAL'},
+        MEDL: {orientation: 'NATURAL'}, 
+        NEST: {orientation: 'NATURAL'}, 
+        OBS: {orientation:  'NATURAL'}, 
+        OPMV: {orientation: 'NATURAL'}, 
+        ORGL: {orientation: 'NATURAL'}, 
+        REGN: {orientation: 'NATURAL'}, 
+        REPR: {orientation: 'NATURAL'}, 
+        REVI: {orientation: 'NATURAL'}, 
+        VARA: {orientation: 'NATURAL'}
+      }
     )
     YIELD graphName
   `);
@@ -60,7 +84,7 @@ const createProjections = async () => {
       'undirectedGraph',    
       ['Person', 'Unit', 'Company', 'Shareholder'],   
       {
-        OWNS: {orientation: 'UNDIRECTED'}, 
+        OWNS: {orientation: 'UNDIRECTED', properties: ['stocks', 'share']}, 
         BEST: {orientation: 'UNDIRECTED'}, 
         BOBE: {orientation: 'UNDIRECTED'}, 
         DAGL: {orientation: 'UNDIRECTED'}, 
