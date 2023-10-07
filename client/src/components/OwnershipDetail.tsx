@@ -43,6 +43,7 @@ const getOwnershipShareText = ({
 }): string => {
   const share = getOwnershipShare(ownership, year, stockClass, investor, investment);
   if (!share) return "";
+  if (share < 0.001) return "<0.1%";
   return `${(share * 100).toFixed(1)}%`;
 };
 
@@ -61,7 +62,12 @@ const getOwnershipChangeText = (
   stockClass: string
 ) => {
   const change = getOwnershipChange(o, year, stockClass);
-  if (!change) return <p style={{ height: "1rem" }}></p>;
+  if (!change)
+    return (
+      <p className="text-xs text-warning m-0" style={{ height: "1rem" }}>
+        0
+      </p>
+    );
   if (change > 0)
     return (
       <p className="text-xs text-success m-0" style={{ height: "1rem" }}>
@@ -97,7 +103,7 @@ export const OwnershipDetail = ({
 }) => {
   const formatNumber = useResponsiveNumberFormatter();
 
-  const [stockClasses, setStockClasses] = useState<string[]>();
+  const [stockClasses, setStockClasses] = useState<string[]>([]);
 
   const [isDetailsVisible, setIsDetailsVisible] = useState<boolean>();
 
@@ -114,30 +120,28 @@ export const OwnershipDetail = ({
               <p className="font-bold text-xs m-0" style={{ height: "1rem" }}>
                 {getOwnershipShareText({ ownership, year, stockClass: "total", investor, investment })}
               </p>
+              <p className="text-xs m-0" style={{ height: "1rem" }}>
+                {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
+              </p>
               {isDetailsVisible && (
                 <>
-                  <p className="text-xs font-bold" style={{ height: "1rem" }}>
-                    {ownership.holdings[year]?.total ? "Totalt" : ""}
-                  </p>
-                  <p className="text-xs m-0" style={{ height: "1rem" }}>
-                    {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
-                  </p>
                   {getOwnershipChangeText(ownership, year, formatNumber, "total")}
-                  {stockClasses?.map((stockClass: string) => (
-                    <div key={stockClass}>
-                      {ownership.holdings[year] ? (
-                        <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
-                          {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
+                  {stockClasses.length > 1 &&
+                    stockClasses?.map((stockClass: string) => (
+                      <div key={stockClass}>
+                        {ownership.holdings[year] ? (
+                          <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
+                            {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
+                          </p>
+                        ) : null}
+                        <p className="text-xs m-0" style={{ height: "1rem" }}>
+                          {ownership.holdings[year]?.[stockClass]
+                            ? formatNumber(ownership.holdings[year]?.[stockClass]!)
+                            : ""}
                         </p>
-                      ) : null}
-                      <p className="text-xs m-0" style={{ height: "1rem" }}>
-                        {ownership.holdings[year]?.[stockClass]
-                          ? formatNumber(ownership.holdings[year]?.[stockClass]!)
-                          : ""}
-                      </p>
-                      {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
-                    </div>
-                  ))}
+                        {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
+                      </div>
+                    ))}
                 </>
               )}
             </>
