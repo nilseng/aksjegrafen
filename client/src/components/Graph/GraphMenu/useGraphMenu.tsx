@@ -18,6 +18,7 @@ import {
   fetchInvestmentsThunk,
   fetchInvestorsThunk,
   fetchRoleUnitsThunk,
+  resetGraph,
 } from "../../../slices/graphSlice";
 import { ModalContent, open as openModal, setContent } from "../../../slices/modalSlice";
 import { AppDispatch } from "../../../store";
@@ -125,6 +126,7 @@ export const useGraphMenu = (node?: GraphNode) => {
             svgIcon: <GraphLogo width="16px" height="16px" />,
             node,
             action: () => {
+              dispatch(resetGraph());
               history.push(`?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
               dispatch(closeMenu());
             },
