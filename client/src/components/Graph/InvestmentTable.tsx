@@ -58,13 +58,11 @@ export const InvestmentTable = () => {
           <button
             className="rounded text-white text-xs px-2 py-1"
             style={{
-              backgroundColor: !!(((investments?.length ?? 0) + (investments?.length ?? 0)) % limit)
-                ? theme.muted
-                : theme.primary,
+              backgroundColor: !!((investments?.length ?? 0) % limit) ? theme.muted : theme.primary,
             }}
-            disabled={!!(((investments?.length ?? 0) + (investments?.length ?? 0)) % limit)}
+            disabled={!!((investments?.length ?? 0) % limit)}
             onClick={() => {
-              if (!(((investments?.length ?? 0) + (investments?.length ?? 0)) % limit)) setSkip(skip + limit);
+              if (!((investments?.length ?? 0) % limit)) setSkip(skip + limit);
             }}
           >
             Neste {limit}
