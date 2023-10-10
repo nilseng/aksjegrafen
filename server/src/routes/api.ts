@@ -255,6 +255,7 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
               }
             });
           });
+          mergedOwnerships.sort((a, b) => ((a.holdings[2022]?.total ?? 0) > (b.holdings[2022]?.total ?? 0) ? -1 : 1));
         } else mergedOwnerships.push(...ownerships);
         const companies = await db.companies
           .find({ orgnr: { $in: mergedOwnerships.map((o: Ownership) => o.orgnr) } })
