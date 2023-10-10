@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
 import NavBar from "./components/NavBar";
@@ -44,7 +44,10 @@ const App = () => {
         >
           <Switch>
             <Route path="/api-docs" component={ApiDocs} />
-            <Route path="/" component={Graph} />
+            <Route path="/" component={Graph} exact />
+            <Route>
+              <Redirect to="/" />
+            </Route>
           </Switch>
         </div>
         <Overlays />
