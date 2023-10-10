@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { body, matchedData, query, validationResult } from "express-validator";
+import { isNumber, mergeWith } from "lodash";
 import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
@@ -227,10 +228,38 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
           .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
           .skip(query.skip)
           .toArray();
+        const mergedOwnerships: Ownership[] = [];
+        if (query.shareHolderId) {
+          const shareholder = await db.shareholders.findOne({ id: query.shareHolderId });
+          const matchedShareholders = await db.shareholders
+            .find({
+              name: shareholder?.name,
+              yearOfBirth: shareholder?.yearOfBirth,
+            })
+            .toArray();
+          const matchedOwnerships = await db.ownerships
+            .find({
+              orgnr: { $in: ownerships.map((o) => o.orgnr) },
+              shareHolderId: { $in: matchedShareholders.map((s) => s.id) },
+            })
+            .toArray();
+          matchedOwnerships.forEach((o) => {
+            const match = mergedOwnerships.find((m) => m.orgnr === o.orgnr);
+            if (!match) {
+              mergedOwnerships.push(o);
+              return;
+            }
+            match.holdings = mergeWith(match.holdings, o.holdings, (val1, val2) => {
+              if (isNumber(val1) && isNumber(val2)) {
+                return val1 + val2;
+              }
+            });
+          });
+        } else mergedOwnerships.push(...ownerships);
         const companies = await db.companies
-          .find({ orgnr: { $in: ownerships.map((o: Ownership) => o.orgnr) } })
+          .find({ orgnr: { $in: mergedOwnerships.map((o: Ownership) => o.orgnr) } })
           .toArray();
-        const data = ownerships.map((o: Ownership) => {
+        const data = mergedOwnerships.map((o: Ownership) => {
           o.investment = companies.find((c: Company) => c.orgnr === o.orgnr);
           return o;
         });
