@@ -4,10 +4,11 @@ import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/mongoDB";
-import { Company, Ownership, Shareholder, isUserEvent } from "../models/models";
+import { Shareholder, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
 import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
+import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
 import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
@@ -210,7 +211,9 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
     query(["shareHolderId", "shareholderOrgnr"]).optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(400).send("Invalid query");
+      if (!(query.shareHolderId || query.shareholderOrgnr)) {
+        return res.json(400).send("Shareholder id or orgnr must be defined.");
+      }
       const investments = await findHistoricalInvestments({
         shareholderOrgnr: query.shareholderOrgnr,
         shareholderId: query.shareHolderId,
@@ -231,47 +234,14 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
     query("orgnr").optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const options = { limit: query.limit };
 
-      const filter: Document = {};
-      if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
-      if (query.orgnr) filter.orgnr = query.orgnr;
-
-      if (query.orgnr) {
-        if (query.count && query.year) {
-          const count = await db.ownerships.countDocuments(filter);
-          return res.json(count);
-        } else {
-          const ownerships = await db.ownerships
-            .find(filter, options)
-            .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
-            .skip(query.skip)
-            .toArray();
-          const [shareholders, companies] = await Promise.all([
-            db.shareholders
-              .find({
-                id: { $in: ownerships.map((o: Ownership) => o.shareHolderId) },
-              })
-              .toArray(),
-            db.companies
-              .find({
-                orgnr: { $in: ownerships.filter((o) => o.shareholderOrgnr).map((o) => o.shareholderOrgnr) as string[] },
-              })
-              .toArray(),
-          ]);
-          const data = ownerships.map((o: Ownership) => {
-            o.investor = {
-              shareholder: shareholders.find((s: Shareholder) => s.id === o.shareHolderId)!,
-              company: companies.find((c: Company) => c.orgnr === o.shareholderOrgnr),
-            };
-            return o;
-          });
-          return res.json(data);
-        }
-      } else {
-        const ownerships = await db.ownerships.find(filter, options).toArray();
-        return res.json(ownerships);
-      }
+      const investors = await findHistoricalInvestors({
+        orgnr: query.orgnr,
+        year: query.year,
+        limit: query.limit,
+        skip: query.skip,
+      });
+      return res.json(investors);
     })
   );
 
