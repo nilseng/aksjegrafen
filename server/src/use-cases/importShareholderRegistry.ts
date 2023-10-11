@@ -15,8 +15,8 @@ import {
 } from "../models/models";
 
 export const importShareholderRegistry = async (db: IDatabase, year?: Year, data?: (number | string)[]) => {
-  console.log("Importing", data);
-  let fileName: string;
+  if (!year) throw Error("Specify year in order to import shareholder registry");
+  console.log("Importing", data, `for year=${year}`);
   const headers = [
     "orgnr",
     "companyName",
@@ -28,30 +28,7 @@ export const importShareholderRegistry = async (db: IDatabase, year?: Year, data
     "shareholderStocks",
     "companyStocks",
   ];
-  switch (year) {
-    case 2019: {
-      fileName = "aksjeeiebok__2019_04052020.csv";
-      break;
-    }
-    case 2020: {
-      fileName = "aksjeeiebok__2020.csv";
-      break;
-    }
-    case 2021: {
-      fileName = "aksjeeiebok__2021.csv";
-      break;
-    }
-    case 2022: {
-      fileName = "aksjeeiebok__2022.csv";
-      break;
-    }
-    default: {
-      console.log("-------------");
-      console.log("Specify for which year you want to import data (2019, 2020, 2021 or 2022)");
-      console.log("-------------");
-      return;
-    }
-  }
+  const fileName = `aksjeeiebok__${year}.csv`;
   console.log("------------- Data import started -------------");
   const ownerships: { [key: string]: Ownership } = {};
   const companies: { [key: string]: Company } = {};
