@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { body, matchedData, query, validationResult } from "express-validator";
-import { isNumber, mergeWith } from "lodash";
 import { Document, ObjectId } from "mongodb";
 import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
@@ -8,6 +7,7 @@ import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership, Shareholder, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
+import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
 import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
@@ -204,68 +204,21 @@ export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatab
 
   router.get(
     "/investments",
-    query("count").optional().toBoolean(),
     query(["limit"]).default(100).toInt(),
     query(["skip"]).default(0).toInt(),
     query(["year"]).optional().toInt(),
     query(["shareHolderId", "shareholderOrgnr"]).optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-
-      if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(404).send("Invalid query");
-
-      const filter: Document = {};
-      if (query.year) filter[`holdings.${query.year}.total`] = { $gt: 0 };
-      if (query.shareHolderId) filter.shareHolderId = query.shareHolderId;
-      if (query.shareholderOrgnr) filter.shareholderOrgnr = query.shareholderOrgnr;
-
-      if (query.count && query.year) {
-        const c = await db.ownerships.countDocuments(filter);
-        return res.json(c);
-      } else {
-        const ownerships = await db.ownerships
-          .find(filter, { limit: query.limit })
-          .sort({ [`holdings.${query.year ?? 2022}.total`]: -1, _id: 1 })
-          .skip(query.skip)
-          .toArray();
-        const mergedOwnerships: Ownership[] = [];
-        if (query.shareHolderId) {
-          const shareholder = await db.shareholders.findOne({ id: query.shareHolderId });
-          const matchedShareholders = await db.shareholders
-            .find({
-              name: shareholder?.name,
-              yearOfBirth: shareholder?.yearOfBirth,
-            })
-            .toArray();
-          const matchedOwnerships = await db.ownerships
-            .find({
-              orgnr: { $in: ownerships.map((o) => o.orgnr) },
-              shareHolderId: { $in: matchedShareholders.map((s) => s.id) },
-            })
-            .toArray();
-          matchedOwnerships.forEach((o) => {
-            const match = mergedOwnerships.find((m) => m.orgnr === o.orgnr);
-            if (!match) {
-              mergedOwnerships.push(o);
-              return;
-            }
-            match.holdings = mergeWith(match.holdings, o.holdings, (val1, val2) => {
-              if (isNumber(val1) && isNumber(val2)) {
-                return val1 + val2;
-              }
-            });
-          });
-          mergedOwnerships.sort((a, b) => ((a.holdings[2022]?.total ?? 0) > (b.holdings[2022]?.total ?? 0) ? -1 : 1));
-        } else mergedOwnerships.push(...ownerships);
-        const companies = await db.companies
-          .find({ orgnr: { $in: mergedOwnerships.map((o: Ownership) => o.orgnr) } })
-          .toArray();
-        const data = mergedOwnerships.map((o: Ownership) => {
-          o.investment = companies.find((c: Company) => c.orgnr === o.orgnr);
-          return o;
-        });
-        return res.json(data);
-      }
+      if (!(query.shareHolderId || query.shareholderOrgnr)) return res.json(400).send("Invalid query");
+      const investments = await findHistoricalInvestments({
+        shareholderOrgnr: query.shareholderOrgnr,
+        shareholderId: query.shareHolderId,
+        year: query.year,
+        limit: query.limit,
+        skip: query.skip,
+      });
+      return res.json(investments);
     })
   );
 
