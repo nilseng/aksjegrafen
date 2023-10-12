@@ -1,8 +1,8 @@
 import { faChevronDown, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { availableYears } from "../config";
 import { useResponsiveNumberFormatter } from "../hooks/useResponsiveNumberFormatter";
 import { ICompany, IOwnership, IShareholder, Year } from "../models/models";
+import { getYears } from "../utils/getYears";
 import { NeuButton } from "./NeuButton";
 
 const getCompanyStocks = (
@@ -48,7 +48,7 @@ const getOwnershipShareText = ({
 };
 
 const getOwnershipChange = (o: IOwnership, year: Year, stockClass: string) => {
-  if (year === Math.min(...availableYears)) return null;
+  if (year === Math.min(...getYears([o]))) return null;
   const cy = o.holdings[year]?.[stockClass] ?? 0;
   const ly = o.holdings[(year - 1) as Year]?.[stockClass] ?? 0;
   if (!cy && !ly) return null;
@@ -96,10 +96,12 @@ export const OwnershipDetail = ({
   ownership,
   investor,
   investment,
+  availableYears,
 }: {
   ownership: IOwnership;
   investor?: IShareholder;
   investment?: ICompany;
+  availableYears: Year[];
 }) => {
   const formatNumber = useResponsiveNumberFormatter();
 
@@ -113,42 +115,44 @@ export const OwnershipDetail = ({
 
   return (
     <>
-      {availableYears.map((year) => (
-        <div key={year} className="w-1/6 px-1 py-2">
-          {ownership.holdings[year] ? (
-            <>
-              <p className="font-bold text-xs m-0" style={{ height: "1rem" }}>
-                {getOwnershipShareText({ ownership, year, stockClass: "total", investor, investment })}
-              </p>
-              <p className="text-xs m-0" style={{ height: "1rem" }}>
-                {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
-              </p>
-              {isDetailsVisible && (
-                <>
-                  {getOwnershipChangeText(ownership, year, formatNumber, "total")}
-                  {stockClasses.length > 1 &&
-                    stockClasses?.map((stockClass: string) => (
-                      <div key={stockClass}>
-                        {ownership.holdings[year] ? (
-                          <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
-                            {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
+      <div className="flex overflow-auto">
+        {availableYears.map((year) => (
+          <div key={year} className="w-20 min-w-[5rem] px-1 py-2">
+            {ownership.holdings[year] ? (
+              <>
+                <p className="font-bold text-xs m-0" style={{ height: "1rem" }}>
+                  {getOwnershipShareText({ ownership, year, stockClass: "total", investor, investment })}
+                </p>
+                <p className="text-xs m-0" style={{ height: "1rem" }}>
+                  {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
+                </p>
+                {isDetailsVisible && (
+                  <>
+                    {getOwnershipChangeText(ownership, year, formatNumber, "total")}
+                    {stockClasses.length > 1 &&
+                      stockClasses?.map((stockClass: string) => (
+                        <div key={stockClass}>
+                          {ownership.holdings[year] ? (
+                            <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
+                              {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
+                            </p>
+                          ) : null}
+                          <p className="text-xs m-0" style={{ height: "1rem" }}>
+                            {ownership.holdings[year]?.[stockClass]
+                              ? formatNumber(ownership.holdings[year]?.[stockClass]!)
+                              : ""}
                           </p>
-                        ) : null}
-                        <p className="text-xs m-0" style={{ height: "1rem" }}>
-                          {ownership.holdings[year]?.[stockClass]
-                            ? formatNumber(ownership.holdings[year]?.[stockClass]!)
-                            : ""}
-                        </p>
-                        {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
-                      </div>
-                    ))}
-                </>
-              )}
-            </>
-          ) : null}
-        </div>
-      ))}
-      <div className="w-1/12">
+                          {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
+                        </div>
+                      ))}
+                  </>
+                )}
+              </>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      <div className="px-4">
         <NeuButton
           className="w-6 sm:w-8 h-6 sm:h-8 p-1 sm:p-2"
           style={{ borderRadius: "100%" }}
