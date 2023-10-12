@@ -16,17 +16,16 @@ export const OwnershipTable = ({
   getGraphLink?: (o: IOwnership) => string | Promise<string>;
 }) => {
   return (
-    <div className="w-full h-full flex flex-wrap pt-3 m-0">
-      <p className="w-40"></p>
-      <p className="grow text-center font-bold text-xs px-1 pb-2">
-        Eierandel / <span className="font-normal">Antall aksjer</span>
-      </p>
+    <div className="w-full h-full max-h-full overflow-hidden flex flex-wrap pt-3 m-0">
       <div className="w-full h-full overflow-auto">
-        <table className="w-full">
+        <table className="w-full h-full">
+          <caption className="sticky top-0 font-bold text-xs px-1 pb-2">
+            Eierandel / <span className="font-normal">Antall aksjer</span>
+          </caption>
           <thead className="sticky z-20 top-0 bg-gray-50 dark:bg-gray-800">
             <th className="sticky z-30 left-0 w-40 text-center font-bold text-xs bg-gray-50 dark:bg-gray-800">Navn</th>
             {getYears(ownerships).map((year) => (
-              <th className="text-left italic text-xs font-normal">{year}</th>
+              <th className="text-left italic text-xs font-normal text-gray-600 dark:text-gray-200">{year}</th>
             ))}
             <th></th>
             <th className="sticky right-0"></th>
