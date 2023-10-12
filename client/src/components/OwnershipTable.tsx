@@ -23,7 +23,9 @@ export const OwnershipTable = ({
             Eierandel / <span className="font-normal">Antall aksjer</span>
           </caption>
           <thead className="sticky z-20 top-0 bg-gray-50 dark:bg-gray-800">
-            <th className="sticky z-30 left-0 w-40 text-center font-bold text-xs bg-gray-50 dark:bg-gray-800">Navn</th>
+            <th className="sticky z-30 left-0 w-20 sm:min-w-[10rem] text-center font-bold text-xs bg-gray-50 dark:bg-gray-800">
+              Navn
+            </th>
             {getYears(ownerships).map((year) => (
               <th className="text-left italic text-xs font-normal text-gray-600 dark:text-gray-200">{year}</th>
             ))}
@@ -33,7 +35,7 @@ export const OwnershipTable = ({
           <tbody>
             {ownerships.map((o) => (
               <tr>
-                <td className="sticky z-10 left-0 w-40 sm:min-w-[10rem] bg-gray-50 dark:bg-gray-800 text-xs text-ellipsis overflow-hidden p-2 m-0">
+                <td className="sticky z-10 left-0 w-20 sm:min-w-[10rem] bg-gray-50 dark:bg-gray-800 text-xs text-ellipsis overflow-hidden p-2 m-0">
                   {investment ? o.investor?.shareholder?.name : o.investment?.name}
                 </td>
                 <OwnershipDetail
