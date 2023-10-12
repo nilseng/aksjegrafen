@@ -64,20 +64,20 @@ const getOwnershipChangeText = (
   const change = getOwnershipChange(o, year, stockClass);
   if (!change)
     return (
-      <p className="text-xs text-warning m-0" style={{ height: "1rem" }}>
+      <span className="text-xs text-warning m-0" style={{ height: "1rem" }}>
         0
-      </p>
+      </span>
     );
   if (change > 0)
     return (
-      <p className="text-xs text-success m-0" style={{ height: "1rem" }}>
+      <span className="text-xs text-success m-0" style={{ height: "1rem" }}>
         +{formatNumber(change)}
-      </p>
+      </span>
     );
   return (
-    <p className="text-xs text-danger m-0" style={{ height: "1rem" }}>
+    <span className="text-xs text-danger m-0" style={{ height: "1rem" }}>
       {formatNumber(change)}
-    </p>
+    </span>
   );
 };
 
@@ -115,44 +115,53 @@ export const OwnershipDetail = ({
 
   return (
     <>
-      <div className="flex overflow-auto">
-        {availableYears.map((year) => (
-          <div key={year} className="w-20 min-w-[5rem] px-1 py-2">
-            {ownership.holdings[year] ? (
-              <>
-                <p className="font-bold text-xs m-0" style={{ height: "1rem" }}>
-                  {getOwnershipShareText({ ownership, year, stockClass: "total", investor, investment })}
-                </p>
-                <p className="text-xs m-0" style={{ height: "1rem" }}>
-                  {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
-                </p>
-                {isDetailsVisible && (
-                  <>
-                    {getOwnershipChangeText(ownership, year, formatNumber, "total")}
-                    {stockClasses.length > 1 &&
-                      stockClasses?.map((stockClass: string) => (
-                        <div key={stockClass}>
-                          {ownership.holdings[year] ? (
-                            <p className="font-bold text-xs text-ellipsis overflow-hidden" style={{ height: "1rem" }}>
+      {availableYears.map((year) => (
+        <td key={year} className="w-20 min-w-[5rem] px-1 py-2">
+          {ownership.holdings[year] ? (
+            <>
+              <span className="font-bold text-xs m-0" style={{ height: "1rem" }}>
+                {getOwnershipShareText({ ownership, year, stockClass: "total", investor, investment })}
+              </span>
+              <br />
+              <span className="text-xs m-0" style={{ height: "1rem" }}>
+                {ownership.holdings[year]?.total ? formatNumber(ownership.holdings[year]?.total!) : ""}
+              </span>
+              <br />
+              {isDetailsVisible && (
+                <>
+                  {getOwnershipChangeText(ownership, year, formatNumber, "total")}
+                  <br />
+                  {stockClasses.length > 1 &&
+                    stockClasses?.map((stockClass: string) => (
+                      <div key={stockClass}>
+                        {ownership.holdings[year] ? (
+                          <>
+                            <span
+                              className="font-bold text-xs text-ellipsis overflow-hidden"
+                              style={{ height: "1rem" }}
+                            >
                               {ownership.holdings[year]?.[stockClass] ? stockClass : ""}
-                            </p>
-                          ) : null}
-                          <p className="text-xs m-0" style={{ height: "1rem" }}>
-                            {ownership.holdings[year]?.[stockClass]
-                              ? formatNumber(ownership.holdings[year]?.[stockClass]!)
-                              : ""}
-                          </p>
-                          {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
-                        </div>
-                      ))}
-                  </>
-                )}
-              </>
-            ) : null}
-          </div>
-        ))}
-      </div>
-      <div className="px-4">
+                            </span>
+                            <br />
+                          </>
+                        ) : null}
+                        <span className="text-xs m-0" style={{ height: "1rem" }}>
+                          {ownership.holdings[year]?.[stockClass]
+                            ? formatNumber(ownership.holdings[year]?.[stockClass]!)
+                            : ""}
+                        </span>
+                        <br />
+                        {getOwnershipChangeText(ownership, year, formatNumber, stockClass)}
+                      </div>
+                    ))}
+                </>
+              )}
+            </>
+          ) : null}
+        </td>
+      ))}
+      <td></td>
+      <td className="sticky right-0 w-16 max-w-[4rem] align-top bg-gray-50 dark:bg-gray-800 px-4">
         <NeuButton
           className="w-6 sm:w-8 h-6 sm:h-8 p-1 sm:p-2"
           style={{ borderRadius: "100%" }}
@@ -160,7 +169,7 @@ export const OwnershipDetail = ({
           icon={isDetailsVisible ? faChevronDown : faChevronRight}
           action={() => setIsDetailsVisible(!isDetailsVisible)}
         />
-      </div>
+      </td>
     </>
   );
 };

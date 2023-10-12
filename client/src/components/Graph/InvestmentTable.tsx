@@ -53,19 +53,16 @@ export const InvestmentTable = () => {
               if (skip >= limit) setSkip(skip - limit);
             }}
           >
-            Forrige {limit}
+            Forrige
           </button>
           <button
             className="rounded text-white text-xs px-2 py-1"
             style={{
-              backgroundColor: !!((investments?.length ?? 0) % limit) ? theme.muted : theme.primary,
+              backgroundColor: theme.primary,
             }}
-            disabled={!!((investments?.length ?? 0) % limit)}
-            onClick={() => {
-              if (!((investments?.length ?? 0) % limit)) setSkip(skip + limit);
-            }}
+            onClick={() => setSkip(skip + limit)}
           >
-            Neste {limit}
+            Neste
           </button>
         </div>
       </div>

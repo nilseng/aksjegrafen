@@ -34,12 +34,12 @@ export const InvestorTable = () => {
 
   if (investors) {
     return (
-      <div className="flex flex-col justify-between h-full overflow-auto mt-12">
+      <div className="flex flex-col justify-between w-full h-full overflow-auto mt-12">
         <h5 className="text-center text-lg pb-2">
           <span className="font-semibold mr-2">Aksjonærer i {company?.name}</span>{" "}
           <span style={{ color: theme.muted }}>({company?.orgnr})</span>
         </h5>
-        <div className="flex-grow overflow-auto border border-primary rounded">
+        <div className="w-full flex-grow overflow-y-auto overflow-x-hidden border border-primary rounded">
           <OwnershipTable investment={company} ownerships={investors} closeModal={() => dispatch(close())} />
         </div>
         <div className="w-full flex justify-between pt-2">
@@ -51,21 +51,18 @@ export const InvestorTable = () => {
               if (skip >= limit) setSkip(skip - limit);
             }}
           >
-            Forrige {limit}
+            Forrige
           </button>
           <button
             className="rounded text-white text-xs px-2 py-1"
             style={{
-              backgroundColor: !!(((investors?.length ?? 0) + (investors?.length ?? 0)) % limit)
-                ? theme.muted
-                : theme.primary,
+              backgroundColor: theme.primary,
             }}
-            disabled={!!(((investors?.length ?? 0) + (investors?.length ?? 0)) % limit)}
             onClick={() => {
-              if (!(((investors?.length ?? 0) + (investors?.length ?? 0)) % limit)) setSkip(skip + limit);
+              setSkip(skip + limit);
             }}
           >
-            Neste {limit}
+            Neste
           </button>
         </div>
       </div>
