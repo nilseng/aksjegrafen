@@ -161,7 +161,7 @@ export const OwnershipDetail = ({
         </td>
       ))}
       <td></td>
-      <td className="sticky right-0 w-16 max-w-[4rem] align-top bg-gray-50 dark:bg-gray-800 px-2">
+      <td className="sticky right-0 w-16 max-w-[4rem] align-top bg-gray-50 dark:bg-gray-800 p-2">
         <NeuButton
           className="w-6 sm:w-8 h-6 sm:h-8 p-1 sm:p-2"
           style={{ borderRadius: "100%" }}

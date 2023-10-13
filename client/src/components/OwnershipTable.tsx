@@ -24,11 +24,11 @@ export const OwnershipTable = ({
         <table className="w-full">
           <thead className="sticky z-20 top-0 bg-gray-50 dark:bg-gray-800">
             <tr>
-              <th className="sticky z-30 left-0 w-20 sm:min-w-[10rem] text-center font-bold text-xs bg-gray-50 dark:bg-gray-800">
+              <th className="sticky z-30 left-0 w-20 sm:min-w-[10rem] text-center font-bold text-xs bg-gray-50 dark:bg-gray-800 pb-2">
                 Navn
               </th>
               {getYears(ownerships).map((year) => (
-                <th key={year} className="text-left italic text-xs font-normal text-gray-600 dark:text-gray-200">
+                <th key={year} className="text-left italic text-xs font-normal text-gray-600 dark:text-gray-200 pb-2">
                   {year}
                 </th>
               ))}
@@ -38,7 +38,7 @@ export const OwnershipTable = ({
           </thead>
           <tbody>
             {ownerships.map((o) => (
-              <tr key={o._id}>
+              <tr key={o._id} className="border border-primary/50">
                 <td className="sticky z-10 left-0 w-20 sm:min-w-[10rem] bg-gray-50 dark:bg-gray-800 text-xs text-ellipsis overflow-hidden p-2 m-0">
                   {investment ? o.investor?.shareholder?.name : o.investment?.name}
                 </td>
