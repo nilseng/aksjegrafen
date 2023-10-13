@@ -21,7 +21,7 @@ export const OwnershipTable = ({
         Eierandel / <span className="font-normal">Antall aksjer</span>
       </div>
       <div className="w-full grow overflow-auto">
-        <table className="w-full h-full">
+        <table className="w-full">
           <thead className="sticky z-20 top-0 bg-gray-50 dark:bg-gray-800">
             <tr>
               <th className="sticky z-30 left-0 w-20 sm:min-w-[10rem] text-center font-bold text-xs bg-gray-50 dark:bg-gray-800">
