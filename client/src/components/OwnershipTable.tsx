@@ -38,7 +38,7 @@ export const OwnershipTable = ({
           </thead>
           <tbody>
             {ownerships.map((o) => (
-              <tr key={o._id} className="border border-primary/50">
+              <tr key={o._id} className="border-y border-secondary/50">
                 <td className="sticky z-10 left-0 w-20 sm:min-w-[10rem] bg-gray-50 dark:bg-gray-800 text-xs text-ellipsis overflow-hidden p-2 m-0">
                   {investment ? o.investor?.shareholder?.name : o.investment?.name}
                 </td>
