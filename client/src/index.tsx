@@ -7,6 +7,12 @@ import "./index.scss";
 import reportWebVitals from "./reportWebVitals";
 import { store } from "./store";
 
+import * as Sentry from "@sentry/react";
+
+Sentry.init({
+  dsn: "https://36f44f30602378a8f7c39efc41d114f5@o4506050474082304.ingest.sentry.io/4506050475720704",
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

@@ -8,6 +8,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
     "@reduxjs/toolkit": "^1.9.5",
+    "@sentry/react": "^7.74.0",
     "@types/d3": "^7.0.0",
     "@types/lodash": "^4.14.168",
     "@types/node": "^12.20.11",
@@ -29,10 +30,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && npm run sentry:sourcemaps",
     "test:all": "react-scripts test --watchAll",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "sentry:sourcemaps": "sentry-cli sourcemaps inject --org pureokrs-as --project javascript-react ./build && sentry-cli sourcemaps upload --org pureokrs-as --project javascript-react ./build"
   },
   "proxy": "http://localhost:4000",
   "eslintConfig": {

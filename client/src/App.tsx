@@ -5,7 +5,8 @@ import { ApiDocs } from "./components/ApiDocs";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
 
-import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ErrorBoundary } from "@sentry/react";
+import { FallbackError } from "./components/FallbackError";
 import { Graph } from "./components/Graph/Graph";
 import { Theme, theming } from "./theming/theme";
 
@@ -28,7 +29,7 @@ const App = () => {
   }, [theme]);
 
   return (
-    <ErrorBoundary>
+    <ErrorBoundary fallback={<FallbackError />}>
       <AppContext.Provider value={{ theme }}>
         <Router>
           <NavBar theme={theme} setTheme={setTheme} />

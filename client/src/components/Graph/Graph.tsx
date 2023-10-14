@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@sentry/react";
 import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
@@ -16,7 +17,7 @@ import {
 import { ModalState, fetchPopularNodesThunk } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
-import { ErrorBoundary } from "../ErrorBoundary";
+import { FallbackError } from "../FallbackError";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { HowToModal } from "./HowToModal";
@@ -69,7 +70,7 @@ export const Graph = () => {
   return (
     <div className="flex w-full h-full dark:text-white px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
-        <ErrorBoundary>
+        <ErrorBoundary fallback={<FallbackError />}>
           {isModalOpen && <Modal />}
           <SearchButton />
           <Settings />
