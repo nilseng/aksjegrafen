@@ -5,6 +5,7 @@ import { ApiDocs } from "./components/ApiDocs";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
 
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Graph } from "./components/Graph/Graph";
 import { Theme, theming } from "./theming/theme";
 
@@ -27,32 +28,30 @@ const App = () => {
   }, [theme]);
 
   return (
-    <AppContext.Provider
-      value={{
-        theme,
-      }}
-    >
-      <Router>
-        <NavBar theme={theme} setTheme={setTheme} />
-        <div
-          id="ag-main"
-          className="flex w-full justify-center"
-          style={{
-            minHeight: "calc(100% - 83.2px)",
-            height: "calc(100% - 83.2px)",
-          }}
-        >
-          <Switch>
-            <Route path="/api-docs" component={ApiDocs} />
-            <Route path="/" component={Graph} exact />
-            <Route>
-              <Redirect to="/" />
-            </Route>
-          </Switch>
-        </div>
-        <Overlays />
-      </Router>
-    </AppContext.Provider>
+    <ErrorBoundary>
+      <AppContext.Provider value={{ theme }}>
+        <Router>
+          <NavBar theme={theme} setTheme={setTheme} />
+          <div
+            id="ag-main"
+            className="flex w-full justify-center"
+            style={{
+              minHeight: "calc(100% - 83.2px)",
+              height: "calc(100% - 83.2px)",
+            }}
+          >
+            <Switch>
+              <Route path="/api-docs" component={ApiDocs} />
+              <Route path="/" component={Graph} exact />
+              <Route>
+                <Redirect to="/" />
+              </Route>
+            </Switch>
+          </div>
+          <Overlays />
+        </Router>
+      </AppContext.Provider>
+    </ErrorBoundary>
   );
 };
 
