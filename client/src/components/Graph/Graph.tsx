@@ -16,6 +16,7 @@ import {
 import { ModalState, fetchPopularNodesThunk } from "../../slices/modalSlice";
 import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
+import { ErrorBoundary } from "../ErrorBoundary";
 import Loading from "../Loading";
 import { GraphView } from "./GraphView";
 import { HowToModal } from "./HowToModal";
@@ -68,19 +69,21 @@ export const Graph = () => {
   return (
     <div className="flex w-full h-full dark:text-white px-2 sm:px-4 pb-2 sm:pb-4 pt-0">
       <div className="relative flex justify-center items-center w-full h-full" style={{ ...theme.lowering }}>
-        {isModalOpen && <Modal />}
-        <SearchButton />
-        <Settings />
-        <HowToModal />
-        {status === FetchState.Loading && (
-          <Loading
-            backgroundColor="transparent"
-            color={theme.primary}
-            text={isDirected === false ? "Søk som ikke er rettet kan ta litt tid...⏳" : ""}
-          />
-        )}
-        {status === FetchState.Success && <GraphView />}
-        {status === FetchState.Error && <p className="text-primary text-sm">{error}</p>}
+        <ErrorBoundary>
+          {isModalOpen && <Modal />}
+          <SearchButton />
+          <Settings />
+          <HowToModal />
+          {status === FetchState.Loading && (
+            <Loading
+              backgroundColor="transparent"
+              color={theme.primary}
+              text={isDirected === false ? "Søk som ikke er rettet kan ta litt tid...⏳" : ""}
+            />
+          )}
+          {status === FetchState.Success && <GraphView />}
+          {status === FetchState.Error && <p className="text-primary text-sm">{error}</p>}
+        </ErrorBoundary>
       </div>
     </div>
   );
