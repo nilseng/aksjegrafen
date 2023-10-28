@@ -6,7 +6,6 @@ import {
   drag,
   forceCollide,
   forceLink,
-  forceRadial,
   forceSimulation,
   forceX,
   forceY,
@@ -30,7 +29,7 @@ const nodeOffset = {
 
 const getCollisionRadius = (width: number) => {
   if (width <= 768) return Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5);
-  return Math.max(graphConfig.nodeDimensions.width / 1.3, graphConfig.nodeDimensions.height / 1.3);
+  return Math.max(graphConfig.nodeDimensions.width / 1.4, graphConfig.nodeDimensions.height / 1.4);
 };
 
 export const useForceSimulation = ({
@@ -108,17 +107,7 @@ export const useForceSimulation = ({
           "link",
           forceLink<GraphNodeDatum, GraphLinkDatum>(mutableLinks).id(({ id }) => mutableNodesMap[id].id)
         )
-        .force("collide", forceCollide(getCollisionRadius(width)).strength(0.5))
-        .force(
-          "radial",
-          forceRadial<GraphNodeDatum>(graphConfig.nodeDimensions.width * 5).strength((d) =>
-            graphType === GraphType.Default &&
-            d.properties.uuid !== source?.properties.uuid &&
-            d.sourceUuid === source?.properties.uuid
-              ? 0.6
-              : 0
-          )
-        );
+        .force("collide", forceCollide(getCollisionRadius(width)));
 
       if (graphType === GraphType.Default) addCurrentRoleForces({ simulation, mutableNodesMap });
 
