@@ -30,7 +30,7 @@ const nodeOffset = {
 
 const getCollisionRadius = (width: number) => {
   if (width <= 768) return Math.max(graphConfig.nodeDimensions.width / 1.5, graphConfig.nodeDimensions.height / 1.5);
-  return Math.max(graphConfig.nodeDimensions.width / 1.4, graphConfig.nodeDimensions.height / 1.4);
+  return Math.max(graphConfig.nodeDimensions.width / 1.3, graphConfig.nodeDimensions.height / 1.3);
 };
 
 export const useForceSimulation = ({
@@ -114,8 +114,7 @@ export const useForceSimulation = ({
           forceRadial<GraphNodeDatum>(graphConfig.nodeDimensions.width * 5).strength((d) =>
             graphType === GraphType.Default &&
             d.properties.uuid !== source?.properties.uuid &&
-            d.sourceUuid === source?.properties.uuid &&
-            (source?.currentRoles?.length ?? 0) >= 2
+            d.sourceUuid === source?.properties.uuid
               ? 0.6
               : 0
           )
