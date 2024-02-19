@@ -43,7 +43,7 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
-  app.use("/api", api({ graphDB, mongoDB: db }));
+  app.use("/api", api({ mongoDB: db }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
 

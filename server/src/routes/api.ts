@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { body, matchedData, query, validationResult } from "express-validator";
 import { Document, ObjectId } from "mongodb";
-import { Driver } from "neo4j-driver";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/mongoDB";
 import { Shareholder, isUserEvent } from "../models/models";
@@ -22,7 +21,7 @@ import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
 
-export const api = ({ graphDB, mongoDB: db }: { graphDB: Driver; mongoDB: IDatabase }) => {
+export const api = ({ mongoDB: db }: { mongoDB: IDatabase }) => {
   router.get(
     "/company",
     asyncRouter(async (req, res) => {
