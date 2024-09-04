@@ -4,4 +4,5 @@ An application for searching for companies and shareholders in the Norwegian sto
 
 Here's an example with one of the largest publicly traded companies in Norway, Telenor ASA:
 
-![image](https://user-images.githubusercontent.com/44683354/140617760-c8204603-4096-452b-8c53-1add5d661456.png)
+<img width="1115" alt="image" src="https://github.com/user-attachments/assets/ee1748de-cf79-4f42-ad90-f40cedc4db07">
+
