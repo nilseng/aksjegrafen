@@ -38,6 +38,9 @@ const createConstraints = async () => {
   await session.run(
     `CREATE CONSTRAINT unique_people IF NOT EXISTS FOR (p:Person) REQUIRE (p.birthDate, p.firstName, p.lastName) IS UNIQUE`
   );
+  await session.run(
+    `CREATE CONSTRAINT unique_organization_orgnrs IF NOT EXISTS FOR (o:Organization) REQUIRE o.orgnr IS UNIQUE`
+  );
   console.info("Created constraints");
   session.close();
 };
