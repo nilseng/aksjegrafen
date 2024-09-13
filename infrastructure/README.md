@@ -20,6 +20,10 @@ Run `terraform destroy`.
 
 ## Notes
 
+To go to the neo4j DB, go to AWS EC2 and click connect.
+
+List docker containers with `docker ps`.
+
 To enter a docker container run:
 
 - `docker exec -it <container_id> /bin/bash`
