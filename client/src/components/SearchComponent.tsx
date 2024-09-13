@@ -84,7 +84,7 @@ export const SearchComponent = <Result extends unknown>({
 
   return (
     <>
-      <div className={`${inputContainerClassName}`}>
+      <div className={`flex ${inputContainerClassName}`}>
         <input
           ref={inputRef}
           className={`w-full ${inputClassName}`}
@@ -98,7 +98,7 @@ export const SearchComponent = <Result extends unknown>({
           onKeyDown={handleKeyDown}
         />
         {isLoading && (
-          <div className="absolute right-0 top-0 w-12 h-full flex items-center p-2">
+          <div className="w-12 h-full flex items-center p-2 -ml-12">
             {<Loading backgroundColor="transparent" height={"2rem"} color={theme.primary} />}
           </div>
         )}
