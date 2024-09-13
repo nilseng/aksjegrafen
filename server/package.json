@@ -8,7 +8,7 @@
     "start:dev": "nodemon",
     "start:prod": "npx tsc && node dist/index.js",
     "start:prod:large": "npx tsc && node --max-old-space-size=8192 dist/index.js",
-    "start:import": "npx tsc && node dist/index.js --import",
+    "start:import": "npx tsc && node --max-old-space-size=8192 dist/index.js --import --year=<year> --data=ownerships companies shareholders",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
