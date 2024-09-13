@@ -7,14 +7,17 @@ type GraphOwnership = Ownership & {
   total_stocks_2020?: number;
   total_stocks_2021?: number;
   total_stocks_2022?: number;
+  total_stocks_2023?: number;
   stocks_2019?: number;
   stocks_2020?: number;
   stocks_2021?: number;
   stocks_2022?: number;
+  stocks_2023?: number;
   share_2019?: number;
   share_2020?: number;
   share_2021?: number;
   share_2022?: number;
+  share_2023?: number;
   [key: string]: number | undefined;
 };
 
@@ -34,7 +37,7 @@ export const importShareholderRegistryToGraph = async ({
   const ownerships = await mongoDB.ownerships.find({ [`holdings.${year}.total`]: { $gt: 0 } }).toArray();
   console.info(`Fetched ${ownerships.length} ownerships.`);
 
-  const companies = await mongoDB.companies.find({}).toArray();
+  const companies = await mongoDB.companies.find({ [`shares.${year}`]: { $exists: true } }).toArray();
   console.info(`Fetched ${companies.length} companies.`);
 
   const shareholders = await mongoDB.shareholders.find({}).toArray();
@@ -66,7 +69,7 @@ export const importShareholderRegistryToGraph = async ({
 
   const session = graphDB.session();
 
-  const chunkSize = 50_000;
+  const chunkSize = 100_000;
   for (let i = 0; i < ownerships.length; i += chunkSize) {
     console.info(`Adding ownerships ${i} to ${i + chunkSize} to graph.`);
 
@@ -79,9 +82,9 @@ export const importShareholderRegistryToGraph = async ({
     const createCompaniesQuery = `
     UNWIND $ownerships as ownership
 
-    MERGE (c:Company {orgnr: ownership.orgnr})
-    ON CREATE SET c.total_stocks_${year} = ownership.total_stocks_${year}, c.name = ownership.investment.name
-    ON MATCH SET c.total_stocks_${year} = ownership.total_stocks_${year}, c.name = ownership.investment.name
+    MERGE (c:Organization {orgnr: ownership.orgnr})
+    ON CREATE SET c:Company, c.uuid = randomUUID(), c.total_stocks_${year} = ownership.total_stocks_${year}, c.name = ownership.investment.name
+    ON MATCH SET c:Company, c.total_stocks_${year} = ownership.total_stocks_${year}, c.name = ownership.investment.name
   `;
 
     await session.executeWrite((t) => t.run(createCompaniesQuery, params));
@@ -92,8 +95,9 @@ export const importShareholderRegistryToGraph = async ({
 
     WITH ownership
     WHERE ownership.shareholderOrgnr IS NOT NULL
-    MATCH (cs:Company {orgnr: ownership.shareholderOrgnr})
-    SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
+    MERGE (cs:Organization {orgnr: ownership.shareholderOrgnr})
+    ON CREATE SET cs.uuid = randomUUID(), cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
+    ON MATCH SET cs:Shareholder, cs.name = ownership.investor.shareholder.name, cs.id = ownership.shareHolderId
   `;
 
     await session.executeWrite((t) => t.run(createShareholderCompaniesQuery, params));
@@ -105,7 +109,7 @@ export const importShareholderRegistryToGraph = async ({
     WITH ownership
     WHERE ownership.investor.shareholder.id IS NOT NULL
     MERGE (s:Shareholder {id: ownership.investor.shareholder.id})
-    ON CREATE SET s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
+    ON CREATE SET s.uuid = randomUUID(), s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
     ON MATCH SET s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
   `;
 
@@ -140,4 +144,5 @@ export const importShareholderRegistryToGraph = async ({
   }
 
   await session.close();
+  console.log(`*** Import of graph for ${year} completed. ***`);
 };
