@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb";
 
-export type Year = 2022 | 2021 | 2020 | 2019;
+export type Year = 2023 | 2022 | 2021 | 2020 | 2019;
 
 export interface OwnershipRaw {
   orgnr: string;
