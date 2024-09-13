@@ -1,20 +1,22 @@
 import { uniqWith } from "lodash";
 import { findInvestments, findInvestors, findRoleHolders, findRoleUnits } from "../gateways/neo4j/neo4j.gateway";
-import { GraphLinkType, GraphNode } from "../models/models";
+import { GraphLinkType, GraphNode, Year } from "../models/models";
 import { addCurrentRoles } from "../utils/addCurrentRoles";
 
 export const findNeighbours = async ({
   uuid,
   linkTypes,
+  year,
   limit,
 }: {
   uuid: string;
   linkTypes?: GraphLinkType[];
+  year: Year;
   limit: number;
 }) => {
   const [investors, investments, holders, units] = await Promise.all([
-    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestors({ uuid, limit }) : emptyGraphResponse,
-    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestments({ uuid, limit }) : emptyGraphResponse,
+    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestors({ uuid, year, limit }) : emptyGraphResponse,
+    shouldIncludeLinkType(GraphLinkType.OWNS, linkTypes) ? findInvestments({ uuid, year, limit }) : emptyGraphResponse,
     // Assumes roles and units should be returned if there are multiple link types
     // TODO: Check actual link types
     shouldIncludeLinkType(GraphLinkType.UNKNOWN, linkTypes) ? findRoleHolders({ uuid, limit }) : emptyGraphResponse,

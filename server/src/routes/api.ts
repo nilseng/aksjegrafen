@@ -21,7 +21,7 @@ import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
 
-export const api = ({ mongoDB: db }: { mongoDB: IDatabase }) => {
+export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/company",
     asyncRouter(async (req, res) => {
@@ -287,12 +287,18 @@ export const api = ({ mongoDB: db }: { mongoDB: IDatabase }) => {
   router.get(
     "/graph/neighbours",
     query(["uuid"]),
+    query(["year"]).default(2023).toInt(),
     query(["linkTypes"]).toArray(),
     query(["limit"]).default(10).toInt(),
     query(["skip"]).default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findNeighbours({ uuid: query.uuid, linkTypes: query.linkTypes, limit: query.limit });
+      const data = await findNeighbours({
+        uuid: query.uuid,
+        year: query.year,
+        linkTypes: query.linkTypes,
+        limit: query.limit,
+      });
       return res.status(200).json(data);
     })
   );
@@ -372,11 +378,12 @@ export const api = ({ mongoDB: db }: { mongoDB: IDatabase }) => {
   router.get(
     "/graph/investors",
     query("uuid"),
+    query(["year"]).default(2023).toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findInvestors({ uuid: query.uuid, limit: query.limit, skip: query.skip });
+      const data = await findInvestors({ uuid: query.uuid, year: query.year, limit: query.limit, skip: query.skip });
       return res.json(data);
     })
   );
@@ -384,11 +391,12 @@ export const api = ({ mongoDB: db }: { mongoDB: IDatabase }) => {
   router.get(
     "/graph/investments",
     query("uuid"),
+    query(["year"]).default(2023).toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findInvestments({ uuid: query.uuid, limit: query.limit, skip: query.skip });
+      const data = await findInvestments({ uuid: query.uuid, year: query.year, limit: query.limit, skip: query.skip });
       return res.json(data);
     })
   );

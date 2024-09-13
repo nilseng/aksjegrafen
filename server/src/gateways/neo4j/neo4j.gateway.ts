@@ -1,6 +1,6 @@
 import { isEmpty, uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
-import { GraphLink, GraphLinkType, GraphNode } from "../../models/models";
+import { GraphLink, GraphLinkType, GraphNode, Year } from "../../models/models";
 import {
   NodeEntry,
   mapPathToGraph,
@@ -61,11 +61,21 @@ export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; li
   return records.map((record) => mapRecordToGraphNode(record, "node"));
 };
 
-export const findInvestors = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
+export const findInvestors = async ({
+  uuid,
+  year,
+  limit,
+  skip,
+}: {
+  uuid: string;
+  year: Year;
+  limit: number;
+  skip?: number;
+}) => {
   const records = await runQuery<{ investor: NodeEntry; investment: NodeEntry }>({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
-        WHERE investment.uuid = $uuid
+        WHERE investment.uuid = $uuid AND r.year = ${year}
         RETURN investor, investment, r
         ORDER BY r.share DESC
         SKIP ${skip ?? 0}
@@ -82,11 +92,21 @@ export const findInvestors = async ({ uuid, limit, skip }: { uuid: string; limit
   };
 };
 
-export const findInvestments = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {
+export const findInvestments = async ({
+  uuid,
+  year,
+  limit,
+  skip,
+}: {
+  uuid: string;
+  year: Year;
+  limit: number;
+  skip?: number;
+}) => {
   const records = await runQuery({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
-        WHERE investor.uuid = $uuid
+        WHERE investor.uuid = $uuid AND r.year = ${year}
         RETURN investor, investment, r
         ORDER BY r.share DESC
         SKIP ${skip ?? 0}
