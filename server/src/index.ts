@@ -20,7 +20,10 @@ const argv = yargs(hideBin(process.argv))
   .options({
     import: { type: "boolean", default: false, description: "Run an import when starting the server" },
     transform: { type: "boolean", default: false, description: "Run data transformation when starting the server." },
-    year: { type: "number", description: "Specify from which year data should be imported - 2019, 2020, 2021 or 2022" },
+    year: {
+      type: "number",
+      description: "Specify from which year data should be imported - 2019, 2020, 2021, 2022 or 2023",
+    },
     data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
   })
   .parseSync();
