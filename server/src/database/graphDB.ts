@@ -49,7 +49,15 @@ const createConstraints = async () => {
 const createProjections = async () => {
   const session = graphDB.session();
   console.info("Creating projections");
-  await session.run(`
+  const directedGraphExists = (
+    await session.run(`
+    CALL gds.graph.exists('directedGraph') YIELD exists
+    RETURN exists;
+  `)
+  ).records[0].get("exists");
+  if (directedGraphExists) console.log("*** Directed graph projection already exists. ***");
+  else {
+    await session.run(`
     CALL gds.graph.project(
       'directedGraph',    
       ['Person', 'Unit', 'Company', 'Shareholder'],   
@@ -82,7 +90,16 @@ const createProjections = async () => {
     )
     YIELD graphName
   `);
-  await session.run(`
+  }
+  const undirectedGraphExists = (
+    await session.run(`
+    CALL gds.graph.exists('undirectedGraph') YIELD exists
+    RETURN exists;
+  `)
+  ).records[0].get("exists");
+  if (undirectedGraphExists) console.log("*** Undirected graph projection already exists. ***");
+  else {
+    await session.run(`
     CALL gds.graph.project(
       'undirectedGraph',    
       ['Person', 'Unit', 'Company', 'Shareholder'],   
@@ -115,6 +132,7 @@ const createProjections = async () => {
     )
     YIELD graphName
   `);
+  }
   console.info("Created projections");
   session.close();
 };
@@ -127,7 +145,6 @@ createConstraints().catch((e) => {
   console.error("Failed to create constraints", e);
 });
 
-/* createProjections().catch((e) => {
+createProjections().catch((e) => {
   console.error("Failed to create projections", e);
 });
- */
