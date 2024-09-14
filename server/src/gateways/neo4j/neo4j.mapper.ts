@@ -7,7 +7,7 @@ interface NodeEntryProperties {
   name: string;
   orgnr?: string;
   id?: string;
-  total_stocks_2022?: number;
+  total_stocks_2023?: number;
   year_of_birth: string;
   location: string;
 }
@@ -39,9 +39,9 @@ export const mapNodeEntryToGraphNode = (node: NodeEntry): GraphNode => {
       name: node.properties.name,
       orgnr: node.properties.orgnr,
       shareholderId: node.properties.id,
-      stocks: node.properties.total_stocks_2022
+      stocks: node.properties.total_stocks_2023
         ? {
-            2022: { total: node.properties.total_stocks_2022 },
+            2023: { total: node.properties.total_stocks_2023 },
           }
         : undefined,
       yearOfBirth: node.properties.year_of_birth,
