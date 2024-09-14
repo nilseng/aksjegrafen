@@ -31,6 +31,7 @@ export const findNeighbours = async ({
     (a, b) =>
       a.source.properties.uuid === b.source.properties.uuid && a.target.properties.uuid === b.target.properties.uuid
   );
+  if (!uniqueNodes.length) return { nodes: [], links: [] };
   addSourceSkip({
     uuid,
     nodes: uniqueNodes,
