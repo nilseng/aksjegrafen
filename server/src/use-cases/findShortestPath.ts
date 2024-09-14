@@ -1,5 +1,6 @@
 import { findRelationships, findShortestPath as shortestPathFinder } from "../gateways/neo4j/neo4j.gateway";
 import { GraphLink, GraphLinkType, GraphNode } from "../models/models";
+import { addCurrentRoles } from "../utils/addCurrentRoles";
 
 export const findShortestPath = async ({
   isDirected,
@@ -22,5 +23,6 @@ export const findShortestPath = async ({
     linkTypes: linkTypes && linkTypes?.length > 0 ? linkTypes : undefined,
   });
   const links = await findRelationships({ links: pathLinks, isDirected });
+  addCurrentRoles({ nodes, links });
   return { nodes, links };
 };

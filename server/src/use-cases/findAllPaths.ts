@@ -1,5 +1,6 @@
 import { findAllPaths as allPathsFinder, findRelationships } from "../gateways/neo4j/neo4j.gateway";
 import { GraphLink, GraphLinkType, GraphNode } from "../models/models";
+import { addCurrentRoles } from "../utils/addCurrentRoles";
 
 export const findAllPaths = async ({
   isDirected,
@@ -25,5 +26,6 @@ export const findAllPaths = async ({
     limit,
   });
   const links = await findRelationships({ links: pathLinks, isDirected });
+  addCurrentRoles({ nodes, links });
   return { links, nodes };
 };
