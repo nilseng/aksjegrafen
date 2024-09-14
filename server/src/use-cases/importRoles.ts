@@ -7,9 +7,7 @@ import { Role } from "../models/models";
 
 export const importRoles = (db: IDatabase) => {
   const parser = JSONStream.parse("*");
-  const stream = fs.createReadStream(
-    path.join(__dirname, "../../..", "data", "roller_2023-04-21T06-45-04.308061.json")
-  );
+  const stream = fs.createReadStream(path.join(__dirname, "../../..", "data", "enheter_alle_20240913.json"));
   const roles: Role[] = [];
   stream.pipe(parser).on("data", (chunk: UnitRoles) => {
     chunk.rollegrupper.forEach((group) => {
