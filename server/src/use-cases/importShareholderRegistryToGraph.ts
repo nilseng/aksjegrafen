@@ -116,17 +116,17 @@ export const importShareholderRegistryToGraph = async ({
     await session.executeWrite((t) => t.run(createShareholdersQuery, params));
     console.info("Created shareholder nodes.");
 
-    const createCompanyToCompanyRelationshipsQuery = `
+    const createOrganizationToCompanyRelationshipsQuery = `
     UNWIND $ownerships as ownership
 
     WITH ownership
     WHERE ownership.shareholderOrgnr IS NOT NULL
-    MATCH (p1:Company {orgnr: ownership.shareholderOrgnr}), (c1: Company {orgnr: ownership.orgnr})
+    MATCH (p1:Organization {orgnr: ownership.shareholderOrgnr}), (c1: Company {orgnr: ownership.orgnr})
     MERGE (p1)-[csc:OWNS {year: ${year}}]->(c1)
     ON CREATE SET csc.year = ${year}, csc.stocks = ownership.stocks_${year}, csc.share = ownership.share_${year}
     ON MATCH SET csc.year = ${year}, csc.stocks = ownership.stocks_${year}, csc.share = ownership.share_${year}
   `;
-    await session.executeWrite((t) => t.run(createCompanyToCompanyRelationshipsQuery, params));
+    await session.executeWrite((t) => t.run(createOrganizationToCompanyRelationshipsQuery, params));
     console.info("Created company to company relationships");
 
     const createShareholderToCompanyRelationshipQuery = `
