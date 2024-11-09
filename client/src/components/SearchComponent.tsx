@@ -112,7 +112,7 @@ export const SearchComponent = <Result extends unknown>({
                 .map(({ result, item }) => (
                   <div
                     key={item.key}
-                    className="w-full max-w-full flex flex-col items-center justify-between border border-primary/20 rounded-lg p-2 my-1"
+                    className="w-full max-w-full flex flex-col items-center justify-between border border-primary/60 rounded-lg p-2 my-1"
                     style={{
                       zIndex: 101,
                       backgroundColor: "transparent",
@@ -130,14 +130,14 @@ export const SearchComponent = <Result extends unknown>({
                       style={item.handleTitleClick ? { cursor: "pointer" } : {}}
                       onClick={() => item.handleTitleClick?.(result)}
                     >
-                      <p className="break-words font-semibold text-gray-700 dark:text-gray-100">{item.name}</p>
                       <div className="w-full flex justify-center pb-1">
                         {item.tags.map((tag) => (
-                          <p key={tag} className="text-xs text-muted mx-2">
+                          <p key={tag} className="text-xs text-muted px-4">
                             {tag}
                           </p>
                         ))}
                       </div>
+                      <p className="break-words font-semibold text-gray-700 dark:text-gray-100 pb-2">{item.name}</p>
                     </section>
                     {item.icon && (
                       <FontAwesomeIcon
