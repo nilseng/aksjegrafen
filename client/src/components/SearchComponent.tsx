@@ -130,7 +130,7 @@ export const SearchComponent = <Result extends unknown>({
                       style={item.handleTitleClick ? { cursor: "pointer" } : {}}
                       onClick={() => item.handleTitleClick?.(result)}
                     >
-                      <p className="break-words font-bold text-gray-700 dark:text-gray-100">{item.name}</p>
+                      <p className="break-words font-semibold text-gray-700 dark:text-gray-100">{item.name}</p>
                       <div className="w-full flex justify-center pb-1">
                         {item.tags.map((tag) => (
                           <p key={tag} className="text-xs text-muted mx-2">
