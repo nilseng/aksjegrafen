@@ -29,7 +29,6 @@ export const NodeSearch = () => {
       <SearchComponent
         inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
         inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
-        searchListClassName="h-1/2 w-full md:w-3/4 dark:text-white overflow-auto shadow-[inset_0_-8px_8px_-4px_rgba(255,255,255,1)] dark:shadow-[inset_0_-8px_8px_-4px_rgba(0,0,0,0.1)]"
         placeholder="Selskap, aksjonær eller rolleinnehaver..."
         apiPath="/api/node"
         mapResultToListItem={(node: GraphNode) => ({
