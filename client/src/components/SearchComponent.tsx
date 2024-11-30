@@ -137,7 +137,9 @@ export const SearchComponent = <Result extends unknown>({
                           </p>
                         ))}
                       </div>
-                      <p className="break-words font-semibold text-gray-700 dark:text-gray-100 pb-2">{item.name}</p>
+                      <p className="break-words text-center font-semibold text-gray-700 dark:text-gray-100 pb-2">
+                        {item.name}
+                      </p>
                     </section>
                     {item.icon && (
                       <FontAwesomeIcon
