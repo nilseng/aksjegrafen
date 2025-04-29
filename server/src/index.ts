@@ -1,3 +1,4 @@
+import cors from "cors";
 import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import sslRedirect from "heroku-ssl-redirect";
@@ -31,6 +32,14 @@ const argv = yargs(hideBin(process.argv))
 const app = express();
 
 app.use(sslRedirect());
+
+app.use(
+  cors({
+    origin: process.env.CORS_ALLOWED_ORIGINS || "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(
   express.urlencoded({
