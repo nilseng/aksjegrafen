@@ -8,16 +8,19 @@ type GraphOwnership = Ownership & {
   total_stocks_2021?: number;
   total_stocks_2022?: number;
   total_stocks_2023?: number;
+  total_stocks_2024?: number;
   stocks_2019?: number;
   stocks_2020?: number;
   stocks_2021?: number;
   stocks_2022?: number;
   stocks_2023?: number;
+  stocks_2024?: number;
   share_2019?: number;
   share_2020?: number;
   share_2021?: number;
   share_2022?: number;
   share_2023?: number;
+  share_2024?: number;
   [key: string]: number | undefined;
 };
 
