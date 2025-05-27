@@ -13,20 +13,58 @@ import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
 import { importData } from "./services/importService";
-import { transformData } from "./services/transformationService";
 
 dotenv.config();
 
 const argv = yargs(hideBin(process.argv))
   .options({
-    import: { type: "boolean", default: false, description: "Run an import when starting the server" },
-    transform: { type: "boolean", default: false, description: "Run data transformation when starting the server." },
+    import: { type: "boolean", default: false, description: "Run the unified import flow when starting the server" },
+    transform: { type: "boolean", default: false, description: "Run data transformation when starting the server" },
     year: {
       type: "number",
-      description: "Specify from which year data should be imported - 2019, 2020, 2021, 2022 or 2023",
+      description: "Specify year for data import (2015-2024)",
+      demandOption: true,
+      coerce: (arg) => {
+        const validYears = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
+        if (!validYears.includes(arg)) {
+          throw new Error(`Year must be one of: ${validYears.join(", ")}`);
+        }
+        return arg;
+      },
     },
-    data: { type: "array", description: "Specify data to be included - ownerships, companies and/or shareholders" },
+    importToMongoDB: {
+      type: "boolean",
+      default: true,
+      description: "Import shareholder registry to MongoDB",
+    },
+    runTransformation: {
+      type: "boolean",
+      default: true,
+      description: "Transform data (count stocks, investor counts, etc.)",
+    },
+    importToGraph: {
+      type: "boolean",
+      default: true,
+      description: "Import data from MongoDB to Neo4j graph database",
+    },
+
+    generateUUIDs: {
+      type: "boolean",
+      default: false,
+      description: "Generate UUIDs for graph nodes",
+    },
+    importBusinessCodes: {
+      type: "boolean",
+      default: false,
+      description: "Import business codes",
+    },
+    importRoles: {
+      type: "boolean",
+      default: false,
+      description: "Import roles",
+    },
   })
+  .help()
   .parseSync();
 
 const app = express();
@@ -71,8 +109,16 @@ const initializeApp = async () => {
     return res.status(500).json({ error: "An unexpected error occured." });
   });
 
-  if (argv.import) importData(graphDB, db, argv.year as Year, argv.data);
-  if (argv.transform && argv.year) transformData(db, argv.year as Year);
+  if (argv.import) {
+    importData(graphDB, db, argv.year as Year, {
+      importToMongoDB: argv.importToMongoDB as boolean,
+      runTransformation: argv.runTransformation as boolean,
+      importToGraph: argv.importToGraph as boolean,
+      generateUUIDs: argv.generateUUIDs as boolean,
+      importBusinessCodes: argv.importBusinessCodes as boolean,
+      importRoles: argv.importRoles as boolean,
+    });
+  }
 
   gracefulShutdown({ graphDB });
 };
