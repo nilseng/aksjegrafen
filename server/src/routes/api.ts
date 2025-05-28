@@ -287,7 +287,7 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/neighbours",
     query(["uuid"]),
-    query(["year"]).default(2023).toInt(),
+    query(["year"]).default(2024).toInt(),
     query(["linkTypes"]).toArray(),
     query(["limit"]).default(10).toInt(),
     query(["skip"]).default(0).toInt(),
@@ -378,7 +378,7 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/investors",
     query("uuid"),
-    query(["year"]).default(2023).toInt(),
+    query(["year"]).default(2024).toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
@@ -391,7 +391,7 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/investments",
     query("uuid"),
-    query(["year"]).default(2023).toInt(),
+    query(["year"]).default(2024).toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {

@@ -28,7 +28,7 @@ export const findOwnerships = ({
   if (year) filter[`holdings.${year}.total`] = { $gt: 0 };
   return db()
     .ownerships.find(filter, { limit: limit ?? defaultLimit })
-    .sort({ [`holdings.${year ?? 2023}.total`]: -1, _id: 1 })
+    .sort({ [`holdings.${year ?? 2024}.total`]: -1, _id: 1 })
     .skip(skip ?? 0)
     .toArray();
 };
