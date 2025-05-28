@@ -1,7 +1,7 @@
 import { Driver as Neo4j } from "neo4j-driver";
 import { IDatabase } from "../database/mongoDB";
 import { Year } from "../models/models";
-import { generateGraphNodeUUIDs } from "../use-cases/generateGraphNodeUUIDs";
+import { clearGraphDatabase } from "../use-cases/clearGraphDatabase";
 import { importBusinessCodes } from "../use-cases/importBusinessCodes";
 import { importRoles } from "../use-cases/importRoles";
 import { importShareholderRegistry } from "../use-cases/importShareholderRegistry";
@@ -19,24 +19,22 @@ import { transformData } from "./transformationService";
  * @param year - Year for which to import data
  * @param options - Configuration options for the import process
  */
-export const importData = async (
-  graphDB: Neo4j,
-  db: IDatabase,
-  year?: Year,
-  options?: {
-    importToMongoDB?: boolean;
-    runTransformation?: boolean;
-    importToGraph?: boolean;
-    generateUUIDs?: boolean;
-    importBusinessCodes?: boolean;
-    importRoles?: boolean;
-  }
-) => {
+export interface ImportOptions {
+  importToMongoDB?: boolean;
+  runTransformation?: boolean;
+  importToGraph?: boolean;
+  clearGraphDBFirst?: boolean;
+  importBusinessCodes?: boolean;
+  importRoles?: boolean;
+}
+
+export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, options?: ImportOptions) => {
   if (!year) throw Error("Year must be specified for data import");
 
   const importToMongoDB = options?.importToMongoDB !== undefined ? options.importToMongoDB : true;
   const runTransformation = options?.runTransformation !== undefined ? options.runTransformation : true;
   const importToGraph = options?.importToGraph !== undefined ? options.importToGraph : true;
+  const clearGraphDBFirst = options?.clearGraphDBFirst !== undefined ? options.clearGraphDBFirst : false;
 
   console.log(`========== STARTING UNIFIED IMPORT FLOW FOR YEAR ${year} ==========`);
 
@@ -56,27 +54,25 @@ export const importData = async (
 
   if (importToGraph) {
     console.log(`\n========== IMPORTING DATA TO GRAPH DATABASE FOR YEAR ${year} ==========`);
+
+    if (clearGraphDBFirst) {
+      console.log("\n========== CLEARING NEO4J DATABASE BEFORE IMPORT ==========");
+      await clearGraphDatabase(graphDB);
+    }
+
     await importShareholderRegistryToGraph({ graphDB, mongoDB: db, year });
   } else {
     console.log("Skipping graph database import as requested");
   }
 
-  if (options?.generateUUIDs) {
-    console.log("\n========== GENERATING GRAPH NODE UUIDS ==========");
-    await generateGraphNodeUUIDs(graphDB);
-    console.log("To enable UUID generation, uncomment the code in importService.ts");
-  }
-
   if (options?.importBusinessCodes) {
     console.log("\n========== IMPORTING BUSINESS CODES ==========");
     await importBusinessCodes(db);
-    console.log("To enable business codes import, uncomment the code in importService.ts");
   }
 
   if (options?.importRoles) {
     console.log("\n========== IMPORTING ROLES ==========");
     importRoles(db);
-    console.log("To enable roles import, uncomment the code in importService.ts");
   }
 
   console.log(`\n========== UNIFIED IMPORT FLOW FOR YEAR ${year} COMPLETED ==========`);

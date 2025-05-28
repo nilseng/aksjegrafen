@@ -55,10 +55,10 @@ async function runImport() {
         default: true,
         description: "Import data from MongoDB to Neo4j graph database",
       },
-      generateUUIDs: {
+      clearGraphDBFirst: {
         type: "boolean",
-        default: false,
-        description: "Generate UUIDs for graph nodes",
+        default: true,
+        description: "Clear the Neo4j database before importing (recommended)",
       },
       importBusinessCodes: {
         type: "boolean",
@@ -86,7 +86,7 @@ async function runImport() {
       importToMongoDB: argv.importToMongoDB,
       runTransformation: argv.runTransformation,
       importToGraph: argv.importToGraph,
-      generateUUIDs: argv.generateUUIDs,
+      clearGraphDBFirst: argv.clearGraphDBFirst,
       importBusinessCodes: argv.importBusinessCodes,
       importRoles: argv.importRoles,
     });
