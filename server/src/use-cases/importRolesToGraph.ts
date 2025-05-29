@@ -4,6 +4,7 @@ import { Driver } from "neo4j-driver";
 import path from "path";
 import { UnitRoles } from "../models/brregModels";
 import { Role } from "../models/models";
+import { setPersonNames } from "./setPersonNames";
 
 export const importRolesToGraph = async (graphDB: Driver) => {
   console.log(`*** Importing roles to graph ***`);
@@ -102,6 +103,10 @@ export const importRolesToGraph = async (graphDB: Driver) => {
   }
 
   session.close();
+
+  console.log("Setting name property on Person nodes...");
+  await setPersonNames(graphDB);
+
   console.log(`*** Import of roles to graph complete ***`);
 };
 
