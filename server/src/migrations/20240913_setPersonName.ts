@@ -6,7 +6,7 @@ export const setPersonName = async (graphDB: Driver) => {
         CALL apoc.periodic.iterate(
             "MATCH (p:Person) return p",
             "SET p.name = p.firstName + ' ' + p.lastName",
-            {batchSize: 50000, paralell: true}
+            {batchSize: 50000, parallel: true}
         )
     `);
   console.log(res);
