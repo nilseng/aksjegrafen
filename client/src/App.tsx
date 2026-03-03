@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { HelmetProvider } from "react-helmet-async";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
+import { CompanyPage } from "./components/CompanyPage/CompanyPage";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
 
@@ -30,28 +32,31 @@ const App = () => {
 
   return (
     <ErrorBoundary fallback={<FallbackError />}>
-      <AppContext.Provider value={{ theme }}>
-        <Router>
-          <NavBar theme={theme} setTheme={setTheme} />
-          <div
-            id="ag-main"
-            className="flex w-full justify-center"
-            style={{
-              minHeight: "calc(100% - 83.2px)",
-              height: "calc(100% - 83.2px)",
-            }}
-          >
-            <Switch>
-              <Route path="/api-docs" component={ApiDocs} />
-              <Route path="/" component={Graph} exact />
-              <Route>
-                <Redirect to="/" />
-              </Route>
-            </Switch>
-          </div>
-          <Overlays />
-        </Router>
-      </AppContext.Provider>
+      <HelmetProvider>
+        <AppContext.Provider value={{ theme }}>
+          <Router>
+            <NavBar theme={theme} setTheme={setTheme} />
+            <div
+              id="ag-main"
+              className="flex w-full justify-center"
+              style={{
+                minHeight: "calc(100% - 83.2px)",
+                height: "calc(100% - 83.2px)",
+              }}
+            >
+              <Switch>
+                <Route path="/api-docs" component={ApiDocs} />
+                <Route path="/selskap/:orgnr/:slug?" component={CompanyPage} />
+                <Route path="/" component={Graph} exact />
+                <Route>
+                  <Redirect to="/" />
+                </Route>
+              </Switch>
+            </div>
+            <Overlays />
+          </Router>
+        </AppContext.Provider>
+      </HelmetProvider>
     </ErrorBoundary>
   );
 };

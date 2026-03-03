@@ -10,6 +10,7 @@ import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
+import { companyPageRoutes } from "./routes/seo";
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
   app.use("/api", api({ db }));
+  app.use("/api/seo", companyPageRoutes({ db }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
 

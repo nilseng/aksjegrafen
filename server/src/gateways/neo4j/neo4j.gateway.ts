@@ -49,13 +49,14 @@ export const findNodesByUuids = async ({ uuids }: { uuids: string[] }) => {
   return records.map((record) => mapRecordToGraphNode(record, "node"));
 };
 
-export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) => {
+export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: number }) => {
   const records = await runQuery<{ node: NodeEntry }>({
     query: `
-    CALL db.index.fulltext.queryNodes("namesAndOrgnrs", "${searchTerm}") YIELD node
+    CALL db.index.fulltext.queryNodes("namesAndOrgnrs", $searchTerm) YIELD node
     RETURN node
-    LIMIT ${limit}
+    LIMIT $limit
     `,
+    params: { searchTerm, limit },
   });
   if (!records || records.length === 0) return [];
   return records.map((record) => mapRecordToGraphNode(record, "node"));
@@ -75,13 +76,13 @@ export const findInvestors = async ({
   const records = await runQuery<{ investor: NodeEntry; investment: NodeEntry }>({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
-        WHERE investment.uuid = $uuid AND r.year = ${year}
+        WHERE investment.uuid = $uuid AND r.year = $year
         RETURN investor, investment, r
         ORDER BY r.share DESC
-        SKIP ${skip ?? 0}
-        LIMIT ${limit}
+        SKIP $skip
+        LIMIT $limit
     `,
-    params: { uuid },
+    params: { uuid, year, skip: skip ?? 0, limit },
   });
   if (!records || records.length === 0) return { nodes: [], links: [] };
   return {
@@ -106,13 +107,13 @@ export const findInvestments = async ({
   const records = await runQuery({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
-        WHERE investor.uuid = $uuid AND r.year = ${year}
+        WHERE investor.uuid = $uuid AND r.year = $year
         RETURN investor, investment, r
         ORDER BY r.share DESC
-        SKIP ${skip ?? 0}
-        LIMIT ${limit}
+        SKIP $skip
+        LIMIT $limit
     `,
-    params: { uuid },
+    params: { uuid, year, skip: skip ?? 0, limit },
   });
   if (!records || records.length === 0) return { nodes: [], links: [] };
   return {
@@ -129,10 +130,10 @@ export const findRoleHolders = async ({ uuid, limit, skip }: { uuid: string; lim
         MATCH (holder:Person|Unit)-[r]->(unit:Unit)
         WHERE unit.uuid = $uuid AND type(r) <> "OWNS"
         RETURN holder, r, unit
-        SKIP ${skip ?? 0}
-        LIMIT ${limit}
+        SKIP $skip
+        LIMIT $limit
     `,
-    params: { uuid },
+    params: { uuid, skip: skip ?? 0, limit },
   });
   if (!records || records.length === 0) return { nodes: [], links: [] };
   return {
@@ -149,10 +150,10 @@ export const findRoleUnits = async ({ uuid, limit, skip }: { uuid: string; limit
         MATCH (holder:Unit|Person)-[r]->(unit:Unit|Company)
         WHERE holder.uuid = $uuid AND type(r) <> "OWNS"
         RETURN holder, unit, r
-        SKIP ${skip ?? 0}
-        LIMIT ${limit}
+        SKIP $skip
+        LIMIT $limit
     `,
-    params: { uuid },
+    params: { uuid, skip: skip ?? 0, limit },
   });
   if (!records || records.length === 0) return { nodes: [], links: [] };
   return {
@@ -213,7 +214,7 @@ export const findAllPaths = async ({
       sourceNode: source,
       targetNode: target,
       ${!isEmpty(linkTypes) ? "relationshipTypes: $linkTypes," : ""}
-      k: ${limit}
+      k: $limit
     })
     YIELD index, path
     RETURN path
