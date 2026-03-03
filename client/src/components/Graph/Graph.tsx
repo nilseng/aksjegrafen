@@ -19,7 +19,6 @@ import { fetchRolesThunk } from "../../slices/rolesSlice";
 import { AppDispatch, RootState } from "../../store";
 import { FallbackError } from "../FallbackError";
 import Loading from "../Loading";
-import { AgentTeamSettings } from "./AgentTeamSettings";
 import { GraphView } from "./GraphView";
 import { HowToModal } from "./HowToModal";
 import { Modal } from "./Modal";
@@ -74,7 +73,6 @@ export const Graph = () => {
         <ErrorBoundary fallback={<FallbackError />}>
           {isModalOpen && <Modal />}
           <SearchButton />
-          <AgentTeamSettings />
           <Settings />
           <HowToModal />
           {status === FetchState.Loading && (
