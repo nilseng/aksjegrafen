@@ -215,3 +215,21 @@ export enum UserEventType {
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
 }
+
+export interface Agent {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  enabled: boolean;
+}
+
+export enum AgentId {
+  CompanyAnalyst = "company-analyst",
+  NetworkDetective = "network-detective",
+  DueDiligence = "due-diligence",
+  MarketMonitor = "market-monitor",
+  FinancialAuditor = "financial-auditor",
+  NewsAgent = "news-agent",
+  RegulatoryAgent = "regulatory-agent",
+}

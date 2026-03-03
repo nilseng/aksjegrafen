@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
+import { agentTeamSlice } from "./slices/agentTeamSlice";
 import { graphSlice } from "./slices/graphSlice";
 import { modalSlice } from "./slices/modalSlice";
 import { rolesSlice } from "./slices/rolesSlice";
@@ -9,6 +10,7 @@ export const store = configureStore({
     modalHandler: modalSlice.reducer,
     graph: graphSlice.reducer,
     roles: rolesSlice.reducer,
+    agentTeam: agentTeamSlice.reducer,
   },
 });
 
