@@ -13,7 +13,8 @@
     "import:mongodb": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=true --runTransformation=false --importToGraph=false",
     "import:transform": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=true --importToGraph=false",
     "import:graph": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=false --importToGraph=true",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts"
   },
   "author": "",
   "license": "ISC",
@@ -45,7 +46,9 @@
     "yargs": "^17.1.1"
   },
   "devDependencies": {
+    "@testcontainers/neo4j": "^11.12.0",
     "nodemon": "^2.0.6",
+    "testcontainers": "^11.12.0",
     "vitest": "^4.0.18"
   },
   "nodemonConfig": {
