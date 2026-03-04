@@ -13,7 +13,7 @@
     "import:mongodb": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=true --runTransformation=false --importToGraph=false",
     "import:transform": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=true --importToGraph=false",
     "import:graph": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=false --importToGraph=true",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest run"
   },
   "author": "",
   "license": "ISC",
@@ -45,7 +45,8 @@
     "yargs": "^17.1.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.6",
+    "vitest": "^4.0.18"
   },
   "nodemonConfig": {
     "ext": "ts,js,json"

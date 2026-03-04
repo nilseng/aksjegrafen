@@ -9,5 +9,5 @@
     "resolveJsonModule": true,
     "target": "ES5"
   },
-  "exclude": ["**/migrations/**"]
+  "exclude": ["**/migrations/**", "**/*.test.ts"]
 }
