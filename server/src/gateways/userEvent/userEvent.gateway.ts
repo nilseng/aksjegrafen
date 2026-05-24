@@ -8,12 +8,15 @@ export const saveUserEvent = async (event: UserEvent) => {
   await client().insertOne(event);
 };
 
-export const getEventCountByUuid = (): Promise<{ uuid: string; count: number }[]> => {
+export const getEventCountByOrgnr = (): Promise<{ orgnr: string; count: number }[]> => {
   return client()
-    .aggregate<{ uuid: string; count: number }>([
+    .aggregate<{ orgnr: string; count: number }>([
+      {
+        $match: { orgnr: { $nin: [null, ""] } },
+      },
       {
         $group: {
-          _id: "$uuid",
+          _id: "$orgnr",
           count: { $sum: 1 },
         },
       },
@@ -28,7 +31,7 @@ export const getEventCountByUuid = (): Promise<{ uuid: string; count: number }[]
       {
         $project: {
           _id: 0,
-          uuid: "$_id",
+          orgnr: "$_id",
           count: 1,
         },
       },
