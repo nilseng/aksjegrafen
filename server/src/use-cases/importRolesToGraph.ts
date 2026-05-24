@@ -114,7 +114,7 @@ const readRoles = (): Promise<Role[]> => {
   return new Promise((resolve, reject) => {
     const parser = JSONStream.parse("*");
     const stream = fs.createReadStream(
-      path.join(__dirname, "../../..", "data", "roller_2024-09-13T04-00-11.954590244.json")
+      path.join(__dirname, "../../..", "data", "roller_2026-05-23T04-00-33.327018344.json")
     );
     const roles: Role[] = [];
     stream.pipe(parser).on("data", (chunk: UnitRoles) => {
@@ -138,7 +138,6 @@ const readRoles = (): Promise<Role[]> => {
                 : undefined,
             },
           };
-          console.log(role);
           roles.push(role);
         });
       });

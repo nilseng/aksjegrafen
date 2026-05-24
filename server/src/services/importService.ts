@@ -4,6 +4,7 @@ import { Year } from "../models/models";
 import { clearGraphDatabase } from "../use-cases/clearGraphDatabase";
 import { importBusinessCodes } from "../use-cases/importBusinessCodes";
 import { importRoles } from "../use-cases/importRoles";
+import { importRolesToGraph } from "../use-cases/importRolesToGraph";
 import { importShareholderRegistry } from "../use-cases/importShareholderRegistry";
 import { importShareholderRegistryToGraph } from "../use-cases/importShareholderRegistryToGraph";
 import { transformData } from "./transformationService";
@@ -26,6 +27,7 @@ export interface ImportOptions {
   clearGraphDBFirst?: boolean;
   importBusinessCodes?: boolean;
   importRoles?: boolean;
+  importRolesToGraph?: boolean;
 }
 
 export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, options?: ImportOptions) => {
@@ -71,8 +73,13 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
   }
 
   if (options?.importRoles) {
-    console.log("\n========== IMPORTING ROLES ==========");
+    console.log("\n========== IMPORTING ROLES TO MONGODB ==========");
     importRoles(db);
+  }
+
+  if (options?.importRolesToGraph) {
+    console.log("\n========== IMPORTING ROLES TO GRAPH ==========");
+    await importRolesToGraph(graphDB);
   }
 
   console.log(`\n========== UNIFIED IMPORT FLOW FOR YEAR ${year} COMPLETED ==========`);

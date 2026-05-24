@@ -68,7 +68,12 @@ async function runImport() {
       importRoles: {
         type: "boolean",
         default: false,
-        description: "Import roles",
+        description: "Import roles to MongoDB (note: the app reads roles from the graph, not MongoDB)",
+      },
+      importRolesToGraph: {
+        type: "boolean",
+        default: false,
+        description: "Import roles from the brreg roles JSON in data/ into the Neo4j graph",
       },
     })
     .help()
@@ -89,6 +94,7 @@ async function runImport() {
       clearGraphDBFirst: argv.clearGraphDBFirst,
       importBusinessCodes: argv.importBusinessCodes,
       importRoles: argv.importRoles,
+      importRolesToGraph: argv.importRolesToGraph,
     });
 
     console.log("Import process completed successfully.");

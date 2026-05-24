@@ -16,11 +16,15 @@ export const setPersonNames = async (graphDB: Driver): Promise<void> => {
       )
     `);
     
-    // Log the operation statistics
-    const stats = result.records[0]?.get('batchErrors') === 0 
-      ? "Completed successfully with no errors" 
-      : `Completed with ${result.records[0]?.get('batchErrors') || 'unknown'} errors`;
-    
+    const record = result.records[0];
+    const toNum = (v: any): number => (v?.toNumber ? v.toNumber() : Number(v ?? 0));
+    const committed = toNum(record?.get("committedOperations"));
+    const failed = toNum(record?.get("failedOperations"));
+    const stats =
+      failed === 0
+        ? `Completed successfully (${committed} nodes updated)`
+        : `Completed with ${failed} failed operations (${committed} succeeded)`;
+
     console.log(`Name property set on Person nodes: ${stats}`);
   } catch (error) {
     console.error("Error setting name property:", error);
