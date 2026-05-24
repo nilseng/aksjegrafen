@@ -146,7 +146,7 @@ export const graphSlice = createSlice<
         (state, action: PayloadAction<{ nodes: GraphNode[]; links: GraphLink[] }>) => {
           state.status = FetchState.Success;
           state.data.nodes = action.payload.nodes;
-          state.data.links = action.payload.links;
+          state.data.links = mergeLinks([], action.payload.links);
           if (state.data.graphType === GraphType.Default) {
             updateSourceUuid({ sourceUuid: state.data.sourceUuid, nodes: state.data.nodes });
           }
@@ -288,6 +288,34 @@ const getSkip = ({
     : { ...{ actors: 0, units: 0, investments: 0, investors: 0 }, [type]: newNodesCount };
 };
 
+// A link is identified by its source, target and category (OWNS vs role). All role types
+// share the "role" category, so several roles between the same two nodes collapse onto one
+// edge instead of overlapping; their types are accumulated in `types` and rendered together.
+const linkKey = (l: GraphLink) =>
+  `${l.source.properties.uuid}-${l.type === GraphLinkType.OWNS ? "OWNS" : "role"}-${l.target.properties.uuid}`;
+
+// Merge incoming links into existing ones, collapsing role links that share an edge and
+// accumulating their role types. Returns the merged list (existing edges may be mutated).
+const mergeLinks = (existing: GraphLink[], incoming: GraphLink[]): GraphLink[] => {
+  const byKey = new Map<string, GraphLink>();
+  const merged = [...existing];
+  existing.forEach((l) => byKey.set(linkKey(l), l));
+  for (const link of incoming) {
+    const key = linkKey(link);
+    const current = byKey.get(key);
+    if (current) {
+      if (link.type !== GraphLinkType.OWNS && !current.types?.includes(link.type)) {
+        current.types = [...(current.types ?? []), link.type];
+      }
+    } else {
+      const newLink = link.type === GraphLinkType.OWNS ? link : { ...link, types: [link.type] };
+      byKey.set(key, newLink);
+      merged.push(newLink);
+    }
+  }
+  return merged;
+};
+
 const addToGraphIfNotExist = (
   state: GraphState,
   action: PayloadAction<{
@@ -297,9 +325,6 @@ const addToGraphIfNotExist = (
 ) => {
   let newNodesCount = 0;
   const currentNodeIds = new Set(state.data.nodes.map((n) => n.properties.uuid));
-  const currentLinkIds = new Set(
-    state.data.links.map((l) => `${l.source.properties.uuid}-${l.target.properties.uuid}`)
-  );
   for (const node of action.payload.nodes) {
     if (!currentNodeIds.has(node.properties.uuid)) {
       currentNodeIds.add(node.properties.uuid);
@@ -307,12 +332,7 @@ const addToGraphIfNotExist = (
       newNodesCount += 1;
     }
   }
-  for (const link of action.payload.links) {
-    if (!currentLinkIds.has(`${link.source.properties.uuid}-${link.target.properties.uuid}`)) {
-      currentLinkIds.add(`${link.source.properties.uuid}-${link.target.properties.uuid}`);
-      state.data.links.push(link);
-    }
-  }
+  state.data.links = mergeLinks(state.data.links, action.payload.links);
   state.status = FetchState.Success;
   return newNodesCount;
 };

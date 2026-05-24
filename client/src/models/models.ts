@@ -154,6 +154,10 @@ export interface GraphLink {
     stocks?: number;
   };
   type: GraphLinkType;
+  // All role types on this edge. Several roles between the same two nodes (e.g. a person who
+  // is both daglig leder and styremedlem of a company) are collapsed into one edge so they
+  // don't render on top of each other; this lists every role for that edge. Unset for OWNS.
+  types?: GraphLinkType[];
 }
 
 export enum GraphLinkType {

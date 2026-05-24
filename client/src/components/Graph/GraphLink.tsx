@@ -77,7 +77,9 @@ export const GraphLink = ({ link }: { link: IGraphLink }) => {
         {link.type !== GraphLinkType.OWNS && (
           <span className="bg-gray-50/90 dark:bg-gray-800/90 rounded py-1 px-2">
             <span className="font-bold">
-              {roleTypes?.find((role) => role.kode === link.type)?.beskrivelse ?? link.type}
+              {(link.types ?? [link.type])
+                .map((type) => roleTypes?.find((role) => role.kode === type)?.beskrivelse ?? type)
+                .join(", ")}
             </span>
           </span>
         )}
