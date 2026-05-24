@@ -69,6 +69,7 @@ export const importRolesToGraph = async (graphDB: Driver) => {
     WHERE n.orgnr = role.orgnr
 
     MERGE (p:Person {birthDate: coalesce(role.holder.person.birthDate, ''), firstName: coalesce(role.holder.person.fornavn, ''), lastName: coalesce(role.holder.person.etternavn, '')})
+    ON CREATE SET p.uuid = randomUUID()
 `;
     await session.executeWrite((t) => t.run(createPersonsQuery, params));
     console.info("Created person nodes.");
