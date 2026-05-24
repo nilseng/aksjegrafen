@@ -9,18 +9,21 @@ type GraphOwnership = Ownership & {
   total_stocks_2022?: number;
   total_stocks_2023?: number;
   total_stocks_2024?: number;
+  total_stocks_2025?: number;
   stocks_2019?: number;
   stocks_2020?: number;
   stocks_2021?: number;
   stocks_2022?: number;
   stocks_2023?: number;
   stocks_2024?: number;
+  stocks_2025?: number;
   share_2019?: number;
   share_2020?: number;
   share_2021?: number;
   share_2022?: number;
   share_2023?: number;
   share_2024?: number;
+  share_2025?: number;
   [key: string]: number | undefined;
 };
 
@@ -110,7 +113,13 @@ export const importShareholderRegistryToGraph = async ({
     UNWIND $ownerships as ownership
 
     WITH ownership
-    WHERE ownership.investor.shareholder.id IS NOT NULL
+    // Only create Shareholder-by-id nodes for non-company investors (persons). Company
+    // investors are represented by their Organization node (created above) and their OWNS
+    // edges are matched by orgnr, so a Shareholder-by-id node is redundant for them. It is
+    // also harmful: one company orgnr can carry several shareHolderId spellings (name/zip
+    // variants in the source), which would make two nodes claim the same Shareholder.id and
+    // violate the unique_shareholder_ids constraint.
+    WHERE ownership.investor.shareholder.id IS NOT NULL AND ownership.shareholderOrgnr IS NULL
     MERGE (s:Shareholder {id: ownership.investor.shareholder.id})
     ON CREATE SET s.uuid = randomUUID(), s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location
     ON MATCH SET s.name = ownership.investor.shareholder.name, s.year_of_birth = ownership.investor.shareholder.yearOfBirth, s.location = ownership.investor.shareholder.location

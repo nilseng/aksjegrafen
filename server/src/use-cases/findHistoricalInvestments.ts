@@ -61,6 +61,6 @@ const findMatchingInvestments = async ({
       });
     }
   });
-  mergedOwnerships.sort((a, b) => ((a.holdings[2024]?.total ?? 0) > (b.holdings[2024]?.total ?? 0) ? -1 : 1));
+  mergedOwnerships.sort((a, b) => ((a.holdings[2025]?.total ?? 0) > (b.holdings[2025]?.total ?? 0) ? -1 : 1));
   return mergedOwnerships;
 };

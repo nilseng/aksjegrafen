@@ -15,12 +15,12 @@ dotenv.config();
  * 3. Import data from MongoDB to Neo4j graph database
  */
 async function runImport() {
-  const validYears = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
+  const validYears = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
 
   const argv = yargs(hideBin(process.argv))
     .usage("Usage: $0 <year> [options]")
     .positional("year", {
-      describe: "Year for data import (2015-2024)",
+      describe: "Year for data import (2015-2025)",
       type: "number",
     })
     .command("$0 [year]", "Import shareholder registry data", (yargs) => {

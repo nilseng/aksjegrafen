@@ -14,12 +14,20 @@ export const clearGraphDatabase = async (graphDB: Driver): Promise<void> => {
   const stopMonitoring = await monitorProgress(graphDB, 5000);
   
   try {
-    // Phase 1: Delete all relationships
-    await deleteAllRelationships(graphDB);
-    
-    // Phase 2: Delete all nodes
-    await deleteAllNodes(graphDB);
+    // Single non-parallel DETACH DELETE pass: removes each node together with its
+    // relationships in one go. Avoids the parallel-delete races and the separate
+    // rel/node phases that previously left orphaned nodes behind, and keeps peak
+    // memory bounded (one batch at a time).
+    await deleteAllNodesAndRelationships(graphDB);
 
+    // apoc.periodic.iterate does not throw on failed batches, so verify rather than
+    // assume success — a partial clear must not silently report "cleared".
+    const remaining = await getCounts(graphDB);
+    if (remaining.nodes > 0 || remaining.relationships > 0) {
+      throw new Error(
+        `Clear incomplete: ${remaining.nodes} nodes and ${remaining.relationships} relationships remain`
+      );
+    }
     console.log("Neo4j database cleared successfully");
   } catch (error) {
     console.error("Error clearing Neo4j database:", error);
@@ -31,40 +39,23 @@ export const clearGraphDatabase = async (graphDB: Driver): Promise<void> => {
 };
 
 /**
- * Delete all relationships in the Neo4j database in batches
+ * Delete every node and its relationships in a single non-parallel pass.
+ * DETACH DELETE removes a node together with its relationships, so there is no
+ * separate relationship phase that could leave a node undeletable. parallel:false
+ * avoids the lock contention/deadlocks that can silently skip rows.
  */
-async function deleteAllRelationships(graphDB: Driver): Promise<void> {
+async function deleteAllNodesAndRelationships(graphDB: Driver): Promise<void> {
   const session = graphDB.session();
   try {
-    console.log("\nPhase 1: Deleting relationships in batches...");
-    await session.run(`
-      CALL apoc.periodic.iterate(
-        'MATCH ()-[r]->() RETURN r',
-        'DELETE r',
-        {batchSize: 10000, parallel: true}
-      )
-    `);
-    console.log("Phase 1 complete: All relationships deleted\n");
-  } finally {
-    await session.close();
-  }
-}
-
-/**
- * Delete all nodes in the Neo4j database in batches
- */
-async function deleteAllNodes(graphDB: Driver): Promise<void> {
-  const session = graphDB.session();
-  try {
-    console.log("Phase 2: Deleting nodes in batches...");
+    console.log("\nDeleting all nodes and relationships in batches...");
     await session.run(`
       CALL apoc.periodic.iterate(
         'MATCH (n) RETURN n',
-        'DELETE n',
-        {batchSize: 10000, parallel: true}
+        'DETACH DELETE n',
+        {batchSize: 10000, parallel: false}
       )
     `);
-    console.log("Phase 2 complete: All nodes deleted\n");
+    console.log("Delete pass complete\n");
   } finally {
     await session.close();
   }
