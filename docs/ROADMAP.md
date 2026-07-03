@@ -71,7 +71,7 @@ Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
       `importShareholderRegistryToGraph.ts:5-28`, year defaults in `routes/api.ts`,
       `neo4j.mapper.ts`, `mongoDB.gateway.ts`, `findHistoricalInvestments.ts`, `Year` type in
       `models.ts`. Derive available years from data.
-- [ ] **Fix destructive reload**: replace clear-all-then-import-one-year
+- [x] **Fix destructive reload**: replace clear-all-then-import-one-year
       (`clearGraphDatabase.ts` wipes ALL years + roles) with additive per-year import
       (delete only that year's `OWNS {year}` edges, then MERGE).
 - [ ] **Automate Brreg refresh**: scheduled job downloading `enheter/lastned` +
@@ -145,3 +145,11 @@ _Append entries: date — session/track — what was done / claimed / decided._
 - 2026-07-03 — session on `track/2-import` — **claimed Track 2 (import automation + SEO)**. Starting
   with de-hardcoding years and fixing the destructive graph reload. Will touch `routes/api.ts` and
   `models.ts` (shared touchpoints).
+- 2026-07-03 — track/2-import — De-hardcode years done (`Year` is now `number`; new
+  `services/yearService.ts` derives available years from OWNS edges at startup; API year defaults
+  and mongo sort follow the data; import CLI accepts 2015→current year). Fix destructive reload
+  done (`clearGraphYear.ts` deletes only the target year's OWNS edges + `total_stocks_<year>`;
+  `--clearYearFirst` default true, `--clearGraphDBFirst` now defaults **false**). Verified against
+  live DBs: year detection returns [2025], graph/mongo endpoints OK, clearGraphYear dry-run on an
+  empty year left 2025's 3.06M edges intact. Touched shared files: `routes/api.ts`, `index.ts`,
+  `models.ts` (server+client).

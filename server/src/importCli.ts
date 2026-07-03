@@ -58,10 +58,17 @@ async function runImport() {
         default: true,
         description: "Import data from MongoDB to Neo4j graph database",
       },
-      clearGraphDBFirst: {
+      clearYearFirst: {
         type: "boolean",
         default: true,
-        description: "Clear the Neo4j database before importing (recommended)",
+        description:
+          "Delete the target year's OWNS relationships before importing it (additive; other years and roles are untouched). Pass --clearYearFirst=false to resume an interrupted import without redoing the year.",
+      },
+      clearGraphDBFirst: {
+        type: "boolean",
+        default: false,
+        description:
+          "DESTRUCTIVE: wipe the ENTIRE graph (all years AND roles) before importing. Only for full rebuilds; roles must be re-imported afterwards.",
       },
       importBusinessCodes: {
         type: "boolean",
@@ -94,6 +101,7 @@ async function runImport() {
       importToMongoDB: argv.importToMongoDB,
       runTransformation: argv.runTransformation,
       importToGraph: argv.importToGraph,
+      clearYearFirst: argv.clearYearFirst,
       clearGraphDBFirst: argv.clearGraphDBFirst,
       importBusinessCodes: argv.importBusinessCodes,
       importRoles: argv.importRoles,

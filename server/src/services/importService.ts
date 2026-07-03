@@ -2,6 +2,7 @@ import { Driver as Neo4j } from "neo4j-driver";
 import { IDatabase } from "../database/mongoDB";
 import { Year } from "../models/models";
 import { clearGraphDatabase } from "../use-cases/clearGraphDatabase";
+import { clearGraphYear } from "../use-cases/clearGraphYear";
 import { importBusinessCodes } from "../use-cases/importBusinessCodes";
 import { importRoles } from "../use-cases/importRoles";
 import { importRolesToGraph } from "../use-cases/importRolesToGraph";
@@ -24,6 +25,9 @@ export interface ImportOptions {
   importToMongoDB?: boolean;
   runTransformation?: boolean;
   importToGraph?: boolean;
+  /** Delete the target year's OWNS edges before importing it (additive, default). */
+  clearYearFirst?: boolean;
+  /** Wipe the ENTIRE graph first — all years AND roles. Roles must be re-imported after. */
   clearGraphDBFirst?: boolean;
   importBusinessCodes?: boolean;
   importRoles?: boolean;
@@ -36,6 +40,7 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
   const importToMongoDB = options?.importToMongoDB !== undefined ? options.importToMongoDB : true;
   const runTransformation = options?.runTransformation !== undefined ? options.runTransformation : true;
   const importToGraph = options?.importToGraph !== undefined ? options.importToGraph : true;
+  const clearYearFirst = options?.clearYearFirst !== undefined ? options.clearYearFirst : true;
   const clearGraphDBFirst = options?.clearGraphDBFirst !== undefined ? options.clearGraphDBFirst : false;
 
   console.log(`========== STARTING UNIFIED IMPORT FLOW FOR YEAR ${year} ==========`);
@@ -59,7 +64,11 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
 
     if (clearGraphDBFirst) {
       console.log("\n========== CLEARING NEO4J DATABASE BEFORE IMPORT ==========");
+      console.warn("WARNING: this wipes ALL years and roles from the graph. Roles must be re-imported afterwards.");
       await clearGraphDatabase(graphDB);
+    } else if (clearYearFirst) {
+      console.log(`\n========== CLEARING YEAR ${year} FROM THE GRAPH BEFORE IMPORT ==========`);
+      await clearGraphYear(graphDB, year);
     }
 
     await importShareholderRegistryToGraph({ graphDB, mongoDB: db, year });
