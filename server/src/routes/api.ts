@@ -8,6 +8,7 @@ import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
 import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
 import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
+import { findIndirectOwnership } from "../use-cases/findIndirectOwnership";
 import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
@@ -397,6 +398,33 @@ export const api = ({ db }: { db: IDatabase }) => {
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       const data = await findInvestments({ uuid: query.uuid, year: query.year, limit: query.limit, skip: query.skip });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/indirect-investors",
+    query("uuid").optional(),
+    query("orgnr").optional(),
+    query(["year"]).default(2025).toInt(),
+    query(["maxDepth"]).default(5).toInt(),
+    // Investors below this effective share of the target are excluded and their owners are
+    // not traversed. The floor keeps widely held companies (>100k shareholders) fast.
+    query(["minShare"]).default(0.0001).toFloat(),
+    query("limit").default(10).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.uuid && !query.orgnr) return res.status(400).json("Uuid or orgnr must be specified.");
+      const data = await findIndirectOwnership({
+        uuid: query.uuid,
+        orgnr: query.orgnr,
+        year: query.year,
+        maxDepth: Math.min(Math.max(query.maxDepth, 1), 10),
+        minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
+        limit: query.limit,
+        skip: query.skip,
+      });
       return res.json(data);
     })
   );

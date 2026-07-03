@@ -1,6 +1,6 @@
 import { isEmpty, uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
-import { GraphLink, GraphLinkType, GraphNode, Year } from "../../models/models";
+import { GraphLink, GraphLinkType, GraphNode, IndirectOwnership, Year } from "../../models/models";
 import {
   NodeEntry,
   mapPathToGraph,
@@ -120,6 +120,109 @@ export const findInvestments = async ({
     links: records.map((record) =>
       mapRecordToGraphLink({ record, sourceKey: "investor", targetKey: "investment", relationshipKey: "r" })
     ),
+  };
+};
+
+// Effective (indirect) ownership is computed level by level rather than by enumerating
+// paths: enumerating all ownership chains into a widely held company (e.g. Equinor) means
+// hundreds of thousands of paths and minutes of query time, while the per-level frontier is
+// bounded by the number of distinct investors. Each round expands one ownership level and
+// collapses the weights per investor before expanding further. Owners whose share of the
+// target at a level falls below minShare are dropped and not expanded — weights only shrink
+// further up a chain, so this bounds the frontier on widely held companies. Chains that
+// revisit the target (cross-ownership cycles) are cut; other cycles contribute their
+// truncated geometric series up to maxDepth.
+export const findIndirectInvestors = async ({
+  uuid,
+  orgnr,
+  year,
+  maxDepth,
+  minShare,
+  limit,
+  skip,
+}: {
+  uuid?: string;
+  orgnr?: string;
+  year: Year;
+  maxDepth: number;
+  minShare: number;
+  limit: number;
+  skip?: number;
+}): Promise<{ node: GraphNode | null; investors: IndirectOwnership[] }> => {
+  const targetRecords = await runQuery({
+    query: `
+        MATCH (target:Company {${uuid ? "uuid: $uuid" : "orgnr: $orgnr"}})
+        RETURN target
+        LIMIT 1
+    `,
+    params: { uuid, orgnr },
+  });
+  if (!targetRecords || targetRecords.length === 0) return { node: null, investors: [] };
+  const node = mapRecordToGraphNode(targetRecords[0], "target");
+  const targetUuid = node.properties.uuid;
+
+  const ownershipByUuid = new Map<
+    string,
+    { effectiveShare: number; directShare: number; pathCount: number; minDepth: number }
+  >();
+  let frontier: { uuid: string; weight: number; walks: number }[] = [{ uuid: targetUuid, weight: 1, walks: 1 }];
+
+  for (let depth = 1; depth <= maxDepth && frontier.length > 0; depth++) {
+    const records = await runQuery({
+      query: `
+        UNWIND $frontier AS f
+        MATCH (owner:Shareholder)-[r:OWNS]->(m:Company {uuid: f.uuid})
+        WHERE r.year = ${year} AND r.share IS NOT NULL AND owner.uuid <> $targetUuid
+        WITH owner, sum(r.share * f.weight) AS weight, sum(f.walks) AS walks
+        WHERE weight >= $minShare
+        RETURN owner.uuid AS uuid, weight, walks, "Company" IN labels(owner) AS isCompany
+      `,
+      params: { frontier, targetUuid, minShare },
+    });
+    frontier = [];
+    for (const record of records ?? []) {
+      const ownerUuid = record.get("uuid") as string;
+      const weight = record.get("weight") as number;
+      const walks = record.get("walks") as number;
+      const entry = ownershipByUuid.get(ownerUuid) ?? {
+        effectiveShare: 0,
+        directShare: 0,
+        pathCount: 0,
+        minDepth: depth,
+      };
+      entry.effectiveShare += weight;
+      if (depth === 1) entry.directShare = weight;
+      entry.pathCount += walks;
+      ownershipByUuid.set(ownerUuid, entry);
+      // Only companies can be owned, so a person in the frontier would never match anyway.
+      if (record.get("isCompany")) frontier.push({ uuid: ownerUuid, weight, walks });
+    }
+  }
+
+  const ranked = [...ownershipByUuid.entries()]
+    .sort(([, a], [, b]) => b.effectiveShare - a.effectiveShare)
+    .slice(skip ?? 0, (skip ?? 0) + limit);
+  if (ranked.length === 0) return { node, investors: [] };
+
+  const investorRecords = await runQuery({
+    query: `
+        MATCH (investor:Shareholder)
+        WHERE investor.uuid IN $uuids
+        RETURN investor
+    `,
+    params: { uuids: ranked.map(([investorUuid]) => investorUuid) },
+  });
+  const investorsByUuid = new Map<string, GraphNode>(
+    (investorRecords ?? []).map((record) => {
+      const investor = mapRecordToGraphNode(record, "investor");
+      return [investor.properties.uuid, investor];
+    })
+  );
+  return {
+    node,
+    investors: ranked
+      .filter(([investorUuid]) => investorsByUuid.has(investorUuid))
+      .map(([investorUuid, ownership]) => ({ investor: investorsByUuid.get(investorUuid)!, ...ownership })),
   };
 };
 

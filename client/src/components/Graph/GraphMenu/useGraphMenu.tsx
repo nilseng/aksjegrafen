@@ -5,6 +5,7 @@ import {
   faDollarSign,
   faList,
   faListAlt,
+  faSitemap,
   faUserTie,
   faWindowRestore,
 } from "@fortawesome/free-solid-svg-icons";
@@ -78,6 +79,17 @@ export const useGraphMenu = (node?: GraphNode) => {
             action: () => {
               dispatch(openModal());
               dispatch(setContent({ content: ModalContent.InvestorTable, source: node }));
+              dispatch(closeMenu());
+            },
+          },
+          {
+            name: "Indirekte eierskap",
+            condition: !!node.labels.includes(GraphNodeLabel.Company),
+            icon: faSitemap,
+            node,
+            action: () => {
+              dispatch(openModal());
+              dispatch(setContent({ content: ModalContent.IndirectOwnership, source: node }));
               dispatch(closeMenu());
             },
           },

@@ -93,8 +93,11 @@ SEO (currently greenfield: CRA SPA, 2 routes, UUID query params, no sitemap/OG/J
 Goal: one page per company aggregating everything (this is the same build as the SEO pages —
 coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
 
-- [ ] **Indirect ownership calculation**: effective % through chains (Neo4j path queries).
+- [x] **Indirect ownership calculation**: effective % through chains (Neo4j path queries).
       The documented market gap and the core KYC feature.
+      _Done on `track/3-features`: `GET /api/graph/indirect-investors` (uuid or orgnr, year,
+      maxDepth, minShare floor for mega-caps, pagination) + "Indirekte eierskap" modal table in
+      the graph UI. Level-by-level aggregation, not path enumeration — Equinor answers in ~1.5s._
 - [ ] **KYC/RRR report export**: PDF/CSV "eierskapskart" documenting the chain with sources +
       date, formatted for an AML file. First paid feature.
 - [ ] **Company portal page**: ownership graph, shareholder history, roles, financials, brreg
@@ -125,3 +128,8 @@ _Append entries: date — session/track — what was done / claimed / decided._
 - 2026-07-03 — planning session — market research done, roadmap created. No tracks claimed yet.
 - 2026-07-03 — track 3 session — **claimed Track 3 (features & portal)** on branch
   `track/3-features` (worktree). Starting with indirect ownership calculation.
+- 2026-07-03 — track 3 session — indirect ownership done (API + graph-UI table), verified
+  against live Neo4j. Touches shared files `server/src/routes/api.ts`, `server/src/models/models.ts`,
+  `client/src/models/models.ts` (new UserEventType `IndirectOwnershipLoad`). The endpoint accepts
+  `orgnr` so Track 2's `/selskap/:orgnr` pages can embed it directly. Next: KYC/RRR report export
+  on top of it.

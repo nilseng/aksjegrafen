@@ -218,4 +218,16 @@ export enum UserEventType {
   InvestmentTableLoad = "InvestmentTableLoad",
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
+  IndirectOwnershipLoad = "IndirectOwnershipLoad",
+}
+
+// Aggregated ownership of an investor in a target company: effective share is the sum over
+// all ownership chains of the product of the shares along each chain. directShare is the
+// length-1 chain contribution, so effectiveShare - directShare = indirect ownership.
+export interface IndirectOwnership {
+  investor: GraphNode;
+  effectiveShare: number;
+  directShare: number;
+  pathCount: number;
+  minDepth: number;
 }
