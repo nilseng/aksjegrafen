@@ -18,9 +18,12 @@ const runQuery = async <T extends { [key: string]: unknown } = never>({
   params?: unknown;
 }) => {
   const session = graphDB.session();
-  const res = await session.run<T>(query, params);
-  session.close();
-  return res.records;
+  try {
+    const res = await session.run<T>(query, params);
+    return res.records;
+  } finally {
+    await session.close();
+  }
 };
 
 export const findNode = async ({ uuid }: { uuid: string }) => {
@@ -52,10 +55,11 @@ export const findNodesByOrgnrs = async ({ orgnrs }: { orgnrs: string[] }) => {
 export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) => {
   const records = await runQuery<{ node: NodeEntry }>({
     query: `
-    CALL db.index.fulltext.queryNodes("namesAndOrgnrs", "${searchTerm}") YIELD node
+    CALL db.index.fulltext.queryNodes("namesAndOrgnrs", $searchTerm) YIELD node
     RETURN node
-    LIMIT ${limit}
+    LIMIT toInteger($limit)
     `,
+    params: { searchTerm, limit },
   });
   if (!records || records.length === 0) return [];
   return records.map((record) => mapRecordToGraphNode(record, "node"));
