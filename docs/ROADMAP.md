@@ -43,21 +43,34 @@ Full research details live in the Claude project memory (`business-strategy.md`,
 Goal: reach potential customers, build trust, test use cases. Mostly content + outreach prep;
 code work is limited to trust pages and analytics funnels.
 
-- [ ] **Kilder/om-oss page** modeled on proff.no/info/kilder: every data source, update frequency,
+- [x] **Kilder/om-oss page** modeled on proff.no/info/kilder: every data source, update frequency,
       NLOD 1.0 attribution for Brreg, data vintage ("per 31.12.20XX") shown on data views.
-- [ ] **Privacy package**: Art 6(1)(f) interest-balancing doc, Art 14 privacy notice page,
+      → `/kilder` (`client/src/components/Kilder.tsx`) + `DataSourceNote` on investor/investment
+      tables and financials. "Om"-link in NavBar.
+- [x] **Privacy package**: Art 6(1)(f) interest-balancing doc, Art 14 privacy notice page,
       objection/correction channel (email is enough to start).
-- [ ] **Use-case funnels**: define one funnel per use case (relationship search, ownership history,
+      → `docs/legal/interesseavveining.md` (internal) + `/personvern`
+      (`client/src/components/Personvern.tsx`); objection channel = teodor.nilseng@gmail.com.
+- [x] **Use-case funnels**: define one funnel per use case (relationship search, ownership history,
       financials, brreg lookup) on top of existing GA4 + `user_events` pipeline
       (`POST /api/user-event`, types in `client/src/models/models.ts`). Add missing events.
-- [ ] **Landing copy per use case** (can be static sections/pages): "hvem eier X", "finn koblingen
+      → `docs/marketing/funnels.md`; added `FinancialsLoad` + `UnitInformationLoad` events
+      (client+server enums in sync). Follow-ups (session id, search events, GA4 mirroring)
+      listed in the doc.
+- [x] **Landing copy per use case** (can be static sections/pages): "hvem eier X", "finn koblingen
       mellom A og B", "eierhistorikk", "KYC/reelle rettighetshavere".
-- [ ] **Pitch drafts**: Kode24 (hei@kode24.no — hobbyprosjekt/tech angle: D3 + Neo4j + 1.7M rows),
+      → `docs/marketing/landing-copy.md` (ready for Track 2's server-rendered pages / front-page
+      sections; not yet mounted as routes to avoid conflicting with Track 2).
+- [x] **Pitch drafts**: Kode24 (hei@kode24.no — hobbyprosjekt/tech angle: D3 + Neo4j + 1.7M rows),
       Shifter (tips@shifter.no — commercial milestone angle), founder LinkedIn post series
       (graph screenshots of newsworthy companies).
-- [ ] **Customer discovery**: script + shortlist for 5–10 interviews with accountants
+      → `docs/marketing/pitch-kode24.md`, `pitch-shifter.md`, `linkedin-series.md` (drafts with
+      pre-send checklists; Shifter waits for a milestone).
+- [x] **Customer discovery**: script + shortlist for 5–10 interviews with accountants
       (Regnskap Norge segment) about AML/eierskaps-documentation workflow; journalist outreach
       list (Data-SKUP, økonomijournalistikk community).
+      → `docs/marketing/customer-discovery.md` (script, recruiting channels, interview log,
+      journalist list skeleton).
 
 ## Track 2 — Technical: auto-import & SEO
 
@@ -123,3 +136,11 @@ coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
 _Append entries: date — session/track — what was done / claimed / decided._
 
 - 2026-07-03 — planning session — market research done, roadmap created. No tracks claimed yet.
+- 2026-07-03 — track 1 session — **claimed Track 1 (Marketing & trust)** on branch `track/1-marketing`. Starting with kilder/om-oss page + privacy package, then funnels/copy/pitches. Will touch `client/src/App.tsx` (new routes) — noting per coordination rule 3.
+- 2026-07-03 — track 1 session — all Track 1 items done in first pass (see checkboxes above).
+  Touched shared files: `client/src/App.tsx` (added `/kilder` + `/personvern` routes),
+  `client/src/models/models.ts` + `server/src/models/models.ts` (two new UserEventTypes),
+  `NavBar.tsx` ("Om" link). For Track 2: `docs/marketing/landing-copy.md` has ready meta
+  descriptions/H1s for the server-rendered pages. Remaining track-1 work is operational
+  (send pitches when milestone hits, run interviews, fill outreach lists) + analytics
+  follow-ups listed in `docs/marketing/funnels.md`.
