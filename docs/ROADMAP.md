@@ -51,7 +51,10 @@ code work is limited to trust pages and analytics funnels.
       financials, brreg lookup) on top of existing GA4 + `user_events` pipeline
       (`POST /api/user-event`, types in `client/src/models/models.ts`). Add missing events.
 - [ ] **Landing copy per use case** (can be static sections/pages): "hvem eier X", "finn koblingen
-      mellom A og B", "eierhistorikk", "KYC/reelle rettighetshavere".
+      mellom A og B", "eierhistorikk". NOTE: the **KYC/reelle-rettighetshavere** offer page +
+      accountant outreach kit + concierge playbook are owned by the **coordinator/revenue-validation**
+      workstream (`docs/marketing/compliance-gtm.md`) — do NOT rebuild these here. Track 1 focuses on
+      awareness/PR (Kode24, Shifter, LinkedIn), the kilder page, privacy, and analytics funnels.
 - [ ] **Pitch drafts**: Kode24 (hei@kode24.no — hobbyprosjekt/tech angle: D3 + Neo4j + 1.7M rows),
       Shifter (tips@shifter.no — commercial milestone angle), founder LinkedIn post series
       (graph screenshots of newsworthy companies).
@@ -130,6 +133,10 @@ _Append entries: date — session/track — what was done / claimed / decided._
   3.26M shareholders, 10.3M ownerships.
 - 2026-07-03 — planning session — **security audit done → `docs/SECURITY-BACKLOG.md`.** Two
   internet-exploitable issues found (C1 Cypher injection, C2 open Neo4j SG).
+- 2026-07-03 — coordinator — **Revenue-validation workstream started (compliance-first)** →
+  `docs/marketing/compliance-gtm.md` + offer/landing page (Artifact). Concierge "eierskapssjekk"
+  is the validation mechanism (sell before building the KYC export). **Track 1: do not rebuild the
+  KYC offer page / accountant outreach / concierge — see the note under Track 1's "Landing copy" item.**
 - 2026-07-03 — coordinator — **Owner deprioritized security** (data is already public + restorable).
   **No security merge window; do not hold back track work for it.** The C1 code fix exists on branch
   `fix/cypher-injection` (also fixes a connection leak) — fold into a normal deploy, not a security
