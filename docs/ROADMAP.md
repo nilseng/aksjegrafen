@@ -151,3 +151,9 @@ _Append entries: date — session/track — what was done / claimed / decided._
   (`docs/marketing/artikler/`: hvem-eier SEO guide + RRR-compliance piece); cold outreach
   email sequence (`docs/marketing/outreach-emails.md`); ready-to-post LinkedIn intro post
   (`docs/marketing/linkedin-post-1.md`).
+- 2026-07-03 — track 1 session — **landing page at `/`, graph moved to `/graf`**
+  (`Landing.tsx`; old `/?sourceUuid=…` share links redirect to `/graf`; in-app link generation
+  updated in `NodeSearch`/`TargetSearch`/`useGraphMenu` — heads-up Track 3). Root
+  `index.html`: `lang="no"`, new title/description + OG tags — heads-up Track 2 (SEO).
+  app.aksjegrafen.com subdomain split assessed and **deferred until auth/paid tier**; decision
+  + runbook in `docs/landing-and-domain.md`.

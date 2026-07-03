@@ -4,6 +4,7 @@ import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
 import { Bruksomrader } from "./components/Bruksomrader";
 import { Kilder } from "./components/Kilder";
+import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
 import { Personvern } from "./components/Personvern";
 import { Overlays } from "./components/Overlays";
@@ -49,7 +50,19 @@ const App = () => {
               <Route path="/bruksomrader" component={Bruksomrader} />
               <Route path="/kilder" component={Kilder} />
               <Route path="/personvern" component={Personvern} />
-              <Route path="/" component={Graph} exact />
+              <Route path="/graf" component={Graph} />
+              <Route
+                path="/"
+                exact
+                render={({ location }) =>
+                  // Old shared graph links point to the root with query params — keep them working.
+                  new URLSearchParams(location.search).has("sourceUuid") ? (
+                    <Redirect to={{ pathname: "/graf", search: location.search }} />
+                  ) : (
+                    <Landing />
+                  )
+                }
+              />
               <Route>
                 <Redirect to="/" />
               </Route>

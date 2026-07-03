@@ -11,7 +11,7 @@ interface IUseCase {
   cta: string;
 }
 
-const useCases: IUseCase[] = [
+export const useCases: IUseCase[] = [
   {
     title: "Hvem eier egentlig et norsk selskap?",
     ingress:
@@ -85,7 +85,7 @@ export const Bruksomrader = () => {
               <li key={bullet}>{bullet}</li>
             ))}
           </ul>
-          <Link to="/">
+          <Link to="/graf">
             <button className="rounded text-white text-xs px-3 py-2" style={{ backgroundColor: theme.primary }}>
               {useCase.cta} →
             </button>
