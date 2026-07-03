@@ -123,3 +123,13 @@ coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
 _Append entries: date — session/track — what was done / claimed / decided._
 
 - 2026-07-03 — planning session — market research done, roadmap created. No tracks claimed yet.
+- 2026-07-03 — planning session — usage baseline from Atlas: 868 tracked events all-time, ~50–100/mo
+  (flat for 14 months). Feature mix: GraphLoad 468, investor/investment tables 373 combined,
+  **relationship search only 27** (most differentiated feature is least discovered — marketing +
+  UI-placement signal). DB scale: 579,562 companies (→ sitemap needs ~12 files at 50k URLs each),
+  3.26M shareholders, 10.3M ownerships.
+- 2026-07-03 — planning session — **security audit done → `docs/SECURITY-BACKLOG.md`.** Two
+  internet-exploitable issues: C1 Cypher injection (FIXED on branch `fix/cypher-injection`, not yet
+  merged/deployed) and C2 open Neo4j SG (needs the user's AWS access). Several HIGH/MEDIUM fixes land
+  in the shared files `index.ts`/`api.ts`/`models.ts` — **coordinate a merge window before batching
+  them** so they don't collide with Track 2/3 work on those files.
