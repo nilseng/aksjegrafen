@@ -4,6 +4,13 @@ From an audit on 2026-07-03 (before real marketing traffic). Ranked by severity.
 whether it touches a file a work track owns (see `ROADMAP.md` coordination rules) so fixes can be
 scheduled without merge conflicts.
 
+> **Owner decision (2026-07-03): security is DEPRIORITIZED.** All readable data is already-public
+> register data and the graph is restorable, so confidentiality/DR findings are not being actioned.
+> Do NOT plan a security merge window or hold back track work for these. The only items worth
+> revisiting *if marketing traffic materializes* are reliability, not security: H1 (OOM on unbounded
+> queries) and H2 (unauth write endpoint → Atlas cost/pollution). C1's code fix already exists on
+> branch `fix/cypher-injection` and doubles as a connection-leak fix — fold into a normal deploy.
+
 **Correction to an earlier worry:** `infrastructure/terraform.tfstate` is NOT committed — it's
 gitignored and was never in git history. No secrets are committed. `main.tf` (committed) discloses
 topology only, no credentials.

@@ -129,7 +129,9 @@ _Append entries: date — session/track — what was done / claimed / decided._
   UI-placement signal). DB scale: 579,562 companies (→ sitemap needs ~12 files at 50k URLs each),
   3.26M shareholders, 10.3M ownerships.
 - 2026-07-03 — planning session — **security audit done → `docs/SECURITY-BACKLOG.md`.** Two
-  internet-exploitable issues: C1 Cypher injection (FIXED on branch `fix/cypher-injection`, not yet
-  merged/deployed) and C2 open Neo4j SG (needs the user's AWS access). Several HIGH/MEDIUM fixes land
-  in the shared files `index.ts`/`api.ts`/`models.ts` — **coordinate a merge window before batching
-  them** so they don't collide with Track 2/3 work on those files.
+  internet-exploitable issues found (C1 Cypher injection, C2 open Neo4j SG).
+- 2026-07-03 — coordinator — **Owner deprioritized security** (data is already public + restorable).
+  **No security merge window; do not hold back track work for it.** The C1 code fix exists on branch
+  `fix/cypher-injection` (also fixes a connection leak) — fold into a normal deploy, not a security
+  push. Only H1 (OOM) and H2 (unauth write) are worth revisiting later, as *reliability* items if
+  traffic grows.
