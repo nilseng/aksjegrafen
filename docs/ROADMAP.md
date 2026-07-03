@@ -78,6 +78,9 @@ Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
       `roller/totalbestand` (streaming, filenames from config not hardcoded), re-running the
       roles-to-graph import monthly. node-cron is already a dependency (unused) or use
       Heroku Scheduler / cron on the EC2 box.
+      _Code done (`npm run refresh-roles` → download + clear roles + re-import; filenames via
+      `DATA_DIR`/`BRREG_ROLES_FILE` env). Remaining: schedule it monthly — belongs with
+      "Run imports server-side" below (cron on the EC2 box)._
 - [ ] **Run imports server-side**: execute on the Neo4j EC2 box (local bolt, no laptop/caffeinate),
       CSV pulled from S3.
 - [ ] **Registry watcher**: small job polling skatteetaten.no/deling/aksjonarregisteret/ for next
@@ -153,3 +156,10 @@ _Append entries: date — session/track — what was done / claimed / decided._
   live DBs: year detection returns [2025], graph/mongo endpoints OK, clearGraphYear dry-run on an
   empty year left 2025's 3.06M edges intact. Touched shared files: `routes/api.ts`, `index.ts`,
   `models.ts` (server+client).
+- 2026-07-03 — track/2-import — Brreg refresh code done: `downloadBrregFiles.ts` (streaming,
+  atomic temp-file swap), gzip-aware data readers, `clearGraphRoles.ts` (delete non-OWNS rels so
+  lapsed roles disappear), `refreshRolesCli.ts` / `npm run refresh-roles` as the monthly job entry
+  point. Verified: downloaded the real 131MB roles dump and stream-parsed it. Data paths now come
+  from `config.ts` (`DATA_DIR`, `BRREG_ROLES_FILE`, `BRREG_ENTITIES_FILE`) — the hardcoded
+  `roller_2026-05-23...json` filename is gone; run `refresh-roles` (or set the env var) before the
+  next roles import. Scheduling still pending (EC2 cron, with "Run imports server-side").

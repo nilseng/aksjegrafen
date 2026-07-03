@@ -83,7 +83,7 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
 
   if (options?.importRoles) {
     console.log("\n========== IMPORTING ROLES TO MONGODB ==========");
-    importRoles(db);
+    await importRoles(db);
   }
 
   if (options?.importRolesToGraph) {
