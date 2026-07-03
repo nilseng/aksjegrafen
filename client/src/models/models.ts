@@ -219,6 +219,7 @@ export enum UserEventType {
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
   IndirectOwnershipLoad = "IndirectOwnershipLoad",
+  OwnershipReportDownload = "OwnershipReportDownload",
 }
 
 // Aggregated ownership of an investor in a target company: effective share is the sum over

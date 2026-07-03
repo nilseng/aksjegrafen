@@ -179,6 +179,25 @@ export interface IndirectOwnership {
   minDepth: number;
 }
 
+// One ownership chain from an investor (first node) to the target company (last node).
+// shares[i] is the share the node at position i holds in the node at position i + 1;
+// product is the chain's contribution to the investor's effective share of the target.
+export interface OwnershipChain {
+  nodes: { uuid: string; name: string; orgnr?: string }[];
+  shares: number[];
+  product: number;
+}
+
+export interface OwnershipReport {
+  company: { uuid: string; name: string; orgnr?: string };
+  year: Year;
+  maxDepth: number;
+  minShare: number;
+  generatedAt: string;
+  investors: IndirectOwnership[];
+  investorChains: { investor: GraphNode; effectiveShare: number; chains: OwnershipChain[] }[];
+}
+
 export interface UserEvent {
   uuid?: string;
   orgnr?: string;
@@ -193,6 +212,7 @@ export enum UserEventType {
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
   IndirectOwnershipLoad = "IndirectOwnershipLoad",
+  OwnershipReportDownload = "OwnershipReportDownload",
 }
 
 export const isOwnership = (o: any): o is Ownership => {

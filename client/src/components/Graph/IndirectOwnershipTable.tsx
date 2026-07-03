@@ -57,8 +57,28 @@ export const IndirectOwnershipTable = () => {
           <span className="font-semibold mr-2">Indirekte eierskap i {source?.properties.name}</span>{" "}
           {source?.properties.orgnr && <span style={{ color: theme.muted }}>({source?.properties.orgnr})</span>}
         </h5>
-        <p className="text-center text-xs pb-2" style={{ color: theme.muted }}>
+        <p className="text-center text-xs pb-1" style={{ color: theme.muted }}>
           Effektiv eierandel er summen over alle eierskapskjeder av produktet av eierandelene i hvert ledd.
+        </p>
+        <p className="text-center text-xs pb-2">
+          <span style={{ color: theme.muted }}>Last ned eierskapsrapport: </span>
+          <a
+            className="underline font-semibold"
+            style={{ color: theme.primary }}
+            href={`/api/ownership-report?uuid=${source?.properties.uuid}&format=pdf`}
+            download
+          >
+            PDF
+          </a>
+          <span style={{ color: theme.muted }}> · </span>
+          <a
+            className="underline font-semibold"
+            style={{ color: theme.primary }}
+            href={`/api/ownership-report?uuid=${source?.properties.uuid}&format=csv`}
+            download
+          >
+            CSV
+          </a>
         </p>
         <div className="w-full flex-grow overflow-y-auto overflow-x-auto border border-primary rounded">
           {owners.length === 0 ? (

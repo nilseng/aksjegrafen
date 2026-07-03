@@ -98,8 +98,13 @@ coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
       _Done on `track/3-features`: `GET /api/graph/indirect-investors` (uuid or orgnr, year,
       maxDepth, minShare floor for mega-caps, pagination) + "Indirekte eierskap" modal table in
       the graph UI. Level-by-level aggregation, not path enumeration — Equinor answers in ~1.5s._
-- [ ] **KYC/RRR report export**: PDF/CSV "eierskapskart" documenting the chain with sources +
+- [x] **KYC/RRR report export**: PDF/CSV "eierskapskart" documenting the chain with sources +
       date, formatted for an AML file. First paid feature.
+      _Done on `track/3-features`: `GET /api/ownership-report?uuid|orgnr&year&format=pdf|csv`
+      (pdfkit; Norwegian copy; sections: eiere etter effektiv andel, minst-25 %-liste
+      (RRR-indikasjon), eierskapskjeder for eiere ≥ 5 %, kilder/forbehold med datovintage).
+      Download links in the "Indirekte eierskap" modal. Currently free — gate behind payment
+      when auth lands._
 - [ ] **Company portal page**: ownership graph, shareholder history, roles, financials, brreg
       info in one view (builds on Track 2's server-rendered page or a richer client route).
 - [ ] **Year-over-year diff**: "what changed in X's ownership since last year".
@@ -133,3 +138,8 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `client/src/models/models.ts` (new UserEventType `IndirectOwnershipLoad`). The endpoint accepts
   `orgnr` so Track 2's `/selskap/:orgnr` pages can embed it directly. Next: KYC/RRR report export
   on top of it.
+- 2026-07-03 — track 3 session — KYC/RRR report export done: PDF/CSV eierskapsrapport endpoint
+  + download links in the graph UI, verified against live data (Equinor report generates in
+  ~1.6 s). New server dep `pdfkit`. Shared files touched again: `server/src/routes/api.ts`,
+  both `models.ts` (UserEventType `OwnershipReportDownload`). Next: company portal page
+  (coordinate with Track 2 on `/selskap/:orgnr`) or year-over-year diff.

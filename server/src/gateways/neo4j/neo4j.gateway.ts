@@ -1,6 +1,6 @@
 import { isEmpty, uniqWith } from "lodash";
 import { graphDB } from "../../database/graphDB";
-import { GraphLink, GraphLinkType, GraphNode, IndirectOwnership, Year } from "../../models/models";
+import { GraphLink, GraphLinkType, GraphNode, IndirectOwnership, OwnershipChain, Year } from "../../models/models";
 import {
   NodeEntry,
   mapPathToGraph,
@@ -224,6 +224,45 @@ export const findIndirectInvestors = async ({
       .filter(([investorUuid]) => investorsByUuid.has(investorUuid))
       .map(([investorUuid, ownership]) => ({ investor: investorsByUuid.get(investorUuid)!, ...ownership })),
   };
+};
+
+// Enumerates the actual ownership chains from one investor to the target, for documenting
+// how an effective share arises (KYC reports). Unlike findIndirectInvestors this walks
+// simple paths, so it must only be called for a single investor at a time with a modest
+// limit — enumerating all paths into a widely held company is prohibitively slow.
+export const findOwnershipChains = async ({
+  investorUuid,
+  targetUuid,
+  year,
+  maxDepth,
+  limit,
+}: {
+  investorUuid: string;
+  targetUuid: string;
+  year: Year;
+  maxDepth: number;
+  limit: number;
+}): Promise<OwnershipChain[]> => {
+  const records = await runQuery({
+    query: `
+        MATCH (investor:Shareholder {uuid: $investorUuid})
+        MATCH (target:Company {uuid: $targetUuid})
+        MATCH path = (investor)-[:OWNS*1..${maxDepth}]->(target)
+        WHERE all(r IN relationships(path) WHERE r.year = ${year} AND r.share IS NOT NULL)
+        AND none(n IN nodes(path)[1..-1] WHERE n = target)
+        RETURN [n IN nodes(path) | {uuid: n.uuid, name: n.name, orgnr: n.orgnr}] AS nodes,
+          [r IN relationships(path) | r.share] AS shares,
+          reduce(share = 1.0, r IN relationships(path) | share * r.share) AS product
+        ORDER BY product DESC
+        LIMIT ${limit}
+    `,
+    params: { investorUuid, targetUuid },
+  });
+  return (records ?? []).map((record) => ({
+    nodes: record.get("nodes") as OwnershipChain["nodes"],
+    shares: record.get("shares") as number[],
+    product: record.get("product") as number,
+  }));
 };
 
 export const findRoleHolders = async ({ uuid, limit, skip }: { uuid: string; limit: number; skip?: number }) => {

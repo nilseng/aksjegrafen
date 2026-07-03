@@ -3,7 +3,7 @@ import { body, matchedData, query, validationResult } from "express-validator";
 import { Document, ObjectId } from "mongodb";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/mongoDB";
-import { Shareholder, isUserEvent } from "../models/models";
+import { Shareholder, UserEventType, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
 import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
@@ -16,9 +16,11 @@ import { findNode } from "../use-cases/findNode";
 import { findPopularNodes } from "../use-cases/findPopularNodes";
 import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
+import { generateOwnershipReport } from "../use-cases/generateOwnershipReport";
 import { saveUserEvent } from "../use-cases/saveUserEvent";
 import { searchNode } from "../use-cases/searchNode";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
+import { renderOwnershipReportCsv, renderOwnershipReportPdf } from "../utils/renderOwnershipReport";
 
 const router = Router();
 
@@ -426,6 +428,44 @@ export const api = ({ db }: { db: IDatabase }) => {
         skip: query.skip,
       });
       return res.json(data);
+    })
+  );
+
+  router.get(
+    "/ownership-report",
+    query("uuid").optional(),
+    query("orgnr").optional(),
+    query(["year"]).default(2025).toInt(),
+    query(["maxDepth"]).default(5).toInt(),
+    query(["minShare"]).default(0.0001).toFloat(),
+    query("format").default("pdf").isIn(["pdf", "csv"]),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.uuid && !query.orgnr) return res.status(400).json("Uuid or orgnr must be specified.");
+      const report = await generateOwnershipReport({
+        uuid: query.uuid,
+        orgnr: query.orgnr,
+        year: query.year,
+        maxDepth: Math.min(Math.max(query.maxDepth, 1), 10),
+        minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
+      });
+      if (!report) return res.status(404).json("Company not found.");
+      saveUserEvent({
+        type: UserEventType.OwnershipReportDownload,
+        uuid: report.company.uuid,
+        orgnr: report.company.orgnr,
+        createdAt: new Date(),
+      }).catch((e) => console.error("Failed to save ownership report user event:", e));
+      const filename = `eierskapsrapport-${report.company.orgnr ?? report.company.uuid}-${report.year}`;
+      if (query.format === "csv") {
+        res.setHeader("Content-Type", "text/csv; charset=utf-8");
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}.csv"`);
+        return res.send(renderOwnershipReportCsv(report));
+      }
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", `attachment; filename="${filename}.pdf"`);
+      renderOwnershipReportPdf(report, res);
+      return res;
     })
   );
 
