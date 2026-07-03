@@ -7,9 +7,10 @@ interface NodeEntryProperties {
   name: string;
   orgnr?: string;
   id?: string;
-  total_stocks_2025?: number;
   year_of_birth: string;
   location: string;
+  // total_stocks_<year> for every year the node has been imported for
+  [key: `total_stocks_${number}`]: number | undefined;
 }
 
 export type NodeEntry = Node<Integer, NodeEntryProperties, GraphNodeLabel>;
@@ -39,15 +40,22 @@ export const mapNodeEntryToGraphNode = (node: NodeEntry): GraphNode => {
       name: node.properties.name,
       orgnr: node.properties.orgnr,
       shareholderId: node.properties.id,
-      stocks: node.properties.total_stocks_2025
-        ? {
-            2025: { total: node.properties.total_stocks_2025 },
-          }
-        : undefined,
+      stocks: mapNodeStocks(node.properties),
       yearOfBirth: node.properties.year_of_birth,
       location: node.properties.location,
     },
   };
+};
+
+const mapNodeStocks = (properties: NodeEntryProperties): GraphNode["properties"]["stocks"] => {
+  let stocks: GraphNode["properties"]["stocks"];
+  for (const [key, value] of Object.entries(properties)) {
+    const yearMatch = key.match(/^total_stocks_(\d{4})$/);
+    if (!yearMatch || !value) continue;
+    if (!stocks) stocks = {};
+    stocks[+yearMatch[1]] = { total: value as number };
+  }
+  return stocks;
 };
 
 export const mapRecordToGraphLink = ({

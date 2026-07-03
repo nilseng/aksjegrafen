@@ -10,6 +10,7 @@ import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
+import { loadAvailableYears } from "./services/yearService";
 
 dotenv.config();
 
@@ -38,6 +39,9 @@ app.use(morgan("tiny"));
 
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
+
+  // Non-blocking: requests fall back to a sensible default year until this resolves.
+  loadAvailableYears(graphDB).catch((e) => console.error("Failed to load available years:", e));
 
   app.use("/api", api({ db }));
   app.use("/business-codes", businessCodeRoutes(db));

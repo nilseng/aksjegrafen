@@ -7,6 +7,7 @@ import {
   findShareholders,
 } from "../gateways/mongoDB/mongoDB.gateway";
 import { Company, Ownership } from "../models/models";
+import { getLatestYear } from "../services/yearService";
 
 export const findHistoricalInvestments = async ({
   shareholderOrgnr,
@@ -23,7 +24,7 @@ export const findHistoricalInvestments = async ({
 }): Promise<Ownership[]> => {
   const ownerships = await findOwnerships({ shareholderOrgnr, shareholderId, year, limit, skip });
   const mergedOwnerships: Ownership[] = [];
-  if (shareholderId) mergedOwnerships.push(...(await findMatchingInvestments({ shareholderId, ownerships })));
+  if (shareholderId) mergedOwnerships.push(...(await findMatchingInvestments({ shareholderId, ownerships, year })));
   else mergedOwnerships.push(...ownerships);
   const companies = await findCompanies(mergedOwnerships.map((o: Ownership) => o.orgnr));
   const investments = mergedOwnerships.map((o: Ownership) => {
@@ -36,9 +37,11 @@ export const findHistoricalInvestments = async ({
 const findMatchingInvestments = async ({
   shareholderId,
   ownerships,
+  year,
 }: {
   shareholderId: string;
   ownerships: Ownership[];
+  year?: number;
 }) => {
   const mergedOwnerships: Ownership[] = [];
   const shareholder = await findShareholderById(shareholderId);
@@ -61,6 +64,7 @@ const findMatchingInvestments = async ({
       });
     }
   });
-  mergedOwnerships.sort((a, b) => ((a.holdings[2025]?.total ?? 0) > (b.holdings[2025]?.total ?? 0) ? -1 : 1));
+  const sortYear = year ?? getLatestYear();
+  mergedOwnerships.sort((a, b) => ((a.holdings[sortYear]?.total ?? 0) > (b.holdings[sortYear]?.total ?? 0) ? -1 : 1));
   return mergedOwnerships;
 };

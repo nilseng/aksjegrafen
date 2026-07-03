@@ -15,12 +15,15 @@ dotenv.config();
  * 3. Import data from MongoDB to Neo4j graph database
  */
 async function runImport() {
-  const validYears = [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025];
+  // The registry starts in 2015; data for year N is published in May of N+1, so the
+  // current calendar year is the upper bound for any importable year.
+  const firstRegistryYear = 2015;
+  const maxYear = new Date().getFullYear();
 
   const argv = yargs(hideBin(process.argv))
     .usage("Usage: $0 <year> [options]")
     .positional("year", {
-      describe: "Year for data import (2015-2025)",
+      describe: `Year for data import (${firstRegistryYear}-${maxYear})`,
       type: "number",
     })
     .command("$0 [year]", "Import shareholder registry data", (yargs) => {
@@ -34,8 +37,8 @@ async function runImport() {
       if (!argv.year) {
         throw new Error("A year must be specified");
       }
-      if (!validYears.includes(Number(argv.year))) {
-        throw new Error(`Year must be one of: ${validYears.join(", ")}`);
+      if (Number(argv.year) < firstRegistryYear || Number(argv.year) > maxYear) {
+        throw new Error(`Year must be between ${firstRegistryYear} and ${maxYear}`);
       }
       return true;
     })

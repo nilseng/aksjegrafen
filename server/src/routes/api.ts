@@ -17,6 +17,7 @@ import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
 import { saveUserEvent } from "../use-cases/saveUserEvent";
 import { searchNode } from "../use-cases/searchNode";
+import { getLatestYear } from "../services/yearService";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
 const router = Router();
@@ -287,7 +288,7 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/neighbours",
     query(["uuid"]),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     query(["linkTypes"]).toArray(),
     query(["limit"]).default(10).toInt(),
     query(["skip"]).default(0).toInt(),
@@ -295,7 +296,7 @@ export const api = ({ db }: { db: IDatabase }) => {
       const query = matchedData(req);
       const data = await findNeighbours({
         uuid: query.uuid,
-        year: query.year,
+        year: query.year ?? getLatestYear(),
         linkTypes: query.linkTypes,
         limit: query.limit,
       });
@@ -378,12 +379,17 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/investors",
     query("uuid"),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findInvestors({ uuid: query.uuid, year: query.year, limit: query.limit, skip: query.skip });
+      const data = await findInvestors({
+        uuid: query.uuid,
+        year: query.year ?? getLatestYear(),
+        limit: query.limit,
+        skip: query.skip,
+      });
       return res.json(data);
     })
   );
@@ -391,12 +397,17 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/graph/investments",
     query("uuid"),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     query("limit").default(5).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      const data = await findInvestments({ uuid: query.uuid, year: query.year, limit: query.limit, skip: query.skip });
+      const data = await findInvestments({
+        uuid: query.uuid,
+        year: query.year ?? getLatestYear(),
+        limit: query.limit,
+        skip: query.skip,
+      });
       return res.json(data);
     })
   );

@@ -67,7 +67,7 @@ code work is limited to trust pages and analytics funnels.
 Goal: next registry drop should be "drop CSV in a bucket, press go"; make the site crawlable.
 
 Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
-- [ ] **De-hardcode years**: year list `server/src/importCli.ts:18`, `stocks_20XX` type in
+- [x] **De-hardcode years**: year list `server/src/importCli.ts:18`, `stocks_20XX` type in
       `importShareholderRegistryToGraph.ts:5-28`, year defaults in `routes/api.ts`,
       `neo4j.mapper.ts`, `mongoDB.gateway.ts`, `findHistoricalInvestments.ts`, `Year` type in
       `models.ts`. Derive available years from data.
@@ -142,3 +142,6 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `fix/cypher-injection` (also fixes a connection leak) — fold into a normal deploy, not a security
   push. Only H1 (OOM) and H2 (unauth write) are worth revisiting later, as *reliability* items if
   traffic grows.
+- 2026-07-03 — session on `track/2-import` — **claimed Track 2 (import automation + SEO)**. Starting
+  with de-hardcoding years and fixing the destructive graph reload. Will touch `routes/api.ts` and
+  `models.ts` (shared touchpoints).
