@@ -123,3 +123,5 @@ coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
 _Append entries: date — session/track — what was done / claimed / decided._
 
 - 2026-07-03 — planning session — market research done, roadmap created. No tracks claimed yet.
+- 2026-07-03 — track 3 session — **claimed Track 3 (features & portal)** on branch
+  `track/3-features` (worktree). Starting with indirect ownership calculation.
