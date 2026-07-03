@@ -218,4 +218,6 @@ export enum UserEventType {
   InvestmentTableLoad = "InvestmentTableLoad",
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
+  FinancialsLoad = "FinancialsLoad",
+  UnitInformationLoad = "UnitInformationLoad",
 }

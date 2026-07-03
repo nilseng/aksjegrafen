@@ -181,6 +181,8 @@ export enum UserEventType {
   InvestmentTableLoad = "InvestmentTableLoad",
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
+  FinancialsLoad = "FinancialsLoad",
+  UnitInformationLoad = "UnitInformationLoad",
 }
 
 export const isOwnership = (o: any): o is Ownership => {

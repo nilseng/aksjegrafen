@@ -1,6 +1,6 @@
 import "./NavBar.scss";
 
-import { faCode } from "@fortawesome/free-solid-svg-icons";
+import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { resetGraph } from "../slices/graphSlice";
@@ -38,6 +38,18 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       </Link>
       <div className="flex justify-end">
         <div className="flex items-center">
+          <Link to="/kilder" aria-label="Kilder og datagrunnlag">
+            <NeuButton
+              className="px-4 py-2 mr-4"
+              ariaLabel="Kilder og datagrunnlag"
+              componentIcon={
+                <span className="text-xs text-primary font-bold">
+                  Om
+                  <FontAwesomeIcon icon={faInfoCircle} className="ml-2" />
+                </span>
+              }
+            />
+          </Link>
           <Link to="/api-docs" aria-label="API Documentation">
             <NeuButton
               className="px-4 py-2 mr-4"

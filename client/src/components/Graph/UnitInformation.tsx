@@ -1,12 +1,28 @@
 import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { UserEventType } from "../../models/models";
 import { useBrregEntityInfo } from "../../services/brregService";
-import { RootState } from "../../store";
+import { captureUserEventThunk } from "../../slices/userEventSlice";
+import { RootState, useAppDispatch } from "../../store";
 
 export const UnitInformation = () => {
+  const dispatch = useAppDispatch();
   const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
   const unit = useBrregEntityInfo(source?.properties.orgnr);
+
+  useEffect(() => {
+    if (source) {
+      dispatch(
+        captureUserEventThunk({
+          type: UserEventType.UnitInformationLoad,
+          uuid: source.properties.uuid,
+          orgnr: source.properties.orgnr,
+        })
+      );
+    }
+  }, [dispatch, source]);
   return (
     <div className="flex flex-col h-full w-full overflow-auto mt-12 px-2 sm:px-8">
       <h1 className="font-bold text-center">{unit?.navn}</h1>
