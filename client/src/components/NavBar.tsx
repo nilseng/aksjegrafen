@@ -38,10 +38,10 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       </Link>
       <div className="flex justify-end">
         <div className="flex items-center">
-          <Link to="/kilder" aria-label="Kilder og datagrunnlag">
+          <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
             <NeuButton
               className="px-4 py-2 mr-4"
-              ariaLabel="Kilder og datagrunnlag"
+              ariaLabel="Om Aksjegrafen"
               componentIcon={
                 <span className="text-xs text-primary font-bold">
                   Om

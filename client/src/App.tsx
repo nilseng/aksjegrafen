@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
+import { Bruksomrader } from "./components/Bruksomrader";
 import { Kilder } from "./components/Kilder";
 import NavBar from "./components/NavBar";
 import { Personvern } from "./components/Personvern";
@@ -45,6 +46,7 @@ const App = () => {
           >
             <Switch>
               <Route path="/api-docs" component={ApiDocs} />
+              <Route path="/bruksomrader" component={Bruksomrader} />
               <Route path="/kilder" component={Kilder} />
               <Route path="/personvern" component={Personvern} />
               <Route path="/" component={Graph} exact />

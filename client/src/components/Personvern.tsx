@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
+import { InfoPageNav } from "./InfoPageNav";
 
 export const Personvern = () => {
   const { theme } = useContext(AppContext);
@@ -11,6 +12,7 @@ export const Personvern = () => {
       className="w-full max-w-2xl h-full overflow-y-auto rounded p-4"
       style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, color: theme.text, ...theme.lowering }}
     >
+      <InfoPageNav />
       <h5 className="text-xl font-bold pb-4">Personvernerklæring</h5>
       <p className="text-sm pb-4">
         <span className="font-bold" style={{ color: theme.primary }}>
