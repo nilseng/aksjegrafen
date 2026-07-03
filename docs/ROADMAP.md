@@ -144,3 +144,10 @@ _Append entries: date — session/track — what was done / claimed / decided._
   descriptions/H1s for the server-rendered pages. Remaining track-1 work is operational
   (send pitches when milestone hits, run interviews, fill outreach lists) + analytics
   follow-ups listed in `docs/marketing/funnels.md`.
+- 2026-07-03 — track 1 session — second pass, content package: live `/bruksomrader` use-case
+  page (landing copy now on-site) + `InfoPageNav` cross-nav on all info pages (touched
+  `App.tsx` route list + `ApiDocs.tsx` + `NavBar.tsx` again); newsletter concept + issue #1
+  draft (`docs/marketing/newsletter.md`); two publishable articles
+  (`docs/marketing/artikler/`: hvem-eier SEO guide + RRR-compliance piece); cold outreach
+  email sequence (`docs/marketing/outreach-emails.md`); ready-to-post LinkedIn intro post
+  (`docs/marketing/linkedin-post-1.md`).
