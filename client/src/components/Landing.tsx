@@ -20,7 +20,7 @@ export const Landing = () => {
     });
 
   return (
-    <div className="w-full h-full overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto" style={{ color: theme.text }}>
       <div className="flex flex-col items-center w-full px-4 pb-8">
         <div className="w-full max-w-2xl pt-4 sm:pt-12 pb-8 text-center">
           <div className="flex justify-center pb-4">
@@ -35,6 +35,8 @@ export const Landing = () => {
             focus
             inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
             inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4 w-full"
+            listContainerClassName="w-full overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white mt-2 px-2"
+            maxHeight="20rem"
             placeholder="Selskap, aksjonær eller rolleinnehaver..."
             apiPath="/api/node"
             mapResultToListItem={(node: GraphNode) => ({
