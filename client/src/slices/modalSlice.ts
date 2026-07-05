@@ -7,6 +7,7 @@ export enum ModalContent {
   InvestorTable = "InvestorTable",
   InvestmentTable = "InvestmentTable",
   IndirectOwnership = "IndirectOwnership",
+  OwnershipChanges = "OwnershipChanges",
   Details = "Details",
   Financials = "Financials",
 }

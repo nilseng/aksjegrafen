@@ -107,7 +107,13 @@ coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
       when auth lands._
 - [ ] **Company portal page**: ownership graph, shareholder history, roles, financials, brreg
       info in one view (builds on Track 2's server-rendered page or a richer client route).
-- [ ] **Year-over-year diff**: "what changed in X's ownership since last year".
+- [x] **Year-over-year diff**: "what changed in X's ownership since last year".
+      _Done on `track/3-features`: `GET /api/ownership-changes?orgnr&year&compareYear` — per-investor
+      New/Exited/Increased/Decreased/Unchanged with share/stocks both years + summary counts, and an
+      "Endringer i eierskap" modal table with year selector. Runs on MongoDB (holdings cover all
+      years; the graph only holds the imported year — NB: the 2025 reload wiped 2019–2024 OWNS
+      edges in Neo4j, so graph-based history is empty until Track 2's additive re-import).
+      Classification/sort/summary pushed into a Mongo aggregation: DNB Bank answers in ~2 s._
 - [ ] **Monitoring/alerts**: watch a company/person, notify on ownership/role changes.
 - [ ] **Auth + payments** (email login, Stripe/Vipps) — only once a paid feature exists.
 
@@ -143,3 +149,9 @@ _Append entries: date — session/track — what was done / claimed / decided._
   ~1.6 s). New server dep `pdfkit`. Shared files touched again: `server/src/routes/api.ts`,
   both `models.ts` (UserEventType `OwnershipReportDownload`). Next: company portal page
   (coordinate with Track 2 on `/selskap/:orgnr`) or year-over-year diff.
+- 2026-07-05 — track 3 session — year-over-year ownership diff done (Mongo aggregation +
+  modal table). **Heads-up for Track 2:** confirmed Neo4j currently only has 2025 OWNS edges —
+  the 2025 reload wiped 2019–2024; the diff therefore runs on MongoDB. Also bumped client
+  `Year` type to include 2025 (was stale). Shared files touched: `routes/api.ts`, both
+  `models.ts`. Remaining track 3: portal page (awaits Track 2 skeleton), monitoring/alerts,
+  auth + payments (gate the report export).

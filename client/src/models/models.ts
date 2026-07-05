@@ -1,4 +1,4 @@
-export type Year = 2024 | 2023 | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015;
+export type Year = 2025 | 2024 | 2023 | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015;
 
 export interface ICompany {
   _id: string;
@@ -220,6 +220,33 @@ export enum UserEventType {
   RelationTargetLoad = "RelationTargetLoad",
   IndirectOwnershipLoad = "IndirectOwnershipLoad",
   OwnershipReportDownload = "OwnershipReportDownload",
+  OwnershipChangesLoad = "OwnershipChangesLoad",
+}
+
+export enum OwnershipChangeType {
+  New = "New",
+  Exited = "Exited",
+  Increased = "Increased",
+  Decreased = "Decreased",
+  Unchanged = "Unchanged",
+}
+
+// How one investor's direct stake in a company changed between two years. share/stocks hold
+// the values for the compare year (previous) and the primary year (current); either side is
+// undefined when the investor held no stake that year.
+export interface OwnershipChange {
+  investor: { shareholderId: string; name?: string; orgnr?: string; yearOfBirth?: number; location?: string };
+  type: OwnershipChangeType;
+  share: { previous?: number; current?: number };
+  stocks: { previous?: number; current?: number };
+}
+
+export interface OwnershipChanges {
+  company: { name: string; orgnr: string };
+  year: Year;
+  compareYear: Year;
+  summary: { [type in OwnershipChangeType]: number };
+  changes: OwnershipChange[];
 }
 
 // Aggregated ownership of an investor in a target company: effective share is the sum over

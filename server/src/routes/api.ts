@@ -13,6 +13,7 @@ import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
 import { findNode } from "../use-cases/findNode";
+import { findOwnershipChanges } from "../use-cases/findOwnershipChanges";
 import { findPopularNodes } from "../use-cases/findPopularNodes";
 import { findRoleUnits } from "../use-cases/findRoleUnits";
 import { findShortestPath } from "../use-cases/findShortestPath";
@@ -427,6 +428,28 @@ export const api = ({ db }: { db: IDatabase }) => {
         limit: query.limit,
         skip: query.skip,
       });
+      return res.json(data);
+    })
+  );
+
+  router.get(
+    "/ownership-changes",
+    query("orgnr"),
+    query(["year"]).default(2025).toInt(),
+    query(["compareYear"]).optional().toInt(),
+    query("limit").default(10).toInt(),
+    query("skip").default(0).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.orgnr) return res.status(400).json("Orgnr must be specified.");
+      const data = await findOwnershipChanges({
+        orgnr: query.orgnr,
+        year: query.year,
+        compareYear: query.compareYear ?? query.year - 1,
+        limit: query.limit,
+        skip: query.skip,
+      });
+      if (!data) return res.status(404).json("Company not found.");
       return res.json(data);
     })
   );
