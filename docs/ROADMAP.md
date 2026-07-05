@@ -87,12 +87,12 @@ Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
       year's availability, notify by email.
 
 SEO (currently greenfield: CRA SPA, 2 routes, UUID query params, no sitemap/OG/JSON-LD):
-- [ ] **Server-rendered company pages** `/selskap/:orgnr` from Express using existing data
+- [x] **Server-rendered company pages** `/selskap/:orgnr` from Express using existing data
       (`/api/company`, `/api/investors`, financials proxy): title, meta description, OG tags,
       JSON-LD Organization, top shareholders, key financials, prominent link into the interactive
       graph. (No framework migration needed.)
-- [ ] **sitemap.xml** generated from the companies collection + `Sitemap:` line in robots.txt.
-- [ ] **Canonicals + per-page meta** on the SPA shell; human-readable orgnr-based share URLs.
+- [x] **sitemap.xml** generated from the companies collection + `Sitemap:` line in robots.txt.
+- [x] **Canonicals + per-page meta** on the SPA shell; human-readable orgnr-based share URLs.
 
 ## Track 3 — Features & portal
 
@@ -163,3 +163,14 @@ _Append entries: date — session/track — what was done / claimed / decided._
   from `config.ts` (`DATA_DIR`, `BRREG_ROLES_FILE`, `BRREG_ENTITIES_FILE`) — the hardcoded
   `roller_2026-05-23...json` filename is gone; run `refresh-roles` (or set the env var) before the
   next roles import. Scheduling still pending (EC2 cron, with "Run imports server-side").
+- 2026-07-05 — track/2-import — SEO done: server-rendered `/selskap/:orgnr` pages (Express, no
+  framework: title/meta/OG/JSON-LD Organization, top-10 aksjonærer per latest company year from
+  Mongo, nøkkeltall from the brreg regnskap API with 3s timeout, NLOD attribution + data vintage,
+  404+noindex for unknown orgnr, Cache-Control 1d). Sharded sitemap: `/sitemap.xml` index →
+  `/sitemap-static.xml` + 12× `/sitemap-companies-N.xml` (50k URLs each, 580k companies);
+  `Sitemap:` line in robots.txt. SPA shell: lang=no, OG tags, dynamic canonical
+  (`CanonicalLink`), and stable share URLs `/?graphType=Default&sourceOrgnr=<orgnr>` —
+  `/api/node` now resolves orgnr→node (Track 3: use these for portal links). Verified locally
+  against live DBs: Statkraft + Equinor pages, sitemap shards, 404s, node-by-orgnr. Touched
+  shared files: `routes/api.ts`, `index.ts` (route mounting), `App.tsx`. NOTE for Track 3: the
+  `/selskap/:orgnr` skeleton is in `server/src/routes/selskap.ts` — enrich there.

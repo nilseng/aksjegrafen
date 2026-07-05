@@ -10,6 +10,8 @@ import { Database } from "./database/databaseSetup";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
+import { selskapRoutes } from "./routes/selskap";
+import { sitemapRoutes } from "./routes/sitemap";
 import { loadAvailableYears } from "./services/yearService";
 
 dotenv.config();
@@ -46,6 +48,8 @@ const initializeApp = async () => {
   app.use("/api", api({ db }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
+  app.use("/selskap", selskapRoutes({ db }));
+  app.use("/", sitemapRoutes({ db }));
 
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));

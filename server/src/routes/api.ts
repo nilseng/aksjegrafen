@@ -266,11 +266,12 @@ export const api = ({ db }: { db: IDatabase }) => {
 
   router.get(
     "/node",
-    query(["uuid"]),
+    query(["uuid"]).optional(),
+    query(["orgnr"]).optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      if (!query.uuid) return res.status(400).json("Uuid not specified.");
-      const node = await findNode({ uuid: query.uuid });
+      if (!query.uuid && !query.orgnr) return res.status(400).json("Uuid or orgnr must be specified.");
+      const node = await findNode({ uuid: query.uuid, orgnr: query.orgnr });
       return res.json(node);
     })
   );
