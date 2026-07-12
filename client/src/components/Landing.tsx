@@ -35,17 +35,18 @@ export const Landing = () => {
             focus
             inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
             inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4 w-full"
-            listContainerClassName="w-full overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white mt-2 px-2"
+            listContainerClassName="w-full overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white mt-2 px-2 py-1"
+            listItemClassName="w-full max-w-full flex flex-col items-center justify-between rounded-md p-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
             maxHeight="20rem"
             placeholder="Selskap, aksjonær eller rolleinnehaver..."
             apiPath="/api/node"
+            handleClick={openInGraph}
             mapResultToListItem={(node: GraphNode) => ({
               key: node.properties.uuid,
               name: node.properties.name,
               tags: [node.properties.orgnr, node.properties.yearOfBirth, node.properties.location].filter(
                 (tag) => !!tag
               ) as (string | number)[],
-              handleTitleClick: openInGraph,
             })}
           />
           <p className="text-xs pt-4" style={{ color: theme.muted }}>

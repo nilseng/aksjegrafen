@@ -35,6 +35,7 @@ interface IProps<Result extends unknown> {
   inputContainerClassName?: string;
   inputClassName?: string;
   listContainerClassName?: string;
+  listItemClassName?: string;
   inputStyle?: CSSProperties;
   focus?: boolean;
   initialResult?: Result[];
@@ -51,6 +52,7 @@ export const SearchComponent = <Result extends unknown>({
   inputContainerClassName,
   inputClassName,
   listContainerClassName = "h-1/2 w-full md:w-3/4 dark:text-white overflow-auto",
+  listItemClassName = "w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1",
   inputStyle,
   focus,
   initialResult,
@@ -112,7 +114,7 @@ export const SearchComponent = <Result extends unknown>({
                 .map(({ result, item }) => (
                   <div
                     key={item.key}
-                    className="w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1"
+                    className={listItemClassName}
                     style={{
                       zIndex: 101,
                       backgroundColor: "transparent",
