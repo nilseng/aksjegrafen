@@ -43,24 +43,37 @@ Full research details live in the Claude project memory (`business-strategy.md`,
 Goal: reach potential customers, build trust, test use cases. Mostly content + outreach prep;
 code work is limited to trust pages and analytics funnels.
 
-- [ ] **Kilder/om-oss page** modeled on proff.no/info/kilder: every data source, update frequency,
+- [x] **Kilder/om-oss page** modeled on proff.no/info/kilder: every data source, update frequency,
       NLOD 1.0 attribution for Brreg, data vintage ("per 31.12.20XX") shown on data views.
-- [ ] **Privacy package**: Art 6(1)(f) interest-balancing doc, Art 14 privacy notice page,
+      → `/kilder` (`client/src/components/Kilder.tsx`) + `DataSourceNote` on investor/investment
+      tables and financials. "Om"-link in NavBar.
+- [x] **Privacy package**: Art 6(1)(f) interest-balancing doc, Art 14 privacy notice page,
       objection/correction channel (email is enough to start).
-- [ ] **Use-case funnels**: define one funnel per use case (relationship search, ownership history,
+      → `docs/legal/interesseavveining.md` (internal) + `/personvern`
+      (`client/src/components/Personvern.tsx`); objection channel = teodor.nilseng@gmail.com.
+- [x] **Use-case funnels**: define one funnel per use case (relationship search, ownership history,
       financials, brreg lookup) on top of existing GA4 + `user_events` pipeline
       (`POST /api/user-event`, types in `client/src/models/models.ts`). Add missing events.
-- [ ] **Landing copy per use case** (can be static sections/pages): "hvem eier X", "finn koblingen
-      mellom A og B", "eierhistorikk". NOTE: the **KYC/reelle-rettighetshavere** offer page +
-      accountant outreach kit + concierge playbook are owned by the **coordinator/revenue-validation**
-      workstream (`docs/marketing/compliance-gtm.md`) — do NOT rebuild these here. Track 1 focuses on
-      awareness/PR (Kode24, Shifter, LinkedIn), the kilder page, privacy, and analytics funnels.
-- [ ] **Pitch drafts**: Kode24 (hei@kode24.no — hobbyprosjekt/tech angle: D3 + Neo4j + 1.7M rows),
+      → `docs/marketing/funnels.md`; added `FinancialsLoad` + `UnitInformationLoad` events
+      (client+server enums in sync). Follow-ups (session id, search events, GA4 mirroring)
+      listed in the doc.
+- [x] **Landing copy per use case** (can be static sections/pages): "hvem eier X", "finn koblingen
+      mellom A og B", "eierhistorikk", "KYC/reelle rettighetshavere".
+      → `docs/marketing/landing-copy.md` (ready for Track 2's server-rendered pages / front-page
+      sections; not yet mounted as routes to avoid conflicting with Track 2).
+      NOTE (coordinator): the paid **KYC/reelle-rettighetshavere** offer/pricing page + accountant
+      outreach kit + concierge playbook live in the coordinator/revenue-validation workstream
+      (`docs/marketing/compliance-gtm.md`); Track 1's landing copy here covers the public use-cases.
+- [x] **Pitch drafts**: Kode24 (hei@kode24.no — hobbyprosjekt/tech angle: D3 + Neo4j + 1.7M rows),
       Shifter (tips@shifter.no — commercial milestone angle), founder LinkedIn post series
       (graph screenshots of newsworthy companies).
-- [ ] **Customer discovery**: script + shortlist for 5–10 interviews with accountants
+      → `docs/marketing/pitch-kode24.md`, `pitch-shifter.md`, `linkedin-series.md` (drafts with
+      pre-send checklists; Shifter waits for a milestone).
+- [x] **Customer discovery**: script + shortlist for 5–10 interviews with accountants
       (Regnskap Norge segment) about AML/eierskaps-documentation workflow; journalist outreach
       list (Data-SKUP, økonomijournalistikk community).
+      → `docs/marketing/customer-discovery.md` (script, recruiting channels, interview log,
+      journalist list skeleton).
 
 ## Track 2 — Technical: auto-import & SEO
 
@@ -206,3 +219,24 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `Year` type to include 2025 (was stale). Shared files touched: `routes/api.ts`, both
   `models.ts`. Remaining track 3: portal page (awaits Track 2 skeleton), monitoring/alerts,
   auth + payments (gate the report export).
+- 2026-07-03 — track 1 session — **claimed Track 1 (Marketing & trust)** on branch `track/1-marketing`. Starting with kilder/om-oss page + privacy package, then funnels/copy/pitches. Will touch `client/src/App.tsx` (new routes) — noting per coordination rule 3.
+- 2026-07-03 — track 1 session — all Track 1 items done in first pass (see checkboxes above).
+  Touched shared files: `client/src/App.tsx` (added `/kilder` + `/personvern` routes),
+  `client/src/models/models.ts` + `server/src/models/models.ts` (two new UserEventTypes),
+  `NavBar.tsx` ("Om" link). For Track 2: `docs/marketing/landing-copy.md` has ready meta
+  descriptions/H1s for the server-rendered pages. Remaining track-1 work is operational
+  (send pitches when milestone hits, run interviews, fill outreach lists) + analytics
+  follow-ups listed in `docs/marketing/funnels.md`.
+- 2026-07-03 — track 1 session — second pass, content package: live `/bruksomrader` use-case
+  page (landing copy now on-site) + `InfoPageNav` cross-nav on all info pages (touched
+  `App.tsx` route list + `ApiDocs.tsx` + `NavBar.tsx` again); newsletter concept + issue #1
+  draft (`docs/marketing/newsletter.md`); two publishable articles
+  (`docs/marketing/artikler/`: hvem-eier SEO guide + RRR-compliance piece); cold outreach
+  email sequence (`docs/marketing/outreach-emails.md`); ready-to-post LinkedIn intro post
+  (`docs/marketing/linkedin-post-1.md`).
+- 2026-07-03 — track 1 session — **landing page at `/`, graph moved to `/graf`**
+  (`Landing.tsx`; old `/?sourceUuid=…` share links redirect to `/graf`; in-app link generation
+  updated in `NodeSearch`/`TargetSearch`/`useGraphMenu` — heads-up Track 3). Root
+  `index.html`: `lang="no"`, new title/description + OG tags — heads-up Track 2 (SEO).
+  app.aksjegrafen.com subdomain split assessed and **deferred until auth/paid tier**; decision
+  + runbook in `docs/landing-and-domain.md`.

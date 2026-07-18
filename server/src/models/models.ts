@@ -243,6 +243,8 @@ export enum UserEventType {
   IndirectOwnershipLoad = "IndirectOwnershipLoad",
   OwnershipReportDownload = "OwnershipReportDownload",
   OwnershipChangesLoad = "OwnershipChangesLoad",
+  FinancialsLoad = "FinancialsLoad",
+  UnitInformationLoad = "UnitInformationLoad",
 }
 
 export const isOwnership = (o: any): o is Ownership => {

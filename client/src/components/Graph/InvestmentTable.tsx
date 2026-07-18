@@ -6,6 +6,7 @@ import { useGetShareholder, useInvestments } from "../../services/apiService";
 import { close } from "../../slices/modalSlice";
 import { captureUserEventThunk } from "../../slices/userEventSlice";
 import { RootState, useAppDispatch } from "../../store";
+import { DataSourceNote } from "../DataSourceNote";
 import Loading from "../Loading";
 import { OwnershipTable } from "../OwnershipTable";
 
@@ -44,6 +45,7 @@ export const InvestmentTable = () => {
         <div className="w-full flex-grow overflow-y-auto overflow-x-hidden border border-primary rounded">
           <OwnershipTable investor={shareholder} ownerships={investments} closeModal={() => dispatch(close())} />
         </div>
+        <DataSourceNote text="Kilde: Skatteetatens aksjonærregister, eierforhold per 31.12. det enkelte år" />
         <div className="w-full flex justify-between pt-2">
           <button
             className="rounded text-white text-xs px-2 py-1"

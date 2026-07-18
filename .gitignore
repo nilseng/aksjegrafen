@@ -42,3 +42,5 @@ terraform.tfstate
 terraform.tfstate.backup
 .terraform.lock.hcl
 .terraform
+# Claude Code session worktrees & local state
+.claude/

@@ -160,7 +160,7 @@ export const useGraphMenu = (node?: GraphNode) => {
             icon: faWindowRestore,
             node,
             action: () => {
-              window.open(`${getBaseUrl()}?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
+              window.open(`${getBaseUrl()}/graf?graphType=${GraphType.Default}&sourceUuid=${node.properties.uuid}`);
               dispatch(closeMenu());
             },
           },

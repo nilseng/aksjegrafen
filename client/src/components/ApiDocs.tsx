@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { EndpointDescription } from "./EndpointDescription";
+import { InfoPageNav } from "./InfoPageNav";
 
 const baseUrl = "https://www.aksjegrafen.com/api";
 
@@ -13,6 +14,7 @@ export const ApiDocs = () => {
       className="w-full max-w-2xl h-full overflow-y-auto rounded p-4"
       style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, color: theme.text, ...theme.lowering }}
     >
+      <InfoPageNav />
       <h5 className="text-xl font-bold pb-4">API for aksjonærregisteret</h5>
       <p className="text-sm pb-4">
         Det åpne API-et til{" "}

@@ -224,6 +224,8 @@ export enum UserEventType {
   IndirectOwnershipLoad = "IndirectOwnershipLoad",
   OwnershipReportDownload = "OwnershipReportDownload",
   OwnershipChangesLoad = "OwnershipChangesLoad",
+  FinancialsLoad = "FinancialsLoad",
+  UnitInformationLoad = "UnitInformationLoad",
 }
 
 export enum OwnershipChangeType {

@@ -1,18 +1,34 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { AppContext } from "../../AppContext";
+import { UserEventType } from "../../models/models";
 import { useFinancialsByUnit } from "../../services/brregService";
-import { RootState } from "../../store";
+import { captureUserEventThunk } from "../../slices/userEventSlice";
+import { RootState, useAppDispatch } from "../../store";
+import { DataSourceNote } from "../DataSourceNote";
 import Loading from "../Loading";
 import { BalanceSheet } from "./BalanceSheet";
 import { ProfitAndLoss } from "./ProfitAndLoss";
 
 export const Financials = () => {
+  const dispatch = useAppDispatch();
   const { theme } = useContext(AppContext);
 
   const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
 
   const { financials, isLoading } = useFinancialsByUnit(source?.properties.orgnr);
+
+  useEffect(() => {
+    if (source) {
+      dispatch(
+        captureUserEventThunk({
+          type: UserEventType.FinancialsLoad,
+          uuid: source.properties.uuid,
+          orgnr: source.properties.orgnr,
+        })
+      );
+    }
+  }, [dispatch, source]);
 
   if (isLoading) return <Loading color={theme.primary} backgroundColor="transparent" />;
 
@@ -45,6 +61,7 @@ export const Financials = () => {
           </div>
         </div>
       ))}
+      <DataSourceNote text="Kilde: Regnskapsregisteret (Brønnøysundregistrene)" />
     </div>
   );
 };
