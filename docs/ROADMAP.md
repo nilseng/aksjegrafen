@@ -269,3 +269,10 @@ _Append entries: date — session/track — what was done / claimed / decided._
   every import — path search then fails with "Source node does not exist in the in-memory
   graph" for nodes added since. Refreshed them manually (drop + recreate on server start);
   the import pipeline should drop/recreate projections as a final step.
+- 2026-07-18 — track 3 session — **rebased onto integrated master and fast-forwarded master**
+  with the three post-integration commits (treasury-share fix — master's version showed
+  >100 % effective ownership without it — plus persons-only default and chains-in-graph).
+  Aligned track-3 endpoints with Track 2's data-driven years (`getLatestYear()` instead of
+  hardcoded 2025; ownership-changes year selector derives from the response). All features
+  smoke-tested live post-rebase. Master remains deployable; deploy still pending the
+  graph re-import decision.

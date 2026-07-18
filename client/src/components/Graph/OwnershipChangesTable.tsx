@@ -6,7 +6,10 @@ import { captureUserEventThunk } from "../../slices/userEventSlice";
 import { RootState, useAppDispatch } from "../../store";
 import Loading from "../Loading";
 
-const years: Year[] = [2025, 2024, 2023, 2022, 2021, 2020];
+// The registry starts in 2015, so 2016 is the earliest year with a previous year to diff
+// against. The latest year comes from the server's first response instead of being
+// hardcoded (it follows the data).
+const EARLIEST_DIFF_YEAR = 2016;
 
 const typeLabels: { [type in OwnershipChangeType]: string } = {
   [OwnershipChangeType.New]: "Ny",
@@ -33,7 +36,8 @@ export const OwnershipChangesTable = () => {
   const dispatch = useAppDispatch();
   const { theme } = useContext(AppContext);
   const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
-  const [year, setYear] = useState<Year>(2025);
+  const [year, setYear] = useState<Year>();
+  const [latestYear, setLatestYear] = useState<Year>();
   const [limit] = useState(10);
   const [skip, setSkip] = useState(0);
   const [data, setData] = useState<OwnershipChanges>();
@@ -43,12 +47,17 @@ export const OwnershipChangesTable = () => {
     if (!source?.properties.orgnr) return;
     const abortController = new AbortController();
     setIsLoading(true);
-    fetch(`/api/ownership-changes?orgnr=${source.properties.orgnr}&year=${year}&limit=${limit}&skip=${skip}`, {
-      signal: abortController.signal,
-    })
+    fetch(
+      `/api/ownership-changes?orgnr=${source.properties.orgnr}${year ? `&year=${year}` : ""}&limit=${limit}&skip=${skip}`,
+      {
+        signal: abortController.signal,
+      }
+    )
       .then((res) => res.json())
       .then((changes: OwnershipChanges) => {
         setData(changes);
+        // The first response (no explicit year) tells us the latest data year.
+        setLatestYear((previous) => previous ?? changes.year);
         setIsLoading(false);
       })
       .catch((e) => {
@@ -85,13 +94,16 @@ export const OwnershipChangesTable = () => {
           <span style={{ color: theme.muted }}>til</span>
           <select
             className="mx-1 rounded border border-primary bg-transparent font-semibold"
-            value={year}
+            value={year ?? data.year}
             onChange={(e) => {
               setSkip(0);
               setYear(+e.target.value as Year);
             }}
           >
-            {years.map((y) => (
+            {Array.from(
+              { length: Math.max((latestYear ?? data.year) - EARLIEST_DIFF_YEAR + 1, 1) },
+              (_, i) => (latestYear ?? data.year) - i
+            ).map((y) => (
               <option key={y} value={y}>
                 {y}
               </option>

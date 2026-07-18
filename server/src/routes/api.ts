@@ -421,7 +421,7 @@ export const api = ({ db }: { db: IDatabase }) => {
     "/graph/indirect-investors",
     query("uuid").optional(),
     query("orgnr").optional(),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     // Investors below this effective share of the target are excluded and their owners are
     // not traversed. The floor keeps widely held companies (>100k shareholders) fast, and is
     // what terminates the traversal — there is deliberately no depth limit, since deep
@@ -436,7 +436,7 @@ export const api = ({ db }: { db: IDatabase }) => {
       const data = await findIndirectOwnership({
         uuid: query.uuid,
         orgnr: query.orgnr,
-        year: query.year,
+        year: query.year ?? getLatestYear(),
         minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
         personsOnly: query.investorType === "person",
         limit: query.limit,
@@ -449,17 +449,18 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/ownership-changes",
     query("orgnr"),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     query(["compareYear"]).optional().toInt(),
     query("limit").default(10).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
       if (!query.orgnr) return res.status(400).json("Orgnr must be specified.");
+      const year = query.year ?? getLatestYear();
       const data = await findOwnershipChanges({
         orgnr: query.orgnr,
-        year: query.year,
-        compareYear: query.compareYear ?? query.year - 1,
+        year,
+        compareYear: query.compareYear ?? year - 1,
         limit: query.limit,
         skip: query.skip,
       });
@@ -472,7 +473,7 @@ export const api = ({ db }: { db: IDatabase }) => {
     "/ownership-report",
     query("uuid").optional(),
     query("orgnr").optional(),
-    query(["year"]).default(2025).toInt(),
+    query(["year"]).optional().toInt(),
     query(["minShare"]).default(0.0001).toFloat(),
     query("format").default("pdf").isIn(["pdf", "csv"]),
     asyncRouter(async (req, res) => {
@@ -481,7 +482,7 @@ export const api = ({ db }: { db: IDatabase }) => {
       const report = await generateOwnershipReport({
         uuid: query.uuid,
         orgnr: query.orgnr,
-        year: query.year,
+        year: query.year ?? getLatestYear(),
         minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
       });
       if (!report) return res.status(404).json("Company not found.");
