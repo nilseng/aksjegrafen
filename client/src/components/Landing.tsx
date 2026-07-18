@@ -47,17 +47,14 @@ export const Landing = () => {
       {/* Hero: fills the initial view; search mirrors the graph's search modal */}
       <div className="w-full h-full flex justify-center px-2">
         <div className="w-full sm:w-3/4 max-w-3xl h-full flex flex-col justify-between items-center">
-          <div className="h-1/2 w-full flex flex-col items-center justify-end text-center pb-8 overflow-hidden">
-            <div className="flex justify-center pb-4">
+          <div className="h-1/2 w-full flex flex-col items-center justify-end text-center pb-10 overflow-hidden">
+            <div className="flex justify-center pb-6">
               <GraphLogo inputColor={theme.primary} width="4rem" height="4rem" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold pb-2">Se hvem som eier norsk næringsliv</h1>
-            <p className="text-sm pb-2" style={{ color: theme.muted }}>
-              Interaktiv graf over eierskap og roller i norske selskaper — med historikk tilbake til 2015. Bygget på
+            <h1 className="text-2xl sm:text-3xl font-bold pb-3">Se hvem som eier norsk næringsliv</h1>
+            <p className="text-sm w-full md:w-3/4 max-w-xl" style={{ color: theme.muted }}>
+              Interaktiv graf over eierskap og roller i norske selskaper — historikk tilbake til 2015, bygget på
               offentlige registre. Gratis, uten registrering.
-            </p>
-            <p className="text-xs pb-2" style={{ color: theme.muted }}>
-              Skatteetatens aksjonærregister · Brønnøysundregistrene · Eierforhold per år, 2015–i dag
             </p>
           </div>
           <SearchComponent
