@@ -91,13 +91,16 @@ Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
       `roller/totalbestand` (streaming, filenames from config not hardcoded), re-running the
       roles-to-graph import monthly. node-cron is already a dependency (unused) or use
       Heroku Scheduler / cron on the EC2 box.
-      _Code done (`npm run refresh-roles` → download + clear roles + re-import; filenames via
-      `DATA_DIR`/`BRREG_ROLES_FILE` env). Remaining: schedule it monthly — belongs with
-      "Run imports server-side" below (cron on the EC2 box)._
+      _Code done (`npm run refresh-roles`); monthly cron entry ready in
+      `infrastructure/import-runner/crontab.txt` — goes live with the one-time `setup.sh`
+      run on the EC2 box (below)._
 - [ ] **Run imports server-side**: execute on the Neo4j EC2 box (local bolt, no laptop/caffeinate),
       CSV pulled from S3.
-- [ ] **Registry watcher**: small job polling skatteetaten.no/deling/aksjonarregisteret/ for next
-      year's availability, notify by email.
+      _Runbook + idempotent `infrastructure/import-runner/setup.sh` (Node 22, build, crontab with
+      the monthly roles refresh) ready — needs one manual run on the box + `.env` there
+      (see infrastructure/README.md). Only remaining Track 2 infra step._
+- [x] ~~**Registry watcher**~~ **Dropped per owner decision (2026-07-18)** — the annual CSV is
+      ordered manually; no page watcher needed.
 
 SEO (currently greenfield: CRA SPA, 2 routes, UUID query params, no sitemap/OG/JSON-LD):
 - [x] **Server-rendered company pages** `/selskap/:orgnr` from Express using existing data
@@ -276,3 +279,19 @@ _Append entries: date — session/track — what was done / claimed / decided._
   hardcoded 2025; ownership-changes year selector derives from the response). All features
   smoke-tested live post-rebase. Master remains deployable; deploy still pending the
   graph re-import decision.
+- 2026-07-18 — track/2-import — Post-integration batch, rebuilt on the integrated master:
+  (1) **Fixed infinite rerender on `?sourceOrgnr=` links** (owner found it while previewing):
+  async orgnr→uuid dispatch fought `Graph.tsx`'s effect cleanup; the hook now resolves the
+  orgnr once and `history.replace`s the URL to the uuid form. Hand-merged with track 3's
+  `linkTypes` param handling in `useGraphQueryParams.ts`. Verified in headless Chromium
+  (API traffic settles to zero; was unbounded).
+  (2) **Registry watcher dropped per owner decision** (CSV ordered manually); a working
+  implementation existed briefly on pre-rebase `track/2-import` history only.
+  (3) **EC2 import-runner runbook**: `infrastructure/import-runner/` setup.sh + crontab
+  (monthly roles refresh). Owner action: run setup.sh on the box + create `.env` there.
+  (4) **GDS projections now refresh at the end of every import** (importCli + refresh-roles) —
+  answers track 3's 2026-07-18 heads-up; shared `database/graphProjections.ts`, startup still
+  creates-if-missing.
+  (5) **`/selskap/:orgnr` redesigned as a branded landing page** (search visitors land there):
+  logo header, neumorphic cards + teal from the app theme, KPI stat tiles, share bars,
+  responsive light+dark. Screenshot-verified desktop/mobile.
