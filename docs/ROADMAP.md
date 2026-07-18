@@ -262,3 +262,7 @@ _Append entries: date — session/track — what was done / claimed / decided._
   (3) new `investorType=person` filter + "Kun personer" toggle in the modal (person = node
   has year_of_birth) so ultimate individual owners surface directly. Aize AS person view now
   ranks Røkke on top at 45,30 % effective.
+- 2026-07-18 — track 3 session — "Kun personer" is now the default view; table rows expand
+  on click to show the investor's actual ownership chains (new
+  `GET /api/graph/ownership-chains?investorUuid&targetUuid`, bounded per investor by
+  minDepth + 2); "Kjeder" column got a tooltip.

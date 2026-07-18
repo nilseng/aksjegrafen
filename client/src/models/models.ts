@@ -264,3 +264,12 @@ export interface IndirectOwnership {
   pathCount: number;
   minDepth: number;
 }
+
+// One ownership chain from an investor (first node) to the target company (last node).
+// shares[i] is the share the node at position i holds in the node at position i + 1;
+// product is the chain's contribution to the investor's effective share of the target.
+export interface OwnershipChain {
+  nodes: { uuid: string; name: string; orgnr?: string }[];
+  shares: number[];
+  product: number;
+}

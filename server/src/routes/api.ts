@@ -12,6 +12,7 @@ import { findIndirectOwnership } from "../use-cases/findIndirectOwnership";
 import { findInvestments } from "../use-cases/findInvestments";
 import { findInvestors } from "../use-cases/findInvestors";
 import { findNeighbours } from "../use-cases/findNeighbours";
+import { findInvestorChains } from "../use-cases/findInvestorChains";
 import { findNode } from "../use-cases/findNode";
 import { findOwnershipChanges } from "../use-cases/findOwnershipChanges";
 import { findPopularNodes } from "../use-cases/findPopularNodes";
@@ -465,6 +466,30 @@ export const api = ({ db }: { db: IDatabase }) => {
       });
       if (!data) return res.status(404).json("Company not found.");
       return res.json(data);
+    })
+  );
+
+  router.get(
+    "/graph/ownership-chains",
+    query("investorUuid"),
+    query("targetUuid"),
+    query(["year"]).default(2025).toInt(),
+    // Chain enumeration walks simple paths, which explodes with depth on broad structures —
+    // the client passes the investor's shortest-chain depth plus slack.
+    query(["maxDepth"]).default(8).toInt(),
+    query("limit").default(10).toInt(),
+    asyncRouter(async (req, res) => {
+      const query = matchedData(req);
+      if (!query.investorUuid || !query.targetUuid)
+        return res.status(400).json("Investor and target uuid must be specified.");
+      const chains = await findInvestorChains({
+        investorUuid: query.investorUuid,
+        targetUuid: query.targetUuid,
+        year: query.year,
+        maxDepth: Math.min(Math.max(query.maxDepth, 1), 20),
+        limit: query.limit,
+      });
+      return res.json(chains);
     })
   );
 
