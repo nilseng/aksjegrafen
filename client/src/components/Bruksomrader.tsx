@@ -9,6 +9,8 @@ interface IUseCase {
   ingress: string;
   bullets: string[];
   cta: string;
+  // Server-rendered page outside the SPA router — link with <a href>, not <Link>.
+  href?: string;
 }
 
 export const useCases: IUseCase[] = [
@@ -55,7 +57,8 @@ export const useCases: IUseCase[] = [
       "Historikk tilbake til 2015 — dokumentér eierskap på tidspunktet det gjaldt",
       "Kilder og datavintage oppgitt på alt — etterprøvbart i AML-mappen",
     ],
-    cta: "Kartlegg en kunde nå",
+    cta: "Bestill gratis eierskapssjekk",
+    href: "/eierskapssjekk",
   },
 ];
 
@@ -85,11 +88,19 @@ export const Bruksomrader = () => {
               <li key={bullet}>{bullet}</li>
             ))}
           </ul>
-          <Link to="/graf">
-            <button className="rounded text-white text-xs px-3 py-2" style={{ backgroundColor: theme.primary }}>
-              {useCase.cta} →
-            </button>
-          </Link>
+          {useCase.href ? (
+            <a href={useCase.href}>
+              <button className="rounded text-white text-xs px-3 py-2" style={{ backgroundColor: theme.primary }}>
+                {useCase.cta} →
+              </button>
+            </a>
+          ) : (
+            <Link to="/graf">
+              <button className="rounded text-white text-xs px-3 py-2" style={{ backgroundColor: theme.primary }}>
+                {useCase.cta} →
+              </button>
+            </Link>
+          )}
         </div>
       ))}
       <p className="text-xs" style={{ color: theme.muted }}>

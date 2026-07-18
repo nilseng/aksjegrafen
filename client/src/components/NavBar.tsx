@@ -2,7 +2,7 @@ import "./NavBar.scss";
 
 import { faCode, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { resetGraph } from "../slices/graphSlice";
 import { resetModal } from "../slices/modalSlice";
 import { useAppDispatch } from "../store";
@@ -18,6 +18,9 @@ interface IProps {
 
 const NavBar = ({ theme, setTheme }: IProps) => {
   const dispatch = useAppDispatch();
+  const { pathname } = useLocation();
+  // Keep the offer CTA out of the graph itself — the app stays clean for tool users.
+  const showOfferCta = !pathname.startsWith("/graf");
 
   return (
     <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
@@ -38,6 +41,15 @@ const NavBar = ({ theme, setTheme }: IProps) => {
       </Link>
       <div className="flex justify-end">
         <div className="flex items-center">
+          {showOfferCta && (
+            <a href="/eierskapssjekk" aria-label="Gratis eierskapssjekk" className="hidden sm:block">
+              <NeuButton
+                className="px-4 py-2 mr-4"
+                ariaLabel="Gratis eierskapssjekk"
+                componentIcon={<span className="text-xs text-primary font-bold">Eierskapssjekk</span>}
+              />
+            </a>
+          )}
           <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
             <NeuButton
               className="px-4 py-2 mr-4"

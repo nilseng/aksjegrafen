@@ -153,14 +153,25 @@ export const Landing = () => {
               <p className="text-sm pb-4" style={{ color: theme.muted }}>
                 {useCase.ingress}
               </p>
-              <Link to="/graf" className="mt-auto">
-                <button
-                  className="rounded text-white text-xs font-bold px-3 py-2"
-                  style={{ backgroundColor: theme.primary }}
-                >
-                  {useCase.cta} →
-                </button>
-              </Link>
+              {useCase.href ? (
+                <a href={useCase.href} className="mt-auto">
+                  <button
+                    className="rounded text-white text-xs font-bold px-3 py-2"
+                    style={{ backgroundColor: theme.primary }}
+                  >
+                    {useCase.cta} →
+                  </button>
+                </a>
+              ) : (
+                <Link to="/graf" className="mt-auto">
+                  <button
+                    className="rounded text-white text-xs font-bold px-3 py-2"
+                    style={{ backgroundColor: theme.primary }}
+                  >
+                    {useCase.cta} →
+                  </button>
+                </Link>
+              )}
             </div>
           ))}
         </div>

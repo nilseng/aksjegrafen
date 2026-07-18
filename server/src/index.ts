@@ -51,6 +51,10 @@ const initializeApp = async () => {
   app.use("/selskap", selskapRoutes({ db }));
   app.use("/", sitemapRoutes({ db }));
 
+  // Static offer page (compliance GTM) — must be mounted before the SPA catch-all.
+  // Resolves to server/static both under ts-node (src/) and a compiled dist/.
+  app.get("/eierskapssjekk", (_, res) => res.sendFile(path.join(__dirname, "../static/eierskapssjekk.html")));
+
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));
 

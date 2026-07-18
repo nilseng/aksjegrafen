@@ -319,3 +319,9 @@ _Append entries: date — session/track — what was done / claimed / decided._
   by it.** May-import rule: import year N, then `clearGraphYear` N-1 so the graph never grows past
   the memory limit. Revisit only if a customer needs historical graph *traversal* (then filter the
   GDS projection to one year, or move to a bigger box).
+- 2026-07-18 — track 1 session — **compliance offer page self-hosted at `/eierskapssjekk`**
+  (owner decision; coordinator's Artifact ported to `server/static/eierskapssjekk.html`, served
+  from Express before the SPA catch-all — touched `server/src/index.ts`). Landing at `/` stays
+  search-first for existing users; discovery via KYC use-case card, NavBar CTA (not on /graf),
+  InfoPageNav, and offer-page footer links back into the site. 2014→2015 data claim reconciled.
+  Outreach should now link to aksjegrafen.com/eierskapssjekk. Mailto swap to branded inbox pending.

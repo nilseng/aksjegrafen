@@ -11,12 +11,17 @@ tier is deliberately positioned below them at **990 kr/user/mnd**.
 
 ## Assets
 
-- **Offer / landing page** (Artifact, private until shared):
+- **Offer / landing page** — now **self-hosted at `aksjegrafen.com/eierskapssjekk`**
+  (`server/static/eierskapssjekk.html`, served from Express before the SPA catch-all; done by
+  track 1 session 2026-07-18 per owner decision — coordinator still owns the copy). Changes vs the
+  Artifact original: data claim corrected 2014→2015, "Åpne grafen" back-link in topbar, footer
+  links to /graf, /bruksomrader, /kilder, /personvern, trust section links to the privacy/sources
+  pages, full head (title/description/OG/canonical). Cross-linked from: landing + bruksomrader KYC
+  card, NavBar CTA (hidden on /graf and on xs screens), InfoPageNav.
+  Original Artifact (kept as design reference, private):
   https://claude.ai/code/artifact/4150d00a-b93d-496e-b6ba-6ae08d6a05b7
-  Source: `scratchpad/compliance-offer.html` (content-only HTML; wrap in a full doc to self-host on
-  aksjegrafen.com later). Primary CTA = **free concierge "eierskapssjekk"**, secondary = Pro pricing.
   ⚠️ CTAs currently mailto `teodor.nilseng@gmail.com` — swap for a branded inbox (e.g.
-  `post@aksjegrafen.com`) before wider sharing.
+  `post@aksjegrafen.com`, four mailto: occurrences in the HTML) before wider sharing.
 
 ## The concierge test (how we validate before building the export feature)
 
