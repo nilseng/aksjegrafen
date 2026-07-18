@@ -67,29 +67,32 @@ code work is limited to trust pages and analytics funnels.
 Goal: next registry drop should be "drop CSV in a bucket, press go"; make the site crawlable.
 
 Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
-- [ ] **De-hardcode years**: year list `server/src/importCli.ts:18`, `stocks_20XX` type in
+- [x] **De-hardcode years**: year list `server/src/importCli.ts:18`, `stocks_20XX` type in
       `importShareholderRegistryToGraph.ts:5-28`, year defaults in `routes/api.ts`,
       `neo4j.mapper.ts`, `mongoDB.gateway.ts`, `findHistoricalInvestments.ts`, `Year` type in
       `models.ts`. Derive available years from data.
-- [ ] **Fix destructive reload**: replace clear-all-then-import-one-year
+- [x] **Fix destructive reload**: replace clear-all-then-import-one-year
       (`clearGraphDatabase.ts` wipes ALL years + roles) with additive per-year import
       (delete only that year's `OWNS {year}` edges, then MERGE).
 - [ ] **Automate Brreg refresh**: scheduled job downloading `enheter/lastned` +
       `roller/totalbestand` (streaming, filenames from config not hardcoded), re-running the
       roles-to-graph import monthly. node-cron is already a dependency (unused) or use
       Heroku Scheduler / cron on the EC2 box.
+      _Code done (`npm run refresh-roles` → download + clear roles + re-import; filenames via
+      `DATA_DIR`/`BRREG_ROLES_FILE` env). Remaining: schedule it monthly — belongs with
+      "Run imports server-side" below (cron on the EC2 box)._
 - [ ] **Run imports server-side**: execute on the Neo4j EC2 box (local bolt, no laptop/caffeinate),
       CSV pulled from S3.
 - [ ] **Registry watcher**: small job polling skatteetaten.no/deling/aksjonarregisteret/ for next
       year's availability, notify by email.
 
 SEO (currently greenfield: CRA SPA, 2 routes, UUID query params, no sitemap/OG/JSON-LD):
-- [ ] **Server-rendered company pages** `/selskap/:orgnr` from Express using existing data
+- [x] **Server-rendered company pages** `/selskap/:orgnr` from Express using existing data
       (`/api/company`, `/api/investors`, financials proxy): title, meta description, OG tags,
       JSON-LD Organization, top shareholders, key financials, prominent link into the interactive
       graph. (No framework migration needed.)
-- [ ] **sitemap.xml** generated from the companies collection + `Sitemap:` line in robots.txt.
-- [ ] **Canonicals + per-page meta** on the SPA shell; human-readable orgnr-based share URLs.
+- [x] **sitemap.xml** generated from the companies collection + `Sitemap:` line in robots.txt.
+- [x] **Canonicals + per-page meta** on the SPA shell; human-readable orgnr-based share URLs.
 
 ## Track 3 — Features & portal
 
@@ -142,3 +145,32 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `fix/cypher-injection` (also fixes a connection leak) — fold into a normal deploy, not a security
   push. Only H1 (OOM) and H2 (unauth write) are worth revisiting later, as *reliability* items if
   traffic grows.
+- 2026-07-03 — session on `track/2-import` — **claimed Track 2 (import automation + SEO)**. Starting
+  with de-hardcoding years and fixing the destructive graph reload. Will touch `routes/api.ts` and
+  `models.ts` (shared touchpoints).
+- 2026-07-03 — track/2-import — De-hardcode years done (`Year` is now `number`; new
+  `services/yearService.ts` derives available years from OWNS edges at startup; API year defaults
+  and mongo sort follow the data; import CLI accepts 2015→current year). Fix destructive reload
+  done (`clearGraphYear.ts` deletes only the target year's OWNS edges + `total_stocks_<year>`;
+  `--clearYearFirst` default true, `--clearGraphDBFirst` now defaults **false**). Verified against
+  live DBs: year detection returns [2025], graph/mongo endpoints OK, clearGraphYear dry-run on an
+  empty year left 2025's 3.06M edges intact. Touched shared files: `routes/api.ts`, `index.ts`,
+  `models.ts` (server+client).
+- 2026-07-03 — track/2-import — Brreg refresh code done: `downloadBrregFiles.ts` (streaming,
+  atomic temp-file swap), gzip-aware data readers, `clearGraphRoles.ts` (delete non-OWNS rels so
+  lapsed roles disappear), `refreshRolesCli.ts` / `npm run refresh-roles` as the monthly job entry
+  point. Verified: downloaded the real 131MB roles dump and stream-parsed it. Data paths now come
+  from `config.ts` (`DATA_DIR`, `BRREG_ROLES_FILE`, `BRREG_ENTITIES_FILE`) — the hardcoded
+  `roller_2026-05-23...json` filename is gone; run `refresh-roles` (or set the env var) before the
+  next roles import. Scheduling still pending (EC2 cron, with "Run imports server-side").
+- 2026-07-05 — track/2-import — SEO done: server-rendered `/selskap/:orgnr` pages (Express, no
+  framework: title/meta/OG/JSON-LD Organization, top-10 aksjonærer per latest company year from
+  Mongo, nøkkeltall from the brreg regnskap API with 3s timeout, NLOD attribution + data vintage,
+  404+noindex for unknown orgnr, Cache-Control 1d). Sharded sitemap: `/sitemap.xml` index →
+  `/sitemap-static.xml` + 12× `/sitemap-companies-N.xml` (50k URLs each, 580k companies);
+  `Sitemap:` line in robots.txt. SPA shell: lang=no, OG tags, dynamic canonical
+  (`CanonicalLink`), and stable share URLs `/?graphType=Default&sourceOrgnr=<orgnr>` —
+  `/api/node` now resolves orgnr→node (Track 3: use these for portal links). Verified locally
+  against live DBs: Statkraft + Equinor pages, sitemap shards, 404s, node-by-orgnr. Touched
+  shared files: `routes/api.ts`, `index.ts` (route mounting), `App.tsx`. NOTE for Track 3: the
+  `/selskap/:orgnr` skeleton is in `server/src/routes/selskap.ts` — enrich there.

@@ -1,6 +1,7 @@
 import { Filter } from "mongodb";
 import { Database } from "../../database/databaseSetup";
 import { Ownership, Shareholder } from "../../models/models";
+import { getLatestYear } from "../../services/yearService";
 
 const defaultLimit = 100;
 
@@ -28,7 +29,7 @@ export const findOwnerships = ({
   if (year) filter[`holdings.${year}.total`] = { $gt: 0 };
   return db()
     .ownerships.find(filter, { limit: limit ?? defaultLimit })
-    .sort({ [`holdings.${year ?? 2025}.total`]: -1, _id: 1 })
+    .sort({ [`holdings.${year ?? getLatestYear()}.total`]: -1, _id: 1 })
     .skip(skip ?? 0)
     .toArray();
 };

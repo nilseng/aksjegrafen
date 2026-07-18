@@ -1,13 +1,13 @@
 import JSONStream from "JSONStream";
-import fs from "fs";
-import path from "path";
 import { IDatabase } from "../database/mongoDB";
+import { brregRolesFile } from "../config";
 import { UnitRoles } from "../models/brregModels";
 import { Role } from "../models/models";
+import { createDataFileReadStream } from "../utils/createDataFileReadStream";
 
-export const importRoles = (db: IDatabase) => {
+export const importRoles = async (db: IDatabase) => {
   const parser = JSONStream.parse("*");
-  const stream = fs.createReadStream(path.join(__dirname, "../../..", "data", "enheter_alle_20240913.json"));
+  const stream = await createDataFileReadStream(brregRolesFile());
   const roles: Role[] = [];
   stream.pipe(parser).on("data", (chunk: UnitRoles) => {
     chunk.rollegrupper.forEach((group) => {

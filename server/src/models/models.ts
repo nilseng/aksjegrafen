@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 
-export type Year = 2025 | 2024 | 2023 | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015;
+// Which years exist is data-driven (registry years 2015→present, see services/yearService.ts),
+// so Year is a plain number rather than a hardcoded union that must be bumped every May.
+export type Year = number;
 
 export interface OwnershipRaw {
   orgnr: string;

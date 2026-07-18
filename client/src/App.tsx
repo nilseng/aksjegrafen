@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
+import { CanonicalLink } from "./components/CanonicalLink";
 import NavBar from "./components/NavBar";
 import { Overlays } from "./components/Overlays";
 
@@ -32,6 +33,7 @@ const App = () => {
     <ErrorBoundary fallback={<FallbackError />}>
       <AppContext.Provider value={{ theme }}>
         <Router>
+          <CanonicalLink />
           <NavBar theme={theme} setTheme={setTheme} />
           <div
             id="ag-main"

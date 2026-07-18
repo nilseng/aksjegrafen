@@ -1,9 +1,9 @@
 import JSONStream from "JSONStream";
-import fs from "fs";
 import { Driver } from "neo4j-driver";
-import path from "path";
+import { brregRolesFile } from "../config";
 import { UnitRoles } from "../models/brregModels";
 import { Role } from "../models/models";
+import { createDataFileReadStream } from "../utils/createDataFileReadStream";
 import { setPersonNames } from "./setPersonNames";
 
 export const importRolesToGraph = async (graphDB: Driver) => {
@@ -111,12 +111,10 @@ export const importRolesToGraph = async (graphDB: Driver) => {
   console.log(`*** Import of roles to graph complete ***`);
 };
 
-const readRoles = (): Promise<Role[]> => {
+const readRoles = async (): Promise<Role[]> => {
+  const stream = await createDataFileReadStream(brregRolesFile());
   return new Promise((resolve, reject) => {
     const parser = JSONStream.parse("*");
-    const stream = fs.createReadStream(
-      path.join(__dirname, "../../..", "data", "roller_2026-05-23T04-00-33.327018344.json")
-    );
     const roles: Role[] = [];
     stream.pipe(parser).on("data", (chunk: UnitRoles) => {
       chunk.rollegrupper.forEach((group) => {
