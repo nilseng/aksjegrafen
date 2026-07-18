@@ -69,9 +69,10 @@ export const Landing = () => {
           <div className="relative w-full">
             <SearchComponent
               focus
-              inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
+              backdrop
+              inputContainerClassName="relative z-20 w-full rounded-lg bg-gray-50 dark:bg-gray-700"
               inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4 w-full"
-              listContainerClassName="absolute top-full left-0 right-0 mt-2 z-20 overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white border border-gray-200 dark:border-gray-600 px-2 py-1 shadow-lg empty:hidden"
+              listContainerClassName="absolute top-full left-0 right-0 mt-2 z-20 overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white border border-gray-300 dark:border-gray-500 px-2 py-1 shadow-2xl empty:hidden"
               listItemClassName="w-full max-w-full flex items-center rounded-md px-3 py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               maxHeight="20rem"
               placeholder="Selskap, aksjonær eller rolleinnehaver..."

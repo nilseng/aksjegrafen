@@ -37,6 +37,7 @@ interface IProps<Result extends unknown> {
   listContainerClassName?: string;
   listItemClassName?: string;
   renderItemContent?: (res: Result) => ReactElement;
+  backdrop?: boolean;
   inputStyle?: CSSProperties;
   focus?: boolean;
   initialResult?: Result[];
@@ -55,6 +56,7 @@ export const SearchComponent = <Result extends unknown>({
   listContainerClassName = "h-1/2 w-full md:w-3/4 dark:text-white overflow-auto",
   listItemClassName = "w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1",
   renderItemContent,
+  backdrop,
   inputStyle,
   focus,
   initialResult,
@@ -107,6 +109,9 @@ export const SearchComponent = <Result extends unknown>({
           </div>
         )}
       </div>
+      {backdrop && searchList && (
+        <div className="fixed inset-0 z-10 bg-black/40" onClick={() => setSearchTerm("")} />
+      )}
       <div className={listContainerClassName} style={maxHeight ? { maxHeight } : undefined}>
         {searchList && (
           <div className="flex flex-col w-full max-w-full h-full max-h-full">
