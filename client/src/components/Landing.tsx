@@ -1,4 +1,4 @@
-import { faHistory, faList, faRoute, faSearch, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faHistory, faList, faRoute, faSearch, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -47,19 +47,16 @@ export const Landing = () => {
       {/* Hero: fills the initial view; search mirrors the graph's search modal */}
       <div className="w-full h-full flex justify-center px-2">
         <div className="w-full sm:w-3/4 max-w-3xl h-full flex flex-col justify-between items-center">
-          <div className="h-1/2 w-full flex flex-col items-center justify-end text-center pb-10 overflow-hidden">
+          <div className="w-full grow basis-0 min-h-0 flex flex-col items-center justify-end text-center pb-10 overflow-hidden">
             <div className="flex justify-center pb-6">
               <GraphLogo inputColor={theme.primary} width="4rem" height="4rem" />
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold pb-3">Se hvem som eier norsk næringsliv</h1>
-            <p className="text-sm w-full md:w-3/4 max-w-xl" style={{ color: theme.muted }}>
-              Interaktiv graf over eierskap og roller i norske selskaper — historikk tilbake til 2015, bygget på
-              offentlige registre. Gratis, uten registrering.
-            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold">Se hvem som eier norsk næringsliv</h1>
           </div>
           <SearchComponent
             focus
             inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
+            listContainerClassName="order-last w-full md:w-3/4 grow basis-0 min-h-0 dark:text-white overflow-auto"
             inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
             placeholder="Selskap, aksjonær eller rolleinnehaver..."
             apiPath="/api/node"
@@ -118,10 +115,21 @@ export const Landing = () => {
               ],
             })}
           />
+          <p className="text-sm w-full md:w-3/4 max-w-xl text-center pt-3" style={{ color: theme.muted }}>
+            Interaktiv graf over eierskap og roller i norske selskaper — historikk tilbake til 2015, bygget på
+            offentlige registre. Gratis, uten registrering.
+          </p>
+          <button
+            aria-label="Se hva du kan bruke Aksjegrafen til"
+            className="order-last shrink-0 pt-1 pb-3"
+            onClick={() => document.getElementById("bruksomrader-seksjon")?.scrollIntoView({ behavior: "smooth" })}
+          >
+            <FontAwesomeIcon icon={faChevronDown} className="animate-bounce" style={{ color: theme.muted }} />
+          </button>
         </div>
       </div>
       {/* Use cases: their own section below the fold */}
-      <section className="w-full flex flex-col items-center px-4 pt-16 pb-10">
+      <section id="bruksomrader-seksjon" className="w-full flex flex-col items-center px-4 pt-16 pb-10">
         <h2 className="text-xl font-bold pb-8 text-center">Hva kan du bruke Aksjegrafen til?</h2>
         <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-6 pb-10">
           {useCases.map((useCase, i) => (
