@@ -99,6 +99,11 @@ Import automation (details/gotchas in memory `yearly-shareholder-import.md`):
       _Runbook + idempotent `infrastructure/import-runner/setup.sh` (Node 22, build, crontab with
       the monthly roles refresh) ready — needs one manual run on the box + `.env` there
       (see infrastructure/README.md). Only remaining Track 2 infra step._
+      **SINGLE-YEAR GRAPH (owner decision 2026-07-18):** the graph holds only the *latest* year's
+      OWNS edges. t3.large (8GB) can't fit all years' GDS path-search projections (~32M edges,
+      projected twice → ~2.5GB vs ~1GB free after Neo4j's 4g heap + 3g pagecache). So the yearly
+      import must import year N **then drop year N-1's OWNS edges** (`clearGraphYear`); never
+      backfill old years into the graph. All history is served from MongoDB, not the graph.
 - [x] ~~**Registry watcher**~~ **Dropped per owner decision (2026-07-18)** — the annual CSV is
       ordered manually; no page watcher needed.
 
@@ -305,3 +310,12 @@ _Append entries: date — session/track — what was done / claimed / decided._
   under the input (hides while results show), scroll chevron to the redesigned use-case cards
   below the fold. Rebased onto master (data-driven years + track-3 events merged cleanly) and
   fast-forwarded master.
+- 2026-07-18 — coordinator — **DECISION: graph stays single-year (latest); no all-years re-import.**
+  Measured all-years = ~31.9M OWNS edges (2025 alone ~3.06M). Binding limit is the GDS in-memory
+  path-search projections (built twice — directed + undirected, carrying stocks/share): ~2.5GB at
+  all years vs ~1GB free on t3.large after Neo4j's 4g heap + 3g pagecache. History is already served
+  from MongoDB (SEO pages, history tables, year-over-year diff), so no graph history is needed.
+  **Resolves the "graph re-import" question in the entries above: NOT needed; deploy is NOT blocked
+  by it.** May-import rule: import year N, then `clearGraphYear` N-1 so the graph never grows past
+  the memory limit. Revisit only if a customer needs historical graph *traversal* (then filter the
+  GDS projection to one year, or move to a bigger box).
