@@ -190,7 +190,7 @@ const renderCompanyPage = ({
       : {}),
   };
 
-  const graphUrl = `/?graphType=Default&sourceOrgnr=${company.orgnr}`;
+  const graphUrl = `/graf?graphType=Default&sourceOrgnr=${company.orgnr}`;
 
   const body = `
     <nav class="crumbs"><a href="/">Aksjegrafen</a> <span aria-hidden="true">/</span> <span>${escapeHtml(
