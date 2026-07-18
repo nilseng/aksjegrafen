@@ -56,7 +56,7 @@ export const Landing = () => {
           <SearchComponent
             focus
             inputContainerClassName="w-full md:w-3/4 rounded-lg bg-gray-50 dark:bg-gray-700"
-            listContainerClassName="order-last w-full md:w-3/4 grow basis-0 min-h-0 dark:text-white overflow-auto"
+            listContainerClassName="peer order-last w-full md:w-3/4 grow basis-0 min-h-0 dark:text-white overflow-auto"
             inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
             placeholder="Selskap, aksjonær eller rolleinnehaver..."
             apiPath="/api/node"
@@ -115,7 +115,10 @@ export const Landing = () => {
               ],
             })}
           />
-          <p className="text-sm w-full md:w-3/4 max-w-xl text-center pt-3" style={{ color: theme.muted }}>
+          <p
+            className="peer-[:not(:empty)]:hidden text-sm w-full md:w-3/4 max-w-xl text-center pt-3"
+            style={{ color: theme.muted }}
+          >
             Interaktiv graf over eierskap og roller i norske selskaper — historikk tilbake til 2015, bygget på
             offentlige registre. Gratis, uten registrering.
           </p>
