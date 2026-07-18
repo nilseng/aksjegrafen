@@ -36,8 +36,6 @@ interface IProps<Result extends unknown> {
   inputClassName?: string;
   listContainerClassName?: string;
   listItemClassName?: string;
-  renderItemContent?: (res: Result) => ReactElement;
-  backdrop?: boolean;
   inputStyle?: CSSProperties;
   focus?: boolean;
   initialResult?: Result[];
@@ -55,8 +53,6 @@ export const SearchComponent = <Result extends unknown>({
   inputClassName,
   listContainerClassName = "h-1/2 w-full md:w-3/4 dark:text-white overflow-auto",
   listItemClassName = "w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1",
-  renderItemContent,
-  backdrop,
   inputStyle,
   focus,
   initialResult,
@@ -109,9 +105,6 @@ export const SearchComponent = <Result extends unknown>({
           </div>
         )}
       </div>
-      {backdrop && searchList && (
-        <div className="fixed inset-0 z-10 bg-black/40" onClick={() => setSearchTerm("")} />
-      )}
       <div className={listContainerClassName} style={maxHeight ? { maxHeight } : undefined}>
         {searchList && (
           <div className="flex flex-col w-full max-w-full h-full max-h-full">
@@ -134,10 +127,6 @@ export const SearchComponent = <Result extends unknown>({
                       }
                     }}
                   >
-                    {renderItemContent ? (
-                      renderItemContent(result)
-                    ) : (
-                      <>
                     <section
                       className="flex flex-col items-center"
                       style={item.handleTitleClick ? { cursor: "pointer" } : {}}
@@ -172,8 +161,7 @@ export const SearchComponent = <Result extends unknown>({
                               className="px-0"
                               aria-label={`Gå til ${b.name}`}
                               aria-describedby={`Klikk for å se ${b.name}`}
-                              onClick={(e) => {
-                                e.stopPropagation();
+                              onClick={() => {
                                 b.handleClick(result);
                               }}
                             >
@@ -181,8 +169,6 @@ export const SearchComponent = <Result extends unknown>({
                             </button>
                           ))}
                       </div>
-                    )}
-                      </>
                     )}
                   </div>
                 ))
