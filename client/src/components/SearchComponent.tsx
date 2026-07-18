@@ -161,7 +161,8 @@ export const SearchComponent = <Result extends unknown>({
                               className="px-0"
                               aria-label={`Gå til ${b.name}`}
                               aria-describedby={`Klikk for å se ${b.name}`}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 b.handleClick(result);
                               }}
                             >
