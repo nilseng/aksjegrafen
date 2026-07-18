@@ -295,3 +295,8 @@ _Append entries: date — session/track — what was done / claimed / decided._
   (5) **`/selskap/:orgnr` redesigned as a branded landing page** (search visitors land there):
   logo header, neumorphic cards + teal from the app theme, KPI stat tiles, share bars,
   responsive light+dark. Screenshot-verified desktop/mobile.
+- 2026-07-18 — track/2-import — **Fast-forwarded master** with the four post-integration
+  commits: sourceOrgnr rerender fix (was live in master's code via the integration merge),
+  GDS projection refresh at end of imports, branded /selskap landing pages, import-runner
+  runbook (+ watcher dropped). Deploy still pending owner decision (graph re-import of
+  historical years, per track 3's note).
