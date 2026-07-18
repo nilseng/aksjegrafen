@@ -240,3 +240,15 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `index.html`: `lang="no"`, new title/description + OG tags — heads-up Track 2 (SEO).
   app.aksjegrafen.com subdomain split assessed and **deferred until auth/paid tier**; decision
   + runbook in `docs/landing-and-domain.md`.
+- 2026-07-18 — coordinator — **INTEGRATED all tracks + `fix/cypher-injection` into master**
+  (fast-forward). Server `tsc`, client `tsc`, and client production build all green. Two
+  cross-track reconciliations made during the merge, **note when you rebase**:
+  (1) `client/src/App.tsx` root route now forwards ANY graph link to `/graf` — Track 1 only
+  forwarded `sourceUuid`, but Track 2's SEO share URLs use `sourceOrgnr`; the redirect now
+  covers `sourceUuid`/`sourceOrgnr`/`targetUuid`/`targetOrgnr`/`graphType` so both styles work.
+  (2) `client/public/index.html` had two `<title>`s — kept Track 2's OG block but used Track 1's
+  title text ("…se hvem som eier norske selskaper") for both `<title>` and `og:title`. Also:
+  `Year` is `number` (Track 2) everywhere; both `models.ts` enums hold all five new UserEventTypes;
+  `.claude/` is now gitignored. **Action for track sessions: rebase your branch onto master.**
+  Production deploy (`git push heroku master`) is a SEPARATE step, pending a decision on whether
+  to trigger a graph re-import first (Neo4j currently holds only 2025 OWNS edges; Mongo has all years).
