@@ -1,6 +1,6 @@
-import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
+import { faBriefcase, faRoute, faUsers } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { ReactNode, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
@@ -12,6 +12,20 @@ import { useCases } from "./Bruksomrader";
 import { GraphLogo } from "./GraphLogo";
 import { InfoPageNav } from "./InfoPageNav";
 import { SearchComponent } from "./SearchComponent";
+
+const Shortcut = ({ label, onClick, children }: { label: string; onClick: () => void; children: ReactNode }) => (
+  <button
+    title={label}
+    aria-label={label}
+    className="px-2 py-1.5 rounded hover:bg-gray-300/60 dark:hover:bg-gray-500/60 transition-colors"
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick();
+    }}
+  >
+    {children}
+  </button>
+);
 
 export const Landing = () => {
   const dispatch = useAppDispatch();
@@ -57,8 +71,8 @@ export const Landing = () => {
               focus
               inputContainerClassName="w-full rounded-lg bg-gray-50 dark:bg-gray-700"
               inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4 w-full"
-              listContainerClassName="absolute top-full left-0 right-0 mt-2 z-20 overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white px-2 py-1 shadow-lg empty:hidden"
-              listItemClassName="w-full max-w-full flex flex-col items-center justify-between rounded-md p-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              listContainerClassName="absolute top-full left-0 right-0 mt-2 z-20 overflow-auto rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-white border border-gray-200 dark:border-gray-600 px-2 py-1 shadow-lg empty:hidden"
+              listItemClassName="w-full max-w-full flex items-center rounded-md px-3 py-2 border-b border-gray-200 dark:border-gray-600 last:border-b-0 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
               maxHeight="20rem"
               placeholder="Selskap, aksjonær eller rolleinnehaver..."
               apiPath="/api/node"
@@ -66,56 +80,40 @@ export const Landing = () => {
               mapResultToListItem={(node: GraphNode) => ({
                 key: node.properties.uuid,
                 name: node.properties.name,
-                tags: [node.properties.orgnr, node.properties.yearOfBirth, node.properties.location].filter(
-                  (tag) => !!tag
-                ) as (string | number)[],
-                buttons: [
-                  {
-                    name: "investorer",
-                    condition: node.labels.includes(GraphNodeLabel.Company),
-                    buttonContent: (
-                      <span className="flex flex-col justify-center items-center">
-                        <FontAwesomeIcon icon={faList} className="text-primary" />
-                        <span className="text-xs text-muted">investorer</span>
-                      </span>
-                    ),
-                    handleClick: openModalOnGraph(ModalContent.InvestorTable),
-                  },
-                  {
-                    name: "investeringer",
-                    condition: node.labels.includes(GraphNodeLabel.Shareholder),
-                    buttonContent: (
-                      <span className="flex flex-col justify-center items-center">
-                        <FontAwesomeIcon icon={faList} className="text-primary" />
-                        <span className="text-xs text-muted">investeringer</span>
-                      </span>
-                    ),
-                    handleClick: openModalOnGraph(ModalContent.InvestmentTable),
-                  },
-                  {
-                    name: "graf",
-                    condition: true,
-                    buttonContent: (
-                      <span className="flex flex-col items-center">
-                        <GraphLogo inputColor={theme.secondary} width={"1rem"} height={"1rem"} />
-                        <span className="text-xs text-muted">graf</span>
-                      </span>
-                    ),
-                    handleClick: openInGraph,
-                  },
-                  {
-                    name: "relasjoner",
-                    condition: true,
-                    buttonContent: (
-                      <span className="flex flex-col justify-center items-center">
-                        <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} />
-                        <span className="text-xs text-muted">relasjoner</span>
-                      </span>
-                    ),
-                    handleClick: openModalOnGraph(ModalContent.PathSearch),
-                  },
-                ],
+                tags: [],
               })}
+              renderItemContent={(node: GraphNode) => (
+                <div className="w-full flex items-center justify-between gap-2">
+                  <div className="min-w-0 text-left">
+                    <p className="truncate text-sm font-semibold text-gray-700 dark:text-gray-100 m-0">
+                      {node.properties.name}
+                    </p>
+                    <p className="truncate text-xs text-muted m-0">
+                      {[node.properties.orgnr, node.properties.location, node.properties.yearOfBirth]
+                        .filter((tag) => !!tag)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  <div className="flex items-center shrink-0">
+                    {node.labels.includes(GraphNodeLabel.Company) && (
+                      <Shortcut label="Investorer" onClick={() => openModalOnGraph(ModalContent.InvestorTable)(node)}>
+                        <FontAwesomeIcon icon={faUsers} className="text-primary" />
+                      </Shortcut>
+                    )}
+                    {node.labels.includes(GraphNodeLabel.Shareholder) && (
+                      <Shortcut label="Investeringer" onClick={() => openModalOnGraph(ModalContent.InvestmentTable)(node)}>
+                        <FontAwesomeIcon icon={faBriefcase} className="text-primary" />
+                      </Shortcut>
+                    )}
+                    <Shortcut label="Åpne i graf" onClick={() => openInGraph(node)}>
+                      <GraphLogo inputColor={theme.secondary} width="1rem" height="1rem" />
+                    </Shortcut>
+                    <Shortcut label="Finn relasjoner" onClick={() => openModalOnGraph(ModalContent.PathSearch)(node)}>
+                      <FontAwesomeIcon icon={faRoute} style={{ color: theme.primary }} />
+                    </Shortcut>
+                  </div>
+                </div>
+              )}
             />
           </div>
           <p className="text-xs pt-4" style={{ color: theme.muted }}>

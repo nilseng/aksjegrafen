@@ -36,6 +36,7 @@ interface IProps<Result extends unknown> {
   inputClassName?: string;
   listContainerClassName?: string;
   listItemClassName?: string;
+  renderItemContent?: (res: Result) => ReactElement;
   inputStyle?: CSSProperties;
   focus?: boolean;
   initialResult?: Result[];
@@ -53,6 +54,7 @@ export const SearchComponent = <Result extends unknown>({
   inputClassName,
   listContainerClassName = "h-1/2 w-full md:w-3/4 dark:text-white overflow-auto",
   listItemClassName = "w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1",
+  renderItemContent,
   inputStyle,
   focus,
   initialResult,
@@ -127,6 +129,10 @@ export const SearchComponent = <Result extends unknown>({
                       }
                     }}
                   >
+                    {renderItemContent ? (
+                      renderItemContent(result)
+                    ) : (
+                      <>
                     <section
                       className="flex flex-col items-center"
                       style={item.handleTitleClick ? { cursor: "pointer" } : {}}
@@ -170,6 +176,8 @@ export const SearchComponent = <Result extends unknown>({
                             </button>
                           ))}
                       </div>
+                    )}
+                      </>
                     )}
                   </div>
                 ))
