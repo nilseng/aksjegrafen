@@ -1,4 +1,4 @@
-import { faBriefcase, faRoute, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { faList, faRoute } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
@@ -97,12 +97,12 @@ export const Landing = () => {
                   <div className="flex items-center shrink-0">
                     {node.labels.includes(GraphNodeLabel.Company) && (
                       <Shortcut label="Investorer" onClick={() => openModalOnGraph(ModalContent.InvestorTable)(node)}>
-                        <FontAwesomeIcon icon={faUsers} className="text-primary" />
+                        <FontAwesomeIcon icon={faList} className="text-primary" />
                       </Shortcut>
                     )}
                     {node.labels.includes(GraphNodeLabel.Shareholder) && (
                       <Shortcut label="Investeringer" onClick={() => openModalOnGraph(ModalContent.InvestmentTable)(node)}>
-                        <FontAwesomeIcon icon={faBriefcase} className="text-primary" />
+                        <FontAwesomeIcon icon={faList} className="text-primary" />
                       </Shortcut>
                     )}
                     <Shortcut label="Åpne i graf" onClick={() => openInGraph(node)}>
