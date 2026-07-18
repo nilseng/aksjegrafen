@@ -29,8 +29,8 @@ const formatChain = (chain: OwnershipChain) =>
 const sourceLines = (report: OwnershipReport) => [
   `Kilde: Skatteetatens aksjonærregister for ${report.year}, beholdning per 31.12.${report.year}. ` +
     `Registeret er basert på selskapenes egen innrapportering.`,
-  `Effektiv eierandel er summen over alle eierskapskjeder (inntil ${report.maxDepth} ledd) av produktet av ` +
-    `eierandelene i hvert ledd. Eiere med effektiv andel under ${formatPct(report.minShare)} er utelatt.`,
+  `Effektiv eierandel er summen over alle eierskapskjeder av produktet av eierandelene i hvert ledd. ` +
+    `Eiere med effektiv andel under ${formatPct(report.minShare)} er utelatt. Egne aksjer inngår ikke.`,
   `Rapporten er generert automatisk av aksjegrafen.com og er ikke juridisk rådgivning. Opplysningene må ` +
     `verifiseres mot primærkilder før bruk i kundetiltak etter hvitvaskingsloven.`,
 ];

@@ -252,3 +252,13 @@ _Append entries: date — session/track — what was done / claimed / decided._
   `.claude/` is now gitignored. **Action for track sessions: rebase your branch onto master.**
   Production deploy (`git push heroku master`) is a SEPARATE step, pending a decision on whether
   to trigger a graph re-import first (Neo4j currently holds only 2025 OWNS edges; Mongo has all years).
+- 2026-07-18 — track 3 session — indirect-ownership fixes after user testing on Aize AS:
+  (1) treasury shares (self-loop OWNS edges, e.g. Aize Holding owning 2,7 % of itself)
+  compounded into phantom indirect ownership (>100 % for a sole owner) — self-loops now
+  excluded from traversal and chain enumeration; (2) the maxDepth cap silently cut off real
+  owners (Røkke sits 6 levels above Aize AS) and is **removed entirely** — the traversal runs
+  until the minShare floor empties the frontier (deep structures are the point of the
+  feature; a 100-level internal guard only stops pathological never-decaying cycles);
+  (3) new `investorType=person` filter + "Kun personer" toggle in the modal (person = node
+  has year_of_birth) so ultimate individual owners surface directly. Aize AS person view now
+  ranks Røkke on top at 45,30 % effective.

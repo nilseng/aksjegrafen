@@ -15,6 +15,7 @@ export const IndirectOwnershipTable = () => {
   const { source } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
   const [limit] = useState(10);
   const [skip, setSkip] = useState(0);
+  const [investorType, setInvestorType] = useState<"all" | "person">("all");
   const [owners, setOwners] = useState<IndirectOwnership[]>();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -22,9 +23,12 @@ export const IndirectOwnershipTable = () => {
     if (!source?.properties.uuid) return;
     const abortController = new AbortController();
     setIsLoading(true);
-    fetch(`/api/graph/indirect-investors?uuid=${source.properties.uuid}&limit=${limit}&skip=${skip}`, {
-      signal: abortController.signal,
-    })
+    fetch(
+      `/api/graph/indirect-investors?uuid=${source.properties.uuid}&investorType=${investorType}&limit=${limit}&skip=${skip}`,
+      {
+        signal: abortController.signal,
+      }
+    )
       .then((res) => res.json())
       .then((data: { investors: IndirectOwnership[] }) => {
         setOwners(data.investors);
@@ -34,7 +38,7 @@ export const IndirectOwnershipTable = () => {
         if (e.name !== "AbortError") setIsLoading(false);
       });
     return () => abortController.abort();
-  }, [source, limit, skip]);
+  }, [source, investorType, limit, skip]);
 
   useEffect(() => {
     if (source) {
@@ -60,6 +64,27 @@ export const IndirectOwnershipTable = () => {
         <p className="text-center text-xs pb-1" style={{ color: theme.muted }}>
           Effektiv eierandel er summen over alle eierskapskjeder av produktet av eierandelene i hvert ledd.
         </p>
+        <div className="flex justify-center pb-2">
+          {(["all", "person"] as const).map((type) => (
+            <button
+              key={type}
+              className="rounded text-xs px-2 py-1 mx-1"
+              style={{
+                backgroundColor: investorType === type ? theme.primary : "transparent",
+                color: investorType === type ? "white" : theme.muted,
+                border: `1px solid ${investorType === type ? theme.primary : theme.muted}`,
+              }}
+              onClick={() => {
+                if (investorType !== type) {
+                  setSkip(0);
+                  setInvestorType(type);
+                }
+              }}
+            >
+              {type === "all" ? "Alle eiere" : "Kun personer"}
+            </button>
+          ))}
+        </div>
         <p className="text-center text-xs pb-2">
           <span style={{ color: theme.muted }}>Last ned eierskapsrapport: </span>
           <a

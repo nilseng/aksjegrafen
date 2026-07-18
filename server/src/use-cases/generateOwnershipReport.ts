@@ -13,20 +13,17 @@ export const generateOwnershipReport = async ({
   uuid,
   orgnr,
   year,
-  maxDepth,
   minShare,
 }: {
   uuid?: string;
   orgnr?: string;
   year: Year;
-  maxDepth: number;
   minShare: number;
 }): Promise<OwnershipReport | null> => {
   const { node, investors } = await findIndirectInvestors({
     uuid,
     orgnr,
     year,
-    maxDepth,
     minShare,
     limit: INVESTOR_LIMIT,
     skip: 0,
@@ -42,7 +39,10 @@ export const generateOwnershipReport = async ({
       investorUuid: ownership.investor.properties.uuid,
       targetUuid: node.properties.uuid,
       year,
-      maxDepth,
+      // Unlike the effective-share traversal, chain enumeration walks simple paths and
+      // explodes with depth on broad structures, so bound it per investor: their shortest
+      // chain plus a little slack covers the chains that matter.
+      maxDepth: ownership.minDepth + 2,
       limit: CHAINS_PER_INVESTOR,
     });
     investorChains.push({ investor: ownership.investor, effectiveShare: ownership.effectiveShare, chains });
@@ -51,7 +51,6 @@ export const generateOwnershipReport = async ({
   return {
     company: { uuid: node.properties.uuid, name: node.properties.name, orgnr: node.properties.orgnr },
     year,
-    maxDepth,
     minShare,
     generatedAt: new Date().toISOString(),
     investors,

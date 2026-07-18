@@ -127,6 +127,13 @@ export const findInvestments = async ({
   };
 };
 
+// Termination guard for the level-by-level traversal. Depth is not a product concept — deep
+// chains are where indirect ownership matters most — the traversal simply runs until the
+// minShare floor empties the frontier, which every real structure reaches quickly because
+// chain weights are products of shares <= 1. The cap only stops pathological data (e.g. two
+// companies each recorded as owning 100 % of the other, where weights never decay).
+const MAX_TRAVERSAL_DEPTH = 100;
+
 // Effective (indirect) ownership is computed level by level rather than by enumerating
 // paths: enumerating all ownership chains into a widely held company (e.g. Equinor) means
 // hundreds of thousands of paths and minutes of query time, while the per-level frontier is
@@ -135,21 +142,21 @@ export const findInvestments = async ({
 // target at a level falls below minShare are dropped and not expanded — weights only shrink
 // further up a chain, so this bounds the frontier on widely held companies. Chains that
 // revisit the target (cross-ownership cycles) are cut; other cycles contribute their
-// truncated geometric series up to maxDepth.
+// geometric series until they decay below minShare.
 export const findIndirectInvestors = async ({
   uuid,
   orgnr,
   year,
-  maxDepth,
   minShare,
+  personsOnly,
   limit,
   skip,
 }: {
   uuid?: string;
   orgnr?: string;
   year: Year;
-  maxDepth: number;
   minShare: number;
+  personsOnly?: boolean;
   limit: number;
   skip?: number;
 }): Promise<{ node: GraphNode | null; investors: IndirectOwnership[] }> => {
@@ -167,19 +174,22 @@ export const findIndirectInvestors = async ({
 
   const ownershipByUuid = new Map<
     string,
-    { effectiveShare: number; directShare: number; pathCount: number; minDepth: number }
+    { effectiveShare: number; directShare: number; pathCount: number; minDepth: number; isPerson: boolean }
   >();
   let frontier: { uuid: string; weight: number; walks: number }[] = [{ uuid: targetUuid, weight: 1, walks: 1 }];
 
-  for (let depth = 1; depth <= maxDepth && frontier.length > 0; depth++) {
+  for (let depth = 1; depth <= MAX_TRAVERSAL_DEPTH && frontier.length > 0; depth++) {
     const records = await runQuery({
       query: `
         UNWIND $frontier AS f
         MATCH (owner:Shareholder)-[r:OWNS]->(m:Company {uuid: f.uuid})
-        WHERE r.year = ${year} AND r.share IS NOT NULL AND owner.uuid <> $targetUuid
+        // owner <> m drops treasury shares (a company owning itself): the self-loop would
+        // otherwise compound into phantom indirect ownership (>100 % for a sole owner).
+        WHERE r.year = ${year} AND r.share IS NOT NULL AND owner <> m AND owner.uuid <> $targetUuid
         WITH owner, sum(r.share * f.weight) AS weight, sum(f.walks) AS walks
         WHERE weight >= $minShare
-        RETURN owner.uuid AS uuid, weight, walks, "Company" IN labels(owner) AS isCompany
+        RETURN owner.uuid AS uuid, weight, walks, "Company" IN labels(owner) AS isCompany,
+          owner.year_of_birth IS NOT NULL AS isPerson
       `,
       params: { frontier, targetUuid, minShare },
     });
@@ -193,6 +203,7 @@ export const findIndirectInvestors = async ({
         directShare: 0,
         pathCount: 0,
         minDepth: depth,
+        isPerson: record.get("isPerson") as boolean,
       };
       entry.effectiveShare += weight;
       if (depth === 1) entry.directShare = weight;
@@ -204,8 +215,12 @@ export const findIndirectInvestors = async ({
   }
 
   const ranked = [...ownershipByUuid.entries()]
+    // Person detection uses year_of_birth, which the registry provides for individuals but
+    // not for companies; foreign entities without one are treated as companies.
+    .filter(([, ownership]) => !personsOnly || ownership.isPerson)
     .sort(([, a], [, b]) => b.effectiveShare - a.effectiveShare)
-    .slice(skip ?? 0, (skip ?? 0) + limit);
+    .slice(skip ?? 0, (skip ?? 0) + limit)
+    .map(([investorUuid, { isPerson, ...ownership }]) => [investorUuid, ownership] as const);
   if (ranked.length === 0) return { node, investors: [] };
 
   const investorRecords = await runQuery({
@@ -254,6 +269,8 @@ export const findOwnershipChains = async ({
         MATCH path = (investor)-[:OWNS*1..${maxDepth}]->(target)
         WHERE all(r IN relationships(path) WHERE r.year = ${year} AND r.share IS NOT NULL)
         AND none(n IN nodes(path)[1..-1] WHERE n = target)
+        // Treasury shares (self-loop edges) are not part of an ownership chain.
+        AND none(r IN relationships(path) WHERE startNode(r) = endNode(r))
         RETURN [n IN nodes(path) | {uuid: n.uuid, name: n.name, orgnr: n.orgnr}] AS nodes,
           [r IN relationships(path) | r.share] AS shares,
           reduce(share = 1.0, r IN relationships(path) | share * r.share) AS product

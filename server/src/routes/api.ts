@@ -422,10 +422,12 @@ export const api = ({ db }: { db: IDatabase }) => {
     query("uuid").optional(),
     query("orgnr").optional(),
     query(["year"]).default(2025).toInt(),
-    query(["maxDepth"]).default(5).toInt(),
     // Investors below this effective share of the target are excluded and their owners are
-    // not traversed. The floor keeps widely held companies (>100k shareholders) fast.
+    // not traversed. The floor keeps widely held companies (>100k shareholders) fast, and is
+    // what terminates the traversal — there is deliberately no depth limit, since deep
+    // holding structures are the whole point of the feature.
     query(["minShare"]).default(0.0001).toFloat(),
+    query("investorType").default("all").isIn(["all", "person"]),
     query("limit").default(10).toInt(),
     query("skip").default(0).toInt(),
     asyncRouter(async (req, res) => {
@@ -435,8 +437,8 @@ export const api = ({ db }: { db: IDatabase }) => {
         uuid: query.uuid,
         orgnr: query.orgnr,
         year: query.year,
-        maxDepth: Math.min(Math.max(query.maxDepth, 1), 10),
         minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
+        personsOnly: query.investorType === "person",
         limit: query.limit,
         skip: query.skip,
       });
@@ -471,7 +473,6 @@ export const api = ({ db }: { db: IDatabase }) => {
     query("uuid").optional(),
     query("orgnr").optional(),
     query(["year"]).default(2025).toInt(),
-    query(["maxDepth"]).default(5).toInt(),
     query(["minShare"]).default(0.0001).toFloat(),
     query("format").default("pdf").isIn(["pdf", "csv"]),
     asyncRouter(async (req, res) => {
@@ -481,7 +482,6 @@ export const api = ({ db }: { db: IDatabase }) => {
         uuid: query.uuid,
         orgnr: query.orgnr,
         year: query.year,
-        maxDepth: Math.min(Math.max(query.maxDepth, 1), 10),
         minShare: Math.min(Math.max(query.minShare, 0.000001), 1),
       });
       if (!report) return res.status(404).json("Company not found.");

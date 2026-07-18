@@ -193,7 +193,6 @@ export interface OwnershipChain {
 export interface OwnershipReport {
   company: { uuid: string; name: string; orgnr?: string };
   year: Year;
-  maxDepth: number;
   minShare: number;
   generatedAt: string;
   investors: IndirectOwnership[];

@@ -5,18 +5,18 @@ export const findIndirectOwnership = async ({
   uuid,
   orgnr,
   year,
-  maxDepth,
   minShare,
+  personsOnly,
   limit,
   skip,
 }: {
   uuid?: string;
   orgnr?: string;
   year: Year;
-  maxDepth: number;
   minShare: number;
+  personsOnly?: boolean;
   limit: number;
   skip: number;
 }) => {
-  return findIndirectInvestors({ uuid, orgnr, year, maxDepth, minShare, limit, skip });
+  return findIndirectInvestors({ uuid, orgnr, year, minShare, personsOnly, limit, skip });
 };
