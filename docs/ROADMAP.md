@@ -262,7 +262,10 @@ _Append entries: date — session/track — what was done / claimed / decided._
   (3) new `investorType=person` filter + "Kun personer" toggle in the modal (person = node
   has year_of_birth) so ultimate individual owners surface directly. Aize AS person view now
   ranks Røkke on top at 45,30 % effective.
-- 2026-07-18 — track 3 session — "Kun personer" is now the default view; table rows expand
-  on click to show the investor's actual ownership chains (new
-  `GET /api/graph/ownership-chains?investorUuid&targetUuid`, bounded per investor by
-  minDepth + 2); "Kjeder" column got a tooltip.
+- 2026-07-18 — track 3 session — "Kun personer" is now the default view; clicking an owner
+  row opens the ownership chains **in the graph** (AllPaths view, directed, OWNS-only, via a
+  new `linkTypes` URL param). **Heads-up for Track 2:** the GDS projections
+  (`directedGraph`/`undirectedGraph`) are only created when missing, so they go stale after
+  every import — path search then fails with "Source node does not exist in the in-memory
+  graph" for nodes added since. Refreshed them manually (drop + recreate on server start);
+  the import pipeline should drop/recreate projections as a final step.

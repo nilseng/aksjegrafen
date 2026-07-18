@@ -68,6 +68,7 @@ export const graphSlice = createSlice<
     setSource: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
     setTarget: (state: GraphState, action: PayloadAction<GraphNode | undefined>) => void;
     setFilter: (state: GraphState, action: PayloadAction<Filter>) => void;
+    setLinkTypes: (state: GraphState, action: PayloadAction<GraphLinkType[]>) => void;
     openMenu: (
       state: GraphState,
       action: PayloadAction<{ node: GraphNode; position: { x: number; y: number } }>
@@ -100,6 +101,9 @@ export const graphSlice = createSlice<
     },
     setFilter: (state, action) => {
       state.data.filter = action.payload;
+    },
+    setLinkTypes: (state, action) => {
+      state.data.filter.linkTypes = action.payload;
     },
     openMenu: (state, action) => {
       state.data.menu = { isOpen: true, node: action.payload.node, position: action.payload.position };
@@ -600,6 +604,7 @@ export const {
   setTarget,
   setIsDirected,
   setFilter,
+  setLinkTypes,
   openMenu,
   closeMenu,
   resetGraph,

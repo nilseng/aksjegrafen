@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { GraphNode, GraphType } from "../models/models";
-import { setGraphType, setIsDirected, setSourceUuid, setTargetUuid } from "../slices/graphSlice";
+import { GraphLinkType, GraphNode, GraphType } from "../models/models";
+import { setGraphType, setIsDirected, setLinkTypes, setSourceUuid, setTargetUuid } from "../slices/graphSlice";
 import { AppDispatch } from "../store";
 import { useQuery } from "./useQuery";
 
@@ -31,6 +31,16 @@ export const useGraphQueryParams = () => {
     }
     if (isDirected) dispatch(setIsDirected(!!isDirected && isDirected !== "false"));
   }, [dispatch, query]);
+
+  // Depends on the raw param string, not the query object (a fresh instance every render),
+  // so the link-type filter is only re-applied when the URL actually changes — otherwise it
+  // would fight the Settings panel, which manages the same filter interactively.
+  const linkTypesParam = query.get("linkTypes");
+  useEffect(() => {
+    if (!linkTypesParam) return;
+    const linkTypes = linkTypesParam.split(",").filter(isGraphLinkType);
+    if (linkTypes.length > 0) dispatch(setLinkTypes(linkTypes));
+  }, [dispatch, linkTypesParam]);
 };
 
 const fetchNodeUuid = async (orgnr: string): Promise<string | undefined> => {
@@ -46,4 +56,8 @@ const fetchNodeUuid = async (orgnr: string): Promise<string | undefined> => {
 
 const isGraphType = (type: string): type is GraphType => {
   return Object.values(GraphType).includes(type as GraphType);
+};
+
+const isGraphLinkType = (type: string): type is GraphLinkType => {
+  return Object.values(GraphLinkType).includes(type as GraphLinkType);
 };
