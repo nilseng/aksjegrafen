@@ -221,4 +221,44 @@ export enum UserEventType {
   InvestmentTableLoad = "InvestmentTableLoad",
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
+  IndirectOwnershipLoad = "IndirectOwnershipLoad",
+  OwnershipReportDownload = "OwnershipReportDownload",
+  OwnershipChangesLoad = "OwnershipChangesLoad",
+}
+
+export enum OwnershipChangeType {
+  New = "New",
+  Exited = "Exited",
+  Increased = "Increased",
+  Decreased = "Decreased",
+  Unchanged = "Unchanged",
+}
+
+// How one investor's direct stake in a company changed between two years. share/stocks hold
+// the values for the compare year (previous) and the primary year (current); either side is
+// undefined when the investor held no stake that year.
+export interface OwnershipChange {
+  investor: { shareholderId: string; name?: string; orgnr?: string; yearOfBirth?: number; location?: string };
+  type: OwnershipChangeType;
+  share: { previous?: number; current?: number };
+  stocks: { previous?: number; current?: number };
+}
+
+export interface OwnershipChanges {
+  company: { name: string; orgnr: string };
+  year: Year;
+  compareYear: Year;
+  summary: { [type in OwnershipChangeType]: number };
+  changes: OwnershipChange[];
+}
+
+// Aggregated ownership of an investor in a target company: effective share is the sum over
+// all ownership chains of the product of the shares along each chain. directShare is the
+// length-1 chain contribution, so effectiveShare - directShare = indirect ownership.
+export interface IndirectOwnership {
+  investor: GraphNode;
+  effectiveShare: number;
+  directShare: number;
+  pathCount: number;
+  minDepth: number;
 }

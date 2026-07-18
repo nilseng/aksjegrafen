@@ -99,13 +99,27 @@ SEO (currently greenfield: CRA SPA, 2 routes, UUID query params, no sitemap/OG/J
 Goal: one page per company aggregating everything (this is the same build as the SEO pages —
 coordinate with Track 2 on `/selskap/:orgnr`), plus the first paid features.
 
-- [ ] **Indirect ownership calculation**: effective % through chains (Neo4j path queries).
+- [x] **Indirect ownership calculation**: effective % through chains (Neo4j path queries).
       The documented market gap and the core KYC feature.
-- [ ] **KYC/RRR report export**: PDF/CSV "eierskapskart" documenting the chain with sources +
+      _Done on `track/3-features`: `GET /api/graph/indirect-investors` (uuid or orgnr, year,
+      maxDepth, minShare floor for mega-caps, pagination) + "Indirekte eierskap" modal table in
+      the graph UI. Level-by-level aggregation, not path enumeration — Equinor answers in ~1.5s._
+- [x] **KYC/RRR report export**: PDF/CSV "eierskapskart" documenting the chain with sources +
       date, formatted for an AML file. First paid feature.
+      _Done on `track/3-features`: `GET /api/ownership-report?uuid|orgnr&year&format=pdf|csv`
+      (pdfkit; Norwegian copy; sections: eiere etter effektiv andel, minst-25 %-liste
+      (RRR-indikasjon), eierskapskjeder for eiere ≥ 5 %, kilder/forbehold med datovintage).
+      Download links in the "Indirekte eierskap" modal. Currently free — gate behind payment
+      when auth lands._
 - [ ] **Company portal page**: ownership graph, shareholder history, roles, financials, brreg
       info in one view (builds on Track 2's server-rendered page or a richer client route).
-- [ ] **Year-over-year diff**: "what changed in X's ownership since last year".
+- [x] **Year-over-year diff**: "what changed in X's ownership since last year".
+      _Done on `track/3-features`: `GET /api/ownership-changes?orgnr&year&compareYear` — per-investor
+      New/Exited/Increased/Decreased/Unchanged with share/stocks both years + summary counts, and an
+      "Endringer i eierskap" modal table with year selector. Runs on MongoDB (holdings cover all
+      years; the graph only holds the imported year — NB: the 2025 reload wiped 2019–2024 OWNS
+      edges in Neo4j, so graph-based history is empty until Track 2's additive re-import).
+      Classification/sort/summary pushed into a Mongo aggregation: DNB Bank answers in ~2 s._
 - [ ] **Monitoring/alerts**: watch a company/person, notify on ownership/role changes.
 - [ ] **Auth + payments** (email login, Stripe/Vipps) — only once a paid feature exists.
 
@@ -174,3 +188,21 @@ _Append entries: date — session/track — what was done / claimed / decided._
   against live DBs: Statkraft + Equinor pages, sitemap shards, 404s, node-by-orgnr. Touched
   shared files: `routes/api.ts`, `index.ts` (route mounting), `App.tsx`. NOTE for Track 3: the
   `/selskap/:orgnr` skeleton is in `server/src/routes/selskap.ts` — enrich there.
+- 2026-07-03 — track 3 session — **claimed Track 3 (features & portal)** on branch
+  `track/3-features` (worktree). Starting with indirect ownership calculation.
+- 2026-07-03 — track 3 session — indirect ownership done (API + graph-UI table), verified
+  against live Neo4j. Touches shared files `server/src/routes/api.ts`, `server/src/models/models.ts`,
+  `client/src/models/models.ts` (new UserEventType `IndirectOwnershipLoad`). The endpoint accepts
+  `orgnr` so Track 2's `/selskap/:orgnr` pages can embed it directly. Next: KYC/RRR report export
+  on top of it.
+- 2026-07-03 — track 3 session — KYC/RRR report export done: PDF/CSV eierskapsrapport endpoint
+  + download links in the graph UI, verified against live data (Equinor report generates in
+  ~1.6 s). New server dep `pdfkit`. Shared files touched again: `server/src/routes/api.ts`,
+  both `models.ts` (UserEventType `OwnershipReportDownload`). Next: company portal page
+  (coordinate with Track 2 on `/selskap/:orgnr`) or year-over-year diff.
+- 2026-07-05 — track 3 session — year-over-year ownership diff done (Mongo aggregation +
+  modal table). **Heads-up for Track 2:** confirmed Neo4j currently only has 2025 OWNS edges —
+  the 2025 reload wiped 2019–2024; the diff therefore runs on MongoDB. Also bumped client
+  `Year` type to include 2025 (was stale). Shared files touched: `routes/api.ts`, both
+  `models.ts`. Remaining track 3: portal page (awaits Track 2 skeleton), monitoring/alerts,
+  auth + payments (gate the report export).
