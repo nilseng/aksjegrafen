@@ -1,4 +1,5 @@
 import { Driver as Neo4j } from "neo4j-driver";
+import { refreshProjections } from "../database/graphProjections";
 import { IDatabase } from "../database/mongoDB";
 import { Year } from "../models/models";
 import { clearGraphDatabase } from "../use-cases/clearGraphDatabase";
@@ -89,6 +90,13 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
   if (options?.importRolesToGraph) {
     console.log("\n========== IMPORTING ROLES TO GRAPH ==========");
     await importRolesToGraph(graphDB);
+  }
+
+  if (importToGraph || options?.importRolesToGraph || clearGraphDBFirst) {
+    // GDS projections are in-memory snapshots; without a refresh, path search
+    // fails for nodes added by this import ("Source node does not exist...").
+    console.log("\n========== REFRESHING GRAPH PROJECTIONS ==========");
+    await refreshProjections(graphDB);
   }
 
   console.log(`\n========== UNIFIED IMPORT FLOW FOR YEAR ${year} COMPLETED ==========`);

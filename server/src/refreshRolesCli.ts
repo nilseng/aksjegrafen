@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { Database } from "./database/databaseSetup";
+import { refreshProjections } from "./database/graphProjections";
 import { clearGraphRoles } from "./use-cases/clearGraphRoles";
 import { downloadBrregEntities, downloadBrregRoles } from "./use-cases/downloadBrregFiles";
 import { importRolesToGraph } from "./use-cases/importRolesToGraph";
@@ -51,6 +52,10 @@ async function refreshRoles() {
     if (argv.clearRolesFirst) await clearGraphRoles(graphDB);
 
     await importRolesToGraph(graphDB);
+
+    // Path search runs on in-memory GDS projections; refresh them so the
+    // updated roles are visible to it.
+    await refreshProjections(graphDB);
 
     await graphDB.close();
     console.log("Roles refresh completed successfully.");
