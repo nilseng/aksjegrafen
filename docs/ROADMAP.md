@@ -300,3 +300,8 @@ _Append entries: date — session/track — what was done / claimed / decided._
   GDS projection refresh at end of imports, branded /selskap landing pages, import-runner
   runbook (+ watcher dropped). Deploy still pending owner decision (graph re-import of
   historical years, per track 3's note).
+- 2026-07-18 — track 1 session — landing page shipped after design iteration with owner: hero
+  mirrors the graph search modal 1:1 (same SearchComponent presentation + shortcuts), subtitle
+  under the input (hides while results show), scroll chevron to the redesigned use-case cards
+  below the fold. Rebased onto master (data-driven years + track-3 events merged cleanly) and
+  fast-forwarded master.
