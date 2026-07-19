@@ -103,7 +103,7 @@ export const Kilder = () => {
       <h5 className="text-lg font-bold">Feil i data?</h5>
       <p className="text-sm pb-4">
         Oppdager du feil, eller har du spørsmål om datagrunnlaget? Send en e-post til{" "}
-        <code>teodor.nilseng@gmail.com</code>. Gjelder det opplysninger om deg selv, se{" "}
+        <code>hei@aksjegrafen.com</code>. Gjelder det opplysninger om deg selv, se{" "}
         <Link to="/personvern" className="underline" style={{ color: theme.primary }}>
           personvernerklæringen
         </Link>{" "}

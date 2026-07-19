@@ -168,7 +168,7 @@ export const ApiDocs = () => {
       />
       <p>
         Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
-        <code>teodor.nilseng@gmail.com</code>.
+        <code>hei@aksjegrafen.com</code>.
       </p>
     </div>
   );

@@ -1,7 +1,7 @@
 # Interesseavveining etter GDPR art. 6 nr. 1 bokstav f — aksjegrafen.com
 
 **Status:** internt arbeidsdokument (accountability-dokumentasjon etter GDPR art. 5 nr. 2 og art. 24).
-**Behandlingsansvarlig:** Aksjegrafen v/Teodor Nilseng (teodor.nilseng@gmail.com).
+**Behandlingsansvarlig:** Aksjegrafen v/Teodor Nilseng (hei@aksjegrafen.com).
 **Sist vurdert:** juli 2026. Revideres ved vesentlige endringer i tjenesten (nye datatyper,
 nye funksjoner som endrer inngrepets omfang, f.eks. varsling/overvåkning av personer) og ellers årlig.
 
@@ -81,7 +81,7 @@ Behandlingen er lovlig etter art. 6 nr. 1 f.
   rettigheter, klageadgang). Individuell underretning av >1M registrerte er umulig/uforholdsmessig,
   jf. art. 14 nr. 5 b — offentlig erklæring er da riktig virkemiddel.
 - **Kildeside:** publisert på `/kilder` (kilder, oppdateringsfrekvens, NLOD-attribusjon, forbehold).
-- **Protest-/rettekanal:** e-post (teodor.nilseng@gmail.com), lenket fra begge sider. Protester
+- **Protest-/rettekanal:** e-post (hei@aksjegrafen.com), lenket fra begge sider. Protester
   behandles individuelt og uten ugrunnet opphold; ved berettiget protest fjernes/skjermes personen.
   *Rutine: loggfør mottak, vurdering og utfall av hver henvendelse (egen logg, ikke i repo).*
 

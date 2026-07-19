@@ -20,8 +20,10 @@ tier is deliberately positioned below them at **990 kr/user/mnd**.
   card, NavBar CTA (hidden on /graf and on xs screens), InfoPageNav.
   Original Artifact (kept as design reference, private):
   https://claude.ai/code/artifact/4150d00a-b93d-496e-b6ba-6ae08d6a05b7
-  ⚠️ CTAs currently mailto `teodor.nilseng@gmail.com` — swap for a branded inbox (e.g.
-  `post@aksjegrafen.com`, four mailto: occurrences in the HTML) before wider sharing.
+  ✅ CTAs now mailto `hei@aksjegrafen.com` (Google Workspace alias → teodor@ inbox; swapped
+  2026-07-19 across the offer page's 4 mailto links, plus the privacy/kilder/api pages and the
+  legal doc). Email deliverability hardening still pending: SPF added, **DKIM + DMARC to do**
+  before outreach — see project memory `email-setup.md`.
 
 ## The concierge test (how we validate before building the export feature)
 

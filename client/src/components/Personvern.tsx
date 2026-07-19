@@ -27,7 +27,7 @@ export const Personvern = () => {
       <h5 className="text-lg font-bold">Behandlingsansvarlig</h5>
       <p className="text-sm pb-4">
         Aksjegrafen v/Teodor Nilseng er behandlingsansvarlig for tjenesten. Kontakt:{" "}
-        <code>teodor.nilseng@gmail.com</code>.
+        <code>hei@aksjegrafen.com</code>.
       </p>
 
       <h5 className="text-lg font-bold">Hvilke opplysninger behandles, og hvor de kommer fra</h5>
@@ -79,7 +79,7 @@ export const Personvern = () => {
         </li>
         <li>
           <span className="font-semibold">Protest (artikkel 21):</span> du kan protestere mot publisering ut fra din
-          særlige situasjon. Send en e-post til <code>teodor.nilseng@gmail.com</code> med navn og hva protesten gjelder,
+          særlige situasjon. Send en e-post til <code>hei@aksjegrafen.com</code> med navn og hva protesten gjelder,
           så behandles den uten ugrunnet opphold.
         </li>
         <li>

@@ -50,7 +50,7 @@ code work is limited to trust pages and analytics funnels.
 - [x] **Privacy package**: Art 6(1)(f) interest-balancing doc, Art 14 privacy notice page,
       objection/correction channel (email is enough to start).
       → `docs/legal/interesseavveining.md` (internal) + `/personvern`
-      (`client/src/components/Personvern.tsx`); objection channel = teodor.nilseng@gmail.com.
+      (`client/src/components/Personvern.tsx`); objection channel = hei@aksjegrafen.com.
 - [x] **Use-case funnels**: define one funnel per use case (relationship search, ownership history,
       financials, brreg lookup) on top of existing GA4 + `user_events` pipeline
       (`POST /api/user-event`, types in `client/src/models/models.ts`). Add missing events.
