@@ -30,7 +30,7 @@ export const findHistoricalInvestments = async ({
     o.investment = companies.find((c: Company) => c.orgnr === o.orgnr);
     return o;
   });
-  return investments;
+  return investments.filter((o) => !o.investment?.suppressed);
 };
 
 const findMatchingInvestments = async ({

@@ -7,6 +7,7 @@ import { Driver } from "neo4j-driver";
 import path from "path";
 
 import { Database } from "./database/databaseSetup";
+import { noindexSuppressedPages } from "./middleware/noindexSuppressedPages";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
@@ -38,6 +39,8 @@ app.use(morgan("tiny"));
 
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
+
+  app.use(noindexSuppressedPages({ db }));
 
   app.use("/api", api({ db }));
   app.use("/business-codes", businessCodeRoutes(db));

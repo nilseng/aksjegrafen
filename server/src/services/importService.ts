@@ -7,6 +7,7 @@ import { importRoles } from "../use-cases/importRoles";
 import { importRolesToGraph } from "../use-cases/importRolesToGraph";
 import { importShareholderRegistry } from "../use-cases/importShareholderRegistry";
 import { importShareholderRegistryToGraph } from "../use-cases/importShareholderRegistryToGraph";
+import { applySuppressions } from "../use-cases/manageSuppressions";
 import { transformData } from "./transformationService";
 
 /**
@@ -81,6 +82,12 @@ export const importData = async (graphDB: Neo4j, db: IDatabase, year: Year, opti
     console.log("\n========== IMPORTING ROLES TO GRAPH ==========");
     await importRolesToGraph(graphDB);
   }
+
+  // Imports rebuild the flagged documents/nodes, so suppressions must be re-derived
+  // from the suppression list afterwards to keep honoring privacy requests.
+  console.log("\n========== RE-APPLYING SUPPRESSIONS ==========");
+  const suppressionCount = await applySuppressions({ db, graphDB });
+  console.log(`Re-applied ${suppressionCount} suppression entries.`);
 
   console.log(`\n========== UNIFIED IMPORT FLOW FOR YEAR ${year} COMPLETED ==========`);
 };

@@ -14,6 +14,7 @@
     "import:transform": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=true --importToGraph=false",
     "import:graph": "npx tsc && node --max-old-space-size=8192 dist/importCli.js --importToMongoDB=false --runTransformation=false --importToGraph=true",
     "migrate": "npx tsc && node --max-old-space-size=8192 dist/migrateCli.js",
+    "suppress": "npx tsc && node dist/suppressCli.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
