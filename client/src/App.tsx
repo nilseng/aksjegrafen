@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { Redirect, Route, BrowserRouter as Router, Switch } from "react-router-dom";
 import { AppContext } from "./AppContext";
 import { ApiDocs } from "./components/ApiDocs";
+import { CanonicalLink } from "./components/CanonicalLink";
+import { Bruksomrader } from "./components/Bruksomrader";
+import { Kilder } from "./components/Kilder";
+import { Landing } from "./components/Landing";
 import NavBar from "./components/NavBar";
+import { Personvern } from "./components/Personvern";
 import { Overlays } from "./components/Overlays";
 
 import { ErrorBoundary } from "@sentry/react";
@@ -32,6 +37,7 @@ const App = () => {
     <ErrorBoundary fallback={<FallbackError />}>
       <AppContext.Provider value={{ theme }}>
         <Router>
+          <CanonicalLink />
           <NavBar theme={theme} setTheme={setTheme} />
           <div
             id="ag-main"
@@ -43,7 +49,28 @@ const App = () => {
           >
             <Switch>
               <Route path="/api-docs" component={ApiDocs} />
-              <Route path="/" component={Graph} exact />
+              <Route path="/bruksomrader" component={Bruksomrader} />
+              <Route path="/kilder" component={Kilder} />
+              <Route path="/personvern" component={Personvern} />
+              <Route path="/graf" component={Graph} />
+              <Route
+                path="/"
+                exact
+                render={({ location }) => {
+                  // Shared graph links point to the root with query params: sourceUuid from before
+                  // the landing move, sourceOrgnr from the SEO share URLs. Forward any of them to
+                  // the graph; otherwise show the landing page.
+                  const params = new URLSearchParams(location.search);
+                  const isGraphLink = ["sourceUuid", "sourceOrgnr", "targetUuid", "targetOrgnr", "graphType"].some(
+                    (k) => params.has(k)
+                  );
+                  return isGraphLink ? (
+                    <Redirect to={{ pathname: "/graf", search: location.search }} />
+                  ) : (
+                    <Landing />
+                  );
+                }}
+              />
               <Route>
                 <Redirect to="/" />
               </Route>

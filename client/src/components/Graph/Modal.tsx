@@ -4,9 +4,11 @@ import { ModalContent, close, setContent } from "../../slices/modalSlice";
 import { RootState } from "../../store";
 import { NeuButton } from "../NeuButton";
 import { Financials } from "./Financials";
+import { IndirectOwnershipTable } from "./IndirectOwnershipTable";
 import { InvestmentTable } from "./InvestmentTable";
 import { InvestorTable } from "./InvestorTable";
 import { NodeSearch } from "./NodeSearch";
+import { OwnershipChangesTable } from "./OwnershipChangesTable";
 import { TargetSearch } from "./TargetSearch";
 import { UnitInformation } from "./UnitInformation";
 
@@ -39,6 +41,8 @@ export const Modal = () => {
         {content === ModalContent.PathSearch && <TargetSearch />}
         {content === ModalContent.InvestmentTable && <InvestmentTable />}
         {content === ModalContent.InvestorTable && <InvestorTable />}
+        {content === ModalContent.IndirectOwnership && <IndirectOwnershipTable />}
+        {content === ModalContent.OwnershipChanges && <OwnershipChangesTable />}
         {content === ModalContent.Financials && <Financials />}
         {content === ModalContent.Details && <UnitInformation />}
       </div>

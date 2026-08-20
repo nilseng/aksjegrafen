@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "mongodb";
-import { BusinessCode, Company, Ownership, Role, Shareholder, Suppression, UserEvent } from "../models/models";
+import { ApiKey, BusinessCode, Company, Ownership, Role, Shareholder, Suppression, UserEvent } from "../models/models";
 
 export interface IDatabase {
   ownerships: Collection<Ownership>;
@@ -9,6 +9,7 @@ export interface IDatabase {
   businessCodes: Collection<BusinessCode>;
   userEvents: Collection<UserEvent>;
   suppressions: Collection<Suppression>;
+  apiKeys: Collection<ApiKey>;
 }
 
 export const connectToMongoDb = async (): Promise<IDatabase> => {
@@ -29,6 +30,7 @@ export const connectToMongoDb = async (): Promise<IDatabase> => {
     businessCodes: client.db().collection<BusinessCode>("businessCodes"),
     userEvents: client.db().collection<UserEvent>("user_events"),
     suppressions: client.db().collection<Suppression>("suppressions"),
+    apiKeys: client.db().collection<ApiKey>("api_keys"),
   };
 
   /* await collections.shareholders.dropIndexes();

@@ -1,6 +1,8 @@
 import { ObjectId } from "mongodb";
 
-export type Year = 2025 | 2024 | 2023 | 2022 | 2021 | 2020 | 2019 | 2018 | 2017 | 2016 | 2015;
+// Which years exist is data-driven (registry years 2015→present, see services/yearService.ts),
+// so Year is a plain number rather than a hardcoded union that must be bumped every May.
+export type Year = number;
 
 export interface OwnershipRaw {
   orgnr: string;
@@ -49,6 +51,7 @@ export interface Company {
   investmentCount?: { [key in Year]?: number };
   suppressed?: boolean;
   suppressedSearch?: boolean;
+  noindex?: boolean;
 }
 
 export interface Person {
@@ -172,6 +175,62 @@ export enum GraphLinkType {
   VARA = "VARA",
 }
 
+// Aggregated ownership of an investor in a target company: effective share is the sum over
+// all ownership chains of the product of the shares along each chain. directShare is the
+// length-1 chain contribution, so effectiveShare - directShare = indirect ownership.
+export interface IndirectOwnership {
+  investor: GraphNode;
+  effectiveShare: number;
+  directShare: number;
+  pathCount: number;
+  minDepth: number;
+}
+
+// One ownership chain from an investor (first node) to the target company (last node).
+// shares[i] is the share the node at position i holds in the node at position i + 1;
+// product is the chain's contribution to the investor's effective share of the target.
+export interface OwnershipChain {
+  nodes: { uuid: string; name: string; orgnr?: string }[];
+  shares: number[];
+  product: number;
+}
+
+export interface OwnershipReport {
+  company: { uuid: string; name: string; orgnr?: string };
+  year: Year;
+  minShare: number;
+  generatedAt: string;
+  investors: IndirectOwnership[];
+  investorChains: { investor: GraphNode; effectiveShare: number; chains: OwnershipChain[] }[];
+}
+
+export enum OwnershipChangeType {
+  New = "New",
+  Exited = "Exited",
+  Increased = "Increased",
+  Decreased = "Decreased",
+  Unchanged = "Unchanged",
+}
+
+// How one investor's direct stake in a company changed between two years. share/stocks hold
+// the values for the compare year (previous) and the primary year (current); either side is
+// undefined when the investor held no stake that year. Computed from MongoDB holdings, which
+// cover all years (the graph only holds the currently imported year).
+export interface OwnershipChange {
+  investor: { shareholderId: string; name?: string; orgnr?: string; yearOfBirth?: number; location?: string };
+  type: OwnershipChangeType;
+  share: { previous?: number; current?: number };
+  stocks: { previous?: number; current?: number };
+}
+
+export interface OwnershipChanges {
+  company: { name: string; orgnr: string };
+  year: Year;
+  compareYear: Year;
+  summary: { [type in OwnershipChangeType]: number };
+  changes: OwnershipChange[];
+}
+
 export interface UserEvent {
   uuid?: string;
   orgnr?: string;
@@ -185,6 +244,30 @@ export enum UserEventType {
   InvestmentTableLoad = "InvestmentTableLoad",
   RelationSourceLoad = "RelationSourceLoad",
   RelationTargetLoad = "RelationTargetLoad",
+  IndirectOwnershipLoad = "IndirectOwnershipLoad",
+  OwnershipReportDownload = "OwnershipReportDownload",
+  OwnershipChangesLoad = "OwnershipChangesLoad",
+  FinancialsLoad = "FinancialsLoad",
+  UnitInformationLoad = "UnitInformationLoad",
+}
+
+export enum ApiTier {
+  Anonymous = "anonymous",
+  Free = "free",
+  Paid = "paid",
+}
+
+// API keys gate rate-limit tiers only — the data itself stays open to everyone.
+// Paid keys are never rate limited; anonymous/free callers are.
+export interface ApiKey {
+  key: string;
+  tier: ApiTier;
+  name?: string;
+  email?: string;
+  note?: string;
+  active: boolean;
+  createdAt: Date;
+  revokedAt?: Date;
 }
 
 /**

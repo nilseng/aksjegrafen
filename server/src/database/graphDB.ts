@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import neo4j, { auth } from "neo4j-driver";
+import { createProjections } from "./graphProjections";
 dotenv.config();
 
 export const graphDB = neo4j.driver(
@@ -45,98 +46,6 @@ const createConstraints = async () => {
   session.close();
 };
 
-/* Neo4j Graph Data Science algorithms are run on projections of the graph and not the DB itself. */
-const createProjections = async () => {
-  const session = graphDB.session();
-  console.info("Creating projections");
-  const directedGraphExists = (
-    await session.run(`
-    CALL gds.graph.exists('directedGraph') YIELD exists
-    RETURN exists;
-  `)
-  ).records[0].get("exists");
-  if (directedGraphExists) console.log("*** Directed graph projection already exists. ***");
-  else {
-    await session.run(`
-    CALL gds.graph.project(
-      'directedGraph',    
-      ['Person', 'Unit', 'Company', 'Shareholder'],   
-      {
-        OWNS: {orientation: 'NATURAL', properties: ['stocks', 'share']}, 
-        BEST: {orientation: 'NATURAL'}, 
-        BOBE: {orientation: 'NATURAL'}, 
-        DAGL: {orientation: 'NATURAL'}, 
-        DTPR: {orientation: 'NATURAL'}, 
-        DTSO: {orientation: 'NATURAL'}, 
-        EIKM: {orientation: 'NATURAL'}, 
-        FFØR: {orientation: 'NATURAL'}, 
-        HFOR: {orientation: 'NATURAL'}, 
-        HLSE: {orientation: 'NATURAL'}, 
-        KDEB: {orientation: 'NATURAL'}, 
-        KIRK: {orientation: 'NATURAL'}, 
-        KOMP: {orientation: 'NATURAL'}, 
-        KONT: {orientation: 'NATURAL'}, 
-        LEDE: {orientation: 'NATURAL'},
-        MEDL: {orientation: 'NATURAL'}, 
-        NEST: {orientation: 'NATURAL'}, 
-        OBS: {orientation:  'NATURAL'}, 
-        OPMV: {orientation: 'NATURAL'}, 
-        ORGL: {orientation: 'NATURAL'}, 
-        REGN: {orientation: 'NATURAL'}, 
-        REPR: {orientation: 'NATURAL'}, 
-        REVI: {orientation: 'NATURAL'}, 
-        VARA: {orientation: 'NATURAL'}
-      }
-    )
-    YIELD graphName
-  `);
-  }
-  const undirectedGraphExists = (
-    await session.run(`
-    CALL gds.graph.exists('undirectedGraph') YIELD exists
-    RETURN exists;
-  `)
-  ).records[0].get("exists");
-  if (undirectedGraphExists) console.log("*** Undirected graph projection already exists. ***");
-  else {
-    await session.run(`
-    CALL gds.graph.project(
-      'undirectedGraph',    
-      ['Person', 'Unit', 'Company', 'Shareholder'],   
-      {
-        OWNS: {orientation: 'UNDIRECTED', properties: ['stocks', 'share']}, 
-        BEST: {orientation: 'UNDIRECTED'}, 
-        BOBE: {orientation: 'UNDIRECTED'}, 
-        DAGL: {orientation: 'UNDIRECTED'}, 
-        DTPR: {orientation: 'UNDIRECTED'}, 
-        DTSO: {orientation: 'UNDIRECTED'}, 
-        EIKM: {orientation: 'UNDIRECTED'}, 
-        FFØR: {orientation: 'UNDIRECTED'}, 
-        HFOR: {orientation: 'UNDIRECTED'}, 
-        HLSE: {orientation: 'UNDIRECTED'}, 
-        KDEB: {orientation: 'UNDIRECTED'}, 
-        KIRK: {orientation: 'UNDIRECTED'}, 
-        KOMP: {orientation: 'UNDIRECTED'}, 
-        KONT: {orientation: 'UNDIRECTED'}, 
-        LEDE: {orientation: 'UNDIRECTED'},
-        MEDL: {orientation: 'UNDIRECTED'}, 
-        NEST: {orientation: 'UNDIRECTED'}, 
-        OBS: {orientation: 'UNDIRECTED'}, 
-        OPMV: {orientation: 'UNDIRECTED'}, 
-        ORGL: {orientation: 'UNDIRECTED'}, 
-        REGN: {orientation: 'UNDIRECTED'}, 
-        REPR: {orientation: 'UNDIRECTED'}, 
-        REVI: {orientation: 'UNDIRECTED'}, 
-        VARA: {orientation: 'UNDIRECTED'}
-      }
-    )
-    YIELD graphName
-  `);
-  }
-  console.info("Created projections");
-  session.close();
-};
-
 createIndexes().catch((e) => {
   console.error("Failed to create indexes", e);
 });
@@ -145,6 +54,6 @@ createConstraints().catch((e) => {
   console.error("Failed to create constraints", e);
 });
 
-createProjections().catch((e) => {
+createProjections(graphDB).catch((e) => {
   console.error("Failed to create projections", e);
 });

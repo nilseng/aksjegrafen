@@ -34,6 +34,8 @@ interface IProps<Result extends unknown> {
   minSearchTermLength?: number;
   inputContainerClassName?: string;
   inputClassName?: string;
+  listContainerClassName?: string;
+  listItemClassName?: string;
   inputStyle?: CSSProperties;
   focus?: boolean;
   initialResult?: Result[];
@@ -49,6 +51,8 @@ export const SearchComponent = <Result extends unknown>({
   minSearchTermLength,
   inputContainerClassName,
   inputClassName,
+  listContainerClassName = "h-1/2 w-full md:w-3/4 dark:text-white overflow-auto",
+  listItemClassName = "w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1",
   inputStyle,
   focus,
   initialResult,
@@ -101,7 +105,7 @@ export const SearchComponent = <Result extends unknown>({
           </div>
         )}
       </div>
-      <div className={`h-1/2 w-full md:w-3/4 dark:text-white overflow-auto`}>
+      <div className={listContainerClassName} style={maxHeight ? { maxHeight } : undefined}>
         {searchList && (
           <div className="flex flex-col w-full max-w-full h-full max-h-full">
             {searchList.length ? (
@@ -110,7 +114,7 @@ export const SearchComponent = <Result extends unknown>({
                 .map(({ result, item }) => (
                   <div
                     key={item.key}
-                    className="w-full max-w-full flex flex-col items-center justify-between border border-white dark:border-gray-500 rounded-lg p-2 my-1"
+                    className={listItemClassName}
                     style={{
                       zIndex: 101,
                       backgroundColor: "transparent",

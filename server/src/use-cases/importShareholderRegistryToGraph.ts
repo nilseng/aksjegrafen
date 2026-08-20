@@ -2,29 +2,9 @@ import { Driver } from "neo4j-driver";
 import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership, Shareholder, Year } from "../models/models";
 
+// total_stocks_<year>, stocks_<year> and share_<year> for the year being imported
 type GraphOwnership = Ownership & {
-  total_stocks_2019?: number;
-  total_stocks_2020?: number;
-  total_stocks_2021?: number;
-  total_stocks_2022?: number;
-  total_stocks_2023?: number;
-  total_stocks_2024?: number;
-  total_stocks_2025?: number;
-  stocks_2019?: number;
-  stocks_2020?: number;
-  stocks_2021?: number;
-  stocks_2022?: number;
-  stocks_2023?: number;
-  stocks_2024?: number;
-  stocks_2025?: number;
-  share_2019?: number;
-  share_2020?: number;
-  share_2021?: number;
-  share_2022?: number;
-  share_2023?: number;
-  share_2024?: number;
-  share_2025?: number;
-  [key: string]: number | undefined;
+  [key: `total_stocks_${number}` | `stocks_${number}` | `share_${number}`]: number | undefined;
 };
 
 export const importShareholderRegistryToGraph = async ({

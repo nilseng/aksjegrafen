@@ -33,9 +33,9 @@ export const findNoindexOrgnrs = async ({ db }: { db: IDatabase }): Promise<stri
 
 const clearSuppressionFlags = async ({ db, graphDB }: { db: IDatabase; graphDB: Driver }) => {
   const flagged = {
-    $or: [{ suppressed: { $exists: true } }, { suppressedSearch: { $exists: true } }],
+    $or: [{ suppressed: { $exists: true } }, { suppressedSearch: { $exists: true } }, { noindex: { $exists: true } }],
   };
-  const unset = { $unset: { suppressed: "" as const, suppressedSearch: "" as const } };
+  const unset = { $unset: { suppressed: "" as const, suppressedSearch: "" as const, noindex: "" as const } };
   await db.companies.updateMany(flagged, unset);
   await db.shareholders.updateMany(flagged, unset);
 
@@ -60,6 +60,12 @@ const applySuppression = async ({
   graphDB: Driver;
   suppression: Suppression;
 }) => {
+  // The noindex flag on the company document keeps the page out of the sitemap;
+  // the response header itself is derived from the suppression entry (see the
+  // noindexSuppressedPages middleware).
+  if (suppression.noindex && suppression.orgnr) {
+    await db.companies.updateMany({ orgnr: suppression.orgnr }, { $set: { noindex: true } });
+  }
   if (suppression.scope === "none") return;
   const fields = flagFields[suppression.scope];
   if (suppression.type === "company") await suppressCompany({ db, graphDB, suppression, fields });

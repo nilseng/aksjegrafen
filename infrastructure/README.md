@@ -48,3 +48,20 @@ Neo4j Graph Data Science plugin:
 - `sudo unzip neo4j-graph-data-science-2.4.0.zip`
 - Add `gds.*` to `dbms.security.procedures.unrestricted` in `neo4j.conf`
 - Restart the Docker container
+
+# Scheduled imports on this box (import-runner)
+
+The recurring data jobs (monthly brreg roles refresh) and the yearly shareholder
+import run on this EC2 box instead of a laptop — local bolt to Neo4j, no caffeinate.
+Setup:
+
+1. Clone the repo to `~/aksjegrafen` (first time only).
+2. Run `~/aksjegrafen/infrastructure/import-runner/setup.sh` (installs Node 22, builds
+   the server, installs the crontab from `import-runner/crontab.txt`).
+3. Create `~/aksjegrafen/server/.env` — same variables as locally, with
+   `NEO4J_URL=bolt://localhost:7687`.
+
+Logs land in `~/aksjegrafen-logs/`. For the yearly import, copy the CSV to
+`~/aksjegrafen/data/aksjeeiebok__<year>.csv` (e.g. from S3) and run
+`cd ~/aksjegrafen/server && npm run import -- <year>` in tmux/screen. The import is
+additive per year by default; `--clearGraphDBFirst` is the only destructive path.

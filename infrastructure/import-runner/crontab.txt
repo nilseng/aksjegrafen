@@ -1,0 +1,7 @@
+# Aksjegrafen scheduled jobs — install with:
+#   crontab infrastructure/import-runner/crontab.txt
+# MAILTO makes cron email stdout/stderr of failed runs if the box has an MTA.
+MAILTO=""
+
+# Monthly brreg roles refresh (~130MB download + a few hours of import), 1st of month 03:00 UTC.
+0 3 1 * * cd $HOME/aksjegrafen/server && ./node_modules/.bin/tsc && node --max-old-space-size=6144 dist/refreshRolesCli.js >> $HOME/aksjegrafen-logs/refresh-roles.log 2>&1

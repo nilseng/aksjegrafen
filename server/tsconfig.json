@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "downlevelIteration": true,
+    "skipLibCheck": true,
     "sourceMap": false,
     "outDir": "dist",
     "strict": true,
@@ -9,5 +10,8 @@
     "resolveJsonModule": true,
     "target": "ES5"
   },
-  "exclude": ["**/migrations/**"]
+  "ts-node": {
+    "files": true
+  },
+  "exclude": ["**/migrations/**", "**/*.test.ts"]
 }

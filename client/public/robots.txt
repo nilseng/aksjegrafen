@@ -1,3 +1,9 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+# Parameterized graph URLs (/graf?sourceOrgnr=… from every company page) all
+# return the same client-only shell, so crawling them wastes crawl budget on
+# duplicates; the server-rendered /selskap/:orgnr pages are the indexable
+# version. Bare /graf stays crawlable because / client-side-redirects to it.
+Disallow: /graf?
+
+Sitemap: https://aksjegrafen.com/sitemap.xml

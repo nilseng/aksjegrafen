@@ -11,12 +11,29 @@ import { noindexSuppressedPages } from "./middleware/noindexSuppressedPages";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
+import { selskapRoutes } from "./routes/selskap";
+import { sitemapRoutes } from "./routes/sitemap";
+import { loadAvailableYears } from "./services/yearService";
 
 dotenv.config();
 
 const app = express();
 
+// Behind Heroku's router: trust the first proxy hop so req.ip is the real client IP
+// (required for correct per-client API rate limiting).
+app.set("trust proxy", 1);
+
 app.use(sslRedirect());
+
+// Canonical host: 301 www.* → apex so Google consolidates signals on one hostname
+// (both currently answer 200, which Search Console flags as duplicate URLs).
+app.use((req, res, next) => {
+  const host = req.headers.host;
+  if (host?.startsWith("www.")) {
+    return res.redirect(301, `https://${host.slice(4)}${req.originalUrl}`);
+  }
+  next();
+});
 
 app.use(
   cors({
@@ -40,11 +57,22 @@ app.use(morgan("tiny"));
 const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
+  // Non-blocking: requests fall back to a sensible default year until this resolves.
+  loadAvailableYears(graphDB).catch((e) => console.error("Failed to load available years:", e));
+
+  // Mounted before all routes so the noindex header also lands on the server-rendered
+  // /selskap pages and the SPA fallback.
   app.use(noindexSuppressedPages({ db }));
 
   app.use("/api", api({ db }));
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
+  app.use("/selskap", selskapRoutes({ db }));
+  app.use("/", sitemapRoutes({ db }));
+
+  // Static offer page (compliance GTM) — must be mounted before the SPA catch-all.
+  // Resolves to server/static both under ts-node (src/) and a compiled dist/.
+  app.get("/eierskapssjekk", (_, res) => res.sendFile(path.join(__dirname, "../static/eierskapssjekk.html")));
 
   app.use(express.static(path.join(__dirname, "../../client/build")));
   app.use("/*", express.static(path.join(__dirname, "../../client/build", "index.html")));
