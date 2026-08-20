@@ -325,3 +325,15 @@ _Append entries: date — session/track — what was done / claimed / decided._
   search-first for existing users; discovery via KYC use-case card, NavBar CTA (not on /graf),
   InfoPageNav, and offer-page footer links back into the site. 2014→2015 data claim reconciled.
   Outreach should now link to aksjegrafen.com/eierskapssjekk. Mailto swap to branded inbox pending.
+- 2026-08-20 — api session (DEV-22) — **`/api/investments` now takes several shareholder orgnrs in one
+  call** (`?shareholderOrgnr=a,b,c`, or the param repeated) so formuesverdi.no's "selskaper du kan være
+  interessert i" no longer needs N sequential requests. `limit`/`skip` apply **per orgnr** — a batch of N
+  returns exactly what N single calls return (verified byte-identical against live data), response shape
+  unchanged (flat ownership array, grouped by the `shareholderOrgnr` each row already carries). Bounds:
+  max 100 orgnrs, `limit` × orgnrs ≤ 10 000 (worst allowed batch = 7 005 rows in ~2 s). Also fixed the
+  route's broken `res.json(400).send(...)` error path and documented it in `/api-docs`. Touched shared
+  file: `routes/api.ts`. **First automated tests in the repo**: jest + ts-jest + supertest on the server
+  (`npm test` in `server/`), 19 tests over the batch use-case and the route, DB-free (Mongo gateway and
+  the Neo4j driver module are mocked). Test files are excluded from `tsc` so the Heroku build — which
+  installs no devDependencies — still compiles; `skipLibCheck` added because `@types/supertest` does not
+  typecheck against this repo's `@types/node` 14. Work done in worktree `.claude/worktrees/batch-investments`.
