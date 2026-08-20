@@ -4,6 +4,7 @@ import { asyncRouter } from "../asyncRouter";
 import { baseUrl } from "../config";
 import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership } from "../models/models";
+import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
 import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 
@@ -26,8 +27,9 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
       if (!company) return notFound(res);
 
       const year = latestCompanyYear(company);
-      const [investors, financials] = await Promise.all([
+      const [investors, investments, financials] = await Promise.all([
         year ? findHistoricalInvestors({ orgnr, year, limit: 10 }).catch(() => []) : [],
+        year ? findHistoricalInvestments({ shareholderOrgnr: orgnr, year, limit: 10 }).catch(() => []) : [],
         fetchFinancials(orgnr),
       ]);
 
@@ -35,7 +37,7 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
         .status(200)
         .set("Content-Type", "text/html; charset=utf-8")
         .set("Cache-Control", "public, max-age=86400")
-        .send(renderCompanyPage({ company, year, investors, financials }));
+        .send(renderCompanyPage({ company, year, investors, investments, financials }));
     })
   );
 
@@ -100,11 +102,13 @@ const renderCompanyPage = ({
   company,
   year,
   investors,
+  investments,
   financials,
 }: {
   company: Company;
   year?: number;
   investors: Ownership[];
+  investments: Ownership[];
   financials: any;
 }): string => {
   const name = company.name;
@@ -138,6 +142,30 @@ const renderCompanyPage = ({
     .join("\n");
 
   const investorCount = year ? company.investorCount?.[year] : undefined;
+
+  // Companies this company owns shares in. These outbound links turn otherwise
+  // orphaned pages (e.g. holding companies owned only by people) into a crawlable
+  // ownership graph, which is how Google discovers and indexes the long tail.
+  const investmentRows = [...investments]
+    .sort((a, b) => (year ? (b.holdings?.[year]?.total ?? 0) - (a.holdings?.[year]?.total ?? 0) : 0))
+    .map((o) => {
+      const stocks = year ? o.holdings?.[year]?.total : undefined;
+      if (!stocks || !o.orgnr) return "";
+      const targetTotal = year ? o.investment?.shares?.[year]?.total : undefined;
+      const share = targetTotal ? stocks / targetTotal : undefined;
+      const targetName = o.investment?.name ?? o.orgnr;
+      const shareCell =
+        share !== undefined
+          ? `<div class="share"><span class="share-bar"><span style="width:${Math.min(100, share * 100).toFixed(
+              1
+            )}%"></span></span>${pf.format(share)}</div>`
+          : "–";
+      return `<tr><td><a href="/selskap/${escapeHtml(o.orgnr)}">${escapeHtml(
+        targetName
+      )}</a></td><td class="num stocks">${nf.format(stocks)}</td><td class="num">${shareCell}</td></tr>`;
+    })
+    .filter(Boolean)
+    .join("\n");
 
   const result = financials?.resultatregnskapResultat;
   const balance = financials?.egenkapitalGjeld;
@@ -222,6 +250,20 @@ const renderCompanyPage = ({
       }${totalShares ? `${nf.format(totalShares)} aksjer utstedt. ` : ""}<a href="${graphUrl}">Se alle i grafen →</a></p>
     </section>`
         : `<section class="card"><p>Ingen aksjonærdata registrert for selskapet.</p></section>`
+    }
+
+    ${
+      investmentRows
+        ? `<section class="card">
+      <h2>Eierandeler i andre selskaper <span class="vintage">per 31.12.${year}</span></h2>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Selskap</th><th class="num stocks">Aksjer</th><th class="num">Andel</th></tr></thead>
+        <tbody>${investmentRows}</tbody>
+      </table>
+      </div>
+    </section>`
+        : ""
     }
 
     ${

@@ -1,5 +1,8 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow:
+# /graf is the interactive graph app: every ?sourceOrgnr=… URL returns the same
+# client-only shell, so crawling them wastes crawl budget on duplicates. The
+# server-rendered /selskap/:orgnr pages are the indexable version.
+Disallow: /graf
 
 Sitemap: https://aksjegrafen.com/sitemap.xml
