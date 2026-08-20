@@ -102,14 +102,16 @@ export const ApiDocs = () => {
           {
             name: "shareholderOrgnr",
             example: "982463718",
-            description: "organisasjonsnummeret i tilfelle aksjonæren er et selskap. (OPTIONAL)",
+            description:
+              "organisasjonsnummeret i tilfelle aksjonæren er et selskap. Flere aksjonærer kan hentes i ett kall — " +
+              "kommaseparert (982463718,984851006) eller ved å gjenta parameteren. (OPTIONAL)",
           },
           {
             name: "shareholderId",
             description:
               "id for aksjonæren i tilfelle aksjonæren er en privatperson, utenlandsk selskap e.l. (OPTIONAL)",
           },
-          { name: "limit", example: 1, description: "maks antall søkeresultater. Default er 10." },
+          { name: "limit", example: 1, description: "maks antall søkeresultater. Default er 100." },
           { name: "skip", example: 0, description: "hopp over et antall investeringer. (OPTIONAL)" },
         ]}
         exampleResponse={`
@@ -136,6 +138,16 @@ export const ApiDocs = () => {
 ]
           `}
       />
+      <p className="text-sm pb-4">
+        <span className="font-bold">Flere aksjonærer i ett kall:</span> <code>shareholderOrgnr</code> tar imot en
+        kommaseparert liste (<code>?shareholderOrgnr=982463718,984851006</code>), eller parameteren kan gjentas.
+        Svaret er den samme flate listen med eierskap — hvert eierskap har feltet <code>shareholderOrgnr</code>, så
+        resultatene kan grupperes per aksjonær. <code>limit</code> og <code>skip</code> gjelder{" "}
+        <span className="font-bold">per organisasjonsnummer</span>, slik at ett selskap med mange investeringer ikke
+        fortrenger de andre — et kall med N organisasjonsnumre gir altså nøyaktig det samme som N enkeltkall. Maks 100
+        organisasjonsnumre per kall, og <code>limit</code> × antall organisasjonsnumre kan ikke overstige 10 000.{" "}
+        <code>shareholderId</code> kan ikke kombineres med flere <code>shareholderOrgnr</code>-verdier.
+      </p>
       <EndpointDescription
         title={"Hent aksjonærene i et selskap"}
         baseUrl={baseUrl}
@@ -146,7 +158,7 @@ export const ApiDocs = () => {
             example: "985173710",
             description: "organisasjonsnummeret til selskapet.",
           },
-          { name: "limit", example: 1, description: "maks antall søkeresultater. Default er 10." },
+          { name: "limit", example: 1, description: "maks antall søkeresultater. Default er 100." },
           { name: "skip", description: "hopp over et antall aksjonærer. (OPTIONAL)" },
         ]}
         exampleResponse={`

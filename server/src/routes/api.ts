@@ -9,7 +9,7 @@ import { tieredRateLimiter } from "../middleware/rateLimit";
 import { Shareholder, UserEventType, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
-import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
+import { findHistoricalInvestments, findHistoricalInvestmentsBatch } from "../use-cases/findHistoricalInvestments";
 import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
 import { findIndirectOwnership } from "../use-cases/findIndirectOwnership";
 import { findInvestments } from "../use-cases/findInvestments";
@@ -32,6 +32,23 @@ const router = Router();
 const parseLimit = (raw: unknown): number | undefined => {
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : undefined;
+};
+
+// Batching bounds for /investments: a client asking for the investments of every company it
+// follows should get them in one request, but not be able to ask for an unbounded response.
+const MAX_BATCH_ORGNRS = 100;
+const MAX_BATCH_RESULTS = 10_000;
+
+// `?shareholderOrgnr=a,b,c` and `?shareholderOrgnr=a&shareholderOrgnr=b` both mean the same
+// thing here; single-orgnr requests fall out of this as a one-element list.
+const parseOrgnrList = (raw: unknown): string[] => {
+  const values = Array.isArray(raw) ? raw : [raw];
+  const orgnrs = values
+    .filter((value): value is string => typeof value === "string")
+    .flatMap((value) => value.split(","))
+    .map((value) => removeOrgnrWhitespace(value.trim()))
+    .filter(Boolean);
+  return [...new Set(orgnrs)];
 };
 
 // Stream straight from the Mongo cursor so a full-collection fetch stays memory-safe
@@ -256,11 +273,39 @@ export const api = ({ db }: { db: IDatabase }) => {
     query(["shareHolderId", "shareholderOrgnr"]).optional(),
     asyncRouter(async (req, res) => {
       const query = matchedData(req);
-      if (!(query.shareHolderId || query.shareholderOrgnr)) {
-        return res.json(400).send("Shareholder id or orgnr must be defined.");
+      // Accepts one orgnr, a comma-separated list, or a repeated param. The response is the
+      // same flat array of ownerships either way — each one carries its `shareholderOrgnr`.
+      const shareholderOrgnrs = parseOrgnrList(req.query.shareholderOrgnr);
+      if (!(query.shareHolderId || shareholderOrgnrs.length)) {
+        return res.status(400).json({ error: "Shareholder id or orgnr must be defined." });
+      }
+      if (shareholderOrgnrs.length > MAX_BATCH_ORGNRS) {
+        return res.status(400).json({
+          error: `At most ${MAX_BATCH_ORGNRS} shareholder orgnrs can be requested at a time, got ${shareholderOrgnrs.length}.`,
+        });
+      }
+      if (shareholderOrgnrs.length > 1) {
+        if (query.shareHolderId) {
+          return res
+            .status(400)
+            .json({ error: "shareHolderId cannot be combined with several shareholderOrgnr values." });
+        }
+        // limit/skip are per orgnr, so a big limit multiplies across the batch — bound the total.
+        if (shareholderOrgnrs.length * query.limit > MAX_BATCH_RESULTS) {
+          return res.status(400).json({
+            error: `limit (${query.limit}) x number of orgnrs (${shareholderOrgnrs.length}) exceeds the batch maximum of ${MAX_BATCH_RESULTS} ownerships. Lower 'limit' or request fewer orgnrs.`,
+          });
+        }
+        const investments = await findHistoricalInvestmentsBatch({
+          shareholderOrgnrs,
+          year: query.year,
+          limit: query.limit,
+          skip: query.skip,
+        });
+        return res.json(investments);
       }
       const investments = await findHistoricalInvestments({
-        shareholderOrgnr: query.shareholderOrgnr,
+        shareholderOrgnr: shareholderOrgnrs[0],
         shareholderId: query.shareHolderId,
         year: query.year,
         limit: query.limit,
