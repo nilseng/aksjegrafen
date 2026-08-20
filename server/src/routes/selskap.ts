@@ -33,11 +33,25 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
         fetchFinancials(orgnr),
       ]);
 
+      // Corporate shareholders outside the registry (municipalities, foundations,
+      // foreign entities) have an orgnr but no /selskap page; linking them would
+      // scatter crawlable 404s across every page, so only link resolvable orgnrs.
+      const shareholderOrgnrs = [...new Set(investors.map((o) => o.shareholderOrgnr).filter((n): n is string => !!n))];
+      const linkableOrgnrs = new Set(
+        shareholderOrgnrs.length
+          ? (
+              await db.companies
+                .find({ orgnr: { $in: shareholderOrgnrs } }, { projection: { orgnr: 1, _id: 0 } })
+                .toArray()
+            ).map((c) => c.orgnr)
+          : []
+      );
+
       res
         .status(200)
         .set("Content-Type", "text/html; charset=utf-8")
         .set("Cache-Control", "public, max-age=86400")
-        .send(renderCompanyPage({ company, year, investors, investments, financials }));
+        .send(renderCompanyPage({ company, year, investors, investments, financials, linkableOrgnrs }));
     })
   );
 
@@ -104,12 +118,14 @@ const renderCompanyPage = ({
   investors,
   investments,
   financials,
+  linkableOrgnrs,
 }: {
   company: Company;
   year?: number;
   investors: Ownership[];
   investments: Ownership[];
   financials: any;
+  linkableOrgnrs: Set<string>;
 }): string => {
   const name = company.name;
   const title = `${name} – aksjonærer og eiere | Aksjegrafen`;
@@ -126,7 +142,7 @@ const renderCompanyPage = ({
       if (!stocks) return "";
       const share = totalShares ? stocks / totalShares : undefined;
       const investorName = o.investor?.shareholder?.name ?? o.investor?.company?.name ?? "Ukjent";
-      const investorOrgnr = o.shareholderOrgnr;
+      const investorOrgnr = o.shareholderOrgnr && linkableOrgnrs.has(o.shareholderOrgnr) ? o.shareholderOrgnr : null;
       const nameCell = investorOrgnr
         ? `<a href="/selskap/${escapeHtml(investorOrgnr)}">${escapeHtml(investorName)}</a>`
         : escapeHtml(investorName);
@@ -150,10 +166,12 @@ const renderCompanyPage = ({
     .sort((a, b) => (year ? (b.holdings?.[year]?.total ?? 0) - (a.holdings?.[year]?.total ?? 0) : 0))
     .map((o) => {
       const stocks = year ? o.holdings?.[year]?.total : undefined;
-      if (!stocks || !o.orgnr) return "";
-      const targetTotal = year ? o.investment?.shares?.[year]?.total : undefined;
+      // Skip holdings whose target didn't resolve to a registry company —
+      // linking an unresolvable orgnr would produce a crawlable 404.
+      if (!stocks || !o.orgnr || !o.investment) return "";
+      const targetTotal = year ? o.investment.shares?.[year]?.total : undefined;
       const share = targetTotal ? stocks / targetTotal : undefined;
-      const targetName = o.investment?.name ?? o.orgnr;
+      const targetName = o.investment.name;
       const shareCell =
         share !== undefined
           ? `<div class="share"><span class="share-bar"><span style="width:${Math.min(100, share * 100).toFixed(
