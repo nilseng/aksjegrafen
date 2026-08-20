@@ -49,6 +49,9 @@ export interface Company {
   shares: { [key in Year]?: { total: number; [stockClass: string]: number } };
   investorCount?: { [key in Year]?: number };
   investmentCount?: { [key in Year]?: number };
+  suppressed?: boolean;
+  suppressedSearch?: boolean;
+  noindex?: boolean;
 }
 
 export interface Person {
@@ -57,6 +60,8 @@ export interface Person {
   zipCode?: string;
   location?: string;
   countryCode?: string;
+  suppressed?: boolean;
+  suppressedSearch?: boolean;
 }
 
 export interface BusinessCode {
@@ -85,6 +90,8 @@ export interface Role {
   };
   company?: Company;
   shareholder?: Shareholder;
+  suppressed?: boolean;
+  suppressedSearch?: boolean;
 }
 
 export enum GraphNodeLabel {
@@ -264,6 +271,34 @@ export interface ApiKey {
   createdAt: Date;
   revokedAt?: Date;
 }
+
+/**
+ * An entry in the suppression list, used to honor privacy requests (e.g. GDPR Art. 21
+ * objections) without deleting the underlying register data. Entries are stored in the
+ * database only and managed with the suppress CLI — identifying details must never be
+ * committed to the repository.
+ *
+ * scope:
+ *  - "search": hidden from name/orgnr search (in-app search and the search endpoints)
+ *  - "all": additionally hidden from relation listings, graphs and direct lookups
+ *  - "none": not hidden in-app; useful combined with noindex to only delist a page
+ * noindex: pages whose path references the entry's orgnr are served with an
+ * X-Robots-Tag noindex header so search engines drop them.
+ */
+export interface Suppression {
+  _id?: ObjectId;
+  type: "person" | "company";
+  scope: SuppressionScope;
+  noindex?: boolean;
+  orgnr?: string;
+  shareholderId?: string;
+  name?: string;
+  yearOfBirth?: number;
+  reason?: string;
+  createdAt: Date;
+}
+
+export type SuppressionScope = "search" | "all" | "none";
 
 export const isOwnership = (o: any): o is Ownership => {
   return o.orgnr && typeof o.orgnr === "string" && o.shareHolderId && typeof o.shareHolderId === "string" && o.holdings;

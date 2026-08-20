@@ -15,7 +15,10 @@ export const findHistoricalInvestors = async ({
 }): Promise<Ownership[]> => {
   const ownerships = await findOwnerships({ orgnr, year, limit, skip });
   await resolveShareholders(ownerships);
-  return mergeOwnerships({ ownerships });
+  const visibleOwnerships = ownerships.filter(
+    (o) => !o.investor?.shareholder?.suppressed && !o.investor?.company?.suppressed
+  );
+  return mergeOwnerships({ ownerships: visibleOwnerships });
 };
 
 const resolveShareholders = async (ownerships: Ownership[]) => {

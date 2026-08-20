@@ -72,6 +72,7 @@ export const findOwnershipChanges = async ({
   // Investor names are only needed for the returned page.
   const changes = page.map(toChange);
   const shareholders = await findShareholdersByIds(changes.map((change) => change.investor.shareholderId));
+  const suppressedIds = new Set(shareholders.filter((s) => s.suppressed).map((s) => s.id));
   changes.forEach((change) => {
     const shareholder = shareholders.find((s) => s.id === change.investor.shareholderId);
     change.investor.name = shareholder?.name;
@@ -85,6 +86,6 @@ export const findOwnershipChanges = async ({
     year,
     compareYear,
     summary,
-    changes,
+    changes: changes.filter((change) => !suppressedIds.has(change.investor.shareholderId)),
   };
 };

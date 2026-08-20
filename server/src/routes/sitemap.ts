@@ -73,10 +73,12 @@ ${urls}
       // Until ensureSeoIndexes has built the investorCount index (first boot after
       // a deploy or an import-year bump), that sort would blow Mongo's in-memory
       // sort limit — fall back to _id order rather than failing the sitemap.
+      // Suppressed companies must not be listed, and a sitemap must not submit URLs
+      // that are served with a noindex header — Search Console flags the contradiction.
       const fetchShard = (sort: Record<string, 1 | -1>) =>
         db.companies
           .find(
-            {},
+            { suppressed: { $ne: true }, noindex: { $ne: true } },
             {
               projection: { orgnr: 1, _id: 0 },
               sort,
