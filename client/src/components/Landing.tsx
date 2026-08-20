@@ -1,13 +1,14 @@
 import { faChevronDown, faHistory, faList, faRoute, faSearch, faShieldAlt } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { GraphNode, GraphNodeLabel, GraphType } from "../models/models";
 import { setSource as setGraphSource } from "../slices/graphSlice";
-import { ModalContent, close, open, setContent } from "../slices/modalSlice";
-import { useAppDispatch } from "../store";
+import { ModalContent, close, fetchPopularNodesThunk, open, setContent } from "../slices/modalSlice";
+import { RootState, useAppDispatch } from "../store";
 import { useCases } from "./Bruksomrader";
 import { GraphLogo } from "./GraphLogo";
 import { InfoPageNav } from "./InfoPageNav";
@@ -20,6 +21,12 @@ export const Landing = () => {
   const { theme } = useContext(AppContext);
   const history = useHistory();
   useDocumentTitle("Aksjegrafen – se hvem som eier norske selskaper");
+
+  // Frequently-visited nodes fill the search's empty state, mirroring the graph's search modal.
+  const { popularNodes } = useSelector<RootState, RootState["modalHandler"]>((state) => state.modalHandler);
+  useEffect(() => {
+    dispatch(fetchPopularNodesThunk());
+  }, [dispatch]);
 
   const goToGraph = (node: GraphNode) => {
     dispatch(setGraphSource(undefined));
@@ -60,6 +67,7 @@ export const Landing = () => {
             inputClassName="ag-input focus:outline-none text-primary dark:text-white bg-transparent font-bold p-4"
             placeholder="Selskap, aksjonær eller rolleinnehaver..."
             apiPath="/api/node"
+            initialResult={popularNodes}
             mapResultToListItem={(node: GraphNode) => ({
               key: node.properties.uuid,
               name: node.properties.name,
