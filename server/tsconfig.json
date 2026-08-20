@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "downlevelIteration": true,
+    "skipLibCheck": true,
     "sourceMap": false,
     "outDir": "dist",
     "strict": true,
@@ -12,5 +13,5 @@
   "ts-node": {
     "files": true
   },
-  "exclude": ["**/migrations/**"]
+  "exclude": ["**/migrations/**", "**/*.test.ts"]
 }
