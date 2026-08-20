@@ -1,8 +1,11 @@
-import { Router } from "express";
+import { Response, Router } from "express";
 import { body, matchedData, query, validationResult } from "express-validator";
-import { Document, ObjectId } from "mongodb";
+import JSONStream from "JSONStream";
+import { Document, FindCursor, ObjectId } from "mongodb";
 import { asyncRouter } from "../asyncRouter";
 import { IDatabase } from "../database/mongoDB";
+import { apiKeyMiddleware } from "../middleware/apiKey";
+import { tieredRateLimiter } from "../middleware/rateLimit";
 import { Shareholder, UserEventType, isUserEvent } from "../models/models";
 import { findActors } from "../use-cases/findActors";
 import { findAllPaths } from "../use-cases/findAllPaths";
@@ -26,7 +29,31 @@ import { renderOwnershipReportCsv, renderOwnershipReportPdf } from "../utils/ren
 
 const router = Router();
 
+const parseLimit = (raw: unknown): number | undefined => {
+  const n = Number(raw);
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : undefined;
+};
+
+// Stream straight from the Mongo cursor so a full-collection fetch stays memory-safe
+// (constant memory, regardless of result size). Fetching the whole collection is a
+// supported bulk operation on this open API — not a bug.
+const streamJson = <T>(res: Response, cursor: FindCursor<T>): Response => {
+  res.type("application/json");
+  const dbStream = cursor.stream();
+  dbStream.on("error", (err: Error) => {
+    console.error("API stream error:", err);
+    if (!res.headersSent) res.status(500).json({ error: "An unexpected error occured." });
+    else res.destroy(err);
+  });
+  dbStream.pipe(JSONStream.stringify()).pipe(res);
+  return res;
+};
+
 export const api = ({ db }: { db: IDatabase }) => {
+  // Resolve the API key -> tier, then apply tiered rate limiting. Paid keys are never limited.
+  router.use(apiKeyMiddleware(db));
+  router.use(tieredRateLimiter);
+
   router.get(
     "/company",
     asyncRouter(async (req, res) => {
@@ -66,18 +93,32 @@ export const api = ({ db }: { db: IDatabase }) => {
   router.get(
     "/shareholders",
     asyncRouter(async (req, res) => {
-      const options = req.query.limit ? { limit: +req.query.limit } : undefined;
-      const shareholders = await db.shareholders.find({}, options).toArray();
-      return res.json(shareholders);
+      const limit = parseLimit(req.query.limit);
+      const cursor = limit ? db.shareholders.find({}, { limit }) : db.shareholders.find({});
+      return streamJson(res, cursor);
     })
   );
 
   router.get(
     "/companies",
     asyncRouter(async (req, res) => {
-      const options = req.query.limit ? { limit: +req.query.limit } : undefined;
-      const companies = await db.companies.find({}, options).toArray();
-      return res.json(companies);
+      const limit = parseLimit(req.query.limit);
+      const cursor = limit ? db.companies.find({}, { limit }) : db.companies.find({});
+      return streamJson(res, cursor);
+    })
+  );
+
+  // Lets an API client see its current tier and remaining rate-limit budget.
+  router.get(
+    "/usage",
+    asyncRouter(async (req, res) => {
+      return res.json({
+        tier: req.apiTier,
+        authenticated: !!req.apiKey,
+        name: req.apiKey?.name,
+        limit: res.getHeader("RateLimit-Limit"),
+        remaining: res.getHeader("RateLimit-Remaining"),
+      });
     })
   );
 

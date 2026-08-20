@@ -18,6 +18,10 @@ dotenv.config();
 
 const app = express();
 
+// Behind Heroku's router: trust the first proxy hop so req.ip is the real client IP
+// (required for correct per-client API rate limiting).
+app.set("trust proxy", 1);
+
 app.use(sslRedirect());
 
 app.use(

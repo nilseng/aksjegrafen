@@ -9,5 +9,8 @@
     "resolveJsonModule": true,
     "target": "ES5"
   },
+  "ts-node": {
+    "files": true
+  },
   "exclude": ["**/migrations/**"]
 }

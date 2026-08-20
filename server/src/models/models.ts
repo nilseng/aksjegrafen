@@ -246,6 +246,25 @@ export enum UserEventType {
   UnitInformationLoad = "UnitInformationLoad",
 }
 
+export enum ApiTier {
+  Anonymous = "anonymous",
+  Free = "free",
+  Paid = "paid",
+}
+
+// API keys gate rate-limit tiers only — the data itself stays open to everyone.
+// Paid keys are never rate limited; anonymous/free callers are.
+export interface ApiKey {
+  key: string;
+  tier: ApiTier;
+  name?: string;
+  email?: string;
+  note?: string;
+  active: boolean;
+  createdAt: Date;
+  revokedAt?: Date;
+}
+
 export const isOwnership = (o: any): o is Ownership => {
   return o.orgnr && typeof o.orgnr === "string" && o.shareHolderId && typeof o.shareHolderId === "string" && o.holdings;
 };

@@ -26,6 +26,27 @@ export const ApiDocs = () => {
         om aksjonærer i ulike selskaper, aksjonærstruktur og endringer i eierskap over tid. API-et kan brukes av både
         investorer og utviklere som ønsker å lage applikasjoner for å analysere og visualisere aksje- og eierskapsdata.
       </p>
+      <h5 className="text-lg font-bold pb-2">Kvoter og API-nøkler</h5>
+      <p className="text-sm pb-2">
+        API-et er åpent og gratis. Anonyme kall er hastighetsbegrenset for å holde tjenesten stabil for alle.
+        Ønsker du høyere eller ubegrenset kvote, bruk en API-nøkkel — send den som HTTP-headeren <code>x-api-key</code>.
+        Alle svar inneholder <code>RateLimit-*</code>-headere som viser gjenværende kvote, og endepunktet{" "}
+        <code>/usage</code> viser din nåværende tier og kvote.
+      </p>
+      <ul className="text-sm pb-4 list-disc pl-5">
+        <li>
+          <span className="font-bold">Anonym</span> (uten nøkkel): begrenset antall kall per minutt.
+        </li>
+        <li>
+          <span className="font-bold">Gratis nøkkel</span>: høyere kvote.
+        </li>
+        <li>
+          <span className="font-bold">Betalt nøkkel</span>: ingen hastighetsbegrensning.
+        </li>
+      </ul>
+      <p className="text-sm pb-4">
+        Ønsker du en API-nøkkel eller ubegrenset tilgang? Kontakt <code>hei@aksjegrafen.com</code>.
+      </p>
       <h5 className="text-lg font-bold">Endepunkter</h5>
       <EndpointDescription
         title={"Søk etter selskap"}
@@ -165,6 +186,66 @@ export const ApiDocs = () => {
         }
     }
 ]`}
+      />
+      <EndpointDescription
+        title={"Hent alle selskaper"}
+        baseUrl={baseUrl}
+        path={"/companies"}
+        query={[
+          {
+            name: "limit",
+            example: 100,
+            description: "maks antall selskaper. Utelat for å hente hele registeret (streames).",
+          },
+        ]}
+        exampleResponse={`
+[
+    {
+        "_id": "61229167c79b48b7e3e0bc90",
+        "orgnr": "982463718",
+        "name": "TELENOR ASA",
+        "stocks": 1399458033,
+        "investorCount": { "2024": 61000, "2025": 62000 },
+        "shares": { "2024": { "total": 1399458033 }, "2025": { "total": 1399458033 } }
+    }
+]`}
+      />
+      <EndpointDescription
+        title={"Hent alle aksjonærer"}
+        baseUrl={baseUrl}
+        path={"/shareholders"}
+        query={[
+          {
+            name: "limit",
+            example: 100,
+            description: "maks antall aksjonærer. Utelat for å hente hele registeret (streames).",
+          },
+        ]}
+        exampleResponse={`
+[
+    {
+        "_id": "61229192c79b48b7e3e461f2",
+        "id": "TELENOR ASA9824637181331 FORNEBUNOR",
+        "kind": 0,
+        "name": "TELENOR ASA",
+        "orgnr": "982463718",
+        "countryCode": "NOR",
+        "location": "FORNEBU",
+        "zipCode": "1331"
+    }
+]`}
+      />
+      <EndpointDescription
+        title={"Se din kvote (rate limit)"}
+        baseUrl={baseUrl}
+        path={"/usage"}
+        exampleResponse={`
+{
+    "tier": "anonymous",
+    "authenticated": false,
+    "limit": "120",
+    "remaining": "118"
+}`}
       />
       <p>
         Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
