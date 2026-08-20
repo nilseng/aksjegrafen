@@ -187,6 +187,12 @@ export const ApiDocs = () => {
     }
 ]`}
       />
+      <p className="text-sm pb-2">
+        <span className="font-bold">Om uttrekk av hele registeret:</span> <code>/companies</code> og{" "}
+        <code>/shareholders</code> streames som chunked HTTP-respons (uten <code>Content-Length</code>-header) —
+        vanlige JSON-klienter håndterer dette automatisk. Verifiser at du har mottatt et komplett JSON-svar før du
+        bruker det; ved en sjelden feil midt i strømmen kan svaret bli avkortet.
+      </p>
       <EndpointDescription
         title={"Hent alle selskaper"}
         baseUrl={baseUrl}
