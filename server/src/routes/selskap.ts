@@ -3,16 +3,16 @@ import { Router } from "express";
 import { asyncRouter } from "../asyncRouter";
 import { baseUrl } from "../config";
 import { IDatabase } from "../database/mongoDB";
-import { Company, Ownership } from "../models/models";
+import { Company, Ownership, Role } from "../models/models";
 import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
 import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
+import { bucketForName, cf, escapeHtml, nf, pf, renderNotFoundPage, renderShell } from "./pageShell";
 
 /**
  * Server-rendered, crawlable company pages (/selskap/:orgnr) built from data we
- * already hold. These are the organic-search landing pages (and OG targets), so
- * they carry the Aksjegrafen brand (neumorphic cards, teal accents) while staying
- * a single self-contained HTML response: inline CSS, same-origin logo only.
+ * already hold. These are the organic-search landing pages (and OG targets); the
+ * shared shell lives in pageShell.ts.
  */
 export const selskapRoutes = ({ db }: { db: IDatabase }) => {
   const router = Router();
@@ -27,21 +27,30 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
       if (!company) return notFound(res);
 
       const year = latestCompanyYear(company);
-      const [investors, investments, financials] = await Promise.all([
+      const [investors, investments, roles, financials] = await Promise.all([
         year ? findHistoricalInvestors({ orgnr, year, limit: 10 }).catch(() => []) : [],
         year ? findHistoricalInvestments({ shareholderOrgnr: orgnr, year, limit: 10 }).catch(() => []) : [],
+        db.roles
+          .find({ orgnr }, { limit: 40 })
+          .toArray()
+          .catch(() => [] as Role[]),
         fetchFinancials(orgnr),
       ]);
 
-      // Corporate shareholders outside the registry (municipalities, foundations,
-      // foreign entities) have an orgnr but no /selskap page; linking them would
-      // scatter crawlable 404s across every page, so only link resolvable orgnrs.
-      const shareholderOrgnrs = [...new Set(investors.map((o) => o.shareholderOrgnr).filter((n): n is string => !!n))];
+      // Corporate shareholders and role holders outside the registry (municipalities,
+      // foundations, foreign entities) have an orgnr but no /selskap page; linking
+      // them would scatter crawlable 404s across every page, so only link orgnrs
+      // that resolve to a company.
+      const candidateOrgnrs = [
+        ...investors.map((o) => o.shareholderOrgnr),
+        ...roles.map((r) => r.holder?.unit?.orgnr),
+      ].filter((n): n is string => !!n);
+      const uniqueOrgnrs = [...new Set(candidateOrgnrs)];
       const linkableOrgnrs = new Set(
-        shareholderOrgnrs.length
+        uniqueOrgnrs.length
           ? (
               await db.companies
-                .find({ orgnr: { $in: shareholderOrgnrs } }, { projection: { orgnr: 1, _id: 0 } })
+                .find({ orgnr: { $in: uniqueOrgnrs } }, { projection: { orgnr: 1, _id: 0 } })
                 .toArray()
             ).map((c) => c.orgnr)
           : []
@@ -51,7 +60,7 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
         .status(200)
         .set("Content-Type", "text/html; charset=utf-8")
         .set("Cache-Control", "public, max-age=86400")
-        .send(renderCompanyPage({ company, year, investors, investments, financials, linkableOrgnrs }));
+        .send(renderCompanyPage({ company, year, investors, investments, roles, financials, linkableOrgnrs }));
     })
   );
 
@@ -63,15 +72,9 @@ const notFound = (res: any) =>
     .status(404)
     .set("Content-Type", "text/html; charset=utf-8")
     .send(
-      renderShell({
+      renderNotFoundPage({
         title: "Fant ikke selskapet | Aksjegrafen",
-        description: "Selskapet finnes ikke i Aksjegrafen.",
-        canonicalPath: null,
-        body: `<section class="card hero">
-      <h1>Fant ikke selskapet</h1>
-      <p>Vi fant ikke noe selskap med dette organisasjonsnummeret i aksjonærregisterdataene.</p>
-      <p><a class="cta" href="/">Søk i Aksjegrafen →</a></p>
-    </section>`,
+        message: "Vi fant ikke noe selskap med dette organisasjonsnummeret i aksjonærregisterdataene.",
       })
     );
 
@@ -97,26 +100,47 @@ const fetchFinancials = async (orgnr: string) => {
   }
 };
 
-const nf = new Intl.NumberFormat("nb-NO");
-const cf = new Intl.NumberFormat("nb-NO", { notation: "compact", maximumFractionDigits: 1 });
-const pf = new Intl.NumberFormat("nb-NO", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 });
-
-const escapeHtml = (value: string | number | undefined | null): string =>
-  String(value ?? "").replace(
-    /[&<>"']/g,
-    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string)
-  );
-
 const statTile = (label: string, value: string): string =>
   `<div class="tile"><span class="tile-label">${escapeHtml(label)}</span><span class="tile-value">${escapeHtml(
     value
   )}</span></div>`;
+
+// Brønnøysund role type codes → labels, in display order. Unknown codes fall back
+// to the raw code at the end.
+const roleTypes: [string, string][] = [
+  ["DAGL", "Daglig leder"],
+  ["LEDE", "Styrets leder"],
+  ["NEST", "Styrets nestleder"],
+  ["MEDL", "Styremedlem"],
+  ["VARA", "Varamedlem"],
+  ["OBS", "Observatør"],
+  ["KONT", "Kontaktperson"],
+  ["INNH", "Innehaver"],
+  ["FFØR", "Forretningsfører"],
+  ["REPR", "Norsk representant"],
+  ["REVI", "Revisor"],
+  ["REGN", "Regnskapsfører"],
+];
+
+const roleRank = (type: string): number => {
+  const i = roleTypes.findIndex(([code]) => code === type);
+  return i === -1 ? roleTypes.length : i;
+};
+
+const roleLabel = (type: string): string => roleTypes.find(([code]) => code === type)?.[1] ?? type;
+
+const roleHolderName = (role: Role): string | undefined => {
+  const person = role.holder?.person;
+  if (person?.fornavn || person?.etternavn) return [person.fornavn, person.etternavn].filter(Boolean).join(" ");
+  return role.holder?.unit?.navn;
+};
 
 const renderCompanyPage = ({
   company,
   year,
   investors,
   investments,
+  roles,
   financials,
   linkableOrgnrs,
 }: {
@@ -124,6 +148,7 @@ const renderCompanyPage = ({
   year?: number;
   investors: Ownership[];
   investments: Ownership[];
+  roles: Role[];
   financials: any;
   linkableOrgnrs: Set<string>;
 }): string => {
@@ -185,6 +210,27 @@ const renderCompanyPage = ({
     .filter(Boolean)
     .join("\n");
 
+  // importRoles appends without deduplication, so repeated imports can leave
+  // duplicate role docs — collapse them by (type, holder) before rendering.
+  const seenRoles = new Set<string>();
+  const roleRows = [...roles]
+    .sort((a, b) => roleRank(a.type) - roleRank(b.type))
+    .map((r) => {
+      const holderName = roleHolderName(r);
+      if (!holderName) return "";
+      const key = `${r.type}:${holderName}`;
+      if (seenRoles.has(key)) return "";
+      seenRoles.add(key);
+      const unitOrgnr = r.holder?.unit?.orgnr;
+      const holderCell =
+        unitOrgnr && linkableOrgnrs.has(unitOrgnr)
+          ? `<a href="/selskap/${escapeHtml(unitOrgnr)}">${escapeHtml(holderName)}</a>`
+          : escapeHtml(holderName);
+      return `<tr><td>${escapeHtml(roleLabel(r.type))}</td><td>${holderCell}</td></tr>`;
+    })
+    .filter(Boolean)
+    .join("\n");
+
   const result = financials?.resultatregnskapResultat;
   const balance = financials?.egenkapitalGjeld;
   const financialsYear: string | undefined = financials?.regnskapsperiode?.tilDato?.slice(0, 4);
@@ -237,11 +283,12 @@ const renderCompanyPage = ({
   };
 
   const graphUrl = `/graf?graphType=Default&sourceOrgnr=${company.orgnr}`;
+  const bucket = bucketForName(name);
 
   const body = `
-    <nav class="crumbs"><a href="/">Aksjegrafen</a> <span aria-hidden="true">/</span> <span>${escapeHtml(
-      name
-    )}</span></nav>
+    <nav class="crumbs"><a href="/">Aksjegrafen</a> <span aria-hidden="true">/</span> <a href="/selskaper">Selskaper</a> <span aria-hidden="true">/</span> <a href="/selskaper/${
+      bucket.slug
+    }">${escapeHtml(bucket.label)}</a> <span aria-hidden="true">/</span> <span>${escapeHtml(name)}</span></nav>
 
     <section class="card hero">
       <h1>${escapeHtml(name)}</h1>
@@ -285,6 +332,20 @@ const renderCompanyPage = ({
     }
 
     ${
+      roleRows
+        ? `<section class="card">
+      <h2>Roller og ledelse <span class="vintage">fra Enhetsregisteret</span></h2>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Rolle</th><th>Navn</th></tr></thead>
+        <tbody>${roleRows}</tbody>
+      </table>
+      </div>
+    </section>`
+        : ""
+    }
+
+    ${
       financialRows
         ? `<section class="card">
       <h2>Nøkkeltall <span class="vintage">${financialsYear ? `regnskapsåret ${escapeHtml(financialsYear)}` : ""}</span></h2>
@@ -315,137 +376,3 @@ const renderCompanyPage = ({
     body,
   });
 };
-
-const renderShell = ({
-  title,
-  description,
-  canonicalPath,
-  jsonLd,
-  body,
-}: {
-  title: string;
-  description: string;
-  canonicalPath: string | null;
-  jsonLd?: object;
-  body: string;
-}): string => `<!DOCTYPE html>
-<html lang="no">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escapeHtml(title)}</title>
-<meta name="description" content="${escapeHtml(description)}" />
-${
-  canonicalPath
-    ? `<link rel="canonical" href="${baseUrl()}${canonicalPath}" />
-<meta property="og:type" content="website" />
-<meta property="og:site_name" content="Aksjegrafen" />
-<meta property="og:title" content="${escapeHtml(title)}" />
-<meta property="og:description" content="${escapeHtml(description)}" />
-<meta property="og:url" content="${baseUrl()}${canonicalPath}" />
-<meta property="og:image" content="${baseUrl()}/logo-512x512.png" />`
-    : `<meta name="robots" content="noindex" />`
-}
-<link rel="icon" href="/favicon.ico" />
-${jsonLd ? `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>` : ""}
-<style>
-  :root {
-    color-scheme: light dark;
-    --bg: #efeeee;
-    --card: #f8f9fa;
-    --text: #212529;
-    --muted: #5f676e;
-    --accent: #117a8b;
-    --accent-soft: rgba(23, 162, 184, 0.18);
-    --line: rgba(33, 37, 41, 0.08);
-    --card-shadow: -6px -6px 16px 0 rgba(255, 255, 255, 0.5), 6px 6px 16px 0 rgba(209, 205, 199, 0.5);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #212529;
-      --card: #343a40;
-      --text: #f8f9fa;
-      --muted: #9aa3ab;
-      --accent: #4cc3d6;
-      --accent-soft: rgba(76, 195, 214, 0.22);
-      --line: rgba(248, 249, 250, 0.1);
-      --card-shadow: -4px -4px 8px 0 rgba(0, 0, 0, 0.2), 4px 4px 8px 0 rgba(60, 60, 60, 0.2);
-    }
-  }
-  * { box-sizing: border-box; }
-  body {
-    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    line-height: 1.55;
-  }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .site-header { display: flex; align-items: center; max-width: 52rem; margin: 0 auto; padding: 1rem; }
-  .brand { display: flex; align-items: center; gap: 0.6rem; color: var(--text); font-weight: 700; font-size: 1.05rem; }
-  .brand:hover { text-decoration: none; }
-  .brand img { width: 36px; height: 36px; }
-
-  main { max-width: 52rem; margin: 0 auto; padding: 0 1rem 3rem; }
-  .crumbs { font-size: 0.85rem; color: var(--muted); margin: 0.25rem 0 1rem; }
-  .crumbs a { color: inherit; }
-
-  .card {
-    background: var(--card);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.25rem;
-  }
-  .hero h1 { margin: 0 0 0.25rem; font-size: 1.7rem; line-height: 1.25; }
-  .facts { color: var(--muted); margin: 0 0 1.1rem; }
-  .cta {
-    display: inline-block;
-    background: var(--accent);
-    color: #fff;
-    font-weight: 600;
-    padding: 0.6rem 1.1rem;
-    border-radius: 8px;
-  }
-  .cta:hover { text-decoration: none; filter: brightness(1.08); }
-  @media (prefers-color-scheme: dark) { .cta { color: #14262a; } }
-
-  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1rem; margin-bottom: 1.25rem; }
-  .tile { background: var(--card); border-radius: 12px; box-shadow: var(--card-shadow); padding: 0.9rem 1.1rem; display: flex; flex-direction: column; gap: 0.15rem; }
-  .tile-label { font-size: 0.8rem; color: var(--muted); }
-  .tile-value { font-size: 1.35rem; font-weight: 600; }
-
-  h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
-  .vintage { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 0.35rem; }
-  .table-wrap { overflow-x: auto; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { text-align: left; padding: 0.45rem 0.75rem 0.45rem 0; border-bottom: 1px solid var(--line); }
-  th { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
-  tbody tr:last-child td { border-bottom: none; }
-  .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  .share { display: inline-flex; align-items: center; gap: 0.5rem; }
-  .share-bar { width: 4.5rem; height: 6px; border-radius: 4px; background: var(--accent-soft); overflow: hidden; display: inline-block; }
-  .share-bar span { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
-
-  /* On narrow screens the raw share count loses to the ownership share. */
-  @media (max-width: 480px) {
-    .stocks { display: none; }
-    .share-bar { width: 2.75rem; }
-    .card { padding: 1.1rem 1.15rem; }
-  }
-
-  .muted { color: var(--muted); font-size: 0.85rem; }
-  footer { padding: 0.5rem 0.25rem; }
-</style>
-</head>
-<body>
-<header class="site-header">
-  <a class="brand" href="/"><img src="/logo-64x64.png" alt="" width="36" height="36" />Aksjegrafen</a>
-</header>
-<main>
-${body}
-</main>
-</body>
-</html>`;
