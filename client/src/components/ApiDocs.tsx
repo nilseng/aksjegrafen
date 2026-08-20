@@ -3,51 +3,67 @@ import { AppContext } from "../AppContext";
 import { useDocumentTitle } from "../hooks/useDocumentTitle";
 import { EndpointDescription } from "./EndpointDescription";
 import { InfoPageNav } from "./InfoPageNav";
+import { docsStyles } from "./apiDocsStyles";
 
 const baseUrl = "https://www.aksjegrafen.com/api";
+
+const tiers = [
+  { name: "Anonym", note: "uten nøkkel", value: "begrenset" },
+  { name: "Gratis nøkkel", note: "på forespørsel", value: "utvidet" },
+  { name: "Betalt nøkkel", note: "fakturert", value: "ubegrenset" },
+];
 
 export const ApiDocs = () => {
   const { theme } = useContext(AppContext);
   useDocumentTitle("API-dokumentasjon");
+
+  const s = docsStyles(theme);
+  const insetBox = s.code;
+  const link = { color: theme.primary };
+
   return (
     <div
-      className="w-full max-w-2xl h-full overflow-y-auto rounded p-4"
-      style={{ maxWidth: "750px", backgroundColor: theme.backgroundSecondary, color: theme.text, ...theme.lowering }}
+      className="w-full h-full overflow-y-auto p-4 sm:p-6"
+      style={{ maxWidth: "750px", color: theme.text, ...s.panel }}
     >
       <InfoPageNav />
-      <h5 className="text-xl font-bold pb-4">API for aksjonærregisteret</h5>
-      <p className="text-sm pb-4">
-        Det åpne API-et til{" "}
-        <span className="font-bold" style={{ color: theme.primary }}>
-          aksjegrafen.com
-        </span>{" "}
-        gir utviklere tilgang til all data om aksjonærer og selskaper i aksjonærregisteret. APIet gjør det mulig for
-        tredjepartsapplikasjoner å integrere seg på en enkel måte. Ved å bruke API-et kan utviklere hente ut informasjon
-        om aksjonærer i ulike selskaper, aksjonærstruktur og endringer i eierskap over tid. API-et kan brukes av både
-        investorer og utviklere som ønsker å lage applikasjoner for å analysere og visualisere aksje- og eierskapsdata.
+
+      <h1 className="text-2xl font-bold mb-1">API</h1>
+      <p className="text-sm mb-4" style={{ color: theme.muted }}>
+        Programmatisk tilgang til hele aksjonærregisteret — selskaper, aksjonærer og eierskap over tid. Åpent og
+        gratis.
       </p>
-      <h5 className="text-lg font-bold pb-2">Kvoter og API-nøkler</h5>
-      <p className="text-sm pb-2">
-        API-et er åpent og gratis. Anonyme kall er hastighetsbegrenset for å holde tjenesten stabil for alle.
-        Ønsker du høyere eller ubegrenset kvote, bruk en API-nøkkel — send den som HTTP-headeren <code>x-api-key</code>.
-        Alle svar inneholder <code>RateLimit-*</code>-headere som viser gjenværende kvote, og endepunktet{" "}
-        <code>/usage</code> viser din nåværende tier og kvote.
+      <pre className="text-xs w-full overflow-x-auto p-3 m-0 mb-6" style={insetBox}>
+        {baseUrl}
+      </pre>
+
+      <h2 className="text-lg font-bold mb-2">Kvoter</h2>
+      <p className="text-sm mb-3">
+        API-et er hastighetsbegrenset per nivå. Send en API-nøkkel i <code>x-api-key</code>-headeren for høyere grense.{" "}
+        <code>/usage</code> og <code>RateLimit-*</code>-headere viser forbruket ditt.
       </p>
-      <ul className="text-sm pb-4 list-disc pl-5">
-        <li>
-          <span className="font-bold">Anonym</span> (uten nøkkel): begrenset antall kall per minutt.
-        </li>
-        <li>
-          <span className="font-bold">Gratis nøkkel</span>: høyere kvote.
-        </li>
-        <li>
-          <span className="font-bold">Betalt nøkkel</span>: ingen hastighetsbegrensning.
-        </li>
-      </ul>
-      <p className="text-sm pb-4">
-        Ønsker du en API-nøkkel eller ubegrenset tilgang? Kontakt <code>hei@aksjegrafen.com</code>.
+      <div className="mb-3 p-4" style={insetBox}>
+        {tiers.map((tier) => (
+          <div key={tier.name} className="flex items-baseline justify-between text-sm py-1">
+            <span>
+              <span className="font-bold">{tier.name}</span> <span style={{ color: theme.muted }}>· {tier.note}</span>
+            </span>
+            <span className="font-bold" style={{ color: tier.value === "ubegrenset" ? theme.primary : theme.muted }}>
+              {tier.value}
+            </span>
+          </div>
+        ))}
+      </div>
+      <p className="text-sm mb-6">
+        Trenger du en nøkkel? Kontakt{" "}
+        <a href="mailto:hei@aksjegrafen.com" style={link}>
+          hei@aksjegrafen.com
+        </a>
+        .
       </p>
-      <h5 className="text-lg font-bold">Endepunkter</h5>
+
+      <h2 className="text-lg font-bold mb-3">Endepunkter</h2>
+
       <EndpointDescription
         title={"Søk etter selskap"}
         baseUrl={baseUrl}
@@ -91,8 +107,7 @@ export const ApiDocs = () => {
         "zipCode": "1331",
         "investmentCount": { "2019": 36, "2020": 14, "2021": 14 }
     }
-]
-          `}
+]`}
       />
       <EndpointDescription
         title={"Hent investeringene til en aksjonær"}
@@ -135,19 +150,21 @@ export const ApiDocs = () => {
             "shares": { "2019": { "total": 666294 }, "2020": { "total": 666294 }, "2021": { "total": 666294 } }
         }
     }
-]
-          `}
+]`}
       />
-      <p className="text-sm pb-4">
-        <span className="font-bold">Flere aksjonærer i ett kall:</span> <code>shareholderOrgnr</code> tar imot en
-        kommaseparert liste (<code>?shareholderOrgnr=982463718,984851006</code>), eller parameteren kan gjentas.
-        Svaret er den samme flate listen med eierskap — hvert eierskap har feltet <code>shareholderOrgnr</code>, så
-        resultatene kan grupperes per aksjonær. <code>limit</code> og <code>skip</code> gjelder{" "}
-        <span className="font-bold">per organisasjonsnummer</span>, slik at ett selskap med mange investeringer ikke
-        fortrenger de andre — et kall med N organisasjonsnumre gir altså nøyaktig det samme som N enkeltkall. Maks 100
-        organisasjonsnumre per kall, og <code>limit</code> × antall organisasjonsnumre kan ikke overstige 10 000.{" "}
-        <code>shareholderId</code> kan ikke kombineres med flere <code>shareholderOrgnr</code>-verdier.
-      </p>
+      <div className="p-4 mb-4 text-sm" style={insetBox}>
+        <span className="font-bold" style={{ color: theme.primary }}>
+          Flere aksjonærer i ett kall.
+        </span>{" "}
+        <code>shareholderOrgnr</code> tar imot en kommaseparert liste (
+        <code>?shareholderOrgnr=982463718,984851006</code>), eller parameteren kan gjentas. Svaret er den samme flate
+        listen med eierskap — hvert eierskap har feltet <code>shareholderOrgnr</code>, så resultatene kan grupperes per
+        aksjonær. <code>limit</code> og <code>skip</code> gjelder <span className="font-bold">per organisasjonsnummer</span>
+        , slik at ett selskap med mange investeringer ikke fortrenger de andre — et kall med N organisasjonsnumre gir
+        altså nøyaktig det samme som N enkeltkall. Maks 100 organisasjonsnumre per kall, og <code>limit</code> × antall
+        organisasjonsnumre kan ikke overstige 10 000. <code>shareholderId</code> kan ikke kombineres med flere{" "}
+        <code>shareholderOrgnr</code>-verdier.
+      </div>
       <EndpointDescription
         title={"Hent aksjonærene i et selskap"}
         baseUrl={baseUrl}
@@ -199,12 +216,16 @@ export const ApiDocs = () => {
     }
 ]`}
       />
-      <p className="text-sm pb-2">
-        <span className="font-bold">Om uttrekk av hele registeret:</span> <code>/companies</code> og{" "}
-        <code>/shareholders</code> streames som chunked HTTP-respons (uten <code>Content-Length</code>-header) —
-        vanlige JSON-klienter håndterer dette automatisk. Verifiser at du har mottatt et komplett JSON-svar før du
-        bruker det; ved en sjelden feil midt i strømmen kan svaret bli avkortet.
-      </p>
+
+      <div className="p-4 mb-4 text-sm" style={insetBox}>
+        <span className="font-bold" style={{ color: theme.primary }}>
+          Uttrekk av hele registeret.
+        </span>{" "}
+        <code>/companies</code> og <code>/shareholders</code> streames som chunked respons (uten{" "}
+        <code>Content-Length</code>). Vanlige JSON-klienter håndterer dette; verifiser at du har mottatt komplett JSON
+        før du bruker det.
+      </div>
+
       <EndpointDescription
         title={"Hent alle selskaper"}
         baseUrl={baseUrl}
@@ -254,7 +275,7 @@ export const ApiDocs = () => {
 ]`}
       />
       <EndpointDescription
-        title={"Se din kvote (rate limit)"}
+        title={"Se din kvote"}
         baseUrl={baseUrl}
         path={"/usage"}
         exampleResponse={`
@@ -265,9 +286,13 @@ export const ApiDocs = () => {
     "remaining": "118"
 }`}
       />
-      <p>
-        Har du en tilbakemelding, ønsker om endringer eller annen funksjonalitet? Send en mail til{" "}
-        <code>hei@aksjegrafen.com</code>.
+
+      <p className="text-sm mt-6" style={{ color: theme.muted }}>
+        Tilbakemelding eller forslag? Kontakt{" "}
+        <a href="mailto:hei@aksjegrafen.com" style={link}>
+          hei@aksjegrafen.com
+        </a>
+        .
       </p>
     </div>
   );
