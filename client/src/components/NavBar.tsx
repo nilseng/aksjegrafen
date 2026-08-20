@@ -50,6 +50,16 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               />
             </a>
           )}
+          {/* Plain anchor: /selskaper is server-rendered, and the link makes the
+              company catalog crawlable from the indexed homepage. Visible on all
+              breakpoints — mobile-first indexing ignores mobile-hidden links. */}
+          <a href="/selskaper" aria-label="Alle selskaper">
+            <NeuButton
+              className="px-4 py-2 mr-4"
+              ariaLabel="Alle selskaper"
+              componentIcon={<span className="text-xs text-primary font-bold">Selskaper</span>}
+            />
+          </a>
           <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
             <NeuButton
               className="px-4 py-2 mr-4"

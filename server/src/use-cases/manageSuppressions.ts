@@ -38,6 +38,7 @@ const clearSuppressionFlags = async ({ db, graphDB }: { db: IDatabase; graphDB: 
   const unset = { $unset: { suppressed: "" as const, suppressedSearch: "" as const, noindex: "" as const } };
   await db.companies.updateMany(flagged, unset);
   await db.shareholders.updateMany(flagged, unset);
+  await db.roles.updateMany(flagged, unset);
 
   const session = graphDB.session();
   try {
@@ -86,6 +87,8 @@ const suppressCompany = async ({
   if (!suppression.orgnr) return;
   await db.companies.updateMany({ orgnr: suppression.orgnr }, { $set: { [fields.mongo]: true } });
   await db.shareholders.updateMany({ orgnr: suppression.orgnr }, { $set: { [fields.mongo]: true } });
+  // Roles the company holds in other units, rendered on those units' pages.
+  await db.roles.updateMany({ "holder.unit.orgnr": suppression.orgnr }, { $set: { [fields.mongo]: true } });
 
   const session = graphDB.session();
   try {
@@ -125,6 +128,35 @@ const suppressPerson = async ({
     clauses.push(nameClause);
   }
   await db.shareholders.updateMany({ $or: clauses }, { $set: { [fields.mongo]: true } });
+
+  // Role documents (rendered on the server-side company pages) store the person as
+  // fornavn/etternavn, so the match compares against the concatenated full name.
+  if (suppression.name) {
+    await db.roles.updateMany(
+      {
+        "holder.person": { $exists: true },
+        $expr: {
+          $eq: [
+            {
+              $toLower: {
+                $trim: {
+                  input: {
+                    $concat: [
+                      { $ifNull: ["$holder.person.fornavn", ""] },
+                      " ",
+                      { $ifNull: ["$holder.person.etternavn", ""] },
+                    ],
+                  },
+                },
+              },
+            },
+            suppression.name.trim().toLowerCase(),
+          ],
+        },
+      },
+      { $set: { [fields.mongo]: true } }
+    );
+  }
 
   // Person nodes from the roles import carry a name but no year of birth, so a name-only
   // match is allowed when the node has no year_of_birth to compare against.

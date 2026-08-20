@@ -11,7 +11,9 @@ import { noindexSuppressedPages } from "./middleware/noindexSuppressedPages";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
+import { ensureSeoIndexes } from "./database/ensureSeoIndexes";
 import { selskapRoutes } from "./routes/selskap";
+import { selskaperRoutes } from "./routes/selskaper";
 import { sitemapRoutes } from "./routes/sitemap";
 import { loadAvailableYears } from "./services/yearService";
 
@@ -58,7 +60,10 @@ const initializeApp = async () => {
   const { db, graphDB } = await Database.initialize();
 
   // Non-blocking: requests fall back to a sensible default year until this resolves.
-  loadAvailableYears(graphDB).catch((e) => console.error("Failed to load available years:", e));
+  // The SEO indexes wait for the years since one is keyed by the latest data year.
+  loadAvailableYears(graphDB)
+    .catch((e) => console.error("Failed to load available years:", e))
+    .finally(() => ensureSeoIndexes(db).catch((e) => console.error("Failed to ensure SEO indexes:", e)));
 
   // Mounted before all routes so the noindex header also lands on the server-rendered
   // /selskap pages and the SPA fallback.
@@ -68,6 +73,7 @@ const initializeApp = async () => {
   app.use("/business-codes", businessCodeRoutes(db));
   app.use("/brreg", brregRouter);
   app.use("/selskap", selskapRoutes({ db }));
+  app.use("/selskaper", selskaperRoutes({ db }));
   app.use("/", sitemapRoutes({ db }));
 
   // Static offer page (compliance GTM) — must be mounted before the SPA catch-all.

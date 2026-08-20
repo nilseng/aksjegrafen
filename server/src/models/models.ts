@@ -90,6 +90,8 @@ export interface Role {
   };
   company?: Company;
   shareholder?: Shareholder;
+  suppressed?: boolean;
+  suppressedSearch?: boolean;
 }
 
 export enum GraphNodeLabel {
