@@ -338,13 +338,17 @@ _Append entries: date — session/track — what was done / claimed / decided._
   installs no devDependencies — still compiles; `skipLibCheck` added because `@types/supertest` does not
   typecheck against this repo's `@types/node` 14. Work done in worktree `.claude/worktrees/batch-investments`.
 - 2026-08-22 — track 1 session — **NavBar topprad ryddet** (branch `claude/landing-button-styling-hwqeiq`).
-  På 390 px hadde raden fire knappehøyder (48/31/45/32 px), tre hjørneradier og etiketter som brakk til
-  to linjer fordi `mr-4` på hver knapp + ikonet sprengte bredden. Nå: alle kontroller `h-11` (44 px,
-  minste komfortable trykkflate), 8 px radius (logoen beholder sirkelen), `gap-2 sm:gap-3` i stedet for
-  `mr-4`, `whitespace-nowrap` på etikettene, «Om»/«API»-ikonene skjult under `sm`, og temabryteren
-  44×44 med ett ikon (var 64×32 med to ikoner stablet via `visibility`). Bredde brukt på 390 px: 296 av
-  358 px, mot 348 før. Temabryteren er nå NeuButtons egen `action` — ingen klikkbar `div` inni en
-  `button` — og `ThemeButton.tsx` ble `ThemeIcon.tsx`. **Rørt delt fil**: `client/src/App.tsx`, kun
-  `83.2px` → `NAV_BAR_HEIGHT` (76 = 16 + 44 + 16) eksportert fra `NavBar.tsx`; ingen ruteendringer.
+  På 390 px vekslet raden mellom to høyder — logo, «Om» og «API» på 48 px, «Selskaper» og temabryteren
+  på 32 px — pluss tre hjørneradier. «Om» og «API» var 48 px kun fordi raden var bredere enn skjermen:
+  knappene krympet under sin egen tekstbredde, så ikonet ble brutt over på en andre linje. Nå: alle
+  kontroller `h-11` (44 px), 8 px radius (logoen beholder sirkelen), `gap-2 sm:gap-3` i stedet for
+  `mr-4`, `px-3 sm:px-4`, `whitespace-nowrap` på etikettene, «Om»/«API»-ikonene skjult under `sm`, og
+  temabryteren 44×44 med ett ikon (var 64×32 fordi den rendrer sol *og* måne side om side med 8 px marg
+  hver og skjuler den ene med `visibility` — 48 av 64 px alltid tomme). Til sammen ~110 px mindre ønsket
+  bredde på mobilraden (24 mellomrom + 24 padding + 40 ikoner + 20 bryter + 4 logo), som er det som
+  stopper krympingen. Temabryteren er nå NeuButtons egen `action` — ingen klikkbar `div` inni en
+  `button`, og den fikk aria-label. `ThemeButton.tsx` ble `ThemeIcon.tsx`. **Rørt delt fil**:
+  `client/src/App.tsx`, kun `83.2px` → `NAV_BAR_HEIGHT` (76 = 16 + 44 + 16) eksportert fra `NavBar.tsx`;
+  den gamle konstanten traff aldri den faktiske høyden på 80 px. Ingen ruteendringer.
   Designunderlag (diagnose, forslag mobil/desktop, målskjema, to forkastede alternativer) ligger som
   Claude Design-lerret. Hero-layouten under toppraden er urørt.
