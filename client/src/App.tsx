@@ -6,7 +6,7 @@ import { CanonicalLink } from "./components/CanonicalLink";
 import { Bruksomrader } from "./components/Bruksomrader";
 import { Kilder } from "./components/Kilder";
 import { Landing } from "./components/Landing";
-import NavBar from "./components/NavBar";
+import NavBar, { NAV_BAR_HEIGHT } from "./components/NavBar";
 import { Personvern } from "./components/Personvern";
 import { Overlays } from "./components/Overlays";
 
@@ -43,8 +43,8 @@ const App = () => {
             id="ag-main"
             className="flex w-full justify-center"
             style={{
-              minHeight: "calc(100% - 83.2px)",
-              height: "calc(100% - 83.2px)",
+              minHeight: `calc(100% - ${NAV_BAR_HEIGHT}px)`,
+              height: `calc(100% - ${NAV_BAR_HEIGHT}px)`,
             }}
           >
             <Switch>

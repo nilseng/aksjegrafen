@@ -337,3 +337,14 @@ _Append entries: date — session/track — what was done / claimed / decided._
   the Neo4j driver module are mocked). Test files are excluded from `tsc` so the Heroku build — which
   installs no devDependencies — still compiles; `skipLibCheck` added because `@types/supertest` does not
   typecheck against this repo's `@types/node` 14. Work done in worktree `.claude/worktrees/batch-investments`.
+- 2026-08-22 — track 1 session — **NavBar topprad ryddet** (branch `claude/landing-button-styling-hwqeiq`).
+  På 390 px hadde raden fire knappehøyder (48/31/45/32 px), tre hjørneradier og etiketter som brakk til
+  to linjer fordi `mr-4` på hver knapp + ikonet sprengte bredden. Nå: alle kontroller `h-11` (44 px,
+  minste komfortable trykkflate), 8 px radius (logoen beholder sirkelen), `gap-2 sm:gap-3` i stedet for
+  `mr-4`, `whitespace-nowrap` på etikettene, «Om»/«API»-ikonene skjult under `sm`, og temabryteren
+  44×44 med ett ikon (var 64×32 med to ikoner stablet via `visibility`). Bredde brukt på 390 px: 296 av
+  358 px, mot 348 før. Temabryteren er nå NeuButtons egen `action` — ingen klikkbar `div` inni en
+  `button` — og `ThemeButton.tsx` ble `ThemeIcon.tsx`. **Rørt delt fil**: `client/src/App.tsx`, kun
+  `83.2px` → `NAV_BAR_HEIGHT` (76 = 16 + 44 + 16) eksportert fra `NavBar.tsx`; ingen ruteendringer.
+  Designunderlag (diagnose, forslag mobil/desktop, målskjema, to forkastede alternativer) ligger som
+  Claude Design-lerret. Hero-layouten under toppraden er urørt.

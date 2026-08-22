@@ -9,18 +9,32 @@ import { useAppDispatch } from "../store";
 import { theming } from "../theming/theme";
 import { GraphLogo } from "./GraphLogo";
 import { NeuButton } from "./NeuButton";
-import { ThemeButton } from "./ThemeButton";
+import { ThemeIcon } from "./ThemeIcon";
 
 interface IProps {
   theme: typeof theming.light;
   setTheme: React.Dispatch<React.SetStateAction<typeof theming.light>>;
 }
 
+// 16px padding + 44px control + 16px padding. App.tsx sizes the main area against this.
+export const NAV_BAR_HEIGHT = 76;
+
+// 44px is the minimum comfortable touch target, and every control in the bar shares it
+// so the row keeps a single baseline at any width.
+const controlClassName = "h-11 px-3 sm:px-4";
+// Without nowrap the labels break onto a second line once the icon no longer fits.
+const labelClassName = "text-xs text-primary font-bold whitespace-nowrap";
+
 const NavBar = ({ theme, setTheme }: IProps) => {
   const dispatch = useAppDispatch();
   const { pathname } = useLocation();
   // Keep the offer CTA out of the graph itself — the app stays clean for tool users.
   const showOfferCta = !pathname.startsWith("/graf");
+
+  const toggleTheme = () => {
+    localStorage.setItem("theme", theme.id === "light" ? "dark" : "light");
+    setTheme((t) => (t.id === "light" ? theming.dark : theming.light));
+  };
 
   return (
     <div className="flex justify-between items-center p-4" style={{ zIndex: 10000 }}>
@@ -33,62 +47,62 @@ const NavBar = ({ theme, setTheme }: IProps) => {
         }}
       >
         <NeuButton
-          className="h-12 w-12 p-2"
+          className="h-11 w-11 p-2.5"
           ariaLabel="Home"
           style={{ borderRadius: "100%" }}
           componentIcon={<GraphLogo inputColor={theme.primary} />}
         />
       </Link>
-      <div className="flex justify-end">
-        <div className="flex items-center">
-          {showOfferCta && (
-            <a href="/eierskapssjekk" aria-label="Gratis eierskapssjekk" className="hidden sm:block">
-              <NeuButton
-                className="px-4 py-2 mr-4"
-                ariaLabel="Gratis eierskapssjekk"
-                componentIcon={<span className="text-xs text-primary font-bold">Eierskapssjekk</span>}
-              />
-            </a>
-          )}
-          {/* Plain anchor: /selskaper is server-rendered, and the link makes the
-              company catalog crawlable from the indexed homepage. Visible on all
-              breakpoints — mobile-first indexing ignores mobile-hidden links. */}
-          <a href="/selskaper" aria-label="Alle selskaper">
+      <div className="flex items-center gap-2 sm:gap-3">
+        {showOfferCta && (
+          <a href="/eierskapssjekk" aria-label="Gratis eierskapssjekk" className="hidden sm:block">
             <NeuButton
-              className="px-4 py-2 mr-4"
-              ariaLabel="Alle selskaper"
-              componentIcon={<span className="text-xs text-primary font-bold">Selskaper</span>}
+              className={controlClassName}
+              ariaLabel="Gratis eierskapssjekk"
+              componentIcon={<span className={labelClassName}>Eierskapssjekk</span>}
             />
           </a>
-          <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
-            <NeuButton
-              className="px-4 py-2 mr-4"
-              ariaLabel="Om Aksjegrafen"
-              componentIcon={
-                <span className="text-xs text-primary font-bold">
-                  Om
-                  <FontAwesomeIcon icon={faInfoCircle} className="ml-2" />
-                </span>
-              }
-            />
-          </Link>
-          <Link to="/api-docs" aria-label="API Documentation">
-            <NeuButton
-              className="px-4 py-2 mr-4"
-              ariaLabel="API Documentation"
-              componentIcon={
-                <span className="text-xs text-primary font-bold">
-                  API
-                  <FontAwesomeIcon icon={faCode} className="ml-2" />
-                </span>
-              }
-            />
-          </Link>
+        )}
+        {/* Plain anchor: /selskaper is server-rendered, and the link makes the
+            company catalog crawlable from the indexed homepage. Visible on all
+            breakpoints — mobile-first indexing ignores mobile-hidden links. */}
+        <a href="/selskaper" aria-label="Alle selskaper">
           <NeuButton
-            style={{ borderRadius: "4rem" }}
-            componentIcon={<ThemeButton theme={theme} setTheme={setTheme} />}
+            className={controlClassName}
+            ariaLabel="Alle selskaper"
+            componentIcon={<span className={labelClassName}>Selskaper</span>}
           />
-        </div>
+        </a>
+        <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
+          <NeuButton
+            className={controlClassName}
+            ariaLabel="Om Aksjegrafen"
+            componentIcon={
+              <span className={labelClassName}>
+                Om
+                <FontAwesomeIcon icon={faInfoCircle} className="hidden sm:inline-block ml-2" />
+              </span>
+            }
+          />
+        </Link>
+        <Link to="/api-docs" aria-label="API Documentation">
+          <NeuButton
+            className={controlClassName}
+            ariaLabel="API Documentation"
+            componentIcon={
+              <span className={labelClassName}>
+                API
+                <FontAwesomeIcon icon={faCode} className="hidden sm:inline-block ml-2" />
+              </span>
+            }
+          />
+        </Link>
+        <NeuButton
+          className="h-11 w-11"
+          ariaLabel={theme.id === "light" ? "Bytt til mørkt tema" : "Bytt til lyst tema"}
+          action={toggleTheme}
+          componentIcon={<ThemeIcon theme={theme} />}
+        />
       </div>
     </div>
   );
