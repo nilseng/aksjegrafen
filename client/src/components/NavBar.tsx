@@ -55,31 +55,31 @@ const NavBar = ({ theme, setTheme }: IProps) => {
               breakpoints — mobile-first indexing ignores mobile-hidden links. */}
           <a href="/selskaper" aria-label="Alle selskaper">
             <NeuButton
-              className="px-4 py-2 mr-4"
+              className="px-3 sm:px-4 py-2 mr-2 sm:mr-4"
               ariaLabel="Alle selskaper"
-              componentIcon={<span className="text-xs text-primary font-bold">Selskaper</span>}
+              componentIcon={<span className="text-xs text-primary font-bold whitespace-nowrap">Selskaper</span>}
             />
           </a>
           <Link to="/bruksomrader" aria-label="Om Aksjegrafen">
             <NeuButton
-              className="px-4 py-2 mr-4"
+              className="px-3 sm:px-4 py-2 mr-2 sm:mr-4"
               ariaLabel="Om Aksjegrafen"
               componentIcon={
-                <span className="text-xs text-primary font-bold">
+                <span className="text-xs text-primary font-bold whitespace-nowrap">
                   Om
-                  <FontAwesomeIcon icon={faInfoCircle} className="ml-2" />
+                  <FontAwesomeIcon icon={faInfoCircle} className="ml-2 hidden sm:inline" />
                 </span>
               }
             />
           </Link>
           <Link to="/api-docs" aria-label="API Documentation">
             <NeuButton
-              className="px-4 py-2 mr-4"
+              className="px-3 sm:px-4 py-2 mr-2 sm:mr-4"
               ariaLabel="API Documentation"
               componentIcon={
-                <span className="text-xs text-primary font-bold">
+                <span className="text-xs text-primary font-bold whitespace-nowrap">
                   API
-                  <FontAwesomeIcon icon={faCode} className="ml-2" />
+                  <FontAwesomeIcon icon={faCode} className="ml-2 hidden sm:inline" />
                 </span>
               }
             />
