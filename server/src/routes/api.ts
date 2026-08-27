@@ -29,6 +29,12 @@ import { renderOwnershipReportCsv, renderOwnershipReportPdf } from "../utils/ren
 
 const router = Router();
 
+// Aggregation stage keeping entities on the suppression list out of search results.
+const excludeSuppressedStage = { $match: { suppressed: { $ne: true }, suppressedSearch: { $ne: true } } };
+
+// Find filter keeping fully suppressed entities out of listings and lookups.
+const excludeSuppressedFilter = { suppressed: { $ne: true as const } };
+
 const parseLimit = (raw: unknown): number | undefined => {
   const n = Number(raw);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : undefined;
@@ -78,10 +84,13 @@ export const api = ({ db }: { db: IDatabase }) => {
         const count = await db.companies.countDocuments();
         return res.json(count);
       } else if (req.query._id) {
-        const company = await db.companies.findOne({ _id: new ObjectId(req.query._id as string) });
+        const company = await db.companies.findOne({
+          _id: new ObjectId(req.query._id as string),
+          suppressed: { $ne: true },
+        });
         return res.json(company);
       } else if (req.query.orgnr && typeof req.query.orgnr === "string") {
-        const company = await db.companies.findOne({ orgnr: req.query.orgnr });
+        const company = await db.companies.findOne({ orgnr: req.query.orgnr, suppressed: { $ne: true } });
         return res.json(company);
       } else {
         return res.status(400).json({ error: "Invalid query." });
@@ -96,10 +105,16 @@ export const api = ({ db }: { db: IDatabase }) => {
         const count = await db.shareholders.countDocuments();
         return res.json(count);
       } else if (req.query._id) {
-        const shareholder = await db.shareholders.findOne({ _id: new ObjectId(req.query._id as string) });
+        const shareholder = await db.shareholders.findOne({
+          _id: new ObjectId(req.query._id as string),
+          suppressed: { $ne: true },
+        });
         return res.json(shareholder);
       } else if (req.query.shareholderId) {
-        const shareholder = await db.shareholders.findOne({ id: req.query.shareholderId });
+        const shareholder = await db.shareholders.findOne({
+          id: req.query.shareholderId,
+          suppressed: { $ne: true },
+        });
         return res.json(shareholder);
       } else {
         return res.status(400).json({ error: "Invalid query." });
@@ -111,7 +126,9 @@ export const api = ({ db }: { db: IDatabase }) => {
     "/shareholders",
     asyncRouter(async (req, res) => {
       const limit = parseLimit(req.query.limit);
-      const cursor = limit ? db.shareholders.find({}, { limit }) : db.shareholders.find({});
+      const cursor = limit
+        ? db.shareholders.find(excludeSuppressedFilter, { limit })
+        : db.shareholders.find(excludeSuppressedFilter);
       return streamJson(res, cursor);
     })
   );
@@ -120,7 +137,9 @@ export const api = ({ db }: { db: IDatabase }) => {
     "/companies",
     asyncRouter(async (req, res) => {
       const limit = parseLimit(req.query.limit);
-      const cursor = limit ? db.companies.find({}, { limit }) : db.companies.find({});
+      const cursor = limit
+        ? db.companies.find(excludeSuppressedFilter, { limit })
+        : db.companies.find(excludeSuppressedFilter);
       return streamJson(res, cursor);
     })
   );
@@ -158,6 +177,7 @@ export const api = ({ db }: { db: IDatabase }) => {
                 },
               },
             },
+            excludeSuppressedStage,
             {
               $count: "count",
             },
@@ -204,6 +224,7 @@ export const api = ({ db }: { db: IDatabase }) => {
                 },
               },
             },
+            excludeSuppressedStage,
           ])
           .limit(query.limit)
           .toArray();
@@ -258,6 +279,7 @@ export const api = ({ db }: { db: IDatabase }) => {
               },
             },
           },
+          excludeSuppressedStage,
         ])
         .limit(query.limit)
         .toArray();

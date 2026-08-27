@@ -19,6 +19,14 @@ const LARGEST_MAX_PAGES = 20;
 const pageCache = new TtlCache<string>(1000 * 60 * 60 * 24, 500);
 const countCache = new TtlCache<number>(1000 * 60 * 60 * 24, 100);
 
+// The hubs exist to get /selskap pages crawled, so suppressed companies and pages
+// served with a noindex header must not be linked from them.
+const excludeSuppressed = {
+  suppressed: { $ne: true as const },
+  suppressedSearch: { $ne: true as const },
+  noindex: { $ne: true as const },
+};
+
 export const selskaperRoutes = ({ db }: { db: IDatabase }) => {
   const router = Router();
 
@@ -121,7 +129,7 @@ ${letterLinks}
 
       const companies = await db.companies
         .find(
-          { [`investorCount.${year}`]: { $gte: 1 } },
+          { [`investorCount.${year}`]: { $gte: 1 }, ...excludeSuppressed },
           {
             projection: { orgnr: 1, name: 1, [`investorCount.${year}`]: 1, _id: 0 },
             sort: { [`investorCount.${year}`]: -1, _id: 1 },
@@ -191,7 +199,7 @@ ${letterLinks}
 
       const companies = await db.companies
         .find(
-          { name: { $regex: bucket.pattern } },
+          { name: { $regex: bucket.pattern }, ...excludeSuppressed },
           {
             projection: { orgnr: 1, name: 1, _id: 0 },
             sort: { name: 1, _id: 1 },

@@ -6,6 +6,7 @@ import { refreshProjections } from "./database/graphProjections";
 import { clearGraphRoles } from "./use-cases/clearGraphRoles";
 import { downloadBrregEntities, downloadBrregRoles } from "./use-cases/downloadBrregFiles";
 import { importRolesToGraph } from "./use-cases/importRolesToGraph";
+import { applySuppressions } from "./use-cases/manageSuppressions";
 
 dotenv.config();
 
@@ -47,7 +48,7 @@ async function refreshRoles() {
     if (argv.downloadEntities) await downloadBrregEntities();
 
     console.log("Initializing database connections...");
-    const { graphDB } = await Database.initialize();
+    const { db, graphDB } = await Database.initialize();
 
     if (argv.clearRolesFirst) await clearGraphRoles(graphDB);
 
@@ -56,6 +57,10 @@ async function refreshRoles() {
     // Path search runs on in-memory GDS projections; refresh them so the
     // updated roles are visible to it.
     await refreshProjections(graphDB);
+
+    // The re-import recreates role holder nodes without their suppression flags;
+    // re-derive them so privacy requests stay honored.
+    await applySuppressions({ db, graphDB });
 
     await graphDB.close();
     console.log("Roles refresh completed successfully.");

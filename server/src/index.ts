@@ -7,6 +7,7 @@ import { Driver } from "neo4j-driver";
 import path from "path";
 
 import { Database } from "./database/databaseSetup";
+import { noindexSuppressedPages } from "./middleware/noindexSuppressedPages";
 import { api } from "./routes/api";
 import brregRouter from "./routes/brreg";
 import { businessCodeRoutes } from "./routes/businessCodes";
@@ -63,6 +64,10 @@ const initializeApp = async () => {
   loadAvailableYears(graphDB)
     .catch((e) => console.error("Failed to load available years:", e))
     .finally(() => ensureSeoIndexes(db).catch((e) => console.error("Failed to ensure SEO indexes:", e)));
+
+  // Mounted before all routes so the noindex header also lands on the server-rendered
+  // /selskap pages and the SPA fallback.
+  app.use(noindexSuppressedPages({ db }));
 
   app.use("/api", api({ db }));
   app.use("/business-codes", businessCodeRoutes(db));

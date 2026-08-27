@@ -29,7 +29,8 @@ const runQuery = async <T extends { [key: string]: unknown } = never>({
 export const findNode = async ({ uuid }: { uuid: string }) => {
   const records = await runQuery<{ n: NodeEntry }>({
     query: `
-        MATCH (n:Person|Unit|Shareholder|Company {uuid: $uuid}) 
+        MATCH (n:Person|Unit|Shareholder|Company {uuid: $uuid})
+        WHERE n.suppressed IS NULL
         RETURN n
         LIMIT 1
     `,
@@ -43,7 +44,7 @@ export const findNodesByOrgnrs = async ({ orgnrs }: { orgnrs: string[] }) => {
   const records = await runQuery<{ node: NodeEntry }>({
     query: `
     MATCH (node: Company|Shareholder|Unit)
-    WHERE node.orgnr IN $orgnrs
+    WHERE node.orgnr IN $orgnrs AND node.suppressed IS NULL AND node.suppressed_search IS NULL
     RETURN node
     `,
     params: { orgnrs },
@@ -52,14 +53,20 @@ export const findNodesByOrgnrs = async ({ orgnrs }: { orgnrs: string[] }) => {
   return records.map((record) => mapRecordToGraphNode(record, "node"));
 };
 
-export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: 10 }) => {
+// The fulltext search term must be passed as a parameter — interpolating it into the
+// query string allows Cypher injection — and Lucene's own operators are escaped so
+// user input can neither break nor alter the fulltext query.
+const escapeLuceneQuery = (searchTerm: string) => searchTerm.replace(/[+\-&|!(){}[\]^"~*?:\\/]/g, "\\$&");
+
+export const searchNode = async ({ searchTerm, limit }: { searchTerm: string; limit: number }) => {
   const records = await runQuery<{ node: NodeEntry }>({
     query: `
     CALL db.index.fulltext.queryNodes("namesAndOrgnrs", $searchTerm) YIELD node
+    WHERE node.suppressed IS NULL AND node.suppressed_search IS NULL
     RETURN node
     LIMIT toInteger($limit)
     `,
-    params: { searchTerm, limit },
+    params: { searchTerm: escapeLuceneQuery(searchTerm), limit },
   });
   if (!records || records.length === 0) return [];
   return records.map((record) => mapRecordToGraphNode(record, "node"));
@@ -80,6 +87,7 @@ export const findInvestors = async ({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investment.uuid = $uuid AND r.year = ${year}
+          AND investor.suppressed IS NULL AND investment.suppressed IS NULL
         RETURN investor, investment, r
         ORDER BY r.share DESC
         SKIP ${skip ?? 0}
@@ -111,6 +119,7 @@ export const findInvestments = async ({
     query: `
         MATCH (investor:Shareholder)-[r:OWNS]->(investment:Company)
         WHERE investor.uuid = $uuid AND r.year = ${year}
+          AND investor.suppressed IS NULL AND investment.suppressed IS NULL
         RETURN investor, investment, r
         ORDER BY r.share DESC
         SKIP ${skip ?? 0}
@@ -163,6 +172,7 @@ export const findIndirectInvestors = async ({
   const targetRecords = await runQuery({
     query: `
         MATCH (target:Company {${uuid ? "uuid: $uuid" : "orgnr: $orgnr"}})
+        WHERE target.suppressed IS NULL
         RETURN target
         LIMIT 1
     `,
@@ -186,6 +196,7 @@ export const findIndirectInvestors = async ({
         // owner <> m drops treasury shares (a company owning itself): the self-loop would
         // otherwise compound into phantom indirect ownership (>100 % for a sole owner).
         WHERE r.year = ${year} AND r.share IS NOT NULL AND owner <> m AND owner.uuid <> $targetUuid
+          AND owner.suppressed IS NULL
         WITH owner, sum(r.share * f.weight) AS weight, sum(f.walks) AS walks
         WHERE weight >= $minShare
         RETURN owner.uuid AS uuid, weight, walks, "Company" IN labels(owner) AS isCompany,
@@ -268,6 +279,7 @@ export const findOwnershipChains = async ({
         MATCH (target:Company {uuid: $targetUuid})
         MATCH path = (investor)-[:OWNS*1..${maxDepth}]->(target)
         WHERE all(r IN relationships(path) WHERE r.year = ${year} AND r.share IS NOT NULL)
+        AND none(n IN nodes(path) WHERE n.suppressed IS NOT NULL)
         AND none(n IN nodes(path)[1..-1] WHERE n = target)
         // Treasury shares (self-loop edges) are not part of an ownership chain.
         AND none(r IN relationships(path) WHERE startNode(r) = endNode(r))
@@ -291,6 +303,7 @@ export const findRoleHolders = async ({ uuid, limit, skip }: { uuid: string; lim
     query: `
         MATCH (holder:Person|Unit)-[r]->(unit:Unit)
         WHERE unit.uuid = $uuid AND type(r) <> "OWNS"
+          AND holder.suppressed IS NULL AND unit.suppressed IS NULL
         RETURN holder, r, unit
         SKIP ${skip ?? 0}
         LIMIT ${limit}
@@ -311,6 +324,7 @@ export const findRoleUnits = async ({ uuid, limit, skip }: { uuid: string; limit
     query: `
         MATCH (holder:Unit|Person)-[r]->(unit:Unit|Company)
         WHERE holder.uuid = $uuid AND type(r) <> "OWNS"
+          AND holder.suppressed IS NULL AND unit.suppressed IS NULL
         RETURN holder, unit, r
         SKIP ${skip ?? 0}
         LIMIT ${limit}
@@ -346,6 +360,7 @@ export const findShortestPath = async ({
       ${!isEmpty(linkTypes) ? ", relationshipTypes: $linkTypes" : ""}
     })
     YIELD index, path
+    WHERE NONE(n IN nodes(path) WHERE n.suppressed IS NOT NULL)
     RETURN path
     ORDER BY index
   `;
@@ -379,6 +394,7 @@ export const findAllPaths = async ({
       k: ${limit}
     })
     YIELD index, path
+    WHERE NONE(n IN nodes(path) WHERE n.suppressed IS NOT NULL)
     RETURN path
     ORDER BY index
   `;
@@ -398,6 +414,7 @@ export const findRelationships = async ({
     MATCH (n1:Unit|Person|Company|Shareholder {uuid: link.source.properties.uuid})-[r]-${
       isDirected ? ">" : ""
     }(n2:Unit|Person|Company|Shareholder {uuid: link.target.properties.uuid})
+    WHERE n1.suppressed IS NULL AND n2.suppressed IS NULL
     RETURN n1, r, n2
   `;
   const records = await runQuery({ query, params: { links } });

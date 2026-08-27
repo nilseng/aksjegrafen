@@ -23,7 +23,7 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
       const orgnr = removeOrgnrWhitespace(req.params.orgnr ?? "");
       if (!/^\d{9}$/.test(orgnr)) return notFound(res);
 
-      const company = await db.companies.findOne({ orgnr });
+      const company = await db.companies.findOne({ orgnr, suppressed: { $ne: true } });
       if (!company) return notFound(res);
 
       const year = latestCompanyYear(company);
@@ -31,7 +31,7 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
         year ? findHistoricalInvestors({ orgnr, year, limit: 10 }).catch(() => []) : [],
         year ? findHistoricalInvestments({ shareholderOrgnr: orgnr, year, limit: 10 }).catch(() => []) : [],
         db.roles
-          .find({ orgnr }, { limit: 40 })
+          .find({ orgnr, suppressed: { $ne: true } }, { limit: 40 })
           .toArray()
           .catch(() => [] as Role[]),
         fetchFinancials(orgnr),

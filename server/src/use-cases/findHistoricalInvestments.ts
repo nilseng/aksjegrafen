@@ -67,7 +67,7 @@ const addInvestmentCompanies = async (ownerships: Ownership[]): Promise<Ownershi
   ownerships.forEach((o: Ownership) => {
     o.investment = companiesByOrgnr.get(o.orgnr);
   });
-  return ownerships;
+  return ownerships.filter((o) => !o.investment?.suppressed);
 };
 
 const findMatchingInvestments = async ({
