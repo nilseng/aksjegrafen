@@ -2,24 +2,35 @@ import { isNumber, mergeWith } from "lodash";
 import { findCompanies, findOwnerships, findShareholdersByIds } from "../gateways/mongoDB/mongoDB.gateway";
 import { Ownership } from "../models/models";
 
-export const findHistoricalInvestors = async ({
-  orgnr,
-  year,
-  limit,
-  skip,
-}: {
+interface InvestorQuery {
   orgnr: string;
   year?: number;
   limit?: number;
   skip?: number;
-}): Promise<Ownership[]> => {
-  const ownerships = await findOwnerships({ orgnr, year, limit, skip });
+}
+
+/**
+ * Investors in a company, plus how many rows were withheld because the holder is on the
+ * suppression list. Callers that render a page use `withheld` to say that something was
+ * omitted rather than silently claiming the company has no shareholders — see
+ * use-cases/manageSuppressions.ts.
+ */
+export const findHistoricalInvestorsWithMeta = async (
+  query: InvestorQuery
+): Promise<{ investors: Ownership[]; withheld: number }> => {
+  const ownerships = await findOwnerships(query);
   await resolveShareholders(ownerships);
   const visibleOwnerships = ownerships.filter(
     (o) => !o.investor?.shareholder?.suppressed && !o.investor?.company?.suppressed
   );
-  return mergeOwnerships({ ownerships: visibleOwnerships });
+  return {
+    investors: await mergeOwnerships({ ownerships: visibleOwnerships }),
+    withheld: ownerships.length - visibleOwnerships.length,
+  };
 };
+
+export const findHistoricalInvestors = async (query: InvestorQuery): Promise<Ownership[]> =>
+  (await findHistoricalInvestorsWithMeta(query)).investors;
 
 const resolveShareholders = async (ownerships: Ownership[]) => {
   const [shareholders, companies] = await Promise.all([

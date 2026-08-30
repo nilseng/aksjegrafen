@@ -5,7 +5,7 @@ import { baseUrl } from "../config";
 import { IDatabase } from "../database/mongoDB";
 import { Company, Ownership, Role } from "../models/models";
 import { findHistoricalInvestments } from "../use-cases/findHistoricalInvestments";
-import { findHistoricalInvestors } from "../use-cases/findHistoricalInvestors";
+import { findHistoricalInvestorsWithMeta } from "../use-cases/findHistoricalInvestors";
 import { removeOrgnrWhitespace } from "../utils/removeOrgnrWhitespace";
 import { bucketForName, cf, escapeHtml, nf, pf, renderNotFoundPage, renderShell } from "./pageShell";
 
@@ -27,8 +27,10 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
       if (!company) return notFound(res);
 
       const year = latestCompanyYear(company);
-      const [investors, investments, roles, financials] = await Promise.all([
-        year ? findHistoricalInvestors({ orgnr, year, limit: 10 }).catch(() => []) : [],
+      const [investorResult, investments, roles, financials] = await Promise.all([
+        year
+          ? findHistoricalInvestorsWithMeta({ orgnr, year, limit: 10 }).catch(() => ({ investors: [], withheld: 0 }))
+          : { investors: [] as Ownership[], withheld: 0 },
         year ? findHistoricalInvestments({ shareholderOrgnr: orgnr, year, limit: 10 }).catch(() => []) : [],
         db.roles
           .find({ orgnr, suppressed: { $ne: true } }, { limit: 40 })
@@ -36,6 +38,8 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
           .catch(() => [] as Role[]),
         fetchFinancials(orgnr),
       ]);
+
+      const { investors, withheld: withheldInvestors } = investorResult;
 
       // Corporate shareholders and role holders outside the registry (municipalities,
       // foundations, foreign entities) have an orgnr but no /selskap page; linking
@@ -60,7 +64,9 @@ export const selskapRoutes = ({ db }: { db: IDatabase }) => {
         .status(200)
         .set("Content-Type", "text/html; charset=utf-8")
         .set("Cache-Control", "public, max-age=86400")
-        .send(renderCompanyPage({ company, year, investors, investments, roles, financials, linkableOrgnrs }));
+        .send(
+          renderCompanyPage({ company, year, investors, investments, roles, financials, linkableOrgnrs, withheldInvestors })
+        );
     })
   );
 
@@ -99,6 +105,12 @@ const fetchFinancials = async (orgnr: string) => {
     return null;
   }
 };
+
+// Shown wherever the suppression list removed rows, so a page never silently claims a
+// company has no shareholders when data exists but is withheld. Deliberately generic:
+// it names no one and does not say that a request was made, which would itself publish
+// personal data about whoever asked.
+const privacyNotice = "Enkelte opplysninger er utelatt av personvernhensyn.";
 
 const statTile = (label: string, value: string): string =>
   `<div class="tile"><span class="tile-label">${escapeHtml(label)}</span><span class="tile-value">${escapeHtml(
@@ -143,6 +155,7 @@ const renderCompanyPage = ({
   roles,
   financials,
   linkableOrgnrs,
+  withheldInvestors,
 }: {
   company: Company;
   year?: number;
@@ -151,6 +164,7 @@ const renderCompanyPage = ({
   roles: Role[];
   financials: any;
   linkableOrgnrs: Set<string>;
+  withheldInvestors: number;
 }): string => {
   const name = company.name;
   const title = `${name} – aksjonærer og eiere | Aksjegrafen`;
@@ -313,7 +327,10 @@ const renderCompanyPage = ({
       <p class="muted">${
         investorCount ? `${nf.format(investorCount)} aksjonær${investorCount === 1 ? "" : "er"} totalt. ` : ""
       }${totalShares ? `${nf.format(totalShares)} aksjer utstedt. ` : ""}<a href="${graphUrl}">Se alle i grafen →</a></p>
+      ${withheldInvestors ? `<p class="muted">${privacyNotice}</p>` : ""}
     </section>`
+        : withheldInvestors
+        ? `<section class="card"><p>${privacyNotice}</p></section>`
         : `<section class="card"><p>Ingen aksjonærdata registrert for selskapet.</p></section>`
     }
 
